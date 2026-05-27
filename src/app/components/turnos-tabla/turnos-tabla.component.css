@@ -1,0 +1,425 @@
+/* ==========================================================================
+   1. ESTRUCTURA GLOBAL (EMULANDO INICIO AL 100%)
+   ========================================================================== */
+.inicio-wrapper {
+  max-width: 100%; /* Quitamos el tope de 1200px */
+  margin: 0 auto;
+  padding: 20px 30px; /* Igual al padding de tu Inicio */
+  animation: fadeIn 0.6s ease-out;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Forzamos tipografía moderna */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 2. HEADER --- */
+.header-inicio { 
+  margin-bottom: 2.5rem; 
+}
+.header-inicio h1 { 
+  font-size: 2.2rem; 
+  color: #1e293b; 
+  font-weight: 800; 
+  margin: 0; 
+}
+.header-inicio p { 
+  color: #64748b; 
+  font-size: 1.1rem; 
+  margin-top: 5px; 
+}
+/* --- 2. HEADER Y STATS --- */
+.header-inicio { margin-bottom: 2.5rem; }
+.header-inicio h1 { font-size: 2.2rem; color: #1e293b; font-weight: 800; margin: 0; }
+.header-inicio p { color: #64748b; font-size: 1.1rem; margin-top: 5px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.card-stat {
+  background: white; padding: 1.5rem; border-radius: 20px;
+  display: flex; align-items: center; gap: 1.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9;
+  transition: transform 0.3s ease;
+}
+
+/* --- 3. BARRA DE FILTROS (TU ORIGINAL - INTACTO) --- */
+/* ==========================================================================
+   CONTENEDOR DE FILTROS Y BÚSQUEDA (ADAPTADO)
+   ========================================================================== */
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+/* Caja del buscador */
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  padding: 10px 16px;
+  border-radius: 12px;
+  flex-grow: 1;
+  max-width: 480px;
+  border: 1px solid #e2e8f0;
+}
+
+.search-icon {
+  margin-right: 10px;
+  font-size: 1.1rem;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #334155;
+  outline: none;
+}
+
+/* Bloque derecho: Fecha e Input */
+.date-picker-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* El input tipo Fecha estilizado */
+.custom-date-input {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600; /* Heredado de tu propuesta para que se lea firme */
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Botón Limpiar Filtros con tus colores personalizados */
+.btn-clear-filters {
+  background-color: #fff1f2;     /* Fondo clarito sutil */
+  color: #a31de1;                 /* Tu violeta de marca */
+  border: 1px solid transparent;  /* Bordes limpios sin cortes raros */
+  padding: 10px 16px;             /* Alineación perfecta con el input de fecha */
+  border-radius: 12px;            /* Curvatura moderna idéntica a los inputs */
+  font-size: 0.95rem;
+  font-weight: 700;               /* Resaltado fuerte */
+  cursor: pointer;
+  transition: all 0.2s ease;      /* Suavizado para las animaciones */
+}
+
+.btn-clear-filters:hover {
+  background-color: #ffe4e6;     /* Se intensifica levemente el fondo */
+  color: #8a2be2;                 /* Vira al violeta de los botones principales */
+  transform: translateY(-1px);    /* Micro-interacción premium hacia arriba */
+}
+/* --- 4. TABLA DE TURNOS (ACOMODADA Y CENTRADA) --- */
+.main-table-container {
+  background: white; padding: 1.5rem; border-radius: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;
+}
+
+.custom-table { width: 100%; border-collapse: collapse; table-layout: fixed !important; }
+
+/* Anchos fijos para que coincidan cabeceras y celdas */
+.custom-table th:nth-child(1), .custom-table td:nth-child(1) { width: 115px; }
+.custom-table th:nth-child(2), .custom-table td:nth-child(2) { width: 95px; }
+.custom-table th:nth-child(3), .custom-table td:nth-child(3) { width: 23%; }
+.custom-table th:nth-child(4), .custom-table td:nth-child(4) { width: 20%; }
+.custom-table th:nth-child(5), .custom-table td:nth-child(5) { width: 130px; text-align: center; } 
+.custom-table th:nth-child(6), .custom-table td:nth-child(6) { width: 180px; text-align: center; } 
+
+.custom-table th {
+  padding: 12px 15px; color: #94a3b8; font-size: 0.75rem;
+  font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #f1f5f9;
+}
+.custom-table td { padding: 15px; border-bottom: 1px solid #f8fafc; color: #334155; vertical-align: middle; }
+
+.section-header-row td { padding: 30px 15px 10px 15px !important; border: none !important; }
+.title-section { font-size: 0.95rem; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 15px; width: 100%; }
+.title-section::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+
+.bold { font-weight: 700; color: #1e293b; }
+.txt-hour-main { font-weight: 700; color: #8a2be2; background: #f5f0ff; padding: 4px 10px; border-radius: 6px; }
+
+/* --- 5. ESTADOS Y BOTONES (RECUPERANDO EL ESTILO Y HOVERS) --- */
+
+/* ESTADOS: Con soporte para mayúsculas/minúsculas */
+
+.btn-cancel-danger:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+  background: transparent;
+}
+/* Base del badge */
+.badge-status {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  min-width: 105px;
+  border: 1px solid transparent;
+}
+
+/* Estado: Atendido (Verde) */
+.status-ok { 
+  background: #dcfce7 !important; 
+  color: #166534 !important; 
+}
+
+/* Pendiente: Naranja */
+.status-pendiente { 
+  background: #ffedd5 !important; 
+  color: #9a3412 !important; 
+}
+
+/* Confirmado: Violeta */
+.status-confirmado { 
+  background: #f3e8ff !important; 
+  color: #6b21a8 !important; 
+}
+
+/* Cancelado: Rojo */
+.status-cancelado { 
+  background: #fee2e2 !important; 
+  color: #b91c1c !important; 
+}
+/* ACCIONES Y BOTONES CON HOVER */
+.actions-flex { display: flex; justify-content: center; gap: 10px; align-items: center; }
+
+.btn-action-ficha {
+  background: white; color: #8a2be2; border: 1px solid #e9d5ff;
+  padding: 6px 14px !important; border-radius: 10px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; 
+  transition: all 0.2s ease; font-size: 0.75rem;
+  box-shadow: 0 2px 4px rgba(138, 43, 226, 0.05);
+}
+.btn-action-ficha:hover { 
+  background: #8a2be2; color: white; border-color: #8a2be2;
+  transform: translateY(-1px); box-shadow: 0 4px 8px rgba(138, 43, 226, 0.2);
+}
+
+.btn-cancel-danger {
+  background: transparent; color: #ff0000; border: none;
+  padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; 
+  font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+}
+.btn-cancel-danger:hover { 
+  background: #e69898; color: #f80000; 
+}
+
+/* AREA DE ADJUNTOS EN LA MODAL */
+.attachments-area { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+.attachment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.btn-add-mini { background: #f5f3ff; color: #8a2be2; border: 1px dashed #c084fc; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
+.attachment-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+.file-chip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 5px 10px; display: flex; align-items: center; gap: 8px; }
+.chip-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+
+/* --- 6. MODAL (TU ORIGINAL - INTACTO) --- */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6); display: flex; align-items: center;
+  justify-content: center; z-index: 1000; backdrop-filter: blur(8px);
+}
+.modal-compact {
+  background: white; width: 90%; max-width: 520px; border-radius: 30px;
+  overflow: hidden; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+  display: flex; flex-direction: column;
+}
+.modal-header-mini { background: #8a2be2; padding: 1.4rem 1.8rem; color: white; display: flex; justify-content: space-between; align-items: center; }
+.patient-title h3 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+.id-badge { font-size: 0.7rem; opacity: 0.8; font-weight: 600; display: block; }
+.close-btn-circle { background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.modal-body-scroll { padding: 1.8rem; max-height: 60vh; overflow-y: auto; }
+.data-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
+.data-item-small { background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid #edf2f7; }
+.data-label { display: block; font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+.data-value { font-size: 0.95rem; color: #1e293b; font-weight: 600; }
+.consultation-box textarea { width: 100%; height: 100px; padding: 12px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f8fafc; resize: none; font-size: 0.95rem; }
+.modal-footer-compact { padding: 1.2rem 1.8rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; background: #fcfcfc; }
+.btn-status-toggle { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.btn-primary-gradient { background: linear-gradient(135deg, #8a2be2, #6a1b9a); color: white; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.2); }
+.atendido-badge-modal { background: #dcfce7; color: #166534; font-weight: 700; padding: 8px 15px; border-radius: 10px; }
+.btn-secondary-flat { background: transparent; border: none; color: #64748b; font-weight: 600; cursor: pointer; }
+
+/* Auxiliares */
+.text-center { text-align: center !important; }
+
+
+.pdf-icon-placeholder {
+  width: 32px;
+  height: 32px;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pdf-icon-placeholder .icon {
+  font-size: 14px;
+}
+
+.pdf-icon-placeholder small {
+  font-size: 7px;
+  font-weight: 800;
+  color: #dc2626;
+  margin-top: -2px;
+}
+
+
+/* ==========================================================================
+   ESTILOS PARA EL SELECT DE ESTADOS INTERACTIVO
+   ========================================================================== */
+.select-status-inline {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase; /* Fuerza las mayúsculas idénticas a tus capturas */
+  border: 1px solid transparent;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  text-align: center;
+  appearance: none; /* Remueve la flecha por defecto del sistema */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: inline-block;
+  width: 130px; /* Ancho fijo ideal para que no salten las columnas */
+}
+
+/* Hover sutil si el select está activo */
+.select-status-inline:not(:disabled):hover {
+  filter: brightness(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Estado deshabilitado (Cuando el turno está Atendido o Cancelado) */
+.select-status-inline:disabled {
+  background-color: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+
+/* ==========================================================================
+   PALETA DE COLORES PERSONALIZADA (SOLICITADA)
+   ========================================================================== */
+
+/* PENDIENTE: Naranjita suave, no muy fuerte */
+.status-pendiente {
+  background-color: #ffedd5;
+  color: #ea580c;
+}
+
+/* CONFIRMADO: Violetita premium */
+.status-confirmado {
+  background-color: #f3e8ff;
+  color: #7c3aed;
+}
+
+/* EN ESPERA: Azulcito pastel */
+.status-espera {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+/* ATENDIDO: Verde sutil */
+.status-ok {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* NO ASISTIÓ: Gris neutral oscuro */
+.status-falta {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* CANCELADO: Rojo sutil */
+.status-cancelado {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+
+/* ==========================================================================
+   BOTÓN CANCELAR (ESTILO OUTLINE - LETRAS ROJAS)
+   ========================================================================== */
+.btn-cancel-danger {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #fca5a5; /* Borde rojo suavizado */
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover: Se rellena sutilmente con fondo rojo transparente */
+.btn-cancel-danger:not(:disabled):hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* Click */
+.btn-cancel-danger:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Estado bloqueado (Gris plano sin interacción) */
+.btn-cancel-danger:disabled {
+  background-color: #f1f5f9;
+  color: #cbd5e1;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* ==========================================================================
+   ESTILO PARA FILAS DE TURNOS CANCELADOS
+   ========================================================================== */
+.cancelado-row {
+  background-color: #fafafa;
+  opacity: 0.65;
+}
+
+/* Tacha los datos clave para identificarlo de un vistazo */
+.cancelado-row td.bold,
+.cancelado-row .txt-hour-main,
+.cancelado-row .txt-hour-sub {
+  text-decoration: line-through;
+  color: #94a3b8;
+}

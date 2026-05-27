@@ -1,0 +1,136 @@
+/* Estructura Principal */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.logo h2 {
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.menu-links, .menu-footer {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Items de Navegación */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #64748b;
+  border-radius: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
+ 
+}
+
+/* Efecto Activo y Hover corregido */
+.nav-item:hover, 
+.nav-item.active {
+  background: #f5f3ff !important; /* Violeta muy suave para que no sature */
+  color: #7c3aed !important; /* El violeta de la marca */
+  font-weight: 500;
+}
+
+/* Selector de Profesional (Estilo Minimalista) */
+.selector-profesional-sidebar {
+  padding: 12px 16px;
+  margin: 0 0 24px 0; /* Ajustado para que no baile */
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+}
+
+.selector-profesional-sidebar label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+.selector-profesional-sidebar select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e1b4b;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  appearance: none; /* Quita flechas feas del navegador */
+}
+
+/* Lógica de Candados y Bloqueos */
+.menu-links li.locked {
+  filter: grayscale(1);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.lock-icon {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* Otros Elementos */
+.logout {
+  color: #ef4444;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: opacity 0.2s;
+}
+
+.logout:hover {
+  opacity: 0.8;
+}
+
+.postgres-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #10b981;
+  margin-top: 10px;
+  padding: 0 16px;
+}
+
+.dot-online {
+  width: 7px;
+  height: 7px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}

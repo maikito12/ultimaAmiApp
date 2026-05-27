@@ -1,0 +1,199 @@
+<div class="inicio-wrapper">
+  <header class="header-inicio">
+    <div class="welcome-text">
+      <h1>Panel de Gestión</h1>
+      <p>Control de citas y pacientes.</p>
+    </div>
+  </header>
+
+  <div class="filters-container">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" [(ngModel)]="filtroTexto" (input)="aplicarFiltros()" placeholder="Buscar por Paciente o DNI...">
+    </div>
+    
+    <div class="date-picker-box">
+      <input type="date" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()" class="custom-date-input">
+      <button class="btn-clear-filters" (click)="limpiarFiltros()">Limpiar Filtros</button>
+    </div>
+  </div>
+
+  <div class="main-table-container">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>Sucursal</th>
+          <th class="text-center">Estado</th>
+          <th class="text-right">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr class="section-header-row" *ngIf="turnosHoy.length > 0">
+          <td colspan="6"><div class="title-section">Turnos de Hoy</div></td>
+        </tr>
+        
+        <tr *ngFor="let turno of turnosHoy"
+            [class.cancelado-row]="turno.estado === 'cancelado'">
+          <td class="bold">{{ turno.fecha }}</td>
+          <td class="txt-hour-main">{{ turno.hora }} hs</td>
+          <td>{{ turno.pacienteNombre }}</td>
+          <td>{{ turno.sucursal || turno.sucursalNombre }}</td>
+          
+          <td class="text-center">
+            <select class="select-status-inline" 
+                    [ngModel]="turno.estado" 
+                    (change)="cambiarEstadoTurno(turno, $event)"
+                    [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
+                    [ngClass]="{
+                      'status-pendiente': turno.estado === 'pendiente',
+                      'status-confirmado': turno.estado === 'confirmado',
+                      'status-espera': turno.estado === 'en_espera',
+                      'status-ok': turno.estado === 'atendido',
+                      'status-falta': turno.estado === 'no_asistio',
+                      'status-cancelado': turno.estado === 'cancelado'
+                    }">
+              <option value="en_espera">En espera</option>
+              <option value="no_asistio">No asistió</option>
+
+              <option *ngIf="turno.estado === 'pendiente'" value="pendiente">Pendiente</option>
+              <option *ngIf="turno.estado === 'confirmado'" value="confirmado">Confirmado</option>
+              <option *ngIf="turno.estado === 'atendido'" value="atendido">Atendido</option>
+              <option *ngIf="turno.estado === 'cancelado'" value="cancelado">Cancelado</option>
+            </select>
+          </td>
+          
+          <td class="text-right">
+            <div class="actions-flex" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+              <button class="btn-cancel-danger" 
+                      (click)="cancelarTurno(turno)" 
+                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'">
+                Cancelar
+              </button>
+              <button class="btn-action-ficha" (click)="verDetalle(turno)">
+                <span>Ver Ficha</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="section-header-row" *ngIf="proximosTurnos.length > 0">
+          <td colspan="6"><div class="title-section">Próximos Turnos</div></td>
+        </tr>
+        
+        <tr *ngFor="let turno of proximosTurnos"
+            [class.cancelado-row]="turno.estado === 'cancelado'">
+          <td class="txt-date-sub">{{ turno.fecha }}</td>
+          <td class="txt-hour-sub">{{ turno.hora }} hs</td>
+          <td>{{ turno.pacienteNombre }}</td>
+          <td>{{ turno.sucursal || turno.sucursalNombre }}</td>
+          
+          <td class="text-center">
+            <select class="select-status-inline" 
+                    [ngModel]="turno.estado" 
+                    (change)="cambiarEstadoTurno(turno, $event)"
+                    [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
+                    [ngClass]="{
+                      'status-pendiente': turno.estado === 'pendiente',
+                      'status-confirmado': turno.estado === 'confirmado',
+                      'status-espera': turno.estado === 'en_espera',
+                      'status-ok': turno.estado === 'atendido',
+                      'status-falta': turno.estado === 'no_asistio',
+                      'status-cancelado': turno.estado === 'cancelado'
+                    }">
+              <option value="en_espera">En espera</option>
+              <option value="no_asistio">No asistió</option>
+
+              <option *ngIf="turno.estado === 'pendiente'" value="pendiente">Pendiente</option>
+              <option *ngIf="turno.estado === 'confirmado'" value="confirmado">Confirmado</option>
+              <option *ngIf="turno.estado === 'atendido'" value="atendido">Atendido</option>
+              <option *ngIf="turno.estado === 'cancelado'" value="cancelado">Cancelado</option>
+            </select>
+          </td>
+          
+          <td class="text-right">
+            <div class="actions-flex" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+              <button class="btn-cancel-danger" 
+                      (click)="cancelarTurno(turno)" 
+                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'">
+                Cancelar
+              </button>
+              <button class="btn-action-ficha" (click)="verDetalle(turno)">
+                <span>Ver Ficha</span> 
+              </button>
+            </div>
+          </td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="modal-compact" (click)="$event.stopPropagation()">
+      <div class="modal-header-mini">
+        <div class="patient-title">
+          <span class="id-badge">DNI: {{ pacienteSeleccionado.pacienteDni }}</span>
+          <h3>{{ pacienteSeleccionado.pacienteNombre }}</h3>
+        </div>
+        <button class="close-btn-circle" (click)="cerrarModal()">×</button>
+      </div>
+
+      <div class="modal-body-scroll">
+        <div class="data-summary-grid">
+          <div class="data-item-small" *ngFor="let campo of pacienteSeleccionado.camposExtras">
+            <span class="data-label">{{ campo.label }}</span>
+            <span class="data-value">{{ campo.valor }}</span>
+          </div>
+        </div>
+
+        <div class="consultation-box">
+          <label class="data-label">Observaciones Clínicas (Evolución de hoy)</label>
+          <textarea [(ngModel)]="pacienteSeleccionado.notasEvolucion" placeholder="Escribir mediciones, peso, evolución de la dieta..."></textarea>
+        </div>
+
+        <div class="attachments-area">
+          <label class="data-label">Archivos y Estudios Adjuntos</label>
+          <div class="attachment-header">
+            <button type="button" class="btn-add-mini" (click)="fileInput.click()">+ Adjuntar Archivo</button>
+            <input #fileInput type="file" (change)="onFileSelected($event)" hidden multiple>
+          </div>
+
+          <div class="attachment-strip">
+            <div class="file-chip" *ngFor="let file of pacienteSeleccionado.archivos; let i = index">
+              <img *ngIf="isImage(file)" [src]="file.previewUrl || file.base64" class="chip-thumb">
+              <div *ngIf="isPdf(file)" class="pdf-icon-placeholder">
+                <span class="icon">📄</span>
+                <small>PDF</small>
+              </div>
+              <span class="chip-name" [title]="file.name">{{ file.name }}</span>
+              <button class="btn-remove-chip" (click)="removeFile(i)">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer-compact">
+        <button class="btn-status-toggle" 
+                *ngIf="pacienteSeleccionado.estado !== 'atendido'"
+                (click)="marcarAtendido(pacienteSeleccionado)">
+          <span class="dot"></span> Marcar Atendido
+        </button>
+        
+        <div class="atendido-badge-modal" *ngIf="pacienteSeleccionado.estado === 'atendido'">
+          <i class="check-icon">✓</i>Atendido
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn-secondary-flat" (click)="cerrarModal()">Cerrar</button>
+          <button class="btn-primary-gradient" (click)="guardarCambios()">
+            Guardar y Finalizar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

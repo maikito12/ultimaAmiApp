@@ -1,0 +1,70 @@
+:host {
+  display: block;
+  width: 100%;
+  background: #9e8989;
+  border-top: 1px solid #e2e8f0;
+}
+
+.form-footer {
+  padding: 1.5rem 2rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tech-by {
+  margin-top: 4px;
+  font-size: 0.8rem;
+}
+
+.agencia-brand {
+  font-weight: 800;
+  color: #8a2be2; /* Tu color violeta distintivo */
+  letter-spacing: -0.5px;
+}
+
+.footer-links {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-links a {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #8a2be2;
+}
+
+.link-soporte {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.separator {
+  color: #cbd5e1;
+  user-select: none;
+}
+
+/* Responsivo rápido */
+@media (max-width: 600px) {
+  .footer-links {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .separator {
+    display: none;
+  }
+}

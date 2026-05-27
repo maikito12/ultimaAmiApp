@@ -1,0 +1,291 @@
+:host {
+    display: block;
+    /* Dejamos el host limpio para que el padding real lo maneje el wrapper, igual que en Inicio */
+    background-color: #fafafa;
+    
+    /* Variables de marca intactas */
+    --v-soft: #9b67cc;
+    --v-pale: #f4eeff;
+    --r-soft: #ff8a8a;
+    --r-pale: #fff0f0;
+}
+
+/* ==========================================================================
+   1. ESTRUCTURA PRINCIPAL (ANCHO COMPLETO UNIFICADO)
+   ========================================================================== */
+.dashboard-wrapper { 
+    max-width: 100%; /* Cambiado de 1200px a 100% para ocupar toda la pantalla */
+    margin: 0 auto; 
+    padding: 20px 30px; /* Idéntico al padding exacto de tu Inicio y Turnos */
+    animation: fadeIn 0.6s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Tipografía pro del sistema */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header y Barra de Filtros Estilo Apple */
+.db-header-filtros {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.title-group h1 { 
+    font-size: 2.2rem; /* Subido de 1.8rem a 2.2rem para igualar al Inicio */
+    font-weight: 800; /* Más imponente como tus otros títulos */
+    color: #1e293b; /* Ajustado al gris oscuro de tu paleta principal */
+    margin: 0; 
+    font-family: inherit;
+}
+
+.title-group p { 
+    color: #64748b; /* Gris unificado */
+    font-size: 1.1rem; /* Subido de 0.9rem para que conserve la proporción */
+    margin-top: 5px; 
+    font-family: inherit;
+}
+
+/* ==========================================================================
+   2. BARRA DE FILTROS Y INPUTS
+   ========================================================================== */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    padding: 10px 16px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e2e8f0;
+}
+
+select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    font-size: 0.85rem;
+    color: #334155;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.btn-primary-soft {
+    background: var(--v-soft);
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+.btn-primary-soft:hover { 
+    opacity: 0.9; 
+    transform: translateY(-1px); 
+}
+
+/* Contenedor dinámico de las fechas */
+.filter-bar div[style*="display: flex"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+}
+
+/* Inputs de tipo date unificados con la fuente global */
+.filter-bar input[type="date"] {
+    font-family: inherit; /* Cambiado de 'Inter' para acoplarse al sistema */
+    font-size: 14px;
+    color: #334155;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0; 
+    border-radius: 10px; 
+    background-color: #ffffff;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.filter-bar input[type="date"]:focus {
+    border-color: #9b67cc; 
+    box-shadow: 0 0 0 3px rgba(155, 103, 204, 0.15);
+}
+
+.filter-bar span {
+    font-family: inherit;
+    font-size: 14px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   3. BLOQUES COMPONENTES (KPIs, GRIDS Y GRÁFICOS FLUÍDOS)
+   ========================================================================== */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Reajustado para que respire en pantallas anchas */
+    gap: 25px;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.kpi-card {
+    padding: 25px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s ease;
+}
+.kpi-card:hover { transform: translateY(-4px); }
+
+.kpi-card.violeta { background: linear-gradient(135deg, #fff 0%, var(--v-pale) 100%); }
+.kpi-card.rojo { background: linear-gradient(135deg, #fff 0%, var(--r-pale) 100%); }
+
+.kpi-content p { margin: 0; font-size: 0.85rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-content h2 { margin: 10px 0; font-size: 2rem; color: #1e293b; font-weight: 900; }
+.kpi-sub { font-size: 0.8rem; font-weight: 700; }
+
+/* Grids de Segmentación (Corrección de las 3 columnas en una fila) */
+.segmentation-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 25px 0;
+    width: 100%;
+}
+
+.seg-card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.seg-card h4 { 
+    margin: 0 0 20px 0; 
+    font-size: 0.8rem; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: 700;
+}
+
+.seg-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.seg-bar-bg { height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+.seg-bar-fill { height: 100%; background: var(--v-soft); border-radius: 10px; opacity: 0.8; }
+
+/* Clases de colores dinámicos para las barras de segmentación */
+.seg-bar-fill.orange-bar { background: #ff9f43 !important; opacity: 1; }
+.seg-bar-fill.green-bar { background: #10ac84 !important; opacity: 1; }
+
+/* Contenedores de Gráficos y Tablas */
+.charts-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 25px;
+    width: 100%;
+}
+
+@media (max-width: 1100px) {
+    .segmentation-grid-3col {
+        grid-template-columns: 1fr;
+    }
+    .charts-container {
+        grid-template-columns: 1fr; /* Se apila en pantallas medianas/chicas */
+    }
+}
+
+.chart-box {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.box-header h3 { margin: 0; font-size: 1.2rem; color: #1e293b; font-weight: 700; }
+.btn-text { background: none; border: none; color: var(--v-soft); font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+
+/* Heat Map */
+.heat-row { display: flex; align-items: center; gap: 15px; margin-bottom: 18px; }
+.hour-label { width: 90px; font-size: 0.85rem; color: #64748b; font-weight: 600; }
+.heat-bar-bg { flex: 1; height: 10px; background: #f1f5f9; border-radius: 5px; overflow: hidden; }
+.heat-bar-fill { height: 100%; background: var(--v-soft); border-radius: 5px; transition: width 1s ease; }
+.percent-label { width: 35px; font-size: 0.85rem; font-weight: 700; color: #1e293b; text-align: right; }
+
+/* ==========================================================================
+   4. CORRECCIÓN TABLA INTERNA (CLIENTES RECURRENTES DE PUNTA A PUNTA)
+   ========================================================================== */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Forzamos a la tabla a expandirse completamente */
+.mini-table { 
+    width: 100% !important;
+    border-collapse: collapse; 
+}
+
+.mini-table th { 
+    font-size: 0.75rem; 
+    color: #94a3b8; 
+    padding-bottom: 12px; 
+    text-transform: uppercase; 
+    font-weight: 700; 
+}
+
+/* Alineaciones dinámicas para que las columnas respiren y ocupen el 100% */
+.mini-table th:nth-child(1), .mini-table td:nth-child(1) {
+    text-align: left;
+}
+.mini-table th:nth-child(2), .mini-table td:nth-child(2) {
+    text-align: center;
+    width: 80px;
+}
+.mini-table th:nth-child(3), .mini-table td:nth-child(3) {
+    text-align: right;
+    width: 100px;
+}
+
+.mini-table td { 
+    padding: 14px 0; 
+    font-size: 0.9rem; 
+    border-bottom: 1px solid #f1f5f9; 
+    color: #334155; 
+}
+
+.mini-table tr:last-child td {
+    border-bottom: none; /* Quitamos la última línea para que no choque abajo */
+}
+
+.tag { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+.tag.fiel { background: var(--v-pale); color: var(--v-soft); }
+.tag.nuevo { background: #dcfce7; color: #15803d; }

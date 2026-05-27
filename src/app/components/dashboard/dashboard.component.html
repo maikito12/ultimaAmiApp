@@ -1,0 +1,12 @@
+<div class="dashboard">
+  <app-sidebar 
+    [menuOpen]="menuOpen" 
+    (toggleMenu)="toggleMenu()">
+  </app-sidebar>
+
+  <div class="main">
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

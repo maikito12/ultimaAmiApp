@@ -1,0 +1,126 @@
+<div class="equipo-container">
+  <div class="header-section">
+    <h2>Gestión de Equipo</h2>
+    <p>Asigná permisos y gestioná el acceso a las secciones del sistema.</p>
+  </div>
+
+  <!-- Alta de Personal -->
+  <div class="card">
+    <div class="form-grid">
+      <div class="form-section">
+        <h4 class="title-purple"><i class="fas fa-user-plus"></i> Registrar Integrante</h4>
+        <div class="input-field">
+          <input type="text" placeholder="Nombre Completo" [(ngModel)]="nuevoColaborador.nombre">
+        </div>
+        <div class="input-field">
+          <input type="email" placeholder="Email / Usuario" [(ngModel)]="nuevoColaborador.usuario">
+        </div>
+        <div class="input-field password-box">
+          <input [type]="mostrarPassword ? 'text' : 'password'" placeholder="Contraseña" [(ngModel)]="nuevoColaborador.pass">
+          <span class="eye-icon" (click)="togglePassword()">
+            <i class="fa" [ngClass]="mostrarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="form-section divider-left">
+        <h4 class="title-purple"><i class="fas fa-key"></i> Accesos Permitidos</h4>
+        <div class="permisos-list">
+          <div class="permiso-row" *ngFor="let p of permisosBase">
+            <span>{{p.nombre}}</span>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="p.activo">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn-main" (click)="confirmarAcceso()">Registrar en Equipo</button>
+    </div>
+  </div>
+
+  <!-- Listado -->
+  <div class="card mt-20">
+    <table class="equipo-table">
+      <thead>
+        <tr>
+          <th>Colaborador</th>
+          <th>Usuario</th>
+          <th>Estado</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of colaboradores">
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{c.nombre.charAt(0)}}</div>
+              <div>
+                <strong>{{c.nombre}}</strong><br>
+                <small class="text-muted">{{c.rol}}</small>
+              </div>
+            </div>
+          </td>
+          <td>{{c.usuario}}</td>
+          <td>
+            <span class="badge-status" [ngClass]="c.estado === 'Conectado' ? 'online' : 'offline'">
+              {{c.estado}}
+            </span>
+          </td>
+          <td class="text-right">
+            <button class="btn-circle edit" (click)="abrirEdicion(c)"><i class="fas fa-pen"></i></button>
+            <button class="btn-circle delete" (click)="eliminarColaborador(c)"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODAL EDITAR TODO (MENOS ESTADO) -->
+  <div class="modal-backdrop" *ngIf="mostrarModalEdit">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Editar Colaborador</h3>
+      <button class="close-x" (click)="cerrarModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="edit-grid">
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="edit-col">
+          <label>Nombre Completo</label>
+          <input type="text" [(ngModel)]="colaboradorEdicion.nombre">
+          
+          <label>Usuario / Email</label>
+          <input type="text" [(ngModel)]="colaboradorEdicion.usuario">
+          
+          <label>Nueva Contraseña</label>
+          <input type="text" [(ngModel)]="colaboradorEdicion.pass">
+
+          <!-- BOTONES DENTRO DE LA COLUMNA -->
+          <div class="modal-actions-inline">
+            <button class="btn-sec" (click)="cerrarModal()">Cancelar</button>
+            <button class="btn-main" (click)="guardarCambios()">Guardar Todo</button>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+       <div class="edit-col">
+  <label>Permisos</label>
+  <div class="permisos-list">
+    <!-- USAMOS colaboradorEdicion.permisos en lugar de permisosBase -->
+    <div class="permiso-row" *ngFor="let p of colaboradorEdicion.permisos">
+      <span>{{p.nombre}}</span>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="p.activo">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>

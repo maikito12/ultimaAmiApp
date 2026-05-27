@@ -1,0 +1,604 @@
+/* ==========================================================================
+   1. ESTRUCTURA PRINCIPAL Y CONTENEDORES (PANEL GENERAL)
+   ========================================================================== */
+.pacientes-wrapper {
+  max-width: 100%; /* Asegura que sea fluido */
+  margin: 0 auto;
+  padding: 20px 30px; /* Cambiado de 24px para igualar el de Inicio (20px 30px) */
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header-pacientes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem; /* Igualado a los 2.5rem del Inicio */
+}
+
+.title-group h1 {
+  font-size: 2.2rem; /* Subido de 1.85rem a 2.2rem para calzar el Inicio */
+  font-weight: 800;
+  color: #1e293b; /* Ajustado al gris oscuro del Inicio */
+  margin: 0 0 4px 0;
+  font-family: inherit; /* Fuerza a usar la letra del wrapper */
+}
+
+.title-group .subtitle {
+  font-size: 1.1rem; /* Subido de 0.95rem a 1.1rem */
+  color: #64748b;
+  margin: 0;
+  font-family: inherit;
+}
+
+.btn-nuevo-paciente {
+  background: linear-gradient(135deg, #8a2be2 0%, #6a1b9a 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-nuevo-paciente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(138, 43, 226, 0.35);
+}
+
+/* ==========================================================================
+   2. CONTENEDOR DE FILTROS Y BÚSQUEDA (MANTENIDO EXACTAMENTE IGUAL)
+   ========================================================================== */
+.filters-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  padding: 10px 16px;
+  border-radius: 12px;
+  flex-grow: 1;
+  max-width: 480px;
+  border: 1px solid #e2e8f0;
+}
+
+.search-icon {
+  margin-right: 10px;
+  font-size: 1.1rem;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #334155;
+  outline: none;
+}
+
+.date-picker-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-date-input {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-clear-filters {
+  background-color: #fff1f2; /* Fondo clarito del primer diseño */
+  color: #a31de1;             /* Tu violeta/púrpura distintivo */
+  border: 1px solid transparent; /* Bordes limpios */
+  padding: 10px 16px;         /* Tamaño y espaciado del segundo diseño */
+  border-radius: 12px;        /* Esquinas un pelín más curvas y modernas */
+  font-size: 0.95rem;         /* Tipografía legible */
+  font-weight: 700;           /* Resaltado fuerte del primer diseño */
+  cursor: pointer;
+  transition: all 0.2s ease;  /* Transición suave para el hover */
+}
+
+.btn-clear-filters:hover {
+  background-color: #ffe4e6; /* Se intensifica sutilmente el fondo al pasar el mouse */
+  color: #8a2be2;             /* El violeta muta al tono de los botones principales */
+  transform: translateY(-1px); /* Un pequeño saltito premium al apoyar el cursor */
+}
+
+/* ==========================================================================
+   3. GRID Y TARJETAS DE PACIENTES (PREMIUM CARD)
+   ========================================================================== */
+.pacientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.paciente-card-premium {
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.paciente-card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  padding: 20px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  position: relative;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.user-meta {
+  flex-grow: 1;
+}
+
+.user-meta h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.badge-genero {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.btn-trash {
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-trash:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Cuerpo de la tarjeta */
+.paciente-card-premium .card-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+.dato-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dato-item.full-width {
+  grid-column: span 2;
+}
+
+.dato-item .label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dato-item .value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Caja de meta/objetivo */
+.objetivo-box {
+  grid-column: span 2;
+  background: #fbf7ff;
+  border-left: 3px solid #8a2be2;
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  margin-top: 4px;
+}
+
+.label-objetivo {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #8a2be2;
+  letter-spacing: 0.5px;
+}
+
+.objetivo-texto {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4c1d95;
+}
+
+/* Footer de la tarjeta */
+.card-footer {
+  padding: 0 20px 20px;
+}
+
+.btn-main-action {
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-main-action:hover {
+  background-color: #8a2be2;
+  border-color: #8a2be2;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   4. MAQUETACIÓN PREMIUM DE LA FICHA MAESTRA (DASHBOARD EN SWEETALERT)
+   ========================================================================== */
+.ficha-dashboard {
+  display: flex;
+  min-height: 580px;
+  text-align: left;
+  background-color: #ffffff;
+}
+
+/* Sidebar de la Modal */
+.ficha-sidebar {
+  width: 260px;
+  background-color: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+}
+
+.sidebar-header {
+  padding: 0 24px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.sidebar-header .avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin: 0 auto 12px;
+  font-size: 1.6rem;
+}
+
+.sidebar-header span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.sidebar-nav {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.sidebar-nav .nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar-nav .nav-item:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Estado Activo de las pestañas inyectadas por JS */
+.sidebar-nav .nav-item.active {
+  background-color: #8a2be2;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.btn-delete-side {
+  background-color: transparent;
+  border: 1px dashed #ef4444;
+  color: #ef4444;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-side:hover {
+  background-color: #fef2f2;
+}
+
+/* Área de Contenido Principal de la Modal */
+.ficha-main {
+  flex-grow: 1;
+  padding: 32px;
+  overflow-y: auto;
+  max-height: 650px;
+}
+
+/* Manejo de visibilidad de las secciones */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.btn-edit-main {
+  background-color: #ffffff;
+  border: 1px solid #8a2be2;
+  color: #8a2be2;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit-main:hover {
+  background-color: #8a2be2;
+  color: #ffffff;
+}
+
+/* Grid de información interna del Perfil */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.info-item p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   5. COMPONENTES DINÁMICOS E INYECTADOS (CAMPOS EXTRAS, NOTAS Y HISTORIAL)
+   ========================================================================== */
+
+/* Filas de la lista de Datos Extras y Archivos */
+.extra-row-styled {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+}
+
+.extra-label-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-right: 12px;
+  text-transform: uppercase;
+}
+
+.extra-value-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.btn-delete-extra {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.btn-delete-extra:hover {
+  color: #ef4444;
+}
+
+/* Cuadro de texto para nuevas evoluciones */
+.nota-input-group textarea {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #334155;
+  outline: none;
+  resize: none;
+  background-color: #f8fafc;
+  transition: border-color 0.2s;
+}
+
+.nota-input-group textarea:focus {
+  border-color: #8a2be2;
+  background-color: #ffffff;
+}
+
+/* Tarjetas del Historial Clínico (Timeline) */
+.timeline-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.timeline-v2 .timeline-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #8a2be2;
+}
+
+.btn-delete-nota {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-nota:hover {
+  opacity: 1;
+}
+
+/* Limpiamos comentarios mal cerrados */
+/* CORRECCIÓN: Agregué el punto (.) al principio */
+.modal-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 15px !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+.modal-form-container .swal-field {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.swal-field {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+.swal-field .label {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  margin-bottom: 4px !important;
+  text-transform: uppercase !important;
+  display: block !important;
+}
+
+.swal-custom-input {
+  padding: 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Esta clase permite que un campo ocupe todo el ancho */
+.col-span-2 {
+  grid-column: span 2 !important;
+}

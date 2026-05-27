@@ -1,0 +1,123 @@
+<div class="container" *ngIf="profesional">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <form #f="ngForm" (submit)="f.valid ? reservar($event) : mostrarError()">
+    <h2>Reservar tu turno</h2>
+
+    <div class="field-group">
+      <label class="label-mini">Nombre Completo</label>
+      <input type="text" name="nombre" [(ngModel)]="datosForm.nombre" #nom="ngModel" placeholder="Tu nombre" required>
+      <small class="error-msg" *ngIf="nom.invalid && (nom.touched || f.submitted)">* El nombre es obligatorio</small>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">DNI</label>
+      <input type="text" name="dni" [(ngModel)]="datosForm.dni" #dni="ngModel" placeholder="Sin puntos ni espacios" required>
+      <small class="error-msg" *ngIf="dni.invalid && (dni.touched || f.submitted)">* El DNI es obligatorio</small>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">Email</label>
+      <input type="email" name="email" [(ngModel)]="datosForm.email" #mail="ngModel" placeholder="ejemplo@correo.com" required email>
+      <small class="error-msg" *ngIf="mail.invalid && (mail.touched || f.submitted)">
+        <span *ngIf="mail.errors?.['required']">* El email es obligatorio</span>
+        <span *ngIf="mail.errors?.['email']">* Formato de email no válido</span>
+      </small>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">Teléfono</label>
+      <input type="text" name="telefono" [(ngModel)]="datosForm.telefono" #tel="ngModel" placeholder="549..." required>
+      <small class="error-msg" *ngIf="tel.invalid && (tel.touched || f.submitted)">* El teléfono es obligatorio</small>
+    </div>
+
+    <div *ngFor="let campo of configuracionCampos; let i = index">
+      <div class="field-group" *ngIf="campo.id !== 'email' && campo.id !== 'telefono'">
+        <label class="label-mini">{{ campo.label }}</label>
+        
+        <ng-container *ngIf="campo.tipo === 'select'">
+          <select [name]="campo.id" [(ngModel)]="datosExtras[campo.id]" #refSel="ngModel" required>
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let opt of campo.opciones" [value]="opt">{{ opt }}</option>
+          </select>
+          <small class="error-msg" *ngIf="refSel.invalid && (refSel.touched || f.submitted)">
+            * {{ campo.label }} es obligatorio
+          </small>
+        </ng-container>
+
+        <ng-container *ngIf="campo.tipo === 'textarea'">
+          <div class="textarea-wrapper">
+            <textarea 
+              [name]="campo.id" 
+              [(ngModel)]="datosExtras[campo.id]" 
+              #refText="ngModel" 
+              [placeholder]="campo.placeholder || 'Escribí aquí...'" 
+              maxlength="250"
+              rows="3"
+              class="custom-textarea"
+              required>
+            </textarea>
+            <div class="char-counter">
+              {{ datosExtras[campo.id]?.length || 0 }} / 250
+            </div>
+          </div>
+          <small class="error-msg" *ngIf="refText.invalid && (refText.touched || f.submitted)">
+            * {{ campo.label }} es obligatorio
+          </small>
+        </ng-container>
+
+        <ng-container *ngIf="campo.tipo !== 'select' && campo.tipo !== 'textarea'">
+          <input 
+            [type]="campo.tipo" 
+            [name]="campo.id" 
+            [(ngModel)]="datosExtras[campo.id]" 
+            #refInp="ngModel" 
+            [placeholder]="campo.label" 
+            required>
+          <small class="error-msg" *ngIf="refInp.invalid && (refInp.touched || f.submitted)">
+            * {{ campo.label }} es obligatorio
+          </small>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">Sucursal</label>
+      <select name="sucursal" [(ngModel)]="datosForm.sucursal" #suc="ngModel" (change)="cargarTurnos()" required>
+        <option value="">Seleccionar sucursal (o buscar en todas)</option>
+        <option *ngFor="let s of sucursales" [value]="s.id || s.sucursal_id">{{ s.nombre }}</option>
+      </select>
+      <small class="error-msg" *ngIf="suc.invalid && (suc.touched || f.submitted)">* Seleccioná una sucursal</small>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">Fecha del Turno</label>
+      <div class="fecha-container">
+        <input type="text" id="fechaPicker" name="fecha" [(ngModel)]="datosForm.fecha" #fec="ngModel" readonly placeholder="Seleccioná una fecha" required>
+        <span class="calendar-icon">📅</span>
+      </div>
+      <small class="error-msg" *ngIf="fec.invalid && (fec.touched || f.submitted)">* La fecha es obligatoria</small>
+    </div>
+
+    <div id="turnos-container" *ngIf="horariosDisponibles.length > 0">
+      <p class="label-mini">Horarios Disponibles:</p>
+      <div id="turnos">
+        <button *ngFor="let h of horariosDisponibles" 
+                type="button" 
+                (click)="turnoSeleccionado = h" 
+                [class.turno-seleccionado]="turnoSeleccionado === h">
+          {{ h.hora }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="datosForm.fecha && horariosDisponibles.length === 0" class="no-turnos">
+      <p>No hay turnos disponibles para esta fecha/sucursal.</p>
+    </div>
+
+    <button type="submit" class="btn-confirmar">Reservar Turno</button>
+    
+  </form>
+</div>
+
+<app-footer></app-footer>

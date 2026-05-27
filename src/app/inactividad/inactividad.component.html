@@ -1,0 +1,165 @@
+<div class="dashboard-wrapper">
+    <header class="db-header-filtros">
+        <div class="title-group">
+            <h1>Gestión de Disponibilidad</h1>
+            <p>Administrá tus sedes de trabajo, horarios semanales y bloqueos de agenda.</p>
+        </div>
+    </header>
+
+    <div class="agenda-tabs">
+        <button [class.active]="tabActiva === 'horarios'" (click)="cambiarTab('horarios')">🕒 Horarios de Atención</button>
+        <button [class.active]="tabActiva === 'sucursales'" (click)="cambiarTab('sucursales')">🏢 Mis Sucursales</button>
+        <button [class.active]="tabActiva === 'bloqueos'" (click)="cambiarTab('bloqueos')">🚫 Bloqueos de Agenda</button>
+    </div>
+
+    <div class="disponibilidad-container" *ngIf="tabActiva === 'horarios'">
+        <div class="form-box">
+            <h3>Asignar Horario Semanal</h3>
+            <form (ngSubmit)="guardarHorario()">
+                <div class="input-group">
+                    <label>¿En qué sucursal vas a atender?</label>
+                    <select [(ngModel)]="nuevoHorario.sucursal_id" name="sucursal_id" required>
+                        <option value="" disabled selected>Seleccioná una de tus sucursales...</option>
+                        <option *ngFor="let suc of listaSucursales" [value]="suc.id">{{ suc.nombre }}</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Días de la semana</label>
+                    <div class="dias-checkbox-grid">
+                        <label class="dia-check-box" *ngFor="let d of diasSemana">
+                            <input type="checkbox" [(ngModel)]="d.seleccionado" [name]="'dia_' + d.id">
+                            <span>{{ d.corto }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label>Hora Inicio</label>
+                        <input type="time" [(ngModel)]="nuevoHorario.hora_inicio" name="hora_inicio" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Hora Fin</label>
+                        <input type="time" [(ngModel)]="nuevoHorario.hora_fin" name="hora_fin" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Duración del Turno (Minutos)</label>
+                    <input type="number" [(ngModel)]="nuevoHorario.duracion_turno" name="duracion_turno" placeholder="Ej: 30, 45, 60" required>
+                </div>
+
+                <button type="submit" class="btn-primary-soft-action">GUARDAR HORARIO</button>
+            </form>
+        </div>
+
+       <div class="list-box">
+    <h3>Cronograma de Atención</h3>
+    <div class="bloqueos-grid">
+        <div class="empty-state" *ngIf="listaHorarios.length === 0">No configuraste horarios de atención todavía.</div>
+        
+        <div class="bloqueo-card agenda-activa" *ngFor="let hor of horariosAgrupados">
+            <div class="card-top">
+                <span class="badge-sede-label">{{ obtenerNombreSucursal(hor.sucursal_id) }}</span>
+                <button class="btn-eliminar-horario" (click)="eliminarHorarioAgrupado(hor.sucursal_id, hor.hora_inicio, hor.hora_fin)">🗑️</button>
+            </div>
+            <h4>{{ formatearDiasTexto(hor.dias) }}</h4>
+            <p class="bloqueo-detalle">🕒 {{ hor.hora_inicio.substring(0,5) }} a {{ hor.hora_fin.substring(0,5) }} hs ({{ hor.duracion_turno }} min por turno)</p>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <div class="disponibilidad-container" *ngIf="tabActiva === 'sucursales'">
+        <div class="form-box">
+            <h3>Agregar Nueva Sucursal</h3>
+            <form (ngSubmit)="guardarSucursal()">
+                <div class="input-group">
+                    <label>Nombre de la Sede</label>
+                    <input type="text" [(ngModel)]="nuevaSucursal.nombre" name="nom_sucursal" placeholder="Ej: Clínica Del Niño" required>
+                </div>
+
+                <div class="form-row-3col">
+                    <div class="input-group">
+                        <label>Calle</label>
+                        <input type="text" [(ngModel)]="nuevaSucursal.calle" name="calle_sucursal" placeholder="Ej: Av. Colón" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Número / Altura</label>
+                        <input type="text" [(ngModel)]="nuevaSucursal.altura" name="alt_sucursal" placeholder="Ej: 2450" required>
+                    </div>
+                </div>
+
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label>Piso / Depto / Consultorio (Opcional)</label>
+                        <input type="text" [(ngModel)]="nuevaSucursal.piso_depto" name="piso_sucursal" placeholder="Ej: 4to B o Cons. 3">
+                    </div>
+                    <div class="input-group">
+                        <label>Ciudad</label>
+                        <input type="text" [(ngModel)]="nuevaSucursal.ciudad" name="ciudad_sucursal" placeholder="Ej: Mar del Plata" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary-soft-action">REGISTRAR SUCURSAL</button>
+            </form>
+        </div>
+
+        <div class="list-box">
+            <h3>Tus Sedes Habilitadas</h3>
+            <div class="bloqueos-grid">
+                <div class="empty-state" *ngIf="listaSucursales.length === 0">No tenés sucursales cargadas. Crea la primera a la izquierda.</div>
+                <div class="bloqueo-card sede-card" *ngFor="let suc of listaSucursales">
+                    <div class="card-top">
+                        <h4>🏢 {{ suc.nombre }}</h4>
+                        <button class="btn-eliminar-horario" (click)="eliminarSucursal(suc.id)">🗑️</button>
+                    </div>
+                    <p class="bloqueo-nota">
+                        📍 {{ suc.calle }} {{ suc.altura }} 
+                        <span *ngIf="suc.piso_depto">({{ suc.piso_depto }})</span> - {{ suc.ciudad }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disponibilidad-container" *ngIf="tabActiva === 'bloqueos'">
+        <div class="form-box">
+            <h3>Configurar Bloqueo Temporal</h3>
+            <form (ngSubmit)="guardarBloqueo()">
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label>Fecha y Hora de Inicio</label>
+                        <input type="datetime-local" [(ngModel)]="nuevoBloqueo.inicio" name="b_inicio" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Fecha y Hora de Fin</label>
+                        <input type="datetime-local" [(ngModel)]="nuevoBloqueo.fin" name="b_fin" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Motivo o Nota</label>
+                    <textarea [(ngModel)]="nuevoBloqueo.motivo" name="b_motivo" placeholder="Ej: Vacaciones o Licencia Médica"></textarea>
+                </div>
+                <button type="submit" class="btn-danger-action">CONFIRMAR BLOQUEO</button>
+            </form>
+        </div>
+
+        <div class="list-box">
+            <h3>Bloqueos Vigentes</h3>
+            <div class="bloqueos-grid">
+                <div class="empty-state" *ngIf="listaBloqueos.length === 0">No hay bloqueos activos en tu agenda.</div>
+                <div class="bloqueo-card" *ngFor="let bloq of listaBloqueos">
+                    <div class="card-top">
+                        <span class="badge-date">🚫 BLOQUEADO</span>
+                        <button class="btn-eliminar-horario" (click)="eliminarBloqueo(bloq.id)">🗑️</button>
+                    </div>
+                    <h4>{{ bloq.motivo || 'Sin motivo especificado' }}</h4>
+                    <p class="bloqueo-detalle">📅 Desde: {{ bloq.inicio | date:'dd/MM/yyyy HH:mm' }} hs</p>
+                    <p class="bloqueo-detalle">📅 Hasta: {{ bloq.fin | date:'dd/MM/yyyy HH:mm' }} hs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

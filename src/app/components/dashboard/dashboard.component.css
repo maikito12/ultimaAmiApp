@@ -1,0 +1,22 @@
+.dashboard {
+  display: grid;
+  /* CAMBIO AQUÍ: de 1px a 1fr */
+  grid-template-columns: 260px 1fr; 
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f8fafc;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  /* Quitamos el width 100% porque en grid puede causar desbordamiento */
+  min-width: 0; 
+  height: 100vh;
+}
+
+.content {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto; /* Para que solo scrollee el contenido */
+}

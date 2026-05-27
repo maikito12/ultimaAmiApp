@@ -1,0 +1,157 @@
+<div class="pacientes-wrapper">
+  <div class="header-pacientes">
+    <div class="title-group">
+      <h1>Panel de Pacientes</h1>
+      <p class="subtitle">Gestioná la salud y evoluciones de tus pacientes</p>
+    </div>
+    <button class="btn-nuevo-paciente" (click)="crearNuevo()">
+      <span>+</span> Nuevo Registro
+    </button>
+  </div>
+
+  <div class="filters-container">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" [(ngModel)]="filtroTexto" (input)="aplicarFiltros()" placeholder="Buscar por Paciente o DNI...">
+    </div>
+    
+    <div class="date-picker-box">
+      <select class="custom-date-input" [(ngModel)]="filtroSede" (change)="aplicarFiltros()">
+        <option value="">Todas las sedes</option>
+        <option *ngFor="let sede of sedes" [value]="sede">{{ sede }}</option>
+      </select>
+      <button class="btn-clear-filters" (click)="limpiarFiltros()">Limpiar Filtros</button>
+    </div>
+  </div>
+
+  <div *ngIf="pacientesFiltrados.length === 0" style="text-align: center; padding: 40px; color: #64748b;">
+    <p style="font-size: 1.1rem;">No se encontraron pacientes que coincidan con la búsqueda.</p>
+  </div>
+
+  <div class="pacientes-grid" *ngIf="pacientesFiltrados.length > 0">
+    <div class="paciente-card-premium" *ngFor="let p of pacientesFiltrados">
+      <div class="card-header">
+        <div class="avatar-circle" [style.background]="p.genero === 'Femenino' ? '#ec4899' : '#8a2be2'">
+          {{ p.nombre | slice:0:1 }}
+        </div>
+        <div class="user-meta">
+          <h3>{{ p.nombre }}</h3>
+          <div class="paciente-subdata">
+            <span class="badge-genero">{{ p.genero }}</span>
+          </div>
+        </div>
+        <button class="btn-trash" (click)="borrarPaciente(p)" style="border: none; background: transparent; cursor: pointer; font-size: 1.2rem;">🗑️</button>
+      </div>
+
+      <div class="card-body">
+        <div class="dato-item">
+          <span class="label">DNI</span>
+          <span class="value">{{ p.dni }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="label">Sucursal</span>
+          <span class="value">{{ p.sucursal }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="label">Cobertura</span>
+          <span class="value">{{ getExtra(p, 'OBRA SOCIAL') || 'Particular' }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="label">Contacto</span>
+          <span class="value">{{ p.telefono }}</span>
+        </div>
+        <div class="dato-item full-width">
+          <span class="label">Email</span>
+          <span class="value">{{ p.email }}</span>
+        </div>
+
+        <div class="objetivo-box" *ngIf="p.metaActual">
+          <span class="label-objetivo">META ACTUAL</span>
+          <p class="objetivo-texto">{{ p.metaActual }}</p>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn-main-action" (click)="abrirFichaMaestra(p)">
+          📁 GESTIONAR FICHA
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="fichaMaestraContent" style="display: none;">
+  <div class="ficha-dashboard">
+    
+    <aside class="ficha-sidebar">
+      <div class="sidebar-header">
+        <div class="avatar-circle" style="background: #8a2be2; color: white;">👤</div>
+        <h3 id="modal-txt-nombre" style="margin: 10px 0 2px; font-size: 1.1rem; color: #1e293b; font-weight: 700;"></h3>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item" data-tab="perfil">👤 Datos Personales</button>
+        <button class="nav-item" data-tab="historial">📜 Historia Clínica</button>
+        <button class="nav-item" data-tab="extras">➕ Datos Extras</button>
+        <button class="nav-item" data-tab="estudios">📂 Fotos y Estudios</button>
+      </nav>
+
+      <div class="sidebar-footer" style="padding: 10px; text-align: center;">
+         <button id="btn-borrar-paciente-click" class="btn-delete-side" style="width: 100%;">Eliminar Paciente</button>
+      </div>
+    </aside>
+
+    <main class="ficha-main">
+      
+      <section id="tab-perfil" class="tab-content">
+        <div class="section-header">
+          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Datos Personales</h2>
+          <button id="btn-editar-perfil-click" class="btn-edit-main">Editar Perfil</button>
+        </div>
+        
+        <div class="info-grid" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+          <div class="info-item"><label class="label">DNI / Pasaporte</label><p id="modal-txt-dni" class="value"></p></div>
+          <div class="info-item"><label class="label">Correo Electrónico</label><p id="modal-txt-email" class="value"></p></div>
+          <div class="info-item"><label class="label">Teléfono de Contacto</label><p id="modal-txt-telefono" class="value"></p></div>
+          <div class="info-item"><label class="label">Género</label><p id="modal-txt-genero" class="value"></p></div>
+          <div class="info-item"><label class="label">Fecha de Nacimiento</label><p id="modal-txt-nacimiento" class="value"></p></div>
+        </div>
+        
+        <div class="meta-box" style="background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #8a2be2;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label class="label-objetivo" style="font-size: 0.65rem; font-weight: 800; color: #8a2be2; text-transform: uppercase;">Meta Actual</label>
+            <button id="btn-editar-meta-click" style="background:none; border:none; color:#8a2be2; cursor:pointer; font-weight:700; font-size:0.8rem;">✏️ Cambiar Meta</button>
+          </div>
+          <p id="modal-txt-meta" class="objetivo-texto" style="margin: 8px 0 0; font-size: 0.95rem; color: #4c1d95; font-weight: 600;"></p>
+        </div>
+      </section>
+
+      <section id="tab-historial" class="tab-content">
+        <h2 style="margin-top:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Evolución Clínica</h2>
+        <div class="nota-input-group">
+          <textarea id="new-nota-input" placeholder="Escribí un nuevo avance clínico aquí..."></textarea>
+          <button id="btn-guardar-nota-click" class="btn-edit-main" style="float: right; margin-top: 5px;">Guardar Nota</button>
+        </div>
+        <div style="clear: both;"></div>
+        <div id="modal-timeline" class="timeline-v2" style="margin-top: 25px;"></div>
+      </section>
+
+      <section id="tab-extras" class="tab-content">
+        <div class="section-header">
+          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Datos Adicionales</h2>
+          <button id="btn-nuevo-extra-click" class="btn-edit-main">+ Agregar Extra</button>
+        </div>
+        <div id="modal-lista-extras" style="margin-top: 20px;"></div>
+      </section>
+
+      <section id="tab-estudios" class="tab-content">
+        <div class="section-header">
+          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Fotos y Estudios</h2>
+          <button id="btn-subir-estudio-click" class="btn-edit-main">📂 Subir Archivo</button>
+        </div>
+        <div id="modal-lista-estudios" style="margin-top: 20px;"></div>
+      </section>
+
+    </main>
+  </div>
+</div>

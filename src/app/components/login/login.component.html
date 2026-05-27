@@ -1,0 +1,37 @@
+<div class="login-container">
+  <form class="login-card" (submit)="login($event)">
+
+    <h2>Iniciar sesión</h2>
+    <p class="subtitle">Acceso para profesionales</p>
+
+    <!-- NOMBRE -->
+    <div class="input-group">
+      <input 
+        type="text" 
+        placeholder="Correo Electronico"
+        [(ngModel)]="email"
+        name="nombre"
+        required
+      >
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="input-group password-container">
+      <input 
+        [type]="mostrarPassword ? 'text' : 'password'"
+        placeholder="Contraseña"
+        [(ngModel)]="password"
+        name="password"
+        required
+      >
+ <span class="eye-icon" (click)="togglePassword()">
+  <i class="fa" [ngClass]="mostrarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+</span>
+    </div>
+    <!-- BOTÓN -->
+    <button type="submit" class="btn-login">
+      Ingresar
+    </button>
+
+  </form>
+</div>

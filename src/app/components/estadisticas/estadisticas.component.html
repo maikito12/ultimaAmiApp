@@ -1,0 +1,103 @@
+<div class="dashboard-wrapper">
+    <header class="db-header-filtros">
+        <div class="title-group">
+            <h1>Panel de Análisis Dinámico</h1>
+            <p>Métricas de rendimiento y segmentación de clientes.</p>
+        </div>
+        
+        <div class="filter-bar">
+            <select [(ngModel)]="filtro.periodo" (change)="aplicarFiltros()">
+                <option value="esta_semana">Esta Semana</option>
+                <option value="este_mes">Este Mes</option>
+                <option value="ultimo_trimestre">Último Trimestre</option>
+                <option value="personalizado">Rango Personalizado</option>
+            </select>
+            
+            <div *ngIf="filtro.periodo === 'personalizado'" style="display: flex; align-items: center; gap: 8px;">
+                <input type="date" [(ngModel)]="filtro.fechaInicio" (change)="aplicarFiltros()">
+                <span>a</span>
+                <input type="date" [(ngModel)]="filtro.fechaFin" (change)="aplicarFiltros()">
+            </div>
+            
+            <select [(ngModel)]="filtro.sucursal" (change)="aplicarFiltros()">
+                <option value="todas">Todas las Sedes</option>
+                <option value="central">Sede Central</option>
+                <option value="norte">Sede Norte</option>
+            </select>
+            
+            <button class="btn-primary-soft" (click)="aplicarFiltros()">Filtrar</button>
+            <button class="btn-primary-soft" (click)="restablecerFiltros()">Limpiar</button>
+        </div>
+    </header>
+
+    <div class="kpi-grid">
+        <div class="kpi-card" *ngFor="let m of metrics" [ngClass]="m.color">
+            <div class="kpi-content">
+                <p>{{ m.label }}</p>
+                <h2>{{ m.valor }}</h2>
+                <span class="kpi-sub">{{ m.sub }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="segmentation-grid-3col" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 25px 0; width: 100%;">
+        <div class="seg-card" *ngFor="let seg of segmentacion" style="background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: #4a5568; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ seg.titulo }}</h4>
+            <div class="seg-item" *ngFor="let item of seg.data" style="margin-bottom: 12px;">
+                <div class="seg-info" style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                    <span style="font-weight: 600; color: #2d3748;">{{ item.label }}</span>
+                    <span style="color: #718096; font-weight: 700;">{{ item.val }}%</span>
+                </div>
+                <div class="seg-bar-bg" style="background: #edf2f7; border-radius: 8px; height: 8px; width: 100%; overflow: hidden;">
+                    <div class="seg-bar-fill" 
+                         [style.width.%]="item.val"
+                         [ngClass]="{'orange-bar': seg.titulo.includes('Canal'), 'green-bar': seg.titulo.includes('Flujo')}"
+                         style="height: 100%; border-radius: 8px; transition: width 0.5s ease-in-out;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-box">
+            <div class="box-header">
+                <h3>Ocupación por Horario</h3>
+            </div>
+            <div class="heat-map">
+                <div class="heat-row" *ngFor="let h of distribucionHoraria">
+                    <span class="hour-label">{{ h.rango }}</span>
+                    <div class="heat-bar-bg">
+                        <div class="heat-bar-fill" [style.width.%]="h.cupo"></div>
+                    </div>
+                    <span class="percent-label">{{ h.cupo }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <div class="box-header">
+                <h3>Clientes Recurrentes</h3>
+                <button class="btn-text" (click)="verTodosLosPacientes()">Ver todos →</button>
+            </div>
+            <div class="table-container">
+                <table class="mini-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Visitas</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of rankingPacientes.slice(0,4)">
+                            <td>{{ p.nombre }}</td>
+                            <td>{{ p.visitas }}</td>
+                            <td><span class="tag" [ngClass]="p.status.toLowerCase()">{{ p.status }}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> 
+</div>
