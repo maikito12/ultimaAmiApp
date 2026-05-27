@@ -189,7 +189,7 @@ export class InicioComponent implements OnInit {
     }
   }
 
-  async guardarCambios() {
+async guardarCambios() {
     if (!this.pacienteSeleccionado) return;
 
     const index = this.proximosTurnos.findIndex(t => t.id === this.pacienteSeleccionado.id);
@@ -200,7 +200,15 @@ export class InicioComponent implements OnInit {
     }
 
     this.recalcularKpisLocales(); 
-    this.mostrarToast('Ficha guardada y estado actualizado', 'success');
+
+    // AQUÍ ESTABA EL ERROR:
+    // Debemos usar Swal.fire y combinar nuestra configuración con los datos específicos
+    Swal.fire({
+      ...this.toastConfig,
+      icon: 'success',
+      title: 'Ficha guardada y estado actualizado'
+    });
+
     this.cerrarModal();
   }
 
@@ -218,21 +226,12 @@ export class InicioComponent implements OnInit {
       if (result.isConfirmed) {
         turno.estado = 'atendido'; 
         this.recalcularKpisLocales(); 
-        this.mostrarToast('Atención registrada (Local)', 'success');
+      Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Paciente atendido correctamente' });
       }
     });
   }
 
-  private mostrarToast(titulo: string, icono: 'success' | 'error' | 'info') {
-    Swal.fire({
-      icon: icono,
-      title: titulo,
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 2500
-    });
-  }
+
 
   abrirModalCumples() { this.mostrarModalCumples = true; }
   cerrarModalCumples() { this.mostrarModalCumples = false; }
@@ -273,8 +272,18 @@ export class InicioComponent implements OnInit {
       if (result.isConfirmed) {
         turno.estado = 'cancelado';
         this.recalcularKpisLocales(); // Re-calcula los KPIs superiores al cancelar
-        Swal.fire('Cancelado', 'El turno ha sido cancelado en memoria.', 'success');
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'turno canelado correctamente' });
       }
     });
   }
+   private toastConfig: any = {
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    iconColor: '#ffffff',
+    background: '#7b2cbf',
+    color: '#ffffff'
+  };
 }

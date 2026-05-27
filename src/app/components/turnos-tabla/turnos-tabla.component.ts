@@ -25,6 +25,17 @@ export class TurnosComponent implements OnInit {
   mostrarModal: boolean = false;
   pacienteSeleccionado: any = { archivos: [], camposExtras: [] };
 
+  private toastConfig: any = {
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    iconColor: '#ffffff',
+    background: '#7b2cbf',
+    color: '#ffffff'
+  };
+
   constructor(
     private turnosService: TurnosService,
     private auth: AuthService
@@ -230,7 +241,7 @@ export class TurnosComponent implements OnInit {
       if (result.isConfirmed) {
         turno.estado = 'atendido';
         this.aplicarFiltros();
-        this.mostrarToast('Atención registrada', 'success');
+       Swal.fire({ ...this.toastConfig, icon: 'sucess', title: 'Paciente atendido' });
 
         /*
         this.turnosService.notificarAtencion(turno.turnoId).subscribe({
@@ -253,13 +264,7 @@ export class TurnosComponent implements OnInit {
       this.aplicarFiltros();
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Ficha Guardada (Local)',
-      text: 'La evolución y los archivos se sincronizaron en memoria.',
-      timer: 2000,
-      showConfirmButton: false
-    });
+  Swal.fire({ ...this.toastConfig, icon: 'sucess', title: 'Ficha guardada y estado actualizado' });
     this.cerrarModal();
 
     /*
@@ -288,7 +293,7 @@ export class TurnosComponent implements OnInit {
       if (result.isConfirmed) {
         turno.estado = 'cancelado';
         this.aplicarFiltros();
-        Swal.fire('Cancelado', 'El turno ha sido cancelado en memoria.', 'success');
+      Swal.fire({ ...this.toastConfig, icon: 'sucess', title: 'turno canelado correctamente' });
 
         /*
         this.turnosService.cancelarTurno(turno.turnoId).subscribe({

@@ -10,6 +10,7 @@
         <button [class.active]="tabActiva === 'horarios'" (click)="cambiarTab('horarios')">🕒 Horarios de Atención</button>
         <button [class.active]="tabActiva === 'sucursales'" (click)="cambiarTab('sucursales')">🏢 Mis Sucursales</button>
         <button [class.active]="tabActiva === 'bloqueos'" (click)="cambiarTab('bloqueos')">🚫 Bloqueos de Agenda</button>
+        <button [class.active]="tabActiva === 'obras_sociales'" (click)="cambiarTab('obras_sociales')">🏥 Obras Sociales</button>
     </div>
 
     <div class="disponibilidad-container" *ngIf="tabActiva === 'horarios'">
@@ -162,4 +163,43 @@
             </div>
         </div>
     </div>
+
+    
+    <div class="disponibilidad-container" *ngIf="tabActiva === 'obras_sociales'">
+        <div class="form-box">
+            <h3>Nueva Obra Social</h3>
+            <form (ngSubmit)="guardarObraSocial()">
+                <div class="input-group">
+                    <label>Nombre de la Obra Social</label>
+                    <input type="text" [(ngModel)]="nuevaObraSocial.nombre" name="os_nombre" placeholder="Ej: OSDE" required>
+                </div>
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label>Siglas</label>
+                        <input type="text" [(ngModel)]="nuevaObraSocial.siglas" name="os_siglas" placeholder="Ej: OSDE">
+                    </div>
+                    <div class="input-group">
+                        <label>Cód. Prestador</label>
+                        <input type="text" [(ngModel)]="nuevaObraSocial.codigo_prestador" name="os_cod" placeholder="Ej: 123456">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary-soft-action">REGISTRAR CONVENIO</button>
+            </form>
+        </div>
+        <div class="list-box">
+            <h3>Tus Convenios Vigentes</h3>
+            <div class="bloqueos-grid">
+                <div class="empty-state" *ngIf="listaObrasSociales.length === 0">No tenés obras sociales cargadas.</div>
+                <div class="bloqueo-card agenda-activa" *ngFor="let os of listaObrasSociales">
+                    <div class="card-top">
+                        <h4>🏥 {{ os.nombre }}</h4>
+                        <button class="btn-eliminar-horario" (click)="eliminarObraSocial(os.id)">🗑️</button>
+                    </div>
+                    <p class="bloqueo-nota">Siglas: {{ os.siglas }} | Cód: {{ os.codigo_prestador }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
