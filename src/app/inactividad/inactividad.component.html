@@ -1,8 +1,8 @@
 <div class="dashboard-wrapper">
     <header class="db-header-filtros">
         <div class="title-group">
-            <h1>Gestión de Disponibilidad</h1>
-            <p>Administrá tus sedes de trabajo, horarios semanales y bloqueos de agenda.</p>
+            <h1>Configuración de Consultorio</h1>
+    <p>Administrá tus sucursales, horarios, bloqueos y obras sociales desde un solo lugar.</p>
         </div>
     </header>
 
@@ -51,6 +51,18 @@
                     <input type="number" [(ngModel)]="nuevoHorario.duracion_turno" name="duracion_turno" placeholder="Ej: 30, 45, 60" required>
                 </div>
 
+                <div class="input-group">
+    <label>Antelación mínima para reservar (horas)</label>
+    <input type="number" 
+           [(ngModel)]="configuracionGlobal.anticipacion_minima" 
+           name="anticipacion_minima"
+           placeholder="24" 
+           min="1">
+    <small class="text-muted">
+        Si dejas el campo vacío o en 0, el sistema tomará <b>24 horas</b> como valor predeterminado.
+    </small>
+</div>
+
                 <button type="submit" class="btn-primary-soft-action">GUARDAR HORARIO</button>
             </form>
         </div>
@@ -67,6 +79,11 @@
             </div>
             <h4>{{ formatearDiasTexto(hor.dias) }}</h4>
             <p class="bloqueo-detalle">🕒 {{ hor.hora_inicio.substring(0,5) }} a {{ hor.hora_fin.substring(0,5) }} hs ({{ hor.duracion_turno }} min por turno)</p>
+<p class="bloqueo-detalle">
+    
+    <br> <small>⚠️ Turnos con <b>{{ hor.anticipacion}}hs</b> de antelación.</small>
+</p>
+
         </div>
     </div>
 </div>

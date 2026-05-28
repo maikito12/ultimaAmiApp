@@ -23,6 +23,7 @@ export class FormularioComponent implements OnInit, AfterViewInit {
   profesionalId: string = '';
   profesional: any = null;
   sucursales: any[] = [];
+  calendarInstance: any = null; // Instancia para controlar el calendario
 
   datosForm = {
     nombre: '', 
@@ -33,7 +34,7 @@ export class FormularioComponent implements OnInit, AfterViewInit {
     fecha: '' 
   };
 
-  datosExtras: any = {}; 
+  datosExtras: any = { 'OBRA SOCIAL': '', 'NRO AFILIADO': '' }; 
   configuracionCampos: any[] = []; 
 
   horariosDisponibles: any[] = [];
@@ -44,7 +45,7 @@ export class FormularioComponent implements OnInit, AfterViewInit {
     private turnosService: TurnosService,
     private _formService: FormularioService,
     private cdr: ChangeDetectorRef,
-    private route:ActivatedRoute
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -66,135 +67,57 @@ export class FormularioComponent implements OnInit, AfterViewInit {
     const dataProfesionales: any = {
       'nutricion': {
         nombre: 'Nutricionista María',
+        diasAtencion: [1, 2, 3, 4], // Lunes a Viernes
         sucursales: [
           { id: '1a1a3afc-b267-4865-8108-cf1fdae9d63c', nombre: 'Clínica Del Colon' },
           { id: '5a7ca1d1-7833-4f93-80d6-afe09c041427', nombre: 'Centro de Radiografia' }
         ],
         camposExtra: [
           { id: 'genero', label: 'Género', tipo: 'select', opciones: ['Masculino', 'Femenino', 'Otro'] },
-          { id: 'obraSocial', label: 'Obra Social / Prepaga', tipo: 'text' },
-          { id: 'nacimiento', label: 'Fecha de Nacimiento', tipo: 'date' },
-          { id: 'motivo', label: 'Motivo de consulta', tipo: 'textarea' },
-          { id: 'origen', label: '¿Dónde nos encontraste?', tipo: 'select', opciones: ['Instagram', 'Recomendación', 'Otro'] }
-        ]
-      },
-      'mecanico': {
-        nombre: 'Taller Juan',
-        sucursales: [{ id: '3', nombre: 'Sede Central' }],
-        camposExtra: [
-          { id: 'patente', label: 'Patente', tipo: 'text' },
-          { id: 'modelo', label: 'Marca/Modelo', tipo: 'text' },
-          { id: 'falla', label: 'Falla que presenta', tipo: 'textarea' }
+          { id: 'motivo', label: 'Motivo de consulta', tipo: 'textarea' }
         ]
       }
     };
 
     const config = dataProfesionales[slug];
     if (config) {
-      this.profesional = { nombre: config.nombre };
+      this.profesional = { 
+        nombre: config.nombre, 
+        diasAtencion: config.diasAtencion 
+      };
       this.sucursales = config.sucursales || [];
       this.configuracionCampos = config.camposExtra || [];
-      // Inicializamos los campos dinámicos
+      
+      this.datosExtras = { 'OBRA SOCIAL': '', 'NRO AFILIADO': '' };
       this.configuracionCampos.forEach(campo => this.datosExtras[campo.id] = '');
+      
+      // Si el calendario ya existe, actualizamos sus opciones con los nuevos días
+      if (this.calendarInstance) {
+        this.calendarInstance.set('disable', [
+          (date: Date) => this.esDiaNoLaboral(date)
+        ]);
+      }
     }
     this.cdr.detectChanges();
   }
 
-  // --- CONECTADO CON N8N ---
- cargarTurnos() {
-  if (!this.datosForm.fecha || !this.datosForm.sucursal) {
-    this.horariosDisponibles = [];
-    return;
-  }
-
-  const filtros = {
-    profesional: this.profesionalId,
-    fecha: this.datosForm.fecha,
-    sucursal: this.datosForm.sucursal,
-    dia_semana: new Date(this.datosForm.fecha + "T00:00:00").getDay()
-  };
-
-  console.log("Enviando filtros a n8n:", filtros);
-
-  this._formService.getTurnosDisponibles(filtros).subscribe({
-    next: (res: any) => {
-      console.log("Respuesta Exitosa de n8n:", res);
-      // Validamos si n8n manda los datos directo o dentro de una propiedad 'data'
-      this.horariosDisponibles = Array.isArray(res) ? res : (res.data || []);
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error("Error crítico de conexión:", err);
-      // Fallback para que no se vea vacío mientras testeas el diseño
-      this.horariosDisponibles = [
-        { hora: '08:00', fecha: this.datosForm.fecha },
-        { hora: '09:30', fecha: this.datosForm.fecha }
-      ];
-      this.cdr.detectChanges();
-    }
-  });
-}
-
-  reservar(e: any) {
-    e.preventDefault();
-    
-    if (!this.turnoSeleccionado) {
-      this.mostrarError();
-      return;
-    }
-
-    // Buscamos el nombre de la sucursal para que n8n lo use en notificaciones (WhatsApp/Email)
-    const sucursalInfo = this.sucursales.find(s => s.id === this.datosForm.sucursal);
-
-    // Payload final: "Aplanamos" los datos extras para que n8n los mapee fácil
-    const payload = {
-      profesional_id: this.profesionalId,
-      profesional_nombre: this.profesional?.nombre,
-      nombre_completo: this.datosForm.nombre,
-      dni: this.datosForm.dni,
-      email: this.datosForm.email,
-      telefono: this.datosForm.telefono,
-      sucursal_id: this.datosForm.sucursal, // El ID para la DB
-      sucursal_nombre: sucursalInfo?.nombre || 'General', // El nombre para el humano
-      fecha_reserva: this.turnoSeleccionado.fecha,
-      hora_reserva: this.turnoSeleccionado.hora,
-      ...this.datosExtras // Esto mete 'genero', 'patente', etc., directamente en el JSON
-    };
-
-    this._formService.enviarNuevoPaciente(payload).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Turno reservado!',
-          text: `Te esperamos el ${payload.fecha_reserva} a las ${payload.hora_reserva} hs.`,
-          confirmButtonColor: '#9b67cc'
-        });
-        this.resetForm();
-      },
-      error: () => Swal.fire('Error', 'No pudimos procesar la reserva. Intentá más tarde.', 'error')
-    });
-  }
-
-  mostrarError() {
-    Swal.fire({
-      icon: 'error',
-      title: 'Faltan datos',
-      text: 'Por favor, seleccioná una sucursal, fecha y horario.',
-      confirmButtonColor: '#9b67cc'
-    });
+  esDiaNoLaboral(date: Date): boolean {
+    const f = date.toISOString().substring(0, 10);
+    const esFeriado = this.feriados.includes(f);
+    const diaSemana = date.getDay();
+    // Bloquea si es feriado O si el día de la semana no está en la config del profesional
+    return esFeriado || !this.profesional?.diasAtencion?.includes(diaSemana);
   }
 
   iniciarCalendario() {
     const input = document.getElementById('fechaPicker');
     if (!input) return;
-    flatpickr(input, {
+    
+    this.calendarInstance = flatpickr(input, {
       locale: Spanish,
       minDate: "today",
       dateFormat: "Y-m-d",
-      disable: [(date: Date) => {
-        const f = date.toISOString().substring(0, 10);
-        return this.feriados.includes(f) || date.getDay() === 0; // Ejemplo: domingos deshabilitados
-      }],
+      disable: [(date: Date) => this.esDiaNoLaboral(date)],
       onChange: (selectedDates, dateStr) => {
         this.datosForm.fecha = dateStr;
         this.cargarTurnos();
@@ -202,16 +125,59 @@ export class FormularioComponent implements OnInit, AfterViewInit {
     });
   }
 
-  cargarFeriados() {
-    this.turnosService.obtenerFeriados().subscribe(data => this.feriados = data.map((f: any) => f.date));
+  cargarTurnos() {
+    if (!this.datosForm.fecha || !this.datosForm.sucursal) return;
+
+    this.horariosDisponibles = [
+        { hora: '09:00', fecha: this.datosForm.fecha },
+        { hora: '10:30', fecha: this.datosForm.fecha },
+        { hora: '14:00', fecha: this.datosForm.fecha },
+        { hora: '16:30', fecha: this.datosForm.fecha }
+    ];
+    this.cdr.detectChanges();
   }
 
-  resetForm() {
-    this.datosForm = { nombre: '', dni: '', email: '', telefono: '', sucursal: '', fecha: '' };
-    Object.keys(this.datosExtras).forEach(key => this.datosExtras[key] = '');
-    this.horariosDisponibles = [];
-    this.turnoSeleccionado = null;
-    const picker = document.getElementById('fechaPicker') as HTMLInputElement;
-    if (picker) picker.value = '';
+  reservar(e: any) {
+    e.preventDefault();
+
+    // 1. Validamos que haya turno
+    if (!this.turnoSeleccionado) { 
+      this.mostrarError(); 
+      return; 
+    }
+
+    const payload = {
+      ...this.datosForm,
+      profesional_nombre: this.profesional?.nombre,
+      ...this.datosExtras,
+      fecha_reserva: this.turnoSeleccionado.fecha,
+      hora_reserva: this.turnoSeleccionado.hora
+    };
+
+    console.log("Datos que se enviarían:", payload);
+
+    // 2. SIMULACIÓN: En lugar de llamar al servicio, forzamos el éxito
+    // Comentamos la llamada real y usamos un observable "de mentira"
+    
+    /* this._formService.enviarNuevoPaciente(payload).subscribe({ ... }); 
+    */
+
+    // --- MODO PRUEBA: Forzamos la respuesta positiva ---
+    setTimeout(() => {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Turno reservado (Modo Prueba)!',
+        text: `Te esperamos el ${payload.fecha_reserva} a las ${payload.hora_reserva} hs.`,
+        confirmButtonColor: '#9b67cc'
+      });
+      this.resetForm();
+    }, 500); 
+  }
+  mostrarError() { Swal.fire('Error', 'Completá todos los campos', 'error'); }
+  cargarFeriados() { this.turnosService.obtenerFeriados().subscribe(data => this.feriados = data.map((f: any) => f.date)); }
+  resetForm() { 
+      this.datosForm = { nombre: '', dni: '', email: '', telefono: '', sucursal: '', fecha: '' }; 
+      this.datosExtras = { 'OBRA SOCIAL': '', 'NRO AFILIADO': '' };
+      if(this.calendarInstance) this.calendarInstance.clear();
   }
 }

@@ -2,7 +2,7 @@
   <div class="header-pacientes">
     <div class="title-group">
       <h1>Panel de Pacientes</h1>
-      <p class="subtitle">Gestioná la salud y evoluciones de tus pacientes</p>
+    <p>Administrá la información personal, historial clínico y seguimiento de tus pacientes.</p>
     </div>
     <button class="btn-nuevo-paciente" (click)="crearNuevo()">
       <span>+</span> Nuevo Registro
@@ -31,9 +31,10 @@
   <div class="pacientes-grid" *ngIf="pacientesFiltrados.length > 0">
     <div class="paciente-card-premium" *ngFor="let p of pacientesFiltrados">
       <div class="card-header">
-        <div class="avatar-circle" [style.background]="p.genero === 'Femenino' ? '#ec4899' : '#8a2be2'">
-          {{ p.nombre | slice:0:1 }}
-        </div>
+       <div class="avatar-circle" 
+     [style.background]="p.genero === 'Femenino' ? '#8a2be2' : (p.genero === 'Masculino' ? '#3b82f6' : '#94a3b8')">
+  {{ p.nombre | slice:0:1 }}
+</div>
         <div class="user-meta">
           <h3>{{ p.nombre }}</h3>
           <div class="paciente-subdata">
@@ -53,7 +54,7 @@
           <span class="value">{{ p.sucursal }}</span>
         </div>
         <div class="dato-item">
-          <span class="label">Cobertura</span>
+          <span class="label">Obra Social</span>
           <span class="value">{{ getExtra(p, 'OBRA SOCIAL') || 'Particular' }}</span>
         </div>
         <div class="dato-item">
@@ -64,6 +65,8 @@
           <span class="label">Email</span>
           <span class="value">{{ p.email }}</span>
         </div>
+
+
 
         <div class="objetivo-box" *ngIf="p.metaActual">
           <span class="label-objetivo">META ACTUAL</span>
@@ -110,13 +113,15 @@
         </div>
         
         <div class="info-grid" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
-          <div class="info-item"><label class="label">DNI / Pasaporte</label><p id="modal-txt-dni" class="value"></p></div>
-          <div class="info-item"><label class="label">Correo Electrónico</label><p id="modal-txt-email" class="value"></p></div>
-          <div class="info-item"><label class="label">Teléfono de Contacto</label><p id="modal-txt-telefono" class="value"></p></div>
-          <div class="info-item"><label class="label">Género</label><p id="modal-txt-genero" class="value"></p></div>
-          <div class="info-item"><label class="label">Fecha de Nacimiento</label><p id="modal-txt-nacimiento" class="value"></p></div>
-        </div>
-        
+  <div class="info-item"><label class="label">DNI / Pasaporte</label><p id="modal-txt-dni" class="value"></p></div>
+  <div class="info-item"><label class="label">Correo Electrónico</label><p id="modal-txt-email" class="value"></p></div>
+  <div class="info-item"><label class="label">Teléfono de Contacto</label><p id="modal-txt-telefono" class="value"></p></div>
+  <div class="info-item"><label class="label">Género</label><p id="modal-txt-genero" class="value"></p></div>
+  <div class="info-item"><label class="label">Fecha de Nacimiento</label><p id="modal-txt-nacimiento" class="value"></p></div>
+  
+  <div class="info-item"><label class="label">Obra Social</label><p id="modal-txt-os" class="value"></p></div>
+  <div class="info-item"><label class="label">Nro. de Afiliado</label><p id="modal-txt-afiliado" class="value"></p></div>
+</div>
         <div class="meta-box" style="background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #8a2be2;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <label class="label-objetivo" style="font-size: 0.65rem; font-weight: 800; color: #8a2be2; text-transform: uppercase;">Meta Actual</label>

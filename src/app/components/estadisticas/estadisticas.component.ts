@@ -27,17 +27,15 @@ export class EstadisticasComponent implements OnInit {
   segmentacion: SegmentacionData[] = [];
   distribucionHoraria: DistribucionHoraria[] = [];
   rankingPacientes: PacienteRanking[] = [];
+  datosEdad: any[] = []; // Nueva propiedad para la segmentación por edad
 
   constructor(private estadisticasService: EstadisticasService) {}
 
   ngOnInit(): void {
-    // Carga inicial automatizada
     this.cargarEstadisticas();
   }
 
-  // Lógica centralizada (Hardcodeada temporalmente para pruebas visuales de layout)
-cargarEstadisticas() {
-    // MOCK DATA ADAPTADA 100% A LAS PROPIEDADES DE TU HTML
+  cargarEstadisticas() {
     const mockData = {
       metrics: [
         { label: 'Turnos Atendidos', valor: '342', sub: '+14% este mes', color: 'violeta' },
@@ -46,33 +44,33 @@ cargarEstadisticas() {
         { label: 'Nuevas Historias', valor: '86', sub: 'En crecimiento', color: 'violeta' }
       ],
       segmentacion: [
-  {
-    titulo: 'Obras Sociales',
-    data: [
-      { label: 'OSDE', val: 45 },
-      { label: 'Particular', val: 25 },
-      { label: 'Swiss Medical', val: 15 },
-      { label: 'Galeno', val: 10 },
-      { label: 'Medifé', val: 5 }
-    ]
-  },
-  {
-    titulo: 'Canal de Adquisición',
-    data: [
-      { label: 'Instagram Ads', val: 50 },
-      { label: 'Recomendación Boca en Boca', val: 25 },
-      { label: 'WhatsApp / Web', val: 15 },
-      { label: 'Facebook Campaign', val: 10 }
-    ]
-  },
-  {
-    titulo: 'Flujo por Sucursal',
-    data: [
-      { label: 'Clínica Del Niño', val: 60 },
-      { label: 'Clínica 25 De Mayo', val: 40 }
-    ]
-  }
-],
+        {
+          titulo: 'Obras Sociales',
+          data: [
+            { label: 'OSDE', val: 45 },
+            { label: 'Particular', val: 25 },
+            { label: 'Swiss Medical', val: 15 },
+            { label: 'Galeno', val: 10 },
+            { label: 'Medifé', val: 5 }
+          ]
+        },
+        {
+          titulo: 'Canal de Adquisición',
+          data: [
+            { label: 'Instagram Ads', val: 50 },
+            { label: 'Recomendación Boca en Boca', val: 25 },
+            { label: 'WhatsApp / Web', val: 15 },
+            { label: 'Facebook Campaign', val: 10 }
+          ]
+        },
+        {
+          titulo: 'Flujo por Sucursal',
+          data: [
+            { label: 'Clínica Del Niño', val: 60 },
+            { label: 'Clínica 25 De Mayo', val: 40 }
+          ]
+        }
+      ],
       distribucionHoraria: [
         { rango: '08:00 - 10:00', cupo: 65 },
         { rango: '10:00 - 12:00', cupo: 90 },
@@ -93,38 +91,25 @@ cargarEstadisticas() {
       ]
     };
 
-    // Forzamos el tipado any temporal para que no chille el compilador
     this.metrics = mockData.metrics as any;
     this.segmentacion = mockData.segmentacion as any;
     this.distribucionHoraria = mockData.distribucionHoraria as any;
     this.rankingPacientes = mockData.rankingPacientes as any;
 
-    /* // Descomentar cuando uses la API real
-    this.estadisticasService.obtenerDatosDashboard(this.filtro).subscribe({
-      next: (data:any) => { ... }
-    });
-    */
+    // Inicializamos la segmentación por edad
+    this.calcularSegmentacionPorEdad();
   }
-    /* // DESCOMENTÁ ESTO CUANDO YA QUIERAS CONECTAR LA API REAL DE C#
-    this.estadisticasService.obtenerDatosDashboard(this.filtro).subscribe({
-      next: (data:any) => {
-        this.metrics = data.metrics;
-        this.segmentacion = data.segmentacion;
-        this.distribucionHoraria = data.distribucionHoraria;
-        this.rankingPacientes = data.rankingPacientes;
-      },
-      error: (err:any)  => {
-        console.error('Error al conectar con la API de C#:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de conexión',
-          text: 'No se pudieron recuperar las métricas del servidor.',
-          confirmButtonColor: '#9b67cc'
-        });
-      }
-    });
-    */
-  
+
+  calcularSegmentacionPorEdad() {
+    // Datos mockeados para la visualización. 
+    // Cuando conectes tu API, aquí procesarás las fechas de nacimiento.
+    this.datosEdad = [
+      { label: '18-24', val: 15 },
+      { label: '25-40', val: 45 },
+      { label: '41-60', val: 30 },
+      { label: '60+', val: 10 }
+    ];
+  }
 
   aplicarFiltros() {
     console.log('Enviando filtros analizados a C#:', this.filtro);
@@ -138,11 +123,9 @@ cargarEstadisticas() {
       fechaFin: '',
       sucursal: 'todas'
     };
-    console.log('Filtros reseteados.');
     this.cargarEstadisticas(); 
   }
 
-  // Función del Modal Detallado (Con soporte nativo para fuentes del sistema heredadas)
   verTodosLosPacientes() {
     const styleTag = document.getElementById('swal-custom-styles');
     if (!styleTag) {

@@ -10,30 +10,32 @@ import { PacientesListaComponent } from './components/clientes-tabla/clientes-ta
 import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
 import { InactividadComponent } from './inactividad/inactividad.component';
 import { GestionEquipoComponent } from './components/gestion-equipo/gestion-equipo.component';
+import { PrivacidadComponent } from './components/privacidad/privacidad.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   
+  // 1. Ponemos las rutas específicas ANTES del slug
+  { path: 'privacidad', component: PrivacidadComponent },
+  
   { 
     path: 'dashboard', 
     component: DashboardComponent,
     children: [
-      // Cuando entres a /dashboard, por defecto muestra el Inicio
       { path: '', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'inicio', component: InicioComponent },
-    { path: 'turnos', component: TurnosComponent },
-      { path: 'clientes', component:PacientesListaComponent},
+      { path: 'turnos', component: TurnosComponent },
+      { path: 'clientes', component: PacientesListaComponent },
       { path: 'estadisticas', component: EstadisticasComponent },
-       { path: 'gestion-equipo', component: GestionEquipoComponent },
+      { path: 'gestion-equipo', component: GestionEquipoComponent },
       { path: 'inactividad', component: InactividadComponent },
-      
     ]
   },
 
-  // 🔥 El slug queda al final para no "pisar" a login o dashboard
+  // 2. El slug va al final para que no "robe" las rutas fijas
   { path: ':slug', component: FormularioComponent },
-
-  // Comodín por si escriben cualquier cosa
+  
+  // 3. El comodín va último de todo
   { path: '**', redirectTo: 'login' }
 ];

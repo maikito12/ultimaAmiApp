@@ -1,70 +1,65 @@
 :host {
   display: block;
   width: 100%;
-  background: #9e8989;
+  background: #f1f5f9; /* Debe coincidir con el color de fondo de abajo */
   border-top: 1px solid #e2e8f0;
+  margin-top: auto; 
+  /* Agregamos esto para quitar cualquier margen externo que pueda tener */
+  margin-left: 0;
+  margin-right: 0;
 }
-
 .form-footer {
-  padding: 1.5rem 2rem;
-  color: #64748b;
+  padding: 2rem 1rem;
+  color: #475569;
   font-size: 0.85rem;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   text-align: center;
 }
 
 .tech-by {
-  margin-top: 4px;
+  margin-top: 5px;
   font-size: 0.8rem;
 }
 
 .agencia-brand {
   font-weight: 800;
-  color: #8a2be2; /* Tu color violeta distintivo */
-  letter-spacing: -0.5px;
+  color: var(--agencia-violeta); /* Usamos tu variable violeta */
 }
 
 .footer-links {
-  margin-top: 12px;
+  margin-top: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
 .footer-links a {
   color: #64748b;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.3s;
 }
 
 .footer-links a:hover {
-  color: #8a2be2;
+  color: var(--agencia-violeta);
 }
 
 .link-soporte {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
-.separator {
-  color: #cbd5e1;
-  user-select: none;
-}
-
-/* Responsivo rápido */
+/* Responsivo */
 @media (max-width: 600px) {
   .footer-links {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
-  .separator {
-    display: none;
-  }
+  .separator { display: none; }
 }

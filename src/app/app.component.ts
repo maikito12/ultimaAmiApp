@@ -4,7 +4,7 @@ import { FormularioComponent } from "./components/formulario/formulario.componen
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FormularioComponent,RouterOutlet],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -1,203 +1,159 @@
-/* --- VARIABLES Y RESET --- */
+/* --- VARIABLES --- */
 :root {
-  --agencia-violeta: #8a2be2; 
-  --agencia-verde: #00dfa2;   
-  --fondo-suave: #f9f9f9;
+  --agencia-violeta: #8a2be2;
+  --agencia-verde: #00dfa2;
+  --fondo-suave: #f4f7fe;
+  --error: #ff4d4d;
 }
 
-* { 
-  box-sizing: border-box; 
-  margin: 0;
-  padding: 0;
-}
+/* --- ESTRUCTURA RESPONSIVA --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {  
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--fondo-suave); 
-  height: 100%;
-}
-
-/* 🔥 IMPORTANTE PARA ANGULAR */
 :host {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: var(--fondo-suave);
+  font-family: 'Poppins', sans-serif;
 }
 
-/* --- CONTENEDOR PRINCIPAL --- */
-.container { 
+.container {
   flex: 1;
   width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- FORMULARIO --- */
+form {
+  background: #fff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-}
-
-/* --- FORM --- */
-form { 
-  background: #fff; 
-  padding: 30px; 
-  border-radius: 20px; 
-  box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
-
-  display: flex; 
-  flex-direction: column; 
-  gap: 18px; 
-
-  width: 90%; 
+  gap: 15px;
+  width: 95%;
   max-width: 450px;
   border: 1px solid #eee;
-
-  margin: 40px auto 20px auto;
+  margin: auto;
 }
 
-/* --- INPUTS Y SELECTS --- */
-input, select { 
-  padding: 14px; 
-  border-radius: 10px; 
-  font-size: 14px; 
-  border: 1px solid #ddd; 
-  width: 100%; 
-}
+h2 { font-size: 22px; color: #333; margin-bottom: 5px; }
 
-/* --- TEXTAREA --- */
-.textarea-wrapper {
-  position: relative;
-  width: 100%;
-}
+/* --- INPUTS, SELECTS Y LABELS --- */
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.label-mini { font-size: 12px; font-weight: 600; color: #666; }
 
-.custom-textarea {
-  width: 100%;
-  padding: 14px;
-  padding-bottom: 30px;
+input, select, textarea {
+  padding: 12px;
   border-radius: 10px;
   font-size: 14px;
-  border: 1px solid #ddd; 
-  background-color: #fff;
-  resize: none;
-}
-
-.char-counter {
-  position: absolute;
-  right: 12px;
-  bottom: 8px;
-  font-size: 11px;
-  color: #bbb;
-  font-weight: 600;
-  pointer-events: none;
-}
-
-/* --- CALENDARIO --- */
-.fecha-container { 
-  position: relative; 
-  width: 100%; 
-}
-
-
-
-#fechaPicker { 
-  cursor: pointer;
-  background-color: #fff;
-  position: relative;
-  z-index: 10;
-}
-.flatpickr-input {
-  width: 100% !important;
-  padding: 14px !important;
-  border-radius: 10px !important;
-  border: 1px solid #ddd !important;
-  font-size: 14px !important;
-}
-
-/* 🔥 ESTO ARREGLA EL CALENDARIO QUE NO SE VE */
-.flatpickr-calendar {
-  z-index: 9999 !important;
-}
-
-/* estilos opcionales */
-.flatpickr-day.selected {
-  background: var(--agencia-violeta);
-  border-color: var(--agencia-violeta);
-}
-
-.flatpickr-day:hover {
-  background: var(--agencia-verde);
-  color: #000;
-}
-
-/* 🔥 ICONO */
-.calendar-icon { 
-  position: absolute; 
-  right: 15px; 
-  top: 50%; 
-  transform: translateY(-50%); 
-  pointer-events: none; 
-  font-size: 18px;
-  z-index: 15;
-}
-
-/* --- TURNOS --- */
-#turnos { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 10px; 
-}
-
-#turnos button { 
-  padding: 10px; 
-  border-radius: 8px; 
-  border: 2px solid #eee; 
-  cursor: pointer; 
-  background: #fff;
-  font-weight: 600;
-}
-
-.turno-seleccionado { 
-  background-color: var(--agencia-verde) !important; 
-  border-color: var(--agencia-verde) !important;
-}
-
-/* --- BOTON --- */
-.btn-confirmar { 
+  border: 1px solid #ddd;
   width: 100%;
-  background-color: #e45be4 !important; 
-  color: #000 !important;
-  font-weight: 700; 
-  padding: 16px;
+  outline: none;
+}
+
+input:focus, select:focus { border-color: var(--agencia-violeta); }
+
+/* --- TEXTAREA ESPECIAL --- */
+.textarea-wrapper { position: relative; }
+.custom-textarea { resize: none; height: 100px; }
+.char-counter {
+  position: absolute; right: 10px; bottom: 10px;
+  font-size: 10px; color: #aaa; pointer-events: none;
+}
+
+/* --- CALENDARIO (FLATPICKR) --- */
+.fecha-container { position: relative; }
+.calendar-icon {
+  position: absolute; right: 15px; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+  font-size: 16px;
+}
+
+/* Colores Calendario */
+.flatpickr-calendar { z-index: 9999 !important; border-radius: 15px !important; box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
+.flatpickr-day.selected { background: var(--agencia-violeta) !important; border-color: var(--agencia-violeta) !important; }
+.flatpickr-day:hover { background: var(--agencia-verde) !important; color: #000 !important; }
+.flatpickr-day.flatpickr-disabled { color: #ccc !important; }
+
+/* --- TURNOS GRID --- */
+#turnos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 5px;
+}
+
+#turnos button {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.3s;
+}
+
+#turnos button:hover { border-color: var(--agencia-violeta); }
+.turno-seleccionado {
+  background-color: var(--agencia-verde) !important;
+  border-color: var(--agencia-verde) !important;
+  color: #000;
+  font-weight: 700;
+}
+
+/* --- BOTONES Y ERRORES --- */
+.btn-confirmar {
+  width: 100%;
+  background-color: #e45be4 !important;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 14px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  text-transform: uppercase;
+  margin-top: 10px;
+  transition: transform 0.2s;
+}
+.btn-confirmar:active { transform: scale(0.98); }
+
+.error-msg { color: var(--error); font-size: 10px; margin-top: 2px; }
+
+/* --- RESPONSIVIDAD EXTRA --- */
+@media (max-width: 480px) {
+  form { padding: 20px; }
+  h2 { font-size: 20px; }
 }
 
-/* --- FOOTER --- */
+/* --- COLOR DE LOS NÚMEROS DE LOS DÍAS --- */
 
-/* --- LABELS Y ERRORES --- */
-.label-mini { 
-  font-size: 12px; 
-  font-weight: 600; 
-  color: #666; 
-  margin-bottom: 4px; 
-  display: block; 
+/* Color base de los números (días habilitados) */
+.flatpickr-day {
+  color: #333 !important; /* Color oscuro para buena legibilidad */
+  font-weight: 500;
 }
 
-.error-msg { 
-  color: #ff4d4d; 
-  font-size: 11px; 
-  margin-top: 4px; 
+/* Color para los días deshabilitados (Feriados / Fines de semana) */
+.flatpickr-day.flatpickr-disabled {
+  color: #d1d5db !important; /* Gris claro */
+  background: transparent !important;
 }
 
-
-.form-page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Ocupa todo el alto de la pantalla */
-  background-color: #f4f7fe; /* El gris azulado que venimos usando */
+/* Color de los números cuando el día está seleccionado (blanco sobre tu violeta) */
+.flatpickr-day.selected {
+  color: #ffffff !important; 
 }
 
-.form-container {
-  flex: 1; /* Esto hace que el formulario crezca y empuje al footer hacia abajo */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem 1rem;
+/* Color de los números al pasar el mouse por encima (negro sobre tu verde) */
+.flatpickr-day:hover {
+  color: #000000 !important;
+}
+
+/* Color del número para el día "hoy" (si quisieras resaltarlo) */
+.flatpickr-day.today {
+  border: 1px solid var(--agencia-violeta) !important;
+  color: var(--agencia-violeta) !important;
 }

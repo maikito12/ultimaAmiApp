@@ -56,48 +56,60 @@ export class PacientesListaComponent implements OnInit {
         console.warn('⚠️ API no disponible. Cargando datos de prueba locales:', err);
         
         const pacientesPrueba = [
-          {
-            id: 1,
-            nombre: 'Carlos Sebastián Pérez',
-            dni: '34899211',
-            email: 'carlosperez@gmail.com',
-            telefono: '2235467812',
-            genero: 'Masculino',
-            fechaNac: '1989-05-14',
-            sucursal: 'Clínica Del Niño',
-            metaActual: 'Bajar porcentaje de grasa corporal al 14% y controlar picos de ansiedad vespertina.',
-            camposExtras: [
-              { label: 'OBRA SOCIAL', valor: 'OSDE 310' },
-              { label: 'MEDICACIÓN', valor: 'Metformina 500mg (Cena)' }
-            ],
-            historial: [
-              { fecha: '20/05/2026', sucursal: 'Clínica Del Niño', nota: 'El paciente logró bajar 1.5kg de masa grasa. Reporta mejor adherencia al plan de alimentación. Se ajustan carbohidratos en la merienda.' },
-              { fecha: '22/04/2026', sucursal: 'Clínica Del Niño', nota: 'Primera consulta. Se realiza antropometría inicial. Presenta resistencia a la insulina leve. Se indica plan bajo en azúcares refinados.' }
-            ],
-            estudios: [
-              { fecha: '18/04/2026', nombre: 'Laboratorio de Sangre Completo', url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80' }
-            ]
-          },
-          {
-            id: 2,
-            nombre: 'María Laura Fernández',
-            dni: '28455632',
-            email: 'marialaura_f@hotmail.com',
-            telefono: '2236894521',
-            genero: 'Indefinido',
-            fechaNac: '1981-11-02',
-            sucursal: 'Clínica 25 De Mayo',
-            metaActual: 'Aumento de masa muscular y readaptación alimentaria por colon irritable.',
-            camposExtras: [
-              { label: 'OBRA SOCIAL', valor: 'Particular' },
-              { label: 'INTOLERANCIAS', valor: 'Lactosa y Harinas de trigo en exceso' }
-            ],
-            historial: [
-              { fecha: '10/05/2026', sucursal: 'Clínica 25 De Mayo', nota: 'Refiere disminución notable de la distensión abdominal. Se incorpora suplementación con Creatina 3g diarios.' }
-            ],
-            estudios: []
-          }
-        ];
+  {
+    id: 1,
+    nombre: 'Carlos Sebastián Pérez',
+    dni: '34899211',
+    email: 'carlosperez@gmail.com',
+    telefono: '2235467812',
+    genero: 'Masculino',
+    fechaNac: '1989-05-14',
+    sucursal: 'Clínica Del Niño',
+    metaActual: 'Bajar porcentaje de grasa corporal al 14% y controlar picos de ansiedad vespertina.',
+    camposExtras: [
+      { label: 'OBRA SOCIAL', valor: 'OSDE 310' },
+      { label: 'NRO AFILIADO', valor: '12345-6789-C' },
+      { label: 'MEDICACIÓN', valor: 'Metformina 500mg (Cena)' }
+    ],
+    historial: [],
+    estudios: []
+  },
+  {
+    id: 2,
+    nombre: 'María Laura Fernández',
+    dni: '28455632',
+    email: 'marialaura_f@hotmail.com',
+    telefono: '2236894521',
+    genero: 'Femenino',
+    fechaNac: '1981-11-02',
+    sucursal: 'Clínica 25 De Mayo',
+    metaActual: 'Aumento de masa muscular y readaptación alimentaria por colon irritable.',
+    camposExtras: [
+      { label: 'OBRA SOCIAL', valor: 'Particular' },
+      { label: 'NRO AFILIADO', valor: '-' },
+      { label: 'INTOLERANCIAS', valor: 'Lactosa y Harinas de trigo' }
+    ],
+    historial: [],
+    estudios: []
+  },
+  {
+    id: 3,
+    nombre: 'Sofía Martínez',
+    dni: '41223344',
+    email: 'sofia.martinez@email.com',
+    telefono: '1144332211',
+    genero: 'Indefinido',
+    fechaNac: '1995-09-21',
+    sucursal: 'Clínica Del Niño',
+    metaActual: 'Mejora de rendimiento deportivo y balance energético.',
+    camposExtras: [
+      { label: 'OBRA SOCIAL', valor: 'Swiss Medical' },
+      { label: 'NRO AFILIADO', valor: 'SW1234567' }
+    ],
+    historial: [],
+    estudios: []
+  }
+];
 
         this.pacientes = pacientesPrueba.map(p => ({
           ...p,
@@ -177,7 +189,8 @@ export class PacientesListaComponent implements OnInit {
     container.querySelector('#modal-txt-dni')!.textContent = p.dni || '---';
     container.querySelector('#modal-txt-email')!.textContent = p.email || '---';
     container.querySelector('#modal-txt-telefono')!.textContent = p.telefono || '---';
-    
+    container.querySelector('#modal-txt-os')!.textContent = this.getExtra(p, 'OBRA SOCIAL') || 'No especificada';
+  container.querySelector('#modal-txt-afiliado')!.textContent = this.getExtra(p, 'NRO AFILIADO') || '-';
     // Aplicar color gris si el género es Indefinido
     const elGenero = container.querySelector('#modal-txt-genero') as HTMLElement;
     if (elGenero) {
@@ -192,19 +205,25 @@ export class PacientesListaComponent implements OnInit {
 
     container.querySelector('#modal-txt-nacimiento')!.textContent = p.fechaNac || '---';
     container.querySelector('#modal-txt-meta')!.textContent = p.metaActual || 'Sin meta definida';
+// ... dentro de inyectarDatosEnModal(p: any) ...
 
-    const containerExtras = container.querySelector('#modal-lista-extras');
-    if (containerExtras) {
-      containerExtras.innerHTML = p.camposExtras.map((ex: any, index: number) => `
-        <div class="extra-row-styled">
-          <div>
-            <span class="extra-label-tag">${ex.label}</span>
-            <span class="extra-value-text">${ex.valor}</span>
-          </div>
-          <button class="btn-delete-extra" data-index="${index}">×</button>
-        </div>
-      `).join('');
-    }
+const containerExtras = container.querySelector('#modal-lista-extras');
+if (containerExtras) {
+  // Filtramos para NO mostrar Obra Social ni Nro Afiliado en la lista de "otros" extras
+  const extrasFiltrados = p.camposExtras.filter((ex: any) => 
+    ex.label !== 'OBRA SOCIAL' && ex.label !== 'NRO AFILIADO'
+  );
+
+  containerExtras.innerHTML = extrasFiltrados.map((ex: any, index: number) => `
+    <div class="extra-row-styled">
+      <div>
+        <span class="extra-label-tag">${ex.label}</span>
+        <span class="extra-value-text">${ex.valor}</span>
+      </div>
+      <button class="btn-delete-extra" data-index="${index}">×</button>
+    </div>
+  `).join('');
+}
 
     // Se agrandaron levemente las dimensiones y el espaciado de las cards en el timeline
     const containerTimeline = container.querySelector('#modal-timeline');
@@ -382,8 +401,7 @@ export class PacientesListaComponent implements OnInit {
     this.esEdicionInterna = false;
     this.abrirFormulario(null, true);
   }
-
- async abrirFormulario(paciente: any = null, esNuevo: boolean = false) {
+async abrirFormulario(paciente: any = null, esNuevo: boolean = false) {
   const opcionesSedesHtml = this.sedes.map(sede => `
     <option value="${sede}" ${paciente?.sucursal === sede ? 'selected' : ''}>${sede}</option>
   `).join('');
@@ -391,6 +409,11 @@ export class PacientesListaComponent implements OnInit {
   const { value: formValues, isDismissed } = await Swal.fire({
     title: esNuevo ? '🚀 Nuevo Registro' : '✏️ Editar Datos Principales',
     width: '700px',
+    // Configuración de botones personalizados
+    showCancelButton: true,
+    confirmButtonText: esNuevo ? 'Crear' : 'Guardar',
+    cancelButtonText: 'Volver',
+    confirmButtonColor: '#9b67cc',
 
     html: `
       <div class="modal-form-grid">
@@ -405,7 +428,10 @@ export class PacientesListaComponent implements OnInit {
           </select>
         </div>
         <div class="swal-field col-span-2"><span class="label">Sucursal</span><select id="sw-sede" class="swal-custom-input">${opcionesSedesHtml}</select></div>
-        <div class="swal-field"><span class="label">Obra Social</span><input id="sw-os" class="swal-custom-input" value="${this.getExtra(paciente, 'OBRA SOCIAL') || 'Particular'}"></div>
+        
+        <div class="swal-field"><span class="label">Obra Social</span><input id="sw-os" class="swal-custom-input" value="${this.getExtra(paciente, 'OBRA SOCIAL') || ''}"></div>
+        <div class="swal-field"><span class="label">Nro. Afiliado</span><input id="sw-afiliado" class="swal-custom-input" value="${this.getExtra(paciente, 'NRO AFILIADO') || ''}"></div>
+        
         <div class="swal-field"><span class="label">Teléfono</span><input id="sw-tel" class="swal-custom-input" value="${paciente?.telefono || ''}"></div>
         <div class="swal-field"><span class="label">Email</span><input id="sw-mail" class="swal-custom-input" value="${paciente?.email || ''}"></div>
       </div>
@@ -421,30 +447,29 @@ export class PacientesListaComponent implements OnInit {
         sucursal: (document.getElementById('sw-sede') as HTMLSelectElement).value,
         telefono: (document.getElementById('sw-tel') as HTMLInputElement).value,
         email: (document.getElementById('sw-mail') as HTMLInputElement).value,
-        obraSocial: (document.getElementById('sw-os') as HTMLInputElement).value
+        obraSocial: (document.getElementById('sw-os') as HTMLInputElement).value,
+        nroAfiliado: (document.getElementById('sw-afiliado') as HTMLInputElement).value
       };
     }
   });
+if (isDismissed) {
+       this.abrirFichaMaestra(paciente)
+        return;
+    }
 
-  // 1. Si el usuario cancela, salimos
-  if (isDismissed) return;
-
-  // 2. Si hay valores, procesamos
   if (formValues) {
-    const { obraSocial, ...fijos } = formValues;
+    const { obraSocial, nroAfiliado, ...fijos } = formValues;
     const objetoFinal = esNuevo 
       ? { ...fijos, id: Date.now(), metaActual: 'Sin meta definida', camposExtras: [], historial: [], estudios: [] } 
       : Object.assign(paciente, fijos);
 
+    // Guardamos los nuevos campos extras
     this.actualizarDatoExtra(objetoFinal, 'OBRA SOCIAL', obraSocial);
+    this.actualizarDatoExtra(objetoFinal, 'NRO AFILIADO', nroAfiliado);
     
-    // 3. Guardamos
     this.turnosService.guardarPaciente(objetoFinal).subscribe({
       next: () => {
-        // Alerta de éxito (esto es lo que no veías)
         Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Paciente guardado correctamente', timer: 1500, showConfirmButton: false });
-        
-        // Recargamos lista y refrescamos vista
         this.cargarPacientes();
       },
       error: () => {

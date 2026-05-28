@@ -1,8 +1,8 @@
 <div class="dashboard-wrapper">
     <header class="db-header-filtros">
         <div class="title-group">
-            <h1>Panel de Análisis Dinámico</h1>
-            <p>Métricas de rendimiento y segmentación de clientes.</p>
+            <h1>Panel de Análisis Estadístico</h1>
+            <p>Analizá la productividad de tu consultorio y optimizá la gestión de tus turnos.</p>
         </div>
         
         <div class="filter-bar">
@@ -40,7 +40,8 @@
         </div>
     </div>
 
-    <div class="segmentation-grid-3col" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 25px 0; width: 100%;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 25px 0; width: 100%;">
+        
         <div class="seg-card" *ngFor="let seg of segmentacion" style="background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
             <h4 style="margin-top: 0; margin-bottom: 15px; color: #4a5568; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ seg.titulo }}</h4>
             <div class="seg-item" *ngFor="let item of seg.data" style="margin-bottom: 12px;">
@@ -54,6 +55,19 @@
                          [ngClass]="{'orange-bar': seg.titulo.includes('Canal'), 'green-bar': seg.titulo.includes('Flujo')}"
                          style="height: 100%; border-radius: 8px; transition: width 0.5s ease-in-out;">
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="seg-card" style="background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: #4a5568; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Distribución por Edad</h4>
+            <div class="seg-item" *ngFor="let item of datosEdad" style="margin-bottom: 12px;">
+                <div class="seg-info" style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                    <span style="font-weight: 600; color: #2d3748;">{{ item.label }} años</span>
+                    <span style="color: #718096; font-weight: 700;">{{ item.val | number:'1.0-0' }}%</span>
+                </div>
+                <div class="seg-bar-bg" style="background: #edf2f7; border-radius: 8px; height: 8px; width: 100%; overflow: hidden;">
+                    <div class="seg-bar-fill" [style.width.%]="item.val" style="background: #805ad5; height: 100%; border-radius: 8px;"></div>
                 </div>
             </div>
         </div>

@@ -19,7 +19,7 @@
       <!-- Inicio -->
       <li [class.locked]="!tienePermiso('Inicio')">
         <a routerLink="/dashboard/inicio" routerLinkActive="active" class="nav-item">
-          <span>🏠</span> <span class="nav-text">Inicio</span>
+           <span class="nav-text">Inicio</span>
           <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Inicio')" class="lock-icon">🔒</span>
         </a>
       </li>
@@ -27,7 +27,7 @@
       <!-- Turnos -->
       <li [class.locked]="!tienePermiso('Turnos')">
         <a routerLink="/dashboard/turnos" routerLinkActive="active" class="nav-item">
-          <span>📅</span> <span class="nav-text">Turnos</span>
+          <span class="nav-text">Turnos</span>
           <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Turnos')" class="lock-icon">🔒</span>
         </a>
       </li>
@@ -35,7 +35,7 @@
       <!-- Clientes -->
       <li [class.locked]="!tienePermiso('Clientes')">
         <a routerLink="/dashboard/clientes" routerLinkActive="active" class="nav-item">
-          <span>👥</span> <span class="nav-text">Clientes</span>
+           <span class="nav-text">Clientes</span>
           <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Clientes')" class="lock-icon">🔒</span>
         </a>
       </li>
@@ -43,27 +43,27 @@
       <!-- Estadísticas -->
       <li [class.locked]="!tienePermiso('Estadísticas')">
         <a routerLink="/dashboard/estadisticas" routerLinkActive="active" class="nav-item">
-          <span>📊</span> <span class="nav-text">Estadísticas</span>
+         <span class="nav-text">Estadísticas</span>
           <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Estadísticas')" class="lock-icon">🔒</span>
-        </a>
-      </li>
-
-      <!-- Periodo de inactividad -->
-      <li [class.locked]="!tienePermiso('Periodo de inactividad')">
-        <a routerLink="/dashboard/inactividad" routerLinkActive="active" class="nav-item">
-          <span>📅</span> <span class="nav-text">Inactividad</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Periodo de inactividad')" class="lock-icon">🔒</span>
         </a>
       </li>
 
       <!-- Gestión de Equipo -->
       <li [class.locked]="!tienePermiso('Gestión de Equipo')">
         <a routerLink="/dashboard/gestion-equipo" routerLinkActive="active" class="nav-item">
-          <span>🔐</span> <span class="nav-text">Gestión de Equipo</span>
+          <span class="nav-text">Gestión de Equipo</span>
           <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Gestión de Equipo')" class="lock-icon">🔒</span>
         </a>
       </li>
+       <li [class.locked]="!tienePermiso('Periodo de inactividad')">
+        <a routerLink="/dashboard/inactividad" routerLinkActive="active" class="nav-item">
+         <span class="nav-text">Mi Consultorio</span>
+          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Periodo de inactividad')" class="lock-icon">🔒</span>
+        </a>
+      </li>
     </ul>
+       <!-- Periodo de inactividad -->
+     
 
     <ul class="menu-footer">
       <li class="logout" (click)="cerrarSesion()">

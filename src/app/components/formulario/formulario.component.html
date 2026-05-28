@@ -31,6 +31,22 @@
       <small class="error-msg" *ngIf="tel.invalid && (tel.touched || f.submitted)">* El teléfono es obligatorio</small>
     </div>
 
+    <div class="field-group">
+      <label class="label-mini">Obra Social</label>
+      <select name="obraSocial" [(ngModel)]="datosExtras['OBRA SOCIAL']" required>
+        <option value="">Seleccionar...</option>
+        <option value="OSDE">OSDE</option>
+        <option value="SWISS MEDICAL">Swiss Medical</option>
+        <option value="IOMA">IOMA</option>
+        <option value="PARTICULAR">Particular</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="label-mini">Nro. de Afiliado (Opcional)</label>
+      <input type="text" name="nroAfiliado" [(ngModel)]="datosExtras['NRO AFILIADO']" placeholder="Escriba el número aquí">
+    </div>
+
     <div *ngFor="let campo of configuracionCampos; let i = index">
       <div class="field-group" *ngIf="campo.id !== 'email' && campo.id !== 'telefono'">
         <label class="label-mini">{{ campo.label }}</label>
@@ -89,15 +105,14 @@
       </select>
       <small class="error-msg" *ngIf="suc.invalid && (suc.touched || f.submitted)">* Seleccioná una sucursal</small>
     </div>
-
-    <div class="field-group">
-      <label class="label-mini">Fecha del Turno</label>
-      <div class="fecha-container">
-        <input type="text" id="fechaPicker" name="fecha" [(ngModel)]="datosForm.fecha" #fec="ngModel" readonly placeholder="Seleccioná una fecha" required>
-        <span class="calendar-icon">📅</span>
-      </div>
-      <small class="error-msg" *ngIf="fec.invalid && (fec.touched || f.submitted)">* La fecha es obligatoria</small>
-    </div>
+<div class="field-group">
+  <label class="label-mini">Fecha del Turno</label>
+  <div class="fecha-container">
+    <input type="text" id="fechaPicker" class="flatpickr-input" name="fecha" [(ngModel)]="datosForm.fecha" #fec="ngModel" readonly placeholder="Seleccioná una fecha" required>
+    <span class="calendar-icon">📅</span>
+  </div>
+  <small class="error-msg" *ngIf="fec.invalid && (fec.touched || f.submitted)">* La fecha es obligatoria</small>
+</div>
 
     <div id="turnos-container" *ngIf="horariosDisponibles.length > 0">
       <p class="label-mini">Horarios Disponibles:</p>

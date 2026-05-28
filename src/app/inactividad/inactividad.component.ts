@@ -14,6 +14,10 @@ export class InactividadComponent {
   
   tabActiva: string = 'horarios';
 
+ // En tu clase InactividadComponent
+configuracionGlobal = {
+  anticipacion_minima: 24 // Este es el valor que guardas en la base de datos
+};
   // Configuración global para alertas tipo Toast
   private toastConfig: any = {
     toast: true,
@@ -65,28 +69,37 @@ export class InactividadComponent {
   }
 
   guardarHorario() {
-    const algunDiaSeleccionado = this.diasSemana.some(d => d.seleccionado);
-    if (!this.nuevoHorario.sucursal_id || !this.nuevoHorario.hora_inicio || !this.nuevoHorario.hora_fin || !algunDiaSeleccionado) {
-      Swal.fire({ icon: 'warning', title: 'Faltan datos', confirmButtonColor: '#7b2cbf' });
-      return;
-    }
-    this.diasSemana.forEach(d => {
-      if (d.seleccionado) {
-        this.listaHorarios.push({
-          id: 'hor-' + Date.now() + Math.random().toString(36).substr(2, 4),
-          sucursal_id: this.nuevoHorario.sucursal_id,
-          dia_semana: d.id,
-          hora_inicio: this.nuevoHorario.hora_inicio,
-          hora_fin: this.nuevoHorario.hora_fin,
-          duracion_turno: this.nuevoHorario.duracion_turno
-        });
-      }
-    });
-    this.nuevoHorario = { sucursal_id: '', hora_inicio: '', hora_fin: '', duracion_turno: 30 };
-    this.diasSemana.forEach(d => d.seleccionado = false);
-    Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Cronograma actualizado' });
+  const algunDiaSeleccionado = this.diasSemana.some(d => d.seleccionado);
+  
+  if (!this.nuevoHorario.sucursal_id || !this.nuevoHorario.hora_inicio || !this.nuevoHorario.hora_fin || !algunDiaSeleccionado) {
+    Swal.fire({ icon: 'warning', title: 'Faltan datos', confirmButtonColor: '#7b2cbf' });
+    return;
   }
 
+  // Capturamos el valor del input, si está vacío usamos 24 por defecto
+  const anticipacionGuardada = this.configuracionGlobal.anticipacion_minima || 24;
+
+  this.diasSemana.forEach(d => {
+    if (d.seleccionado) {
+      this.listaHorarios.push({
+        id: 'hor-' + Date.now() + Math.random().toString(36).substr(2, 4),
+        sucursal_id: this.nuevoHorario.sucursal_id,
+        dia_semana: d.id,
+        hora_inicio: this.nuevoHorario.hora_inicio,
+        hora_fin: this.nuevoHorario.hora_fin,
+        duracion_turno: this.nuevoHorario.duracion_turno,
+        // AQUÍ ESTÁ LA CLAVE: Guardamos la antelación dentro del horario
+        anticipacion: anticipacionGuardada 
+      });
+    }
+  });
+
+  // Limpiamos el formulario
+  this.nuevoHorario = { sucursal_id: '', hora_inicio: '', hora_fin: '', duracion_turno: 30 };
+  this.diasSemana.forEach(d => d.seleccionado = false);
+  
+  Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Cronograma actualizado' });
+}
   guardarBloqueo() {
     if (!this.nuevoBloqueo.inicio || !this.nuevoBloqueo.fin) {
       Swal.fire({ icon: 'warning', title: 'Faltan datos', confirmButtonColor: '#7b2cbf' });
@@ -110,43 +123,67 @@ export class InactividadComponent {
   // ==========================================================================
   // MÉTODOS DE ELIMINACIÓN CON CONFIRMACIÓN
   // ==========================================================================
-  eliminarSucursal(id: string) {
+ eliminarSucursal(id: string) {
     Swal.fire({ title: '¿Eliminar sucursal?', text: "Se quitarán los horarios vinculados.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#7b2cbf' }).then((r) => {
       if (r.isConfirmed) {
         this.listaSucursales = this.listaSucursales.filter(s => s.id !== id);
         this.listaHorarios = this.listaHorarios.filter(h => h.sucursal_id !== id);
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Sucursal eliminada' });
       }
     });
   }
 
   eliminarHorarioAgrupado(sucursalId: string, inicio: string, fin: string) {
     Swal.fire({ title: '¿Eliminar bloque?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#7b2cbf' }).then((r) => {
-      if (r.isConfirmed) this.listaHorarios = this.listaHorarios.filter(h => !(h.sucursal_id === sucursalId && h.hora_inicio === inicio && h.hora_fin === fin));
+      if (r.isConfirmed) {
+        this.listaHorarios = this.listaHorarios.filter(h => !(h.sucursal_id === sucursalId && h.hora_inicio === inicio && h.hora_fin === fin));
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Horario eliminado' });
+      }
     });
   }
 
   eliminarBloqueo(id: number) {
     Swal.fire({ title: '¿Habilitar agenda?', icon: 'question', showCancelButton: true, confirmButtonColor: '#7b2cbf' }).then((r) => {
-      if (r.isConfirmed) this.listaBloqueos = this.listaBloqueos.filter(b => b.id !== id);
+      if (r.isConfirmed) {
+        this.listaBloqueos = this.listaBloqueos.filter(b => b.id !== id);
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Agenda habilitada' });
+      }
     });
   }
 
   eliminarObraSocial(id: string) {
     Swal.fire({ title: '¿Eliminar convenio?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#7b2cbf' }).then((r) => {
-      if (r.isConfirmed) this.listaObrasSociales = this.listaObrasSociales.filter(os => os.id !== id);
+      if (r.isConfirmed) {
+        this.listaObrasSociales = this.listaObrasSociales.filter(os => os.id !== id);
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Convenio eliminado' });
+      }
     });
   }
 
   // ==========================================================================
   // HELPERS
   // ==========================================================================
-  get horariosAgrupados(): any[] {
+get horariosAgrupados(): any[] {
     const grupos: { [key: string]: any } = {};
     this.listaHorarios.forEach(h => {
       const clave = `${h.sucursal_id}_${h.hora_inicio}_${h.hora_fin}_${h.duracion_turno}`;
-      if (!grupos[clave]) grupos[clave] = { sucursal_id: h.sucursal_id, hora_inicio: h.hora_inicio, hora_fin: h.hora_fin, duracion_turno: h.duracion_turno, dias: [] };
-      if (!grupos[clave].dias.includes(h.dia_semana)) grupos[clave].dias.push(h.dia_semana);
+      
+      if (!grupos[clave]) {
+        grupos[clave] = { 
+          sucursal_id: h.sucursal_id, 
+          hora_inicio: h.hora_inicio, 
+          hora_fin: h.hora_fin, 
+          duracion_turno: h.duracion_turno, 
+          dias: [],
+          // GUARDAMOS LA ANTICIPACIÓN AL CREAR EL GRUPO
+          anticipacion: h.anticipacion || 24 
+        };
+      }
+      if (!grupos[clave].dias.includes(h.dia_semana)) {
+        grupos[clave].dias.push(h.dia_semana);
+      }
     });
+    
     return Object.values(grupos).map(g => {
       g.dias.sort((a: any, b: any) => (a === 0 ? 7 : a) - (b === 0 ? 7 : b));
       return g;
