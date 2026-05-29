@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-footer',
@@ -8,5 +8,18 @@ import { RouterLink } from "@angular/router";
   styleUrl: './footer.component.css'
 })
 export class FooterComponent {
- constructor(){}
+constructor(private router: Router) {}
+
+  getSlugActual() {
+    const url = this.router.url; // Ejemplo: "/nutricion"
+    
+    // Si la URL es solo "/" o "/terminos", no hay slug
+    if (url === '/' || url.includes('/privacidad')) {
+      return null;
+    }
+
+    // Esto toma el primer segmento después de la barra
+    // Si la URL es "/nutricion", esto devuelve "nutricion"
+    return url.replace('/', '');
+  }
 }

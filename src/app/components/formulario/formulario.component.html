@@ -31,21 +31,34 @@
       <small class="error-msg" *ngIf="tel.invalid && (tel.touched || f.submitted)">* El teléfono es obligatorio</small>
     </div>
 
-    <div class="field-group">
-      <label class="label-mini">Obra Social</label>
-      <select name="obraSocial" [(ngModel)]="datosExtras['OBRA SOCIAL']" required>
-        <option value="">Seleccionar...</option>
-        <option value="OSDE">OSDE</option>
-        <option value="SWISS MEDICAL">Swiss Medical</option>
-        <option value="IOMA">IOMA</option>
-        <option value="PARTICULAR">Particular</option>
-      </select>
-    </div>
+  <div class="field-group">
+  <label class="label-mini">Obra Social</label>
+  <select name="obraSocial" [(ngModel)]="datosExtras['OBRA SOCIAL']" #os="ngModel" required>
+    <option value="">Seleccionar...</option>
+    <option value="OSDE">OSDE</option>
+    <option value="SWISS MEDICAL">Swiss Medical</option>
+    <option value="IOMA">IOMA</option>
+    <option value="PARTICULAR">Particular</option>
+  </select>
+  <small class="error-msg" *ngIf="os.invalid && (os.touched || f.submitted)">* Seleccioná una opción</small>
+</div>
 
-    <div class="field-group">
-      <label class="label-mini">Nro. de Afiliado (Opcional)</label>
-      <input type="text" name="nroAfiliado" [(ngModel)]="datosExtras['NRO AFILIADO']" placeholder="Escriba el número aquí">
-    </div>
+<div class="field-group" *ngIf="datosExtras['OBRA SOCIAL'] && datosExtras['OBRA SOCIAL'] !== 'PARTICULAR'">
+  <label class="label-mini">Nro. de Afiliado(opcional)</label>
+  <input type="text" name="nroAfiliado" [(ngModel)]="datosExtras['NRO AFILIADO']" placeholder="Escriba el número de afiliado">
+</div>
+
+<div class="field-group">
+  <label class="label-mini">¿Cómo nos conociste?</label>
+  <select name="comoNosConocio" [(ngModel)]="datosExtras['COMO NOS CONOCIO']" required>
+    <option value="">Seleccionar...</option>
+    <option value="REDES">Redes Sociales (Instagram/Facebook)</option>
+    <option value="GOOGLE">Google</option>
+    <option value="RECOMENDACION">Recomendación de un conocido</option>
+    <option value="CARTEL">Vi un cartel / publicidad en la calle</option>
+    <option value="OTRO">Otro</option>
+  </select>
+</div>
 
     <div *ngFor="let campo of configuracionCampos; let i = index">
       <div class="field-group" *ngIf="campo.id !== 'email' && campo.id !== 'telefono'">

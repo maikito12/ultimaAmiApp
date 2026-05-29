@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-privacidad',
   imports: [],
@@ -8,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class PrivacidadComponent {
 
+  constructor(private location: Location) {}
+
+
+  irAtras() {
+  console.log("El botón fue presionado");
+  this.location.back();
+}
 }

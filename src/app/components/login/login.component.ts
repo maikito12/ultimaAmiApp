@@ -19,25 +19,6 @@ export class LoginComponent {
   mostrarPassword: boolean = false;
   cargando: boolean = false;
 
-  // --- BASE DE DATOS FICTICIA PARA PRUEBAS ---
-  //
-  usuariosDB = [
-    { 
-      id: 1, 
-      nombre: 'Juan Cruz Di Bello', //
-      usuario: 'admin@clinica.com', 
-      pass: 'admin', 
-      rol: 'Profesional' 
-    },
-    { 
-      id: 2, 
-      nombre: 'Ana García', 
-      usuario: 'ana@clinica.com', 
-      pass: '123456', 
-      rol: 'Secretaria' 
-    }
-  ];
-
   constructor(
     private auth: AuthService, 
     private router: Router
@@ -53,38 +34,16 @@ export class LoginComponent {
 
     this.cargando = true;
 
-    // 1. PRIMERO PROBAMOS CON LA BASE LOCAL PARA TESTEAR PERMISOS
-    const usuarioEncontrado = this.usuariosDB.find(
-      u => u.usuario === this.email && u.pass === this.password
-    );
-
-    if (usuarioEncontrado) {
-      // GUARDAMOS EL USUARIO CON SU ROL PARA EL SIDEBAR
-      localStorage.setItem('usuarioActual', JSON.stringify(usuarioEncontrado));
-      localStorage.setItem('token', 'fake-jwt-token'); // Para saltar los Guards
-
-      this.cargando = false;
-      this.router.navigate(['/dashboard/inicio']);
-      return;
-    }
-
-    // 2. SI NO ESTÁ LOCAL, INTENTAMOS CON EL SERVICIO REAL (n8n/Backend)
+    // Conectamos directamente con el Backend (C# + PostgreSQL)
     this.auth.login({ email: this.email, password: this.password }).subscribe({
-      next: (res: any) => {
+      next: (usuario) => {
         this.cargando = false;
-        if (res.auth) {
-          // Si el backend responde, guardamos la respuesta
-          // Asegurate que 'res.user' contenga el rol (Profesional/Secretaria)
-          localStorage.setItem('usuarioActual', JSON.stringify(res.user));
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.mostrarMensaje('Error', 'Credenciales incorrectas', 'error');
-        }
+        // El servicio ya guardó el usuario en localStorage gracias al tap()
+        this.router.navigate(['/dashboard']);
       },
-      error: (err: any) => {
+      error: (err) => {
         this.cargando = false;
-        console.error('Error en login:', err);
-        this.mostrarMensaje('Error', 'No se pudo conectar con el servidor', 'error');
+        this.mostrarMensaje('Error', err.message || 'Credenciales incorrectas', 'error');
       }
     });
   }

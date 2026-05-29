@@ -34,8 +34,10 @@ export const routes: Routes = [
   },
 
   // 2. El slug va al final para que no "robe" las rutas fijas
-  { path: ':slug', component: FormularioComponent },
+ { path: 'privacidad', component: PrivacidadComponent },
   
+  // 2. Deja el comodín dinámico al final
+  { path: ':slug', component: FormularioComponent },
   // 3. El comodín va último de todo
   { path: '**', redirectTo: 'login' }
 ];

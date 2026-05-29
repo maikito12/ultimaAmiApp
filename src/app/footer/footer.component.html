@@ -12,7 +12,10 @@
       
       <span class="separator">|</span>
       
-   <a routerLink="/privacidad" target="_blank">Términos y Privacidad</a>
+ <a [routerLink]="['/privacidad']" 
+     [queryParams]="{ medico: getSlugActual() }">
+     Términos y Privacidad
+  </a>
     </div>
   </div>
 </footer>
