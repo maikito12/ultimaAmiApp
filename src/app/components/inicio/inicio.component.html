@@ -56,7 +56,7 @@
             <td class="bold">{{ turno.hora }} hs</td>
             <td>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span [ngClass]="getGenderClass(turno.sexo)" 
+                <span [ngClass]="" 
                       style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;">
                 </span>
                 {{ turno.paciente }}
@@ -64,29 +64,27 @@
             </td>
             <td>{{ turno.sucursal }}</td>
             
-            <td class="text-center">
-              <select class="select-status-inline" 
-                      [ngModel]="turno.estado" 
-                      (change)="cambiarEstadoTurno(turno, $event)"
-                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
-                      [ngClass]="{
-                        'status-pendiente': turno.state === 'pendiente' || turno.estado === 'pendiente',
-                        'status-confirmado': turno.estado === 'confirmado',
-                        'status-espera': turno.estado === 'en_espera',
-                        'status-ok': turno.estado === 'atendido',
-                        'status-falta': turno.estado === 'no_asistio',
-                        'status-cancelado': turno.estado === 'cancelado'
-                      }">
-                
-                <option value="en_espera">En espera</option>
-                <option value="no_asistio">No asistió</option>
+        <td class="text-center">
+  <select class="select-status-inline" 
+          [ngModel]="turno.estado" 
+          (change)="cambiarEstadoTurno(turno, $event)"
+          [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
+          [ngClass]="{
+            'status-pendiente': turno.estado === 'pendiente',
+            'status-confirmado': turno.estado === 'confirmado',
+            'status-espera': turno.estado === 'en_espera',
+            'status-ok': turno.estado === 'atendido',
+            'status-falta': turno.estado === 'no_asistio',
+            'status-cancelado': turno.estado === 'cancelado'
+          }">
+    
+    <option *ngFor="let opt of getOpcionesDisponibles(turno)" [value]="opt.value">
+      {{ opt.label }}
+    </option>
+  </select>
+</td>
 
-                <option *ngIf="turno.estado === 'pendiente'" value="pendiente">Pendiente</option>
-                <option *ngIf="turno.estado === 'confirmado'" value="confirmado">Confirmado</option>
-                <option *ngIf="turno.estado === 'atendido'" value="atendido">Atendido</option>
-                <option *ngIf="turno.estado === 'cancelado'" value="cancelado">Cancelado</option>
-              </select>
-            </td>
+          
 
             <td class="text-right">
               <button class="btn-cancel-danger" 
@@ -122,7 +120,7 @@
           </div>
 
           <div class="birthday-card" *ngFor="let cumple of cumplesHoy.slice(0,3)">
-            <div class="avatar-mini" [ngClass]="getGenderClass(cumple.sexo)">
+            <div class="avatar-mini" [ngClass]="">
               {{ cumple.paciente.charAt(0) }}
             </div>
             <div class="b-info">
@@ -162,10 +160,10 @@
 
       <div class="modal-body-scroll">
         <div class="data-summary-grid">
-          <div class="data-item-small" *ngFor="let campo of pacienteSeleccionado.camposExtras">
-            <span class="data-label">{{ campo.label }}</span>
-            <span class="data-value">{{ campo.valor }}</span>
-          </div>
+         <div class="data-item-small" *ngFor="let campo of pacienteSeleccionado.camposExtras | keyvalue">
+   <span class="data-label">{{ campo.key }}:</span>
+   <span class="data-value">{{ campo.value }}</span>
+</div>
         </div>
 
         <div class="consultation-box">
@@ -175,25 +173,30 @@
         </div>
 
         <div class="attachments-area">
-          <div class="attachment-header">
-            <span>Adjuntos</span>
-            <button class="btn-add-mini" (click)="fileInput.click()">+ Adjuntar</button>
-            <input #fileInput type="file" (change)="onFileSelected($event)" hidden multiple>
-          </div>
-          <div class="attachment-strip">
-            <div class="file-chip" *ngFor="let file of pacienteSeleccionado.archivos; let i = index">
-              <img *ngIf="isImage(file)" [src]="file.previewUrl" class="chip-thumb">
-              <div *ngIf="isPdf(file)" class="pdf-icon-placeholder">
-                <i class="fas fa-file-pdf"></i>
-                <span>PDF</span>
-              </div>
-              <span *ngIf="!isImage(file) && !isPdf(file)" class="chip-icon">📄</span>
-              <span class="chip-name">{{ file.name }}</span>
-              <button class="btn-remove-chip" (click)="removeFile(i)">×</button>
-            </div>
-          </div>
-        </div>
+  <div class="attachment-header">
+    <span>Adjuntos</span>
+    <button class="btn-add-mini" (click)="fileInput.click()">+ Adjuntar</button>
+    <input #fileInput type="file" (change)="onFileSelected($event)" hidden multiple>
+  </div>
+
+  <div class="attachment-strip">
+    <div class="file-chip" *ngFor="let file of (pacienteSeleccionado?.archivos || []); let i = index">
+      
+      <img *ngIf="isImage(file)" [src]="file.previewUrl" class="chip-thumb" alt="preview">
+      
+      <div *ngIf="isPdf(file)" class="pdf-icon-placeholder">
+        <i class="fas fa-file-pdf"></i>
+        <span>PDF</span>
       </div>
+      
+      <span *ngIf="!isImage(file) && !isPdf(file)" class="chip-icon">📄</span>
+      
+      <span class="chip-name">{{ file.name }}</span>
+      
+      <button class="btn-remove-chip" (click)="removeFile(i)" type="button">×</button>
+    </div>
+  </div>
+</div>
 
       <div class="modal-footer-compact">
         <button class="btn-status-toggle" 
@@ -225,7 +228,7 @@
       <div class="modal-body-scroll">
         <div class="birthday-card" *ngFor="let cumple of cumplesHoy" style="justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="avatar-mini" [ngClass]="getGenderClass(cumple.sexo)">
+            <div class="avatar-mini" [ngClass]="">
               {{ cumple.paciente.charAt(0) }}
             </div>
             <div class="b-info">

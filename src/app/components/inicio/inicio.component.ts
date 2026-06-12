@@ -4,7 +4,10 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { TurnosService } from '../../services/turno-service.service';
-
+import { AuthService } from '../../services/auth-service.service';
+import { DashboardHome,DashboardStats,TurnoDashboard,Cumpleanios } from '../../interfaces/dashboard';
+import { DashboardService } from '../../services/dashboard-service.service';
+ 
 @Component({
   selector: 'app-inicio',
   standalone: true,
@@ -13,277 +16,266 @@ import { TurnosService } from '../../services/turno-service.service';
   styleUrl: './inicio.component.css'
 })
 export class InicioComponent implements OnInit {
-  
-  stats: any = { turnosHoy: 0, turnosSemana: 0, clientesTotal: 0, turnosAtendidosHoy: 0 };
-  proximosTurnos: any[] = [];
+
+  // --- CONFIGURACIÓN Y ESTADO ---
+private readonly toastConfig: any = {
+    toast: true, position: 'top-end', showConfirmButton: false, timer: 2500,
+    timerProgressBar: true, iconColor: '#ffffff', background: '#7b2cbf', color: '#ffffff'
+  };
+
+  stats: DashboardStats = { turnosHoy: 0, clientesTotal: 0, turnosAtendidosHoy: 0 };
+  proximosTurnos: TurnoDashboard[] = [];
+  cumplesHoy: Cumpleanios[] = [];
   notasDia: string = '';
+  
   mostrarModal = false;
-  pacienteSeleccionado: any = null;
+  mostrarModalCumples = false;
+  pacienteSeleccionado: any = {};
 
-  cumplesHoy: any[] = [];
-  mostrarModalCumples: boolean = false;
-
-  constructor(private turnosService: TurnosService) {}
+  constructor(private turnosService: TurnosService, private auth: AuthService,private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.cargarDatos();
-    
-    // Datos estáticos de prueba (Mock ajustados a .estado)
-    this.proximosTurnos = [
-      { 
-        id: 1, 
-        hora: '09:00', 
-        paciente: 'Maikito Charra', 
-        dni: '38.123.456',
-        telefono: '5492235263754',
-        sucursal: 'Clínica Del Niño', 
-        estado: 'atendido', 
-        sexo: 'M',
-        notasEvolucion: 'El paciente presenta una mejora notable en la movilidad.',
-        archivos: [],
-        camposExtras: [
-          { label: 'Obra Social', valor: 'OSDE 210' },
-          { label: 'Motivo', valor: 'Control Post-operatorio' },
-          { label: 'Edad', valor: '29 años' }
-        ]
-      },
-      { 
-        id: 2,
-        hora: '10:30', 
-        paciente: 'Cande Rossi', 
-        dni: '42.987.654',
-        telefono: '5492237654321',
-        sucursal: 'Clínica 25 De Mayo', 
-        estado: 'pendiente', 
-        sexo: 'F',
-        notasEvolucion: '',
-        archivos: [],
-        camposExtras: [
-          { label: 'Obra Social', valor: 'Swiss Medical' },
-          { label: 'Motivo', valor: 'Consulta Nutricional' },
-          { label: 'Edad', valor: '25 años' }
-        ]
-      },
-      { 
-        id: 3,
-        hora: '11:15', 
-        paciente: 'Paciente Nuevo', 
-        dni: '35.000.111',
-        telefono: '5492230001112',
-        sucursal: 'Clínica Del Niño', 
-        estado: 'confirmado', 
-        sexo: 'O',
-        notasEvolucion: '',
-        archivos: [],
-        camposExtras: [
-          { label: 'Obra Social', valor: 'Particular' },
-          { label: 'Motivo', valor: 'Primera vez' },
-          { label: 'Edad', valor: '32 años' }
-        ]
-      }
-    ];
-
-    this.cumplesHoy = [
-      { paciente: 'Maikito Charra', edad: 29, telefono: '5492235263754', sexo: 'M' },
-      { paciente: 'Cande Rossi', edad: 25, telefono: '5492237654321', sexo: 'F' },
-      { paciente: 'Juan Cruz Di Bello', edad: 28, telefono: '5492230001112', sexo: 'M' },
-      { paciente: 'Paciente Nuevo', edad: 30, telefono: '5492231112223', sexo: 'O' }
-    ];
-
     this.cargarNotas();
-    this.recalcularKpisLocales();
+    // Nota: Los datos de prueba se quitarán cuando la API esté 100% activa
   }
 
-  guardarNotas() {
-    localStorage.setItem('agenda_personal_nutri', this.notasDia);
-  }
-
-  cargarNotas() {
-    const notasGuardadas = localStorage.getItem('agenda_personal_nutri');
-    if (notasGuardadas) {
-      this.notasDia = notasGuardadas;
+cargarTurnosDeHoy(): void {
+  // Llamamos a tu servicio real con el filtro de 'soloHoy = true'
+  this.turnosService.obtenerTurnos(true).subscribe({
+    next: (turnos: any[]) => {
+      this.proximosTurnos = turnos; 
+      this.recalcularKpisLocales();
+    },
+    error: (err) => console.error('Error cargando turnos de hoy:', err)
+  });
+}
+verDetalle(turno: any) {
+    // 1. Procesamiento seguro de datos extras
+    let extras = [];
+    try {
+      const rawExtras = turno.paciente?.datos_extra;
+      extras = typeof rawExtras === 'string' ? JSON.parse(rawExtras) : (rawExtras || []);
+    } catch (e) {
+      console.warn("Error parseando extras:", e);
     }
-  }
 
-  cargarDatos() {
-    this.turnosService.getStats().subscribe({
-      next: (res) => {
-        this.stats = res;
-        this.recalcularKpisLocales();
-      },
-      error: (err) => console.error('Error cargando stats:', err)
-    });
-    
-    this.turnosService.obtenerTurnos().subscribe({
-      next: (res) => {
-        this.proximosTurnos = res.slice(0, 5);
-        this.recalcularKpisLocales();
-      },
-      error: (err) => console.error('Error cargando turnos:', err)
-    });
-  }
+    // 2. Mapeo completo: mantenemos info base y añadimos lo procesado
+    this.pacienteSeleccionado = {
+      ...turno,
+      ...turno.paciente,
+      camposExtras: extras,
+      notesEvolucion: turno.notesEvolucion || '',
+      archivos: turno.archivos ? [...turno.archivos] : [], // Clonamos el array
+      cargando: false
+    };
 
-  cambiarEstadoTurno(turno: any, event: Event) {
-    const nuevoEstado = (event.target as HTMLSelectElement).value;
-    const estadoAnterior = turno.estado || 'pendiente';
-    
-    turno.estado = nuevoEstado;
-    console.log(`Cambiando estado de ${turno.paciente} a: ${nuevoEstado}`);
-    this.recalcularKpisLocales();
-
-    /*
-    this.turnosService.actualizarEstadoTurno(turno.id, nuevoEstado).subscribe({
-      next: () => this.mostrarToast('Estado actualizado', 'success'),
-      error: (err) => {
-        turno.estado = estadoAnterior;
-        this.recalcularKpisLocales();
-        this.mostrarToast('No se pudo guardar el estado', 'error');
-      }
-    });
-    */
-  }
-
-  recalcularKpisLocales() {
-    if (this.proximosTurnos && this.proximosTurnos.length > 0) {
-      this.stats.turnosHoy = this.proximosTurnos.length;
-      this.stats.turnosAtendidosHoy = this.proximosTurnos.filter(t => t.estado === 'atendido').length;
-    }
-  }
-
-  verDetalle(turno: any) {
-    this.pacienteSeleccionado = { ...turno }; 
-    if (!this.pacienteSeleccionado.archivos) this.pacienteSeleccionado.archivos = [];
     this.mostrarModal = true;
   }
+  // --- CARGA DE DATOS ---
+cargarDatos(): void {
+  this.dashboardService.obtenerDatosHome().subscribe({
+    next: (res: DashboardHome) => {
+      console.log('Dashboard cargado:', res);
 
-  cerrarModal() {
-    this.mostrarModal = false;
-    this.pacienteSeleccionado = null;
-  }
+      this.stats = res.stats;
+      this.proximosTurnos = res.proximosTurnos;
+      this.cumplesHoy = res.cumplesHoy;
 
-  onFileSelected(event: any) {
-    const files: FileList = event.target.files;
-    if (files && this.pacienteSeleccionado) {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const previewUrl = URL.createObjectURL(file);
-        this.pacienteSeleccionado.archivos.push({
-          name: file.name,
-          type: file.type,
-          previewUrl: previewUrl,
-          file: file 
-        });
-      }
+      this.recalcularKpisLocales();
+    },
+    error: (err) => {
+      console.error('Error cargando el dashboard:', err);
     }
-    event.target.value = ''; 
+  });
+}
+
+  // --- LÓGICA DE TURNOS Y KPIs ---
+  recalcularKpisLocales() {
+    if (this.proximosTurnos && this.proximosTurnos.length > 0) {
+      this.stats = {
+        ...this.stats,
+        turnosHoy: this.proximosTurnos.length,
+        turnosAtendidosHoy: this.proximosTurnos.filter(t => t.estado === 'atendido').length
+      };
+    }
   }
 
-  isImage(file: any): boolean {
-    return file.type?.startsWith('image/') || false;
+
+  private ejecutarCambioEstado(turno: any, nuevoEstado: string, mensaje: string) {
+    const estadoAnterior = turno.estado;
+    turno.estado = nuevoEstado;
+
+    this.turnosService.actualizarEstadoTurno({ id: turno.id, estado: nuevoEstado }).subscribe({
+      next: () => {
+        this.recalcularKpisLocales();
+        Swal.fire({ ...this.toastConfig, icon: 'success', title: mensaje });
+      },
+      error: () => {
+        turno.estado = estadoAnterior; // Rollback
+        Swal.fire({ icon: 'error', title: 'Error al actualizar' });
+      }
+    });
+  }
+guardarCambios() {
+  if (!this.pacienteSeleccionado) return;
+
+  // 1. Usamos FormData porque vamos a enviar archivos reales (imágenes/PDFs)
+  const formData = new FormData();
+  formData.append('id', this.pacienteSeleccionado.id);
+  formData.append('notas', this.pacienteSeleccionado.notesEvolucion);
+
+  // 2. Adjuntamos cada archivo al FormData
+  if (this.pacienteSeleccionado.archivos && this.pacienteSeleccionado.archivos.length > 0) {
+    this.pacienteSeleccionado.archivos.forEach((item: any) => {
+      // 'files' es el nombre que tu backend (C#) debería esperar recibir
+      formData.append('files', item.file); 
+    });
+  }
+
+  // 3. Llamamos al servicio (asegúrate de que tu servicio acepte FormData)
+  this.turnosService.finalizarAtencion(formData).subscribe({
+    next: () => {
+      Swal.fire('Éxito', 'Atención finalizada y archivos guardados', 'success');
+      this.cerrarModal();
+      this.cargarDatos(); // Recargamos para ver el cambio de estado
+    },
+    error: (err) => {
+      console.error(err);
+      Swal.fire('Error', 'No se pudieron guardar los cambios', 'error');
+    }
+  });
+}
+  // --- MÉTODOS DE ACCIÓN ---
+  
+
+  cancelarTurno(turno: any) {
+    Swal.fire({ title: '¿Cancelar turno?', icon: 'warning', showCancelButton: true })
+        .then(r => { if (r.isConfirmed) this.ejecutarCambioEstado(turno, 'cancelado', 'Turno cancelado'); });
+  }
+
+  cambiarEstadoTurno(turno: any, event: any) {
+    this.ejecutarCambioEstado(turno, event.target.value, 'Estado actualizado');
+  }
+ 
+
+  // En tu InicioComponent
+getOpcionesDisponibles(turno: any) {
+  // Lista maestra de estados
+  const todas = [
+    { value: 'pendiente', label: 'Pendiente' },
+    { value: 'confirmado', label: 'Confirmado' },
+    { value: 'en_espera', label: 'En espera' },
+    { value: 'no_asistio', label: 'No asistió' },
+    { value: 'atendido', label: 'Atendido' },
+    { value: 'cancelado', label: 'Cancelado' }
+  ];
+
+  // Filtramos solo las que quieres que el usuario vea afuera (en la tabla)
+  const permitidas = ['en_espera', 'no_asistio'];
+  
+  // Si el turno actual está en un estado que no es uno de esos, lo agregamos igual 
+  // para que el select no se quede en blanco
+  if (!permitidas.includes(turno.estado)) {
+    return [...todas.filter(o => permitidas.includes(o.value)), { value: turno.estado, label: turno.estado }];
+  }
+
+  return todas.filter(o => permitidas.includes(o.value));
+}
+ marcarAtendido(turno: any) {
+  Swal.fire({
+    title: '¿Confirmar atención?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, atendido'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // LLAMA AL SERVICIO PRIMERO
+      this.turnosService.actualizarEstadoTurno({ id: turno.id, estado: 'atendido' })
+        .subscribe(() => {
+          turno.estado = 'atendido'; // Solo actualizas si el backend dijo que OK
+          this.recalcularKpisLocales();
+        });
+    }
+  });
+}
+
+ 
+
+  // --- NOTAS Y ARCHIVOS ---
+  guardarNotas() { localStorage.setItem('agenda_personal_nutri', this.notasDia); }
+  cargarNotas() { this.notasDia = localStorage.getItem('agenda_personal_nutri') || ''; }
+
+ 
+
+  
+
+  // --- UTILS ---
+  getGenderClass(sexo: string): string {
+    const s = sexo?.toUpperCase();
+    return s === 'F' ? 'bg-mujer' : s === 'M' ? 'bg-hombre' : 'bg-otro';
+  }
+
+  saludarPaciente(cumple: any) {
+    const mensaje = `¡Hola ${cumple.paciente}! 🎂 ¡Feliz cumpleaños! ✨`;
+    window.open(`https://wa.me/${cumple.telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+  }
+
+  // En tu InicioComponent
+
+onFileSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
+
+    if (!this.pacienteSeleccionado.archivos) {
+      this.pacienteSeleccionado.archivos = [];
+    }
+
+    Array.from(files).forEach(file => {
+      // Creamos un objeto con estructura clara
+      const newFile = {
+        name: file.name,
+        type: file.type,
+        previewUrl: URL.createObjectURL(file),
+        file: file // El objeto File original para el FormData
+      };
+      this.pacienteSeleccionado.archivos.push(newFile);
+    });
+
+    event.target.value = ''; // Reset input
   }
 
   removeFile(index: number) {
+    const file = this.pacienteSeleccionado.archivos[index];
+    if (file.previewUrl) URL.revokeObjectURL(file.previewUrl);
+    this.pacienteSeleccionado.archivos.splice(index, 1);
+  }
+
+
+
+  cerrarModal() { 
+    // Limpieza de memoria: revocar todas las URLs de archivos al cerrar
     if (this.pacienteSeleccionado?.archivos) {
-      URL.revokeObjectURL(this.pacienteSeleccionado.archivos[index].previewUrl);
-      this.pacienteSeleccionado.archivos.splice(index, 1);
+      this.pacienteSeleccionado.archivos.forEach((f: any) => URL.revokeObjectURL(f.previewUrl));
     }
+    this.mostrarModal = false; 
+    this.pacienteSeleccionado = null; 
   }
+isImage(file: any): boolean {
+  return file?.type?.startsWith('image/') || false;
+}
 
-async guardarCambios() {
-    if (!this.pacienteSeleccionado) return;
+isPdf(file: any): boolean {
+  return file?.type === 'application/pdf' || file?.name?.toLowerCase().endsWith('.pdf');
+}
 
-    const index = this.proximosTurnos.findIndex(t => t.id === this.pacienteSeleccionado.id);
-    if (index !== -1) {
-      this.pacienteSeleccionado.estado = 'atendido';
-      this.proximosTurnos[index] = { ...this.pacienteSeleccionado };
-      this.proximosTurnos = [...this.proximosTurnos];
-    }
+abrirModalCumples() {
+  console.log('Abriendo modal de cumpleaños');
+  this.mostrarModalCumples = true;
+}
+cerrarModalCumples() { 
+  console.log('Cerrando modal de cumpleaños...'); // Esto es para debuggear
+  this.mostrarModalCumples = false; 
+}
 
-    this.recalcularKpisLocales(); 
-
-    // AQUÍ ESTABA EL ERROR:
-    // Debemos usar Swal.fire y combinar nuestra configuración con los datos específicos
-    Swal.fire({
-      ...this.toastConfig,
-      icon: 'success',
-      title: 'Ficha guardada y estado actualizado'
-    });
-
-    this.cerrarModal();
-  }
-
-  marcarAtendido(turno: any) {
-    Swal.fire({
-      title: '¿Confirmar atención?',
-      text: `¿Deseas marcar a ${turno.paciente} como atendido?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#8a2be2',
-      confirmButtonText: 'Sí, atendido',
-      cancelButtonText: 'Cancelar',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        turno.estado = 'atendido'; 
-        this.recalcularKpisLocales(); 
-      Swal.fire({ ...this.toastConfig, icon: 'success', title: 'Paciente atendido correctamente' });
-      }
-    });
-  }
-
-
-
-  abrirModalCumples() { this.mostrarModalCumples = true; }
-  cerrarModalCumples() { this.mostrarModalCumples = false; }
-
-  saludarPaciente(cumple: any) {
-    const mensaje = `¡Hola ${cumple.paciente}! 🎂 De parte de todo el equipo, te deseamos un muy feliz cumpleaños. ¡Que tengas un día excelente! ✨`;
-    const url = `https://wa.me/${cumple.telefono}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
-  }
-
-  getGenderClass(sexo: string): string {
-    switch (sexo?.toUpperCase()) {
-      case 'F': return 'bg-mujer';
-      case 'M': return 'bg-hombre';
-      default: return 'bg-otro';
-    }
-  }
-
-  isPdf(file: any): boolean {
-    if (!file || !file.name) return false;
-    return file.name.toLowerCase().endsWith('.pdf');
-  }
-
-  cancelarTurno(turno: any) {
-    if (turno.estado === 'atendido' || turno.estado === 'cancelado') {
-      return;
-    }
-
-    Swal.fire({
-      title: '¿Cancelar turno?',
-      text: `¿Estás seguro de cancelar el turno de ${turno.paciente}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, cancelar',
-      cancelButtonText: 'Volver'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        turno.estado = 'cancelado';
-        this.recalcularKpisLocales(); // Re-calcula los KPIs superiores al cancelar
-        Swal.fire({ ...this.toastConfig, icon: 'success', title: 'turno canelado correctamente' });
-      }
-    });
-  }
-   private toastConfig: any = {
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 2500,
-    timerProgressBar: true,
-    iconColor: '#ffffff',
-    background: '#7b2cbf',
-    color: '#ffffff'
-  };
 }

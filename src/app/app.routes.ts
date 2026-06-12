@@ -11,6 +11,7 @@ import { EstadisticasComponent } from './components/estadisticas/estadisticas.co
 import { InactividadComponent } from './inactividad/inactividad.component';
 import { GestionEquipoComponent } from './components/gestion-equipo/gestion-equipo.component';
 import { PrivacidadComponent } from './components/privacidad/privacidad.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     component: DashboardComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'inicio', component: InicioComponent },

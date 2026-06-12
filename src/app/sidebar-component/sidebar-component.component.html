@@ -4,10 +4,10 @@
   </div>
 
 <!-- Versión optimizada del selector en el Sidebar -->
-<div class="selector-profesional-sidebar" *ngIf="usuarioActual?.rol === 'Secretaria'">
+<div class="selector-profesional-sidebar" *ngIf="usuarioActual?.rol === 'secretaria'">
   <label>AGENDA DE:</label>
   <div class="select-wrapper">
-    <select [(ngModel)]="profesionalSeleccionado" (change)="cambiarProfesional()">
+    <select [(ngModel)]="profesionalSeleccionado" (change)="onProfesionalChange()">
       <option *ngFor="let prof of profesionalesAsignados" [ngValue]="prof">
         {{ prof.nombre }}
       </option>

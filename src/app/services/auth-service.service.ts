@@ -7,28 +7,37 @@ import { Observable, tap, throwError, catchError } from 'rxjs';
 })
 export class AuthService {
   // Ajusta la URL a la de tu API C# (no uses el webhook de n8n para el login real)
-  private readonly URL_API = 'https://localhost:7001/api/usuario/login';
+  private readonly URL_API = 'https://localhost:7203/api/usuarios/login';
 
   constructor(private http: HttpClient) {}
 
   // 1. Agregamos el tipado para los credenciales
-  login(credentials: { email: string, password: string }): Observable<any> {
-    return this.http.post(this.URL_API, credentials).pipe(
-      tap((res: any) => {
-        // 2. Ajustamos la lógica de guardado a la respuesta de tu API C#
-        if (res) {
-          localStorage.setItem('usuario', JSON.stringify({
-            id: res.id,
-            nombre: res.nombre,
-            email: res.email,
-            rol: res.rol
-          }));
-        }
-      }),
-      // 3. Manejo de errores profesional
-      catchError(this.handleError)
-    );
+ login(credentials: { email: string, password: string }): Observable<any> {
+  return this.http.post(this.URL_API, credentials).pipe(
+    tap((res: any) => {
+      if (res && res.token) { // Verificamos que venga el token
+        // Guardamos todo el objeto, incluido el token
+        localStorage.setItem('usuario', JSON.stringify({
+          id: res.id,
+          nombre: res.nombre,
+          email: res.email,
+          rol: res.rol,
+          token: res.token // <--- ¡AQUÍ ESTÁ LA CLAVE!
+        }));
+      }
+    }),
+    catchError(this.handleError)
+  );
+}
+
+getToken(): string | null {
+  const user = localStorage.getItem('usuario');
+  if (user) {
+    const usuarioObj = JSON.parse(user);
+    return usuarioObj.token; // Retorna solo el string del token
   }
+  return null;
+}
 
   logout() {
     localStorage.removeItem('usuario');
@@ -49,7 +58,8 @@ export class AuthService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`;
     } else {
-      errorMessage = error.status === 400 ? 'Email o contraseña incorrecta' : `Error: ${error.status}`;
+      // AJUSTE: Cambiado a 401 que es el que devuelve tu API
+      errorMessage = error.status === 401 ? 'Email o contraseña incorrecta' : `Error: ${error.status}`;
     }
     return throwError(() => new Error(errorMessage));
   }

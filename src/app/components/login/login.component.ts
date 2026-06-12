@@ -14,35 +14,42 @@ import { AuthService } from '../../services/auth-service.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  email: string = ''; 
+  email: string = '';
   password: string = '';
   mostrarPassword: boolean = false;
-  cargando: boolean = false;
 
   constructor(
-    private auth: AuthService, 
+    private auth: AuthService,
     private router: Router
   ) {}
 
-  async login(e: any) {
+  async login(e: Event) {
     e.preventDefault();
-    
+
     if (!this.email || !this.password) {
       this.mostrarMensaje('Error', 'Por favor, completa todos los campos', 'warning');
       return;
     }
 
-    this.cargando = true;
+    // 1. Mostrar cartel de carga
+    Swal.fire({
+      title: 'Validando...',
+      text: 'Por favor, espera un momento.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
-    // Conectamos directamente con el Backend (C# + PostgreSQL)
+    // 2. Ejecutar autenticación
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: (usuario) => {
-        this.cargando = false;
-        // El servicio ya guardó el usuario en localStorage gracias al tap()
+        Swal.close();
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.cargando = false;
+        Swal.close();
+        // Usamos el mensaje que viene del servicio o uno por defecto
         this.mostrarMensaje('Error', err.message || 'Credenciales incorrectas', 'error');
       }
     });
