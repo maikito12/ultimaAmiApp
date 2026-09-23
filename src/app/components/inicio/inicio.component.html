@@ -1,246 +1,428 @@
-<div class="inicio-wrapper">
-  <header class="header-inicio">
-    <div class="welcome-text">
-      <h1>Panel de Gestión</h1>
-      <p>Resumen de actividad para hoy.</p>
+<section class="inicio-page">
+
+  <!-- =======================================================
+       ENCABEZADO
+       ======================================================= -->
+
+  <header class="inicio-header">
+    <div class="header-copy">
+      <p class="eyebrow">{{ fechaTexto }}</p>
+
+      <h1>
+        Hola, {{ nombreUsuario }}
+        <span class="saludo-dot" aria-hidden="true"></span>
+      </h1>
+
+      <p class="header-subtitle">
+        {{ tituloPrincipal }} · {{ subtituloPrincipal }}
+      </p>
+    </div>
+
+    <div class="header-actions">
+
+      <div
+        class="view-switcher"
+        *ngIf="esAdminYProfesional"
+        aria-label="Cambiar vista del inicio">
+
+        <button
+          type="button"
+          [class.active]="vistaActiva === 'ORGANIZACION'"
+          (click)="cambiarVista('ORGANIZACION')">
+          Organización
+        </button>
+
+        <button
+          type="button"
+          [class.active]="vistaActiva === 'MI_AGENDA'"
+          (click)="cambiarVista('MI_AGENDA')">
+          Mi agenda
+        </button>
+      </div>
+
+      <a
+        class="btn-primary"
+        routerLink="/dashboard/turnos/nuevo">
+        <span class="btn-plus" aria-hidden="true">+</span>
+        Nuevo turno
+      </a>
     </div>
   </header>
 
-  <div class="stats-grid">
-    <div class="card-stat">
-      <span class="icon">📅</span>
-      <div class="info">
-        <span class="label">Turnos Hoy</span>
-        <span class="value">{{ stats.turnosHoy }}</span>
+
+  <!-- =======================================================
+       KPIs
+       ======================================================= -->
+
+  <div class="kpi-grid" aria-label="Resumen del día">
+
+    <article
+      class="kpi-card"
+      *ngFor="let kpi of kpis; trackBy: trackById"
+      [attr.data-type]="kpi.tipo">
+
+      <div class="kpi-icon" aria-hidden="true">
+
+        <svg
+          *ngIf="kpi.id === 'turnos-hoy'"
+          viewBox="0 0 24 24"
+          fill="none">
+          <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+          <path d="M8 3v4M16 3v4M3 10h18"></path>
+        </svg>
+
+        <svg
+          *ngIf="kpi.id === 'pacientes'"
+          viewBox="0 0 24 24"
+          fill="none">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+
+        <svg
+          *ngIf="kpi.id === 'atendidos'"
+          viewBox="0 0 24 24"
+          fill="none">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="m8 12 2.5 2.5L16 9"></path>
+        </svg>
+
+        <svg
+          *ngIf="kpi.id === 'pendientes'"
+          viewBox="0 0 24 24"
+          fill="none">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+
+        <svg
+          *ngIf="kpi.id === 'profesionales'"
+          viewBox="0 0 24 24"
+          fill="none">
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M2 21v-2a7 7 0 0 1 14 0v2"></path>
+          <path d="M19 8v6M16 11h6"></path>
+        </svg>
       </div>
-    </div>
-    <div class="card-stat">
-      <span class="icon">👥</span>
-      <div class="info">
-        <span class="label">Pacientes</span>
-        <span class="value">{{ stats.clientesTotal }}</span>
+
+      <div class="kpi-content">
+        <span class="kpi-label">{{ kpi.label }}</span>
+        <strong>{{ kpi.valor }}</strong>
+        <small>{{ kpi.detalle }}</small>
       </div>
-    </div>
-    <div class="card-stat">
-      <span class="icon">✅</span>
-      <div class="info">
-        <span class="label">Atendidos</span>
-        <span class="value">{{ stats.turnosAtendidosHoy || 0 }} / {{ stats.turnosHoy || 0 }}</span>
-      </div>
-    </div>
+    </article>
   </div>
 
-  <div class="dashboard-content-flex">
-    <div class="main-table-container">
-      <div class="table-header-flex">
-        <h2>Próximos Turnos</h2>
-        <button class="btn-view-all-table" routerLink="/dashboard/turnos">
-          Ver todos →
-        </button>
-      </div>
 
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>Hora</th>
-            <th>Paciente</th>
-            <th>Sucursal</th>
-            <th class="text-center">Estado</th>
-            <th class="text-right">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let turno of proximosTurnos" 
-              [class.atendido-row]="turno.estado === 'atendido'"
-              [class.cancelado-row]="turno.estado === 'cancelado'">
-            <td class="bold">{{ turno.hora }} hs</td>
-            <td>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span [ngClass]="" 
-                      style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;">
-                </span>
-                {{ turno.paciente }}
-              </div>
-            </td>
-            <td>{{ turno.sucursal }}</td>
-            
-        <td class="text-center">
-  <select class="select-status-inline" 
-          [ngModel]="turno.estado" 
-          (change)="cambiarEstadoTurno(turno, $event)"
-          [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
-          [ngClass]="{
-            'status-pendiente': turno.estado === 'pendiente',
-            'status-confirmado': turno.estado === 'confirmado',
-            'status-espera': turno.estado === 'en_espera',
-            'status-ok': turno.estado === 'atendido',
-            'status-falta': turno.estado === 'no_asistio',
-            'status-cancelado': turno.estado === 'cancelado'
-          }">
-    
-    <option *ngFor="let opt of getOpcionesDisponibles(turno)" [value]="opt.value">
-      {{ opt.label }}
-    </option>
-  </select>
-</td>
+  <!-- =======================================================
+       CONTENIDO PRINCIPAL
+       ======================================================= -->
 
-          
+  <div class="content-grid">
 
-            <td class="text-right">
-              <button class="btn-cancel-danger" 
-                      (click)="cancelarTurno(turno)" 
-                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'">
-                Cancelar
-              </button>
-              <button class="btn-action-ficha" (click)="verDetalle(turno)">
-                <span>Ver Ficha</span>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="proximosTurnos.length === 0">
-            <td colspan="5" class="text-center" style="padding: 2.5rem; color: #94a3b8;">
-              <span style="font-size: 1.2rem; display: block; margin-bottom: 8px;">🗓️</span>
-              No hay turnos registrados para hoy.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- PRÓXIMOS TURNOS -->
+    <section class="panel agenda-panel">
 
-    <div class="bottom-sections-flex">
-      <aside class="birthday-widget">
-        <div class="birthday-header">
-          <h3><span>🎂</span> Cumpleaños</h3>
-          <button class="btn-link-mini" (click)="abrirModalCumples()">Ver todos →</button>
+      <div class="panel-header">
+        <div>
+          <span class="panel-kicker">Agenda</span>
+          <h2>Próximos turnos</h2>
         </div>
 
-        <div class="birthday-list">
-          <div class="no-birthdays" *ngIf="cumplesHoy.length === 0">
-            <p>Hoy no hay cumpleañeros.</p>
+        <a
+          routerLink="/dashboard/turnos"
+          class="link-action">
+          Ver agenda
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div
+        class="agenda-list"
+        *ngIf="turnosVisibles.length > 0; else sinTurnos">
+
+        <article
+          class="turno-row"
+          *ngFor="let turno of turnosVisibles; trackBy: trackById">
+
+          <div class="turno-hora">
+            <strong>{{ turno.hora }}</strong>
           </div>
 
-          <div class="birthday-card" *ngFor="let cumple of cumplesHoy.slice(0,3)">
-            <div class="avatar-mini" [ngClass]="">
-              {{ cumple.paciente.charAt(0) }}
-            </div>
-            <div class="b-info">
-              <span class="b-name">{{ cumple.paciente }}</span>
-              <span class="b-age">{{ cumple.edad }} años</span>
-            </div>
-            <button class="btn-whatsapp-mini" (click)="saludarPaciente(cumple)">
-              <i class="fab fa-whatsapp"></i>
-            </button>
+          <div class="avatar">
+            {{ iniciales(turno.paciente) }}
           </div>
-        </div>
-      </aside>
 
-      <aside class="notes-widget">
-        <div class="notes-header">
-          <h3><span>📝</span>Notas rápidas</h3>
-          <span class="save-status">Auto-guardado</span>
-        </div>
-        <textarea 
-          [(ngModel)]="notasDia" 
-          (ngModelChange)="guardarNotas()" 
-          placeholder="Escribí acá tus pendientes, recordatorios o notas del día...">
-        </textarea>
-      </aside>
-    </div>
-  </div>
+          <div class="turno-main">
+            <div class="turno-topline">
+              <strong>{{ turno.paciente }}</strong>
 
-  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
-    <div class="modal-compact" (click)="$event.stopPropagation()">
-      <div class="modal-header-mini">
-        <div class="patient-title">
-          <span class="id-badge">DNI: {{ pacienteSeleccionado.dni }}</span>
-          <h3>{{ pacienteSeleccionado.paciente }}</h3>
-        </div>
-        <button class="close-btn-circle" (click)="cerrarModal()">×</button>
-      </div>
-
-      <div class="modal-body-scroll">
-        <div class="data-summary-grid">
-         <div class="data-item-small" *ngFor="let campo of pacienteSeleccionado.camposExtras | keyvalue">
-   <span class="data-label">{{ campo.key }}:</span>
-   <span class="data-value">{{ campo.value }}</span>
-</div>
-        </div>
-
-        <div class="consultation-box">
-          <label>Observaciones de hoy</label>
-          <textarea [(ngModel)]="pacienteSeleccionado.notesEvolucion" 
-                    placeholder="Ej: Cumplió el plan, refiere cansancio..."></textarea>
-        </div>
-
-        <div class="attachments-area">
-  <div class="attachment-header">
-    <span>Adjuntos</span>
-    <button class="btn-add-mini" (click)="fileInput.click()">+ Adjuntar</button>
-    <input #fileInput type="file" (change)="onFileSelected($event)" hidden multiple>
-  </div>
-
-  <div class="attachment-strip">
-    <div class="file-chip" *ngFor="let file of (pacienteSeleccionado?.archivos || []); let i = index">
-      
-      <img *ngIf="isImage(file)" [src]="file.previewUrl" class="chip-thumb" alt="preview">
-      
-      <div *ngIf="isPdf(file)" class="pdf-icon-placeholder">
-        <i class="fas fa-file-pdf"></i>
-        <span>PDF</span>
-      </div>
-      
-      <span *ngIf="!isImage(file) && !isPdf(file)" class="chip-icon">📄</span>
-      
-      <span class="chip-name">{{ file.name }}</span>
-      
-      <button class="btn-remove-chip" (click)="removeFile(i)" type="button">×</button>
-    </div>
-  </div>
-</div>
-
-      <div class="modal-footer-compact">
-        <button class="btn-status-toggle" 
-                *ngIf="pacienteSeleccionado?.estado !== 'atendido'" 
-                (click)="marcarAtendido(pacienteSeleccionado)">
-          <span class="dot"></span> Marcar Atendido
-        </button>
-
-        <div class="atendido-badge-modal" *ngIf="pacienteSeleccionado?.estado === 'atendido'">
-          ✓ Atendido
-        </div>
-
-        <div class="footer-actions">
-          <button class="btn-secondary-flat" (click)="cerrarModal()">Cerrar</button>
-          <button class="btn-primary-gradient" (click)="guardarCambios()">
-            {{ pacienteSeleccionado?.estado === 'atendido' ? 'Actualizar Ficha' : 'Guardar y Finalizar' }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" *ngIf="mostrarModalCumples" (click)="cerrarModalCumples()">
-    <div class="modal-compact modal-small-cumples" (click)="$event.stopPropagation()">
-      <div class="modal-header-mini birthday-bg">
-        <h3>Cumpleaños de Hoy 🥳</h3>
-        <button class="close-btn-circle" (click)="cerrarModalCumples()">×</button>
-      </div>
-      <div class="modal-body-scroll">
-        <div class="birthday-card" *ngFor="let cumple of cumplesHoy" style="justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="avatar-mini" [ngClass]="">
-              {{ cumple.paciente.charAt(0) }}
+              <span [class]="claseEstado(turno.estado)">
+                {{ turno.estado }}
+              </span>
             </div>
-            <div class="b-info">
-              <span class="b-name">{{ cumple.paciente }}</span>
-              <span class="b-age">{{ cumple.edad }} años</span>
+
+            <div class="turno-meta">
+              <span>{{ turno.especialidad }}</span>
+
+              <span class="meta-dot" aria-hidden="true"></span>
+
+              <span
+                *ngIf="mostrarMetricasOrganizacion || rol === 'SECRETARIA'">
+                {{ turno.profesional }}
+              </span>
+
+              <span
+                class="meta-dot"
+                aria-hidden="true"
+                *ngIf="mostrarMetricasOrganizacion || rol === 'SECRETARIA'">
+              </span>
+
+              <span>{{ turno.sucursal }}</span>
             </div>
           </div>
-          <button class="btn-saludar-pro" (click)="saludarPaciente(cumple)">
-            <i class="fab fa-whatsapp"></i> Saludar
-          </button>
+
+          <a
+            class="turno-open"
+            [routerLink]="['/dashboard/turnos', turno.id]"
+            [queryParams]="{ fecha: fechaApi }"
+            aria-label="Abrir turno">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+        </article>
+      </div>
+
+      <ng-template #sinTurnos>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+              <path d="M8 3v4M16 3v4M3 10h18"></path>
+            </svg>
+          </div>
+
+          <strong>No hay próximos turnos</strong>
+          <span>La agenda está libre por ahora.</span>
         </div>
+      </ng-template>
+    </section>
+
+
+    <!-- COLUMNA DERECHA -->
+    <aside class="side-column">
+
+      <!-- PENDIENTES -->
+      <section class="panel attention-panel">
+        <div class="panel-header compact">
+          <div>
+            <span class="panel-kicker">Atención</span>
+            <h2>Por resolver</h2>
+          </div>
+
+          <span class="count-pill">{{ pendientesHoy }}</span>
+        </div>
+
+        <div class="attention-list">
+
+          <a
+            routerLink="/dashboard/turnos"
+            class="attention-item">
+            <span class="attention-icon warning">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v5M12 16h.01"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>{{ pendientesHoy }} turnos por confirmar</strong>
+              <small>Revisá las respuestas de hoy.</small>
+            </span>
+
+            <span class="chevron">›</span>
+          </a>
+
+          <a
+            routerLink="/dashboard/turnos"
+            class="attention-item"
+            *ngIf="mostrarGestionOperativa">
+            <span class="attention-icon neutral">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 12h18M12 3v18"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>Gestionar agenda</strong>
+              <small>Crear, mover o cancelar turnos.</small>
+            </span>
+
+            <span class="chevron">›</span>
+          </a>
+
+          <a
+            routerLink="/dashboard/clientes"
+            class="attention-item"
+            *ngIf="mostrarAccesoHistoria">
+            <span class="attention-icon success">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>Historias clínicas</strong>
+              <small>Acceso rápido a tus pacientes.</small>
+            </span>
+
+            <span class="chevron">›</span>
+          </a>
+        </div>
+      </section>
+
+
+      <!-- CUMPLEAÑOS -->
+      <section class="panel birthday-panel">
+        <div class="panel-header compact">
+          <div>
+            <span class="panel-kicker">Pacientes</span>
+            <h2>Cumpleaños de hoy</h2>
+          </div>
+
+          <span class="count-pill light">
+            {{ cumplesHoy.length }}
+          </span>
+        </div>
+
+        <div
+          class="birthday-list"
+          *ngIf="cumplesHoy.length > 0; else sinCumples">
+
+          <div
+            class="birthday-item"
+            *ngFor="let cumple of cumplesHoy; trackBy: trackById">
+
+            <div class="avatar small">
+              {{ iniciales(cumple.paciente) }}
+            </div>
+
+            <div>
+              <strong>{{ cumple.paciente }}</strong>
+              <small *ngIf="cumple.edad">
+                Cumple {{ cumple.edad }} años
+              </small>
+            </div>
+
+            <span class="birthday-mark" aria-hidden="true">✦</span>
+          </div>
+        </div>
+
+        <ng-template #sinCumples>
+          <div class="mini-empty">
+            No hay cumpleaños hoy.
+          </div>
+        </ng-template>
+      </section>
+    </aside>
+  </div>
+
+
+  <!-- =======================================================
+       ACCESOS RÁPIDOS
+       ======================================================= -->
+
+  <section class="quick-section">
+    <div class="section-heading">
+      <div>
+        <span class="panel-kicker">Accesos rápidos</span>
+        <h2>¿Qué querés hacer?</h2>
       </div>
     </div>
+
+    <div class="quick-grid">
+
+      <a
+        class="quick-card"
+        routerLink="/dashboard/turnos/nuevo">
+
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+            <path d="M8 3v4M16 3v4M3 10h18M8 15h8"></path>
+          </svg>
+        </span>
+
+        <span>
+          <strong>Nuevo turno</strong>
+          <small>Agendar un paciente.</small>
+        </span>
+      </a>
+
+
+      <a
+        class="quick-card"
+        routerLink="/dashboard/clientes">
+
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="9" cy="8" r="4"></circle>
+            <path d="M3 21v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"></path>
+          </svg>
+        </span>
+
+        <span>
+          <strong>Pacientes</strong>
+          <small>Buscar o cargar un paciente.</small>
+        </span>
+      </a>
+
+
+      <a
+        class="quick-card"
+        routerLink="/dashboard/estadisticas"
+        *ngIf="puedeVerEstadisticas">
+
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 20V10M10 20V4M16 20v-7M22 20V7"></path>
+          </svg>
+        </span>
+
+        <span>
+          <strong>Estadísticas</strong>
+          <small>Ver actividad de la organización.</small>
+        </span>
+      </a>
+
+
+      <a
+        class="quick-card"
+        routerLink="/dashboard/automatizaciones"
+        *ngIf="puedeVerAutomatizaciones">
+
+        <span class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="m5.6 5.6 2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path>
+          </svg>
+        </span>
+
+        <span>
+          <strong>Automatizaciones</strong>
+          <small>Mensajes y recordatorios.</small>
+        </span>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- CARGANDO -->
+  <div class="loading-layer" *ngIf="cargando">
+    <div class="spinner"></div>
   </div>
-</div>
+
+</section>

@@ -1,162 +1,947 @@
-<div class="pacientes-wrapper">
-  <div class="header-pacientes">
-    <div class="title-group">
-      <h1>Panel de Pacientes</h1>
-    <p>Administrá la información personal, historial clínico y seguimiento de tus pacientes.</p>
+<div class="pacientes-page">
+
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
+
+  <header class="page-header">
+
+    <div class="header-copy">
+
+      <h1>Pacientes</h1>
+
+      <p>
+        Administrá los datos de los pacientes de tu organización.
+      </p>
+
     </div>
-    <button class="btn-nuevo-paciente" (click)="crearNuevo()">
-      <span>+</span> Nuevo Registro
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="crearNuevo()"
+    >
+      <span>+</span>
+      Nuevo paciente
     </button>
-  </div>
 
-  <div class="filters-container">
+  </header>
+
+
+  <!-- ===================================================== -->
+  <!-- FILTROS -->
+  <!-- ===================================================== -->
+
+  <section class="filters-card">
+
     <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" [(ngModel)]="filtroTexto" (input)="aplicarFiltros()" placeholder="Buscar por Paciente o DNI...">
+
+      <span class="search-icon">
+        ⌕
+      </span>
+
+      <input
+        type="text"
+        [(ngModel)]="filtroTexto"
+        (input)="aplicarFiltros()"
+        placeholder="Buscar por nombre, DNI, teléfono o email..."
+      >
+
     </div>
-    
-    <div class="date-picker-box">
-      <select class="custom-date-input" [(ngModel)]="filtroSede" (change)="aplicarFiltros()">
-        <option value="">Todas las sedes</option>
-        <option *ngFor="let sede of sedes" [value]="sede">{{ sede }}</option>
-      </select>
-      <button class="btn-clear-filters" (click)="limpiarFiltros()">Limpiar Filtros</button>
-    </div>
+
+    <button
+      type="button"
+      class="btn-clear"
+      *ngIf="filtroTexto"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar
+    </button>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- CARGANDO -->
+  <!-- ===================================================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="cargando"
+  >
+
+    <div class="spinner"></div>
+
+    <span>
+      Cargando pacientes...
+    </span>
+
   </div>
 
-  <div *ngIf="pacientesFiltrados.length === 0" style="text-align: center; padding: 40px; color: #64748b;">
-    <p style="font-size: 1.1rem;">No se encontraron pacientes que coincidan con la búsqueda.</p>
-  </div>
 
-  <div class="pacientes-grid" *ngIf="pacientesFiltrados.length > 0">
-    <div class="paciente-card-premium" *ngFor="let p of pacientesFiltrados">
-      <div class="card-header">
-       <div class="avatar-circle" 
-     [style.background]="p.genero === 'Femenino' ? '#8a2be2' : (p.genero === 'Masculino' ? '#3b82f6' : '#94a3b8')">
-  {{ p.nombre | slice:0:1 }}
-</div>
-        <div class="user-meta">
-          <h3>{{ p.nombre }}</h3>
-          <div class="paciente-subdata">
-            <span class="badge-genero">{{ p.genero }}</span>
-          </div>
-        </div>
-        <button class="btn-trash" (click)="borrarPaciente(p)" style="border: none; background: transparent; cursor: pointer; font-size: 1.2rem;">🗑️</button>
-      </div>
+  <!-- ===================================================== -->
+  <!-- EMPTY -->
+  <!-- ===================================================== -->
 
-      <div class="card-body">
-        <div class="dato-item">
-          <span class="label">DNI</span>
-          <span class="value">{{ p.dni }}</span>
-        </div>
-        <div class="dato-item">
-          <span class="label">Sucursal</span>
-          <span class="value">{{ p.sucursal }}</span>
-        </div>
-        <div class="dato-item">
-          <span class="label">Obra Social</span>
-          <span class="value">{{ getExtra(p, 'OBRA SOCIAL') || 'Particular' }}</span>
-        </div>
-        <div class="dato-item">
-          <span class="label">Contacto</span>
-          <span class="value">{{ p.telefono }}</span>
-        </div>
-        <div class="dato-item full-width">
-          <span class="label">Email</span>
-          <span class="value">{{ p.email }}</span>
-        </div>
+  <section
+    class="empty-state"
+    *ngIf="
+      !cargando &&
+      pacientesFiltrados.length === 0
+    "
+  >
+
+    <div class="empty-icon">
+      ♙
+    </div>
+
+    <h3>
+      No encontramos pacientes
+    </h3>
+
+    <p>
+      Podés registrar un paciente nuevo o modificar la búsqueda.
+    </p>
+
+    <button
+      type="button"
+      (click)="crearNuevo()"
+    >
+      + Nuevo paciente
+    </button>
+
+  </section>
 
 
+  <!-- ===================================================== -->
+  <!-- GRID -->
+  <!-- ===================================================== -->
 
-        <div class="objetivo-box" *ngIf="p.metaActual">
-          <span class="label-objetivo">META ACTUAL</span>
-          <p class="objetivo-texto">{{ p.metaActual }}</p>
+  <section
+    class="patients-grid"
+    *ngIf="
+      !cargando &&
+      pacientesFiltrados.length > 0
+    "
+  >
+
+    <article
+      class="patient-card"
+      *ngFor="
+        let paciente
+        of pacientesFiltrados
+      "
+    >
+
+      <!-- HEADER CARD -->
+
+      <div class="patient-card-header">
+
+        <div class="avatar">
+          {{
+            obtenerIniciales(
+              paciente
+            )
+          }}
         </div>
-      </div>
 
-      <div class="card-footer">
-        <button class="btn-main-action" (click)="abrirFichaMaestra(p)">
-          📁 GESTIONAR FICHA
+        <div class="patient-name">
+
+          <h3>
+            {{
+              obtenerNombreCompleto(
+                paciente
+              )
+            }}
+          </h3>
+
+          <span>
+            DNI {{ paciente.dni }}
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-more"
+          title="Ver ficha"
+          (click)="abrirFicha(paciente)"
+        >
+          →
         </button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div id="fichaMaestraContent" style="display: none;">
-  <div class="ficha-dashboard">
-    
-    <aside class="ficha-sidebar">
-      <div class="sidebar-header">
-        <div class="avatar-circle" style="background: #8a2be2; color: white;">👤</div>
-        <h3 id="modal-txt-nombre" style="margin: 10px 0 2px; font-size: 1.1rem; color: #1e293b; font-weight: 700;"></h3>
       </div>
-      
-      <nav class="sidebar-nav">
-        <button class="nav-item" data-tab="perfil">👤 Datos Personales</button>
-        <button class="nav-item" data-tab="historial">📜 Historia Clínica</button>
-        <button class="nav-item" data-tab="extras">➕ Datos Extras</button>
-        <button class="nav-item" data-tab="estudios">📂 Fotos y Estudios</button>
-      </nav>
 
-      <div class="sidebar-footer" style="padding: 10px; text-align: center;">
-         <button id="btn-borrar-paciente-click" class="btn-delete-side" style="width: 100%;">Eliminar Paciente</button>
-      </div>
-    </aside>
 
-    <main class="ficha-main">
-      
-      <section id="tab-perfil" class="tab-content">
-        <div class="section-header">
-          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Datos Personales</h2>
-          <button id="btn-editar-perfil-click" class="btn-edit-main">Editar Perfil</button>
+      <!-- BODY -->
+
+      <div class="patient-card-body">
+
+        <div class="info-item">
+
+          <span class="info-label">
+            Teléfono
+          </span>
+
+          <span class="info-value">
+            {{
+              paciente.telefono ||
+              'Sin teléfono'
+            }}
+          </span>
+
         </div>
-        
-        <div class="info-grid" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
-  <div class="info-item"><label class="label">DNI / Pasaporte</label><p id="modal-txt-dni" class="value"></p></div>
-  <div class="info-item"><label class="label">Correo Electrónico</label><p id="modal-txt-email" class="value"></p></div>
-  <div class="info-item"><label class="label">Teléfono de Contacto</label><p id="modal-txt-telefono" class="value"></p></div>
-  <div class="info-item"><label class="label">Género</label><p id="modal-txt-genero" class="value"></p></div>
-  <div class="info-item"><label class="label">Fecha de Nacimiento</label><p id="modal-txt-nacimiento" class="value"></p></div>
-  
-  <div class="info-item"><label class="label">Obra Social</label><p id="modal-txt-os" class="value"></p></div>
-  <div class="info-item"><label class="label">Nro. de Afiliado</label><p id="modal-txt-afiliado" class="value"></p></div>
-</div>
-        <div class="meta-box" style="background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 25px; border-left: 4px solid #8a2be2;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label class="label-objetivo" style="font-size: 0.65rem; font-weight: 800; color: #8a2be2; text-transform: uppercase;">Meta Actual</label>
-            <button id="btn-editar-meta-click" style="background:none; border:none; color:#8a2be2; cursor:pointer; font-weight:700; font-size:0.8rem;">✏️ Cambiar Meta</button>
+
+
+        <div class="info-item">
+
+          <span class="info-label">
+            Email
+          </span>
+
+          <span
+            class="info-value truncate"
+          >
+            {{
+              paciente.email ||
+              'Sin email'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="info-item">
+
+          <span class="info-label">
+            Obra social
+          </span>
+
+          <span class="info-value">
+            {{
+              paciente.obra_social ||
+              'Particular'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="info-item">
+
+          <span class="info-label">
+            Edad
+          </span>
+
+          <span class="info-value">
+
+            <ng-container
+              *ngIf="
+                obtenerEdad(paciente)
+                !== null
+              "
+            >
+              {{
+                obtenerEdad(paciente)
+              }}
+              años
+            </ng-container>
+
+            <ng-container
+              *ngIf="
+                obtenerEdad(paciente)
+                === null
+              "
+            >
+              -
+            </ng-container>
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div class="patient-card-footer">
+
+        <button
+          type="button"
+          class="btn-view"
+          (click)="abrirFicha(paciente)"
+        >
+          Ver ficha
+        </button>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- MODAL DETALLE -->
+  <!-- ===================================================== -->
+
+  <div
+    class="modal-overlay"
+    *ngIf="
+      mostrarDetalle &&
+      pacienteSeleccionado
+    "
+    (click)="cerrarFicha()"
+  >
+
+    <div
+      class="modal-card detail-modal"
+      (click)="$event.stopPropagation()"
+    >
+
+      <header class="modal-header">
+
+        <div class="detail-identity">
+
+          <div class="avatar avatar-large">
+            {{
+              obtenerIniciales(
+                pacienteSeleccionado
+              )
+            }}
           </div>
-          <p id="modal-txt-meta" class="objetivo-texto" style="margin: 8px 0 0; font-size: 0.95rem; color: #4c1d95; font-weight: 600;"></p>
-        </div>
-      </section>
 
-      <section id="tab-historial" class="tab-content">
-        <h2 style="margin-top:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Evolución Clínica</h2>
-        <div class="nota-input-group">
-          <textarea id="new-nota-input" placeholder="Escribí un nuevo avance clínico aquí..."></textarea>
-          <button id="btn-guardar-nota-click" class="btn-edit-main" style="float: right; margin-top: 5px;">Guardar Nota</button>
-        </div>
-        <div style="clear: both;"></div>
-        <div id="modal-timeline" class="timeline-v2" style="margin-top: 25px;"></div>
-      </section>
+          <div>
 
-      <section id="tab-extras" class="tab-content">
-        <div class="section-header">
-          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Datos Adicionales</h2>
-          <button id="btn-nuevo-extra-click" class="btn-edit-main">+ Agregar Extra</button>
-        </div>
-        <div id="modal-lista-extras" style="margin-top: 20px;"></div>
-      </section>
+            <span class="eyebrow">
+              Paciente
+            </span>
 
-      <section id="tab-estudios" class="tab-content">
-        <div class="section-header">
-          <h2 style="margin:0; color:#1e293b; font-size:1.4rem; font-weight: 800;">Fotos y Estudios</h2>
-          <button id="btn-subir-estudio-click" class="btn-edit-main">📂 Subir Archivo</button>
-        </div>
-        <div id="modal-lista-estudios" style="margin-top: 20px;"></div>
-      </section>
+            <h2>
+              {{
+                obtenerNombreCompleto(
+                  pacienteSeleccionado
+                )
+              }}
+            </h2>
 
-    </main>
+            <p>
+              DNI
+              {{
+                pacienteSeleccionado.dni
+              }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarFicha()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div class="detail-body">
+
+        <div class="detail-section-header">
+
+          <div>
+
+            <h3>
+              Datos personales
+            </h3>
+
+            <p>
+              Información registrada del paciente.
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            class="btn-edit"
+            (click)="
+              editarPaciente(
+                pacienteSeleccionado
+              )
+            "
+          >
+            Editar
+          </button>
+
+        </div>
+
+
+        <div class="detail-grid">
+
+          <div class="detail-field">
+
+            <span>
+              Nombre
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado.nombre
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Apellido
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado.apellido
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              DNI
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado.dni
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Sexo
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado.sexo ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Fecha de nacimiento
+            </span>
+
+            <strong>
+              {{
+                formatearFecha(
+                  pacienteSeleccionado
+                    .fecha_nacimiento
+                )
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Edad
+            </span>
+
+            <strong>
+
+              <ng-container
+                *ngIf="
+                  obtenerEdad(
+                    pacienteSeleccionado
+                  ) !== null
+                "
+              >
+                {{
+                  obtenerEdad(
+                    pacienteSeleccionado
+                  )
+                }}
+                años
+              </ng-container>
+
+              <ng-container
+                *ngIf="
+                  obtenerEdad(
+                    pacienteSeleccionado
+                  ) === null
+                "
+              >
+                -
+              </ng-container>
+
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Teléfono
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado
+                  .telefono ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Email
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado
+                  .email ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Dirección
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado
+                  .direccion ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Obra social
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado
+                  .obra_social ||
+                'Particular'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-field">
+
+            <span>
+              Número afiliado
+            </span>
+
+            <strong>
+              {{
+                pacienteSeleccionado
+                  .numero_afiliado ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-delete"
+          (click)="
+            borrarPaciente(
+              pacienteSeleccionado
+            )
+          "
+        >
+          Eliminar paciente
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cerrarFicha()"
+        >
+          Cerrar
+        </button>
+
+      </footer>
+
+    </div>
+
   </div>
+
+
+  <!-- ===================================================== -->
+  <!-- MODAL CREAR / EDITAR -->
+  <!-- ===================================================== -->
+
+  <div
+    class="modal-overlay"
+    *ngIf="mostrarFormulario"
+    (click)="cerrarFormulario()"
+  >
+
+    <div
+      class="modal-card form-modal"
+      (click)="$event.stopPropagation()"
+    >
+
+      <header class="modal-header">
+
+        <div>
+
+          <span class="eyebrow">
+            {{
+              editando
+                ? 'Editar paciente'
+                : 'Nuevo paciente'
+            }}
+          </span>
+
+          <h2>
+            {{
+              editando
+                ? 'Actualizar información'
+                : 'Registrar paciente'
+            }}
+          </h2>
+
+          <p>
+            Completá la información personal.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarFormulario()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div class="form-body">
+
+        <div class="form-section">
+
+          <h3>
+            Información personal
+          </h3>
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Nombre *
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="
+                  formulario.nombre
+                "
+                placeholder="Nombre"
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Apellido *
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="
+                  formulario.apellido
+                "
+                placeholder="Apellido"
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                DNI *
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="
+                  formulario.dni
+                "
+                placeholder="DNI"
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Fecha de nacimiento
+              </label>
+
+              <input
+                type="date"
+                [(ngModel)]="
+                  formulario.fecha_nacimiento
+                "
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Sexo
+              </label>
+
+              <select
+                [(ngModel)]="
+                  formulario.sexo
+                "
+              >
+
+                <option value="">
+                  Seleccionar
+                </option>
+
+                <option value="Masculino">
+                  Masculino
+                </option>
+
+                <option value="Femenino">
+                  Femenino
+                </option>
+
+                <option value="Otro">
+                  Otro
+                </option>
+
+                <option value="No especifica">
+                  Prefiere no indicar
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Teléfono
+              </label>
+
+              <input
+                type="tel"
+                [(ngModel)]="
+                  formulario.telefono
+                "
+                placeholder="223..."
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Email
+              </label>
+
+              <input
+                type="email"
+                [(ngModel)]="
+                  formulario.email
+                "
+                placeholder="paciente@email.com"
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Dirección
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="
+                  formulario.direccion
+                "
+                placeholder="Dirección"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="form-section"
+          *ngIf="
+            formulario.obra_social
+            ||
+            formulario.numero_afiliado
+          "
+        >
+
+          <h3>
+            Cobertura médica
+          </h3>
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Obra social
+              </label>
+
+              <input
+                type="text"
+                [value]="
+                  formulario.obra_social ||
+                  'Particular'
+                "
+                disabled
+              >
+
+              <small>
+                La selección de obras sociales
+                la conectamos con el catálogo
+                de la organización.
+              </small>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Número afiliado
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="
+                  formulario.numero_afiliado
+                "
+                placeholder="Número de afiliado"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <footer class="modal-footer">
+
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="guardando"
+          (click)="cerrarFormulario()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-save"
+          [disabled]="guardando"
+          (click)="guardarPaciente()"
+        >
+
+          <span
+            class="mini-spinner"
+            *ngIf="guardando"
+          ></span>
+
+          {{
+            guardando
+              ? 'Guardando...'
+              : (
+                  editando
+                    ? 'Guardar cambios'
+                    : 'Crear paciente'
+                )
+          }}
+
+        </button>
+
+      </footer>
+
+    </div>
+
+  </div>
+
 </div>

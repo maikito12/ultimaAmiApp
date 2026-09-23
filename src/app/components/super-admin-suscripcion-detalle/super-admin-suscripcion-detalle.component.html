@@ -1,0 +1,605 @@
+<div class="subscription-detail-page">
+
+  <header class="detail-topbar">
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="volver()"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+      Volver al Super Admin
+    </button>
+
+    <span
+      class="estado"
+      *ngIf="detalle?.suscripcion as suscripcion"
+      [ngClass]="claseEstado(suscripcion.estado)"
+    >
+      {{ suscripcion.estado }}
+    </span>
+
+  </header>
+
+
+  <div
+    class="loading-state"
+    *ngIf="cargando"
+  >
+    <div class="spinner"></div>
+    <span>Cargando suscripción...</span>
+  </div>
+
+
+  <div
+    class="error-state"
+    *ngIf="!cargando && errorCarga"
+  >
+
+    <i class="fa-solid fa-triangle-exclamation"></i>
+
+    <div>
+      <strong>No pudimos cargar esta organización</strong>
+      <p>
+        Revisá que el backend esté ejecutándose
+        y volvé a intentarlo.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="cargarTodo()"
+    >
+      Reintentar
+    </button>
+
+  </div>
+
+
+  <ng-container
+    *ngIf="
+      !cargando &&
+      !errorCarga &&
+      detalle as data
+    "
+  >
+
+    <section class="organization-header">
+
+      <div class="organization-main">
+
+        <div class="organization-avatar">
+          {{
+            data.organizacion
+              .nombre
+              .charAt(0)
+              .toUpperCase()
+          }}
+        </div>
+
+        <div>
+
+          <span class="eyebrow">
+            GESTIÓN DE SUSCRIPCIÓN
+          </span>
+
+          <h1>
+            {{ data.organizacion.nombre }}
+          </h1>
+
+          <p>
+            /{{ data.organizacion.slug }}
+            <ng-container *ngIf="data.organizacion.ciudad">
+              · {{ data.organizacion.ciudad }}
+            </ng-container>
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="organization-contact">
+
+        <span *ngIf="data.organizacion.email">
+          <i class="fa-regular fa-envelope"></i>
+          {{ data.organizacion.email }}
+        </span>
+
+        <span *ngIf="data.organizacion.telefono">
+          <i class="fa-solid fa-phone"></i>
+          {{ data.organizacion.telefono }}
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <section class="summary-grid">
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Plan
+        </span>
+
+        <strong>
+          {{ data.plan?.nombre || 'Sin plan' }}
+        </strong>
+
+        <small>
+          {{ data.suscripcion?.modalidad || '-' }}
+        </small>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Precio habitual
+        </span>
+
+        <strong>
+          {{
+            data.suscripcion
+              ? formatearDinero(
+                  data.suscripcion.importeTotal
+                )
+              : '-'
+          }}
+        </strong>
+
+        <small *ngIf="data.suscripcion">
+          {{
+            formatearDinero(
+              data.suscripcion.precioPorProfesional
+            )
+          }}
+          por profesional
+        </small>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Profesionales
+        </span>
+
+        <strong>
+          {{
+            data.suscripcion
+              ?.cantidadProfesionales
+            ??
+            data.uso.profesionales
+          }}
+        </strong>
+
+        <small>
+          {{ data.uso.profesionales }}
+          actualmente activos
+        </small>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Vencimiento
+        </span>
+
+        <strong>
+          {{
+            formatearFecha(
+              data.suscripcion?.fechaFin
+            )
+          }}
+        </strong>
+
+        <small
+          [ngClass]="claseVencimiento()"
+        >
+          {{ textoVencimiento() }}
+        </small>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Último pago
+        </span>
+
+        <strong>
+          {{
+            ultimoPago
+              ? formatearDinero(
+                  ultimoPago.importe
+                )
+              : '-'
+          }}
+        </strong>
+
+        <small>
+          {{
+            ultimoPago
+              ? (
+                  formatearFecha(
+                    ultimoPago.fechaPago
+                  )
+                  + ' · '
+                  + ultimoPago.metodoPago
+                )
+              : 'Sin pagos registrados'
+          }}
+        </small>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span class="summary-label">
+          Uso
+        </span>
+
+        <strong>
+          {{ data.uso.turnosEsteMes }} turnos
+        </strong>
+
+        <small>
+          {{ data.uso.usuarios }} usuarios ·
+          {{ data.uso.sucursales }} sucursales
+        </small>
+
+      </article>
+
+    </section>
+
+
+    <div
+      class="no-subscription"
+      *ngIf="!data.suscripcion"
+    >
+
+      <i class="fa-solid fa-circle-info"></i>
+
+      <div>
+        <strong>
+          Esta organización todavía no tiene una suscripción
+        </strong>
+
+        <p>
+          Primero creale una suscripción para poder registrar
+          pagos o definir un precio habitual.
+        </p>
+      </div>
+
+    </div>
+
+
+    <section
+      class="management-grid"
+      *ngIf="data.suscripcion"
+    >
+
+      <article class="management-card">
+
+        <div class="card-header">
+
+          <div>
+            <span class="card-eyebrow">COBRANZA</span>
+            <h2>Registrar pago</h2>
+            <p>
+              Si dejás el importe vacío se cobra
+              el precio habitual actual.
+            </p>
+          </div>
+
+          <i class="fa-solid fa-circle-dollar-to-slot"></i>
+
+        </div>
+
+
+        <div class="card-body">
+
+          <div class="field">
+
+            <label>Método de pago</label>
+
+            <select
+              [(ngModel)]="pagoForm.metodoPago"
+              [disabled]="guardandoPago"
+            >
+              <option value="Transferencia">Transferencia</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Otro">Otro</option>
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Importe de este pago</label>
+
+            <div class="money-input">
+
+              <span>$</span>
+
+              <input
+                type="number"
+                min="1"
+                step="1"
+                placeholder="Usar precio habitual"
+                [(ngModel)]="pagoForm.importe"
+                [disabled]="guardandoPago"
+              >
+
+            </div>
+
+            <small>
+              Habitual:
+              {{
+                formatearDinero(
+                  data.suscripcion.importeTotal
+                )
+              }}
+            </small>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Referencia</label>
+
+            <input
+              type="text"
+              placeholder="Ej: Transferencia septiembre"
+              [(ngModel)]="pagoForm.referencia"
+              [disabled]="guardandoPago"
+            >
+
+          </div>
+
+
+          <div class="field full">
+
+            <label>Observaciones</label>
+
+            <textarea
+              rows="4"
+              placeholder="Detalle opcional del pago"
+              [(ngModel)]="pagoForm.observaciones"
+              [disabled]="guardandoPago"
+            ></textarea>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="guardandoPago"
+            (click)="registrarPagoManual()"
+          >
+
+            <i
+              class="fa-solid"
+              [class.fa-spinner]="guardandoPago"
+              [class.fa-spin]="guardandoPago"
+              [class.fa-check]="!guardandoPago"
+            ></i>
+
+            {{
+              guardandoPago
+                ? 'Registrando...'
+                : 'Registrar pago'
+            }}
+
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <article class="management-card">
+
+        <div class="card-header">
+
+          <div>
+            <span class="card-eyebrow">ACUERDO COMERCIAL</span>
+            <h2>Precio habitual</h2>
+            <p>
+              Cambiá el precio permanente de esta organización
+              sin modificar el plan general.
+            </p>
+          </div>
+
+          <i class="fa-solid fa-tag"></i>
+
+        </div>
+
+
+        <div class="card-body">
+
+          <div class="info-note">
+
+            <i class="fa-solid fa-lightbulb"></i>
+
+            <p>
+              Si solamente querés cobrarle menos un mes,
+              no cambies este precio. Poné otro importe
+              en “Registrar pago”.
+            </p>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Importe total habitual</label>
+
+            <div class="money-input">
+
+              <span>$</span>
+
+              <input
+                type="number"
+                min="1"
+                step="1"
+                [(ngModel)]="precioForm.importeTotal"
+                [disabled]="guardandoPrecio"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Precio por profesional</label>
+
+            <div class="money-input">
+
+              <span>$</span>
+
+              <input
+                type="number"
+                min="1"
+                step="1"
+                [(ngModel)]="precioForm.precioPorProfesional"
+                [disabled]="guardandoPrecio"
+              >
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="guardandoPrecio"
+            (click)="actualizarPrecio()"
+          >
+
+            <i
+              class="fa-solid"
+              [class.fa-spinner]="guardandoPrecio"
+              [class.fa-spin]="guardandoPrecio"
+              [class.fa-floppy-disk]="!guardandoPrecio"
+            ></i>
+
+            {{
+              guardandoPrecio
+                ? 'Guardando...'
+                : 'Guardar precio'
+            }}
+
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <section class="history-card">
+
+      <div class="history-header">
+
+        <div>
+          <span class="card-eyebrow">MOVIMIENTOS</span>
+          <h2>Historial de pagos</h2>
+          <p>
+            Pagos registrados para esta organización.
+          </p>
+        </div>
+
+        <span class="history-count">
+          {{ pagos.length }}
+        </span>
+
+      </div>
+
+
+      <div
+        class="history-empty"
+        *ngIf="pagos.length === 0"
+      >
+        <i class="fa-regular fa-folder-open"></i>
+        <span>Todavía no hay pagos registrados.</span>
+      </div>
+
+
+      <div
+        class="table-wrapper"
+        *ngIf="pagos.length > 0"
+      >
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Importe</th>
+              <th>Método</th>
+              <th>Referencia</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let pago of pagos">
+
+              <td>
+                {{ formatearFecha(pago.fechaPago) }}
+              </td>
+
+              <td>
+                <strong>
+                  {{ formatearDinero(pago.importe) }}
+                </strong>
+              </td>
+
+              <td>
+                {{ pago.metodoPago }}
+              </td>
+
+              <td>
+                {{ pago.referencia || '-' }}
+              </td>
+
+              <td>
+                <span
+                  class="estado"
+                  [ngClass]="claseEstado(pago.estado)"
+                >
+                  {{ pago.estado }}
+                </span>
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </ng-container>
+
+</div>

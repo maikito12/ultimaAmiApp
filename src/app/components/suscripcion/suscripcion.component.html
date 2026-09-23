@@ -1,0 +1,1330 @@
+<div class="suscripcion-page">
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        CUENTA
+      </span>
+
+      <h1>
+        Suscripción
+      </h1>
+
+      <p>
+        Administrá tu plan y tu suscripción de AmiApp.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==========================================
+       CARGANDO
+  =========================================== -->
+
+  <div
+    class="loading-container"
+    *ngIf="cargando"
+  >
+
+    <div class="loading-spinner"></div>
+
+    <span>
+      Cargando información de tu suscripción...
+    </span>
+
+  </div>
+
+
+  <!-- ==========================================
+       ERROR
+  =========================================== -->
+
+  <div
+    class="error-card"
+    *ngIf="!cargando && error"
+  >
+
+    <div class="error-icon">
+      !
+    </div>
+
+    <div class="error-content">
+
+      <strong>
+        No pudimos cargar tu suscripción
+      </strong>
+
+      <span>
+        Ocurrió un problema al obtener la información.
+      </span>
+
+    </div>
+
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="cargarSuscripcion()"
+    >
+      Reintentar
+    </button>
+
+  </div>
+
+  <!-- ==========================================
+       SIN SUSCRIPCIÓN
+  =========================================== -->
+
+  <section
+    class="checkout-container"
+    *ngIf="!cargando && !error && sinSuscripcion"
+  >
+
+    <!-- HEADER -->
+
+    <div class="checkout-header">
+
+      <span class="eyebrow">
+        COMENZÁ CON AMIUP
+      </span>
+
+      <h1>
+        Elegí tu plan
+      </h1>
+
+      <p>
+        Un único plan, adaptado a la cantidad de
+        profesionales de tu organización.
+      </p>
+
+    </div>
+
+
+    <!-- CARGANDO PLAN -->
+
+    <div
+      class="loading-container"
+      *ngIf="cargandoPlan"
+    >
+
+      <div class="loading-spinner"></div>
+
+      <span>
+        Cargando plan...
+      </span>
+
+    </div>
+
+
+    <!-- PLAN PROFESIONAL -->
+
+    <div
+      class="checkout-card"
+      *ngIf="!cargandoPlan && plan"
+    >
+
+      <div class="checkout-card-header">
+
+        <div>
+
+          <span class="card-label">
+            PLAN DISPONIBLE
+          </span>
+
+          <h2>
+            {{ plan.nombre }}
+          </h2>
+
+          <p>
+            Todo lo necesario para administrar
+            tu organización desde AmiUp.
+          </p>
+
+        </div>
+
+
+        <div class="plan-price">
+
+          <span class="currency">
+            $
+          </span>
+
+          <span class="price">
+            {{ formatearPrecio(plan.precio) }}
+          </span>
+
+          <span class="period">
+            / profesional / mes
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           CANTIDAD DE PROFESIONALES
+      ======================================= -->
+
+      <div class="professionals-section">
+
+        <div class="section-title">
+
+          <span>
+            Profesionales
+          </span>
+
+          <small>
+            ¿Cuántos profesionales necesitás?
+          </small>
+
+        </div>
+
+
+        <div class="counter">
+
+          <button
+            type="button"
+            (click)="disminuirProfesionales()"
+            [disabled]="cantidadProfesionales <= 1"
+          >
+            −
+          </button>
+
+
+          <span class="counter-value">
+            {{ cantidadProfesionales }}
+          </span>
+
+
+          <button
+            type="button"
+            (click)="aumentarProfesionales()"
+            [disabled]="cantidadProfesionales >= 16"
+          >
+            +
+          </button>
+
+        </div>
+
+      </div>
+<!-- ======================================
+     SECRETARIAS INCLUIDAS
+======================================= -->
+
+<div class="secretaries-section">
+
+  <div class="section-title">
+
+    <span>
+      Secretarias incluidas
+    </span>
+
+    <small>
+      Incluye 1 secretaria cada 3 profesionales.
+    </small>
+
+  </div>
+
+  <div class="secretaries-value">
+
+    <span class="secretaries-number">
+      {{ secretariasIncluidas }}
+    </span>
+
+    <span class="secretaries-label">
+      {{ secretariasIncluidas === 1 ? 'secretaria' : 'secretarias' }}
+    </span>
+
+  </div>
+
+</div>
+
+      <!-- ======================================
+           COTIZANDO
+      ======================================= -->
+
+      <div
+        class="quote-loading"
+        *ngIf="cotizando"
+      >
+
+        <div class="loading-spinner small"></div>
+
+        <span>
+          Calculando precio...
+        </span>
+
+      </div>
+
+
+   
+
+    <!-- ======================================
+     COTIZACIÓN
+======================================= -->
+
+<div
+  class="quote-container"
+  *ngIf="cotizacion && !cotizacion.esPlanPersonalizado"
+>
+
+  <!-- INDICADOR DE ACTUALIZACIÓN -->
+
+  <div
+    class="quote-updating"
+    *ngIf="cotizando"
+  >
+    <div class="loading-spinner small"></div>
+
+    <span>
+      Actualizando precio...
+    </span>
+  </div>
+
+
+  <!-- COTIZACIÓN -->
+
+  <div class="quote-box">
+
+    <div class="quote-row">
+
+      <span>
+        Precio por profesional
+      </span>
+
+      <strong>
+        ${{ formatearPrecio(cotizacion.precioPorProfesional) }}
+      </strong>
+
+    </div>
+
+
+    <div class="quote-row">
+
+      <span>
+        Profesionales
+      </span>
+
+      <strong>
+        {{ cotizacion.cantidadProfesionales }}
+      </strong>
+
+    </div>
+
+
+    <div class="quote-row">
+
+      <span>
+        Subtotal
+      </span>
+
+      <strong>
+        ${{ formatearPrecio(cotizacion.subtotal) }}
+      </strong>
+
+    </div>
+
+
+    <div
+      class="quote-row"
+      *ngIf="cotizacion.porcentajeDescuento > 0"
+    >
+
+      <span>
+        Descuento
+      </span>
+
+      <strong class="discount">
+        -{{ cotizacion.porcentajeDescuento }}%
+      </strong>
+
+    </div>
+
+
+    <div
+      class="quote-row"
+      *ngIf="cotizacion.importeDescuento > 0"
+    >
+
+      <span>
+        Ahorro
+      </span>
+
+      <strong class="discount">
+        -${{ formatearPrecio(cotizacion.importeDescuento) }}
+      </strong>
+
+    </div>
+
+
+    <div class="quote-divider"></div>
+
+
+    <div class="quote-total">
+
+      <span>
+        Total mensual
+      </span>
+
+      <strong>
+        ${{ formatearPrecio(cotizacion.importeTotal) }}
+      </strong>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+   <!-- ======================================
+     PLAN PERSONALIZADO
+======================================= -->
+
+<div
+  class="custom-plan"
+  *ngIf="cotizacion?.esPlanPersonalizado"
+>
+
+  <div class="custom-icon">
+    +
+  </div>
+
+  <div class="custom-content">
+
+    <strong>
+      Plan personalizado
+    </strong>
+
+    <p>
+      Para equipos de más de 15 profesionales
+      preparamos una propuesta personalizada
+      según las necesidades de tu organización.
+    </p>
+
+    <span class="custom-secretaries">
+      Incluye {{ secretariasIncluidas }}
+      {{ secretariasIncluidas === 1 ? 'secretaria' : 'secretarias' }}
+      según tu equipo.
+    </span>
+
+   <button
+  type="button"
+  class="custom-contact-button"
+  (click)="contactarPlanPersonalizado()"
+>
+  Contactarnos por WhatsApp
+</button>
+
+  </div>
+
+</div>
+
+      <!-- ======================================
+           CONTINUAR
+      ======================================= -->
+
+      <button
+        type="button"
+        class="btn-primary checkout-button"
+        *ngIf="cotizacion && !cotizacion.esPlanPersonalizado"
+        [disabled]="cotizando"
+        (click)="contratarPlan()"
+      >
+
+        Continuar con este plan
+
+      </button>
+
+    </div>
+
+  </section>
+  <!-- ==========================================
+       CONTENIDO
+  =========================================== -->
+
+  <ng-container
+    *ngIf="!cargando && !error && suscripcion"
+  >
+
+
+    <!-- ========================================
+         ALERTA PENDIENTE
+    ========================================= -->
+
+    <div
+      class="alert-pendiente"
+      *ngIf="esPendiente"
+    >
+
+      <div class="alert-icon">
+        !
+      </div>
+
+      <div class="alert-content">
+
+        <strong>
+          Tu suscripción está pendiente
+        </strong>
+
+        <span>
+          Completá el proceso de pago para activar tu plan.
+        </span>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="completarSuscripcion()"
+        [disabled]="!suscripcion.initPoint"
+      >
+        Completar suscripción
+      </button>
+
+    </div>
+
+
+    <!-- ========================================
+         GRID PRINCIPAL
+    ========================================= -->
+
+    <div class="subscription-grid">
+
+
+      <!-- ======================================
+           PLAN ACTUAL
+      ======================================= -->
+
+      <section class="plan-card">
+
+        <div class="plan-card-header">
+
+          <div>
+
+            <span class="card-label">
+              PLAN ACTUAL
+            </span>
+
+            <h2>
+              {{ suscripcion.plan }}
+            </h2>
+
+          </div>
+
+
+          <!-- ESTADO -->
+
+          <span
+            class="status"
+            [class.pending]="esPendiente"
+            [class.active]="esActiva"
+            [class.trial]="esEnPrueba"
+          >
+
+            <span class="status-dot"></span>
+
+            {{ suscripcion.estado }}
+
+          </span>
+
+        </div>
+
+
+        <!-- ==================================
+             PRECIO
+        =================================== -->
+
+        <div class="price-container">
+
+          <span class="currency">
+            $
+          </span>
+
+          <span class="price">
+            {{ formatearPrecio(suscripcion.precio) }}
+          </span>
+
+          <span class="period">
+            / mes
+          </span>
+
+        </div>
+
+
+        <div class="price-description">
+          Suscripción mensual
+        </div>
+
+
+        <!-- ==================================
+             DETALLES
+        =================================== -->
+
+        <div class="plan-details">
+
+          <div class="detail-row">
+
+            <span>
+              Plan
+            </span>
+
+            <strong>
+              {{ suscripcion.plan }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Precio
+            </span>
+
+            <strong>
+              ${{ formatearPrecio(suscripcion.precio) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Estado
+            </span>
+
+            <strong>
+              {{ suscripcion.estado }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Inicio
+            </span>
+
+            <strong>
+              {{ suscripcion.fechaInicio | date:'dd/MM/yyyy' }}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="detail-row"
+            *ngIf="suscripcion.fechaFin"
+          >
+
+            <span>
+              Fin del período
+            </span>
+
+            <strong>
+              {{ suscripcion.fechaFin | date:'dd/MM/yyyy' }}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="detail-row"
+            *ngIf="suscripcion.fechaCancelacion"
+          >
+
+            <span>
+              Cancelación
+            </span>
+
+            <strong>
+              {{ suscripcion.fechaCancelacion | date:'dd/MM/yyyy' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- ==================================
+             ACCIONES
+        =================================== -->
+
+        <div class="plan-actions">
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="cambiarPlan()"
+          >
+            Cambiar plan
+          </button>
+
+
+          <button
+            type="button"
+            class="btn-secondary danger-button"
+            *ngIf="esActiva || esEnPrueba"
+            (click)="cancelarSuscripcion()"
+          >
+            Cancelar suscripción
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           INFORMACIÓN DE FACTURACIÓN
+      ======================================= -->
+
+      <section class="info-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon">
+            $
+          </div>
+
+          <div>
+
+            <h3>
+              Facturación
+            </h3>
+
+            <p>
+              Información de tu suscripción
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- MÉTODO DE PAGO -->
+
+        <div class="info-item">
+
+          <span>
+            Método de pago
+          </span>
+
+          <strong>
+            Mercado Pago
+          </strong>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+        <div class="info-item">
+
+          <span>
+            Estado
+          </span>
+
+          <strong>
+            {{ suscripcion.estado }}
+          </strong>
+
+        </div>
+
+
+        <!-- PRECIO -->
+
+        <div class="info-item">
+
+          <span>
+            Importe
+          </span>
+
+          <strong>
+            ${{ formatearPrecio(suscripcion.precio) }}
+          </strong>
+
+        </div>
+
+
+        <!-- FECHA DE INICIO -->
+
+        <div class="info-item">
+
+          <span>
+            Fecha de inicio
+          </span>
+
+          <strong>
+            {{ suscripcion.fechaInicio | date:'dd/MM/yyyy' }}
+          </strong>
+
+        </div>
+
+
+        <div class="info-divider"></div>
+
+
+        <!-- AYUDA -->
+
+        <div class="help-box">
+
+          <div class="help-icon">
+            ?
+          </div>
+
+          <div>
+
+            <strong>
+              ¿Necesitás ayuda?
+            </strong>
+
+            <p>
+              Podés administrar tu suscripción
+              desde este panel.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- ==========================================
+         WHATSAPP
+    =========================================== -->
+
+    <section
+      class="whatsapp-section"
+      *ngIf="esActiva || esEnPrueba"
+    >
+
+      <div class="whatsapp-section-header">
+
+        <div>
+
+          <span class="card-label">
+            WHATSAPP
+          </span>
+
+          <h2>
+            Mensajes de WhatsApp
+          </h2>
+
+          <p>
+            Cada profesional incluye 250 mensajes por ciclo.
+            Los mensajes extra que compres no vencen.
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cargarWhatsApp()"
+          [disabled]="
+            cargandoWhatsApp ||
+            cargandoPaquetesWhatsApp
+          "
+        >
+          Actualizar
+        </button>
+
+      </div>
+
+
+      <!-- ESTADO DEL CUPO -->
+
+      <div
+        class="whatsapp-loading"
+        *ngIf="cargandoWhatsApp"
+      >
+
+        <div class="loading-spinner small"></div>
+
+        <span>
+          Cargando consumo de WhatsApp...
+        </span>
+
+      </div>
+
+
+      <div
+        class="whatsapp-usage-grid"
+        *ngIf="
+          !cargandoWhatsApp &&
+          whatsappEstado
+        "
+      >
+
+        <article class="whatsapp-stat">
+
+          <span>
+            Incluidos este ciclo
+          </span>
+
+          <strong>
+            {{
+              formatearNumero(
+                whatsappEstado.mensajesIncluidos
+              )
+            }}
+          </strong>
+
+          <small>
+            {{
+              whatsappEstado.cantidadProfesionales
+            }}
+            profesionales ×
+            {{
+              whatsappEstado.mensajesPorProfesional
+            }}
+          </small>
+
+        </article>
+
+
+        <article class="whatsapp-stat">
+
+          <span>
+            Consumidos
+          </span>
+
+          <strong>
+            {{
+              formatearNumero(
+                whatsappEstado.mensajesConsumidos
+              )
+            }}
+          </strong>
+
+          <small>
+            {{
+              whatsappEstado.porcentajeConsumido
+                | number:'1.0-1'
+            }}%
+            del cupo incluido
+          </small>
+
+        </article>
+
+
+        <article class="whatsapp-stat">
+
+          <span>
+            Incluidos disponibles
+          </span>
+
+          <strong>
+            {{
+              formatearNumero(
+                whatsappEstado.mensajesIncluidosDisponibles
+              )
+            }}
+          </strong>
+
+          <small>
+            Se renuevan en cada ciclo
+          </small>
+
+        </article>
+
+
+        <article class="whatsapp-stat accent">
+
+          <span>
+            Extras disponibles
+          </span>
+
+          <strong>
+            {{
+              formatearNumero(
+                whatsappEstado.mensajesExtraDisponibles
+              )
+            }}
+          </strong>
+
+          <small>
+            No vencen
+          </small>
+
+        </article>
+
+
+        <article class="whatsapp-stat total">
+
+          <span>
+            Total disponible
+          </span>
+
+          <strong>
+            {{
+              formatearNumero(
+                whatsappEstado.mensajesDisponiblesTotales
+              )
+            }}
+          </strong>
+
+          <small>
+            Incluidos + extras
+          </small>
+
+        </article>
+
+      </div>
+
+
+      <!-- PAQUETES -->
+
+      <div class="whatsapp-packages-heading">
+
+        <div>
+
+          <h3>
+            Comprar mensajes extra
+          </h3>
+
+          <p>
+            Elegí el paquete que necesites.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="whatsapp-loading"
+        *ngIf="cargandoPaquetesWhatsApp"
+      >
+
+        <div class="loading-spinner small"></div>
+
+        <span>
+          Cargando paquetes...
+        </span>
+
+      </div>
+
+
+      <div
+        class="whatsapp-packages-grid"
+        *ngIf="
+          !cargandoPaquetesWhatsApp &&
+          paquetesWhatsApp.length > 0
+        "
+      >
+
+        <article
+          class="whatsapp-package-card"
+          *ngFor="
+            let paquete
+            of paquetesWhatsApp
+          "
+        >
+
+          <div>
+
+            <span class="package-label">
+              PAQUETE EXTRA
+            </span>
+
+            <h3>
+              +
+              {{
+                formatearNumero(
+                  paquete.cantidadMensajes
+                )
+              }}
+            </h3>
+
+            <p>
+              mensajes
+            </p>
+
+          </div>
+
+
+          <strong class="package-price">
+            ${{ formatearPrecio(paquete.precio) }}
+          </strong>
+
+
+          <button
+            type="button"
+            class="btn-primary package-button"
+            [disabled]="
+              paqueteComprandoId !== null
+            "
+            (click)="
+              comprarPaqueteWhatsApp(
+                paquete
+              )
+            "
+          >
+            {{
+              paqueteComprandoId === paquete.id
+                ? 'Creando...'
+                : 'Comprar'
+            }}
+          </button>
+
+        </article>
+
+
+        <article
+          class="whatsapp-package-card custom-package"
+        >
+
+          <div>
+
+            <span class="package-label">
+              PERSONALIZADO
+            </span>
+
+            <h3>
+              ¿Necesitás más?
+            </h3>
+
+            <p>
+              Armamos un paquete especial
+              para tu organización.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn-secondary package-button"
+            (click)="solicitarPaqueteWhatsAppPersonalizado()"
+          >
+            Consultar
+          </button>
+
+        </article>
+
+      </div>
+
+
+      <!-- HISTORIAL -->
+
+      <div class="whatsapp-purchases">
+
+        <div class="whatsapp-purchases-header">
+
+          <div>
+
+            <h3>
+              Compras de mensajes
+            </h3>
+
+            <p>
+              Historial de paquetes solicitados.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="whatsapp-loading"
+          *ngIf="cargandoComprasWhatsApp"
+        >
+
+          <div class="loading-spinner small"></div>
+
+          <span>
+            Cargando compras...
+          </span>
+
+        </div>
+
+
+        <div
+          class="whatsapp-empty"
+          *ngIf="
+            !cargandoComprasWhatsApp &&
+            comprasWhatsApp.length === 0
+          "
+        >
+          Todavía no hay compras de mensajes extra.
+        </div>
+
+
+        <div
+          class="whatsapp-purchase-list"
+          *ngIf="
+            !cargandoComprasWhatsApp &&
+            comprasWhatsApp.length > 0
+          "
+        >
+
+          <div
+            class="whatsapp-purchase-row"
+            *ngFor="
+              let compra
+              of comprasWhatsApp
+            "
+          >
+
+            <div>
+
+              <strong>
+                +
+                {{
+                  formatearNumero(
+                    compra.cantidadMensajes
+                  )
+                }}
+                mensajes
+              </strong>
+
+              <span>
+                {{
+                  compra.createdAt
+                    | date:'dd/MM/yyyy HH:mm'
+                }}
+              </span>
+
+            </div>
+
+
+            <div class="purchase-right">
+
+              <strong>
+                ${{ formatearPrecio(compra.importe) }}
+              </strong>
+
+              <span
+                class="purchase-status"
+                [ngClass]="
+                  claseCompraWhatsApp(
+                    compra.estado
+                  )
+                "
+              >
+                {{ compra.estado }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         MERCADO PAGO
+    =========================================== -->
+
+    <section
+      class="payment-card"
+      *ngIf="esPendiente"
+    >
+
+      <div class="payment-icon">
+        $
+      </div>
+
+      <div class="payment-content">
+
+        <span class="payment-label">
+          MERCADO PAGO
+        </span>
+
+        <h3>
+          Activá tu suscripción
+        </h3>
+
+        <p>
+          Tu plan ya fue creado. Solo falta completar
+          el proceso de pago para comenzar a utilizarlo.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="completarSuscripcion()"
+        [disabled]="!suscripcion.initPoint"
+      >
+        Ir a Mercado Pago
+      </button>
+
+    </section>
+
+
+    <!-- ==========================================
+         HISTORIAL
+    =========================================== -->
+
+    <section class="history-card">
+
+      <div class="history-header">
+
+        <div>
+
+          <span class="card-label">
+            MOVIMIENTOS
+          </span>
+
+          <h2>
+            Historial de pagos
+          </h2>
+
+        </div>
+
+        <button
+          type="button"
+          class="link-button"
+        >
+          Ver historial
+        </button>
+
+      </div>
+
+
+      <div class="empty-history">
+
+        <div class="empty-icon">
+          $
+        </div>
+
+        <h3>
+          Todavía no hay pagos
+        </h3>
+
+        <p>
+          Cuando realices tu primer pago,
+          aparecerá acá.
+        </p>
+
+      </div>
+
+    </section>
+
+
+  </ng-container>
+
+</div>

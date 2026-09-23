@@ -1,0 +1,810 @@
+<div class="turno-page">
+
+  <!-- ===================================================== -->
+  <!-- CARGANDO -->
+  <!-- ===================================================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="cargando"
+  >
+
+    <div class="spinner"></div>
+
+    <span>
+      Cargando turno...
+    </span>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- CONTENIDO -->
+  <!-- ===================================================== -->
+
+  <ng-container
+    *ngIf="
+      !cargando &&
+      turno
+    "
+  >
+
+    <!-- =================================================== -->
+    <!-- VOLVER -->
+    <!-- =================================================== -->
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="volverAgenda()"
+    >
+      <span>←</span>
+      Volver a agenda
+    </button>
+
+
+    <!-- =================================================== -->
+    <!-- HEADER TURNO -->
+    <!-- =================================================== -->
+
+    <section class="turno-hero">
+
+      <div class="hero-left">
+
+        <div class="patient-avatar">
+          {{ obtenerIniciales() }}
+        </div>
+
+
+        <div class="hero-copy">
+
+          <span class="eyebrow">
+            TURNO
+          </span>
+
+          <div class="hero-title-row">
+
+            <h1>
+              {{ obtenerPaciente() }}
+            </h1>
+
+
+            <span
+              class="status-badge"
+              [ngClass]="obtenerClaseEstado()"
+            >
+              <span class="status-dot"></span>
+
+              {{ obtenerTextoEstado() }}
+            </span>
+
+          </div>
+
+
+          <div class="hero-meta">
+
+            <span>
+              {{ formatearFecha() }}
+            </span>
+
+            <span class="meta-dot">
+              ·
+            </span>
+
+            <strong>
+              {{ obtenerHoraInicio() }}
+            </strong>
+
+            <span class="meta-dot">
+              ·
+            </span>
+
+            <span>
+              {{ obtenerEspecialidad() }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- ACCIONES -->
+      <!-- ================================================= -->
+
+      <div class="hero-actions">
+
+        <button
+    type="button"
+    class="btn-primary"
+    *ngIf="puedeConfirmar()"
+    (click)="confirmarTurno()"
+  >
+    Confirmar turno
+  </button>
+
+
+  <button
+    type="button"
+    class="btn-primary"
+    *ngIf="puedeCheckIn()"
+    (click)="checkIn()"
+  >
+    Check-in
+  </button>
+
+
+  <button
+    type="button"
+    class="btn-primary"
+    *ngIf="puedeIniciar()"
+    (click)="iniciarAtencion()"
+  >
+    Iniciar atención
+  </button>
+
+
+  <button
+    type="button"
+    class="btn-primary"
+    *ngIf="puedeFinalizar()"
+    (click)="finalizarAtencion()"
+  >
+    Finalizar atención
+  </button>
+
+        <details
+          class="more-actions"
+          *ngIf="
+            puedeNoAsistio() ||
+            puedeCancelar()
+          "
+        >
+
+          <summary>
+            Más
+            <span>⋯</span>
+          </summary>
+
+
+          <div class="more-menu">
+
+            <button
+              type="button"
+              *ngIf="puedeNoAsistio()"
+              (click)="registrarNoAsistio()"
+            >
+              No asistió
+            </button>
+
+
+            <button
+              type="button"
+              class="danger"
+              *ngIf="puedeCancelar()"
+              (click)="cancelarTurno()"
+            >
+              Cancelar turno
+            </button>
+
+          </div>
+
+        </details>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- TABS -->
+    <!-- =================================================== -->
+
+    <nav class="turno-tabs">
+
+      <button
+        type="button"
+        [class.active]="tabActual === 'resumen'"
+        (click)="cambiarTab('resumen')"
+      >
+        Resumen
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="tabActual === 'paciente'"
+        (click)="cambiarTab('paciente')"
+      >
+        Paciente
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="tabActual === 'historia'"
+        (click)="cambiarTab('historia')"
+      >
+        Historia clínica
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="tabActual === 'consultas'"
+        (click)="cambiarTab('consultas')"
+      >
+        Consultas
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="tabActual === 'archivos'"
+        (click)="cambiarTab('archivos')"
+      >
+        Estudios y archivos
+      </button>
+
+    </nav>
+
+
+    <!-- =================================================== -->
+    <!-- TAB RESUMEN -->
+    <!-- =================================================== -->
+
+    <section
+      class="tab-content"
+      *ngIf="tabActual === 'resumen'"
+    >
+
+      <div class="section-heading">
+
+        <span>
+          RESUMEN
+        </span>
+
+        <h2>
+          Información del turno
+        </h2>
+
+        <p>
+          Datos principales de la reserva y la atención.
+        </p>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- CARDS -->
+      <!-- ================================================= -->
+
+      <div class="quick-grid">
+
+        <article class="quick-card">
+
+          <div class="quick-icon">
+            ◎
+          </div>
+
+          <div>
+
+            <span>
+              Profesional
+            </span>
+
+            <strong>
+              {{ obtenerProfesional() }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="quick-card">
+
+          <div class="quick-icon">
+            +
+          </div>
+
+          <div>
+
+            <span>
+              Especialidad
+            </span>
+
+            <strong>
+              {{ obtenerEspecialidad() }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="quick-card">
+
+          <div class="quick-icon">
+            ⌂
+          </div>
+
+          <div>
+
+            <span>
+              Sucursal
+            </span>
+
+            <strong>
+              {{ obtenerSucursal() }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="quick-card">
+
+          <div class="quick-icon">
+            ◷
+          </div>
+
+          <div>
+
+            <span>
+              Horario
+            </span>
+
+            <strong>
+              {{ obtenerRangoHorario() }}
+            </strong>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- INFORMACIÓN -->
+      <!-- ================================================= -->
+
+      <div class="content-grid">
+
+        <article class="info-card">
+
+          <div class="card-heading">
+
+            <div>
+
+              <span>
+                RESERVA
+              </span>
+
+              <h3>
+                Información del turno
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div class="info-list">
+
+            <div class="info-row">
+
+              <span>
+                Fecha
+              </span>
+
+              <strong>
+                {{ formatearFecha() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Horario
+              </span>
+
+              <strong>
+                {{ obtenerRangoHorario() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Profesional
+              </span>
+
+              <strong>
+                {{ obtenerProfesional() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Especialidad
+              </span>
+
+              <strong>
+                {{ obtenerEspecialidad() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Sucursal
+              </span>
+
+              <strong>
+                {{ obtenerSucursal() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Origen
+              </span>
+
+              <strong>
+                {{ obtenerOrigen() }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Estado
+              </span>
+
+              <span
+                class="status-badge"
+                [ngClass]="obtenerClaseEstado()"
+              >
+                <span class="status-dot"></span>
+
+                {{ obtenerTextoEstado() }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- ================================================= -->
+        <!-- PACIENTE -->
+        <!-- ================================================= -->
+
+        <article class="info-card patient-summary-card">
+
+          <div class="card-heading">
+
+            <div>
+
+              <span>
+                PACIENTE
+              </span>
+
+              <h3>
+                Datos del paciente
+              </h3>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="link-button"
+              (click)="verPaciente()"
+            >
+              Ver ficha →
+            </button>
+
+          </div>
+
+
+          <div class="patient-summary">
+
+            <div class="patient-avatar small">
+              {{ obtenerIniciales() }}
+            </div>
+
+
+            <div>
+
+              <strong>
+                {{ obtenerPaciente() }}
+              </strong>
+
+              <span>
+                Paciente asociado a este turno.
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="patient-help">
+
+            La ficha completa contiene datos personales,
+            historia clínica, consultas y archivos.
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- MOTIVO / OBSERVACIONES -->
+      <!-- ================================================= -->
+
+      <div class="notes-grid">
+
+        <article class="note-card">
+
+          <span class="note-label">
+            MOTIVO DE CONSULTA
+          </span>
+
+          <h3>
+            Motivo
+          </h3>
+
+          <p>
+            {{ obtenerMotivo() }}
+          </p>
+
+        </article>
+
+
+        <article class="note-card">
+
+          <span class="note-label">
+            OBSERVACIONES
+          </span>
+
+          <h3>
+            Notas del turno
+          </h3>
+
+          <p>
+            {{ obtenerObservaciones() }}
+          </p>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- TAB PACIENTE -->
+    <!-- =================================================== -->
+
+    <section
+      class="tab-content"
+      *ngIf="tabActual === 'paciente'"
+    >
+
+      <div class="section-heading">
+
+        <span>
+          PACIENTE
+        </span>
+
+        <h2>
+          {{ obtenerPaciente() }}
+        </h2>
+
+        <p>
+          Información asociada al paciente del turno.
+        </p>
+
+      </div>
+
+
+      <div class="single-card">
+
+        <div class="patient-large">
+
+          <div class="patient-avatar">
+            {{ obtenerIniciales() }}
+          </div>
+
+
+          <div>
+
+            <h3>
+              {{ obtenerPaciente() }}
+            </h3>
+
+            <span>
+              Paciente del turno
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn-outline"
+          (click)="verPaciente()"
+        >
+          Abrir ficha completa
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- HISTORIA -->
+    <!-- =================================================== -->
+
+    <section
+      class="tab-content"
+      *ngIf="tabActual === 'historia'"
+    >
+
+      <div class="section-heading">
+
+        <span>
+          HISTORIA CLÍNICA
+        </span>
+
+        <h2>
+          Historia del paciente
+        </h2>
+
+        <p>
+          Evoluciones e información clínica registrada.
+        </p>
+
+      </div>
+
+
+      <div class="empty-section">
+
+        <div class="empty-icon">
+          +
+        </div>
+
+        <h3>
+          Historia clínica
+        </h3>
+
+        <p>
+          En el siguiente paso conectamos esta sección
+          con la historia clínica del paciente.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- CONSULTAS -->
+    <!-- =================================================== -->
+
+    <section
+      class="tab-content"
+      *ngIf="tabActual === 'consultas'"
+    >
+
+      <div class="section-heading">
+
+        <span>
+          CONSULTAS
+        </span>
+
+        <h2>
+          Consultas del paciente
+        </h2>
+
+        <p>
+          Registro de atenciones realizadas.
+        </p>
+
+      </div>
+
+
+      <div class="empty-section">
+
+        <div class="empty-icon">
+          ◷
+        </div>
+
+        <h3>
+          Consultas
+        </h3>
+
+        <p>
+          Esta sección se conectará con las consultas médicas.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- ARCHIVOS -->
+    <!-- =================================================== -->
+
+    <section
+      class="tab-content"
+      *ngIf="tabActual === 'archivos'"
+    >
+
+      <div class="section-heading">
+
+        <span>
+          DOCUMENTACIÓN
+        </span>
+
+        <h2>
+          Estudios y archivos
+        </h2>
+
+        <p>
+          Documentación clínica asociada al paciente.
+        </p>
+
+      </div>
+
+
+      <div class="empty-section">
+
+        <div class="empty-icon">
+          ⤓
+        </div>
+
+        <h3>
+          Sin archivos conectados todavía
+        </h3>
+
+        <p>
+          Después reutilizamos la sección de archivos
+          que ya tiene la ficha del paciente.
+        </p>
+
+      </div>
+
+    </section>
+
+  </ng-container>
+
+</div>

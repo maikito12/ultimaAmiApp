@@ -1,136 +1,1121 @@
-/* Estructura Principal */
+/* ==========================================
+   SIDEBAR
+========================================== */
+
 .sidebar {
+
   width: 260px;
   height: 100vh;
-  background: white;
-  border-right: 1px solid #e2e8f0;
+
+  position: sticky;
+
+  top: 0;
+
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+
   box-sizing: border-box;
+
+  padding:
+    24px
+    16px;
+
+  background:
+    #ffffff;
+
+  flex-shrink: 0;
+
+  border-right:
+    1px solid
+    #e5ebe8;
+
+  color:
+    #33413c;
+
+  z-index: 100;
+
 }
 
-.logo h2 {
-  color: #1e293b;
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.sidebar-header {
+
+  padding:
+    0
+    8px
+    28px;
+
 }
+
+
+.logo {
+
+  color:
+    #173f35;
+
+  font-size:
+    23px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    -0.6px;
+
+}
+
+
+/* ==========================================
+   MENU PRINCIPAL
+========================================== */
 
 .menu-container {
+
+  flex: 1;
+
+  min-height: 0;
+
   display: flex;
+
   flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+
+  justify-content:
+    space-between;
+
 }
 
-.menu-links, .menu-footer {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+
+/* ==========================================
+   SCROLL
+========================================== */
+
+.menu-scroll {
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding-right:
+    4px;
+
 }
 
-/* Items de Navegación */
+
+.menu-scroll::-webkit-scrollbar {
+
+  width:
+    4px;
+
+}
+
+
+.menu-scroll::-webkit-scrollbar-track {
+
+  background:
+    transparent;
+
+}
+
+
+.menu-scroll::-webkit-scrollbar-thumb {
+
+  background:
+    #dce5e1;
+
+  border-radius:
+    10px;
+
+}
+
+
+/* ==========================================
+   SECCIONES
+========================================== */
+
+.menu-section {
+
+  margin-bottom:
+    14px;
+
+}
+
+
+/* ==========================================
+   CABECERA DE SECCIÓN
+========================================== */
+
+.section-header {
+
+  width: 100%;
+
+  min-height:
+    32px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  padding:
+    0
+    12px;
+
+  border:
+    none;
+
+  background:
+    transparent;
+
+  color:
+    #89958f;
+
+  font-family:
+    inherit;
+
+  cursor:
+    pointer;
+
+  border-radius:
+    7px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+}
+
+
+.section-header:hover {
+
+  background:
+    #f7f9f8;
+
+  color:
+    #65736d;
+
+}
+
+
+/* ==========================================
+   TÍTULO
+========================================== */
+
+.section-title {
+
+  font-size:
+    12px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    0.9px;
+
+  line-height:
+    1;
+
+  text-align:
+    left;
+
+}
+
+
+/* ==========================================
+   FLECHA
+========================================== */
+
+.section-arrow {
+
+  width:
+    18px;
+
+  height:
+    18px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  color:
+    #a2aca7;
+
+  font-size:
+    19px;
+
+  font-weight:
+    400;
+
+  line-height:
+    1;
+
+  transform:
+    rotate(0deg);
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+
+}
+
+
+.section-arrow.open {
+
+  transform:
+    rotate(90deg);
+
+  color:
+    #173f35;
+
+}
+
+
+/* ==========================================
+   LINKS
+========================================== */
+
+.menu-links {
+
+  list-style:
+    none;
+
+  padding:
+    4px
+    0
+    0;
+
+  margin:
+    0;
+
+}
+
+
+.menu-links li {
+
+  margin-bottom:
+    3px;
+
+}
+
+
+/* ==========================================
+   ITEM DE NAVEGACIÓN
+========================================== */
+
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  text-decoration: none;
-  color: #64748b;
-  border-radius: 12px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+
   width: 100%;
-  box-sizing: border-box;
- 
+
+  min-height:
+    44px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  padding:
+    0
+    12px;
+
+  box-sizing:
+    border-box;
+
+  border-radius:
+    9px;
+
+  color:
+    #697771;
+
+  text-decoration:
+    none;
+
+  font-size:
+    15px;
+
+  font-weight:
+    500;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+
 }
 
-/* Efecto Activo y Hover corregido */
-.nav-item:hover, 
+
+.nav-item:hover {
+
+  background:
+    #f4f7f5;
+
+  color:
+    #173f35;
+
+}
+
+
 .nav-item.active {
-  background: #f5f3ff !important; /* Violeta muy suave para que no sature */
-  color: #7c3aed !important; /* El violeta de la marca */
-  font-weight: 500;
+
+  background:
+    #edf4f1;
+
+  color:
+    #173f35;
+
+  font-weight:
+    650;
+
 }
 
-/* Selector de Profesional (Estilo Minimalista) */
-.selector-profesional-sidebar {
-  padding: 12px 16px;
-  margin: 0 0 24px 0; /* Ajustado para que no baile */
-  background: #f8fafc;
-  border: 1px solid #f1f5f9;
-  border-radius: 14px;
+
+/* ==========================================
+   ICONOS
+========================================== */
+
+.nav-icon {
+
+  width:
+    20px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  flex-shrink:
+    0;
+
+  color:
+    #8c9893;
+
+  font-size:
+    15px;
+
+  transition:
+    color 0.2s ease;
+
 }
 
-.selector-profesional-sidebar label {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
+
+.nav-item:hover
+.nav-icon,
+
+.nav-item.active
+.nav-icon {
+
+  color:
+    #173f35;
+
 }
 
-.selector-profesional-sidebar select {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1e1b4b;
-  cursor: pointer;
-  outline: none;
-  padding: 0;
-  appearance: none; /* Quita flechas feas del navegador */
+
+/* ==========================================
+   TEXTO
+========================================== */
+
+.nav-text {
+
+  flex: 1;
+
+  white-space:
+    nowrap;
+
 }
 
-/* Lógica de Candados y Bloqueos */
-.menu-links li.locked {
-  filter: grayscale(1);
-  opacity: 0.4;
-  pointer-events: none;
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.menu-footer {
+
+  padding-top:
+    16px;
+
+  border-top:
+    1px solid
+    #edf1ef;
+
 }
 
-.lock-icon {
-  margin-left: auto;
-  font-size: 0.9rem;
-  color: #94a3b8;
-}
 
-/* Otros Elementos */
+/* ==========================================
+   LOGOUT
+========================================== */
+
 .logout {
-  color: #ef4444;
-  padding: 12px 16px;
-  cursor: pointer;
-  font-weight: 600;
+
+  width: 100%;
+
   display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: opacity 0.2s;
+
+  align-items:
+    center;
+
+  gap:
+    11px;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    none;
+
+  background:
+    transparent;
+
+  border-radius:
+    9px;
+
+  color:
+    #9a5148;
+
+  font-family:
+    inherit;
+
+  font-size:
+    15px;
+
+  font-weight:
+    600;
+
+  text-align:
+    left;
+
+  cursor:
+    pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
 }
+
 
 .logout:hover {
-  opacity: 0.8;
+
+  background:
+    #fdf3f2;
+
+  color:
+    #8d4038;
+
 }
 
-.postgres-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  color: #10b981;
-  margin-top: 10px;
-  padding: 0 16px;
+
+.logout-icon {
+
+  font-size:
+    16px;
+
 }
 
-.dot-online {
-  width: 7px;
-  height: 7px;
-  background-color: #10b981;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+
+/* =========================================================
+   ORGANIZACIÓN ACTIVA
+========================================================= */
+
+.workspace-switcher {
+
+  position:
+    relative;
+
+  margin:
+    -8px
+    4px
+    22px;
+
+}
+
+
+.workspace-label {
+
+  display:
+    block;
+
+  margin:
+    0
+    8px
+    7px;
+
+  color:
+    #9aa5a0;
+
+  font-size:
+    9px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    1.15px;
+
+}
+
+
+/* =========================================================
+   ORGANIZACIÓN ACTUAL
+========================================================= */
+
+.workspace-current {
+
+  width:
+    100%;
+
+  min-height:
+    58px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  padding:
+    9px
+    10px;
+
+  background:
+    #f7faf8;
+
+  border:
+    1px solid
+    #e1e9e5;
+
+  border-radius:
+    11px;
+
+  font-family:
+    inherit;
+
+  text-align:
+    left;
+
+  cursor:
+    pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+.workspace-current:hover {
+
+  background:
+    #f2f7f4;
+
+  border-color:
+    #cfddd7;
+
+}
+
+
+.workspace-current.open {
+
+  border-color:
+    #b7cbc2;
+
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(
+      23,
+      63,
+      53,
+      0.05
+    );
+
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.workspace-avatar,
+.workspace-option-avatar {
+
+  flex-shrink:
+    0;
+
+  overflow:
+    hidden;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  background:
+    #e4efea;
+
+  color:
+    #173f35;
+
+  font-weight:
+    750;
+
+}
+
+
+.workspace-avatar {
+
+  width:
+    37px;
+
+  height:
+    37px;
+
+  border-radius:
+    9px;
+
+  font-size:
+    13px;
+
+}
+
+
+.workspace-option-avatar {
+
+  width:
+    32px;
+
+  height:
+    32px;
+
+  border-radius:
+    8px;
+
+  font-size:
+    11px;
+
+}
+
+
+.workspace-avatar img,
+.workspace-option-avatar img {
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    cover;
+
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.workspace-info,
+.workspace-option-info {
+
+  min-width:
+    0;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  flex:
+    1;
+
+  gap:
+    2px;
+
+}
+
+
+.workspace-info strong {
+
+  overflow:
+    hidden;
+
+  color:
+    #33483f;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  white-space:
+    nowrap;
+
+  text-overflow:
+    ellipsis;
+
+}
+
+
+.workspace-info span {
+
+  color:
+    #8b9892;
+
+  font-size:
+    8px;
+
+}
+
+
+.workspace-chevron {
+
+  color:
+    #84918b;
+
+  font-size:
+    13px;
+
+  transition:
+    transform 0.2s ease;
+
+}
+
+
+.workspace-current.open
+.workspace-chevron {
+
+  transform:
+    rotate(180deg);
+
+}
+
+
+/* =========================================================
+   DROPDOWN
+========================================================= */
+
+.workspace-dropdown {
+
+  position:
+    absolute;
+
+  top:
+    calc(
+      100% + 7px
+    );
+
+  left:
+    0;
+
+  right:
+    0;
+
+  z-index:
+    500;
+
+  padding:
+    7px;
+
+  background:
+    #ffffff;
+
+  border:
+    1px solid
+    #dfe7e3;
+
+  border-radius:
+    12px;
+
+  box-shadow:
+    0
+    14px
+    35px
+    rgba(
+      20,
+      50,
+      41,
+      0.12
+    );
+
+  animation:
+    workspaceDropdownIn
+    0.16s
+    ease;
+
+}
+
+
+@keyframes workspaceDropdownIn {
+
+  from {
+
+    opacity:
+      0;
+
+    transform:
+      translateY(-4px);
+
+  }
+
+
+  to {
+
+    opacity:
+      1;
+
+    transform:
+      translateY(0);
+
+  }
+
+}
+
+
+.workspace-dropdown-label {
+
+  display:
+    block;
+
+  padding:
+    6px
+    8px
+    7px;
+
+  color:
+    #9ba6a1;
+
+  font-size:
+    8px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    0.9px;
+
+}
+
+
+/* =========================================================
+   OPCIONES
+========================================================= */
+
+.workspace-option {
+
+  width:
+    100%;
+
+  min-height:
+    49px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    9px;
+
+  padding:
+    7px
+    8px;
+
+  background:
+    transparent;
+
+  border:
+    none;
+
+  border-radius:
+    8px;
+
+  font-family:
+    inherit;
+
+  text-align:
+    left;
+
+  cursor:
+    pointer;
+
+  transition:
+    background 0.15s ease;
+
+}
+
+
+.workspace-option:hover:not(:disabled) {
+
+  background:
+    #f4f7f5;
+
+}
+
+
+.workspace-option.active {
+
+  background:
+    #edf4f1;
+
+}
+
+
+.workspace-option:disabled {
+
+  cursor:
+    wait;
+
+  opacity:
+    0.7;
+
+}
+
+
+.workspace-option-info strong {
+
+  overflow:
+    hidden;
+
+  color:
+    #42534d;
+
+  font-size:
+    10px;
+
+  font-weight:
+    650;
+
+  white-space:
+    nowrap;
+
+  text-overflow:
+    ellipsis;
+
+}
+
+
+.workspace-option-info span {
+
+  color:
+    #929f99;
+
+  font-size:
+    8px;
+
+}
+
+
+.workspace-option > i {
+
+  flex-shrink:
+    0;
+
+  color:
+    #173f35;
+
+  font-size:
+    9px;
+
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (
+  max-width:
+    900px
+) {
+
+  .sidebar {
+
+    width:
+      245px;
+
+  }
+
+}
+
+
+@media (
+  max-width:
+    700px
+) {
+
+  .sidebar {
+
+    position:
+      fixed;
+
+    top:
+      0;
+
+    left:
+      0;
+
+    width:
+      270px;
+
+    height:
+      100vh;
+
+    transform:
+      translateX(-100%);
+
+    transition:
+      transform 0.25s ease;
+
+    box-shadow:
+      10px
+      0
+      30px
+      rgba(
+        0,
+        0,
+        0,
+        0.08
+      );
+
+  }
+
+
+  .sidebar.open {
+
+    transform:
+      translateX(0);
+
+  }
+
 }

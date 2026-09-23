@@ -1,74 +1,914 @@
-<aside class="sidebar" [class.open]="menuOpen">
-  <div class="logo">
-    <h2>AmiApp</h2>
+<aside
+  class="sidebar"
+  [class.open]="menuOpen"
+>
+
+
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
+  <div class="sidebar-header">
+
+    <div class="logo">
+      AmiApp
+    </div>
+
   </div>
 
-<!-- Versión optimizada del selector en el Sidebar -->
-<div class="selector-profesional-sidebar" *ngIf="usuarioActual?.rol === 'secretaria'">
-  <label>AGENDA DE:</label>
-  <div class="select-wrapper">
-    <select [(ngModel)]="profesionalSeleccionado" (change)="onProfesionalChange()">
-      <option *ngFor="let prof of profesionalesAsignados" [ngValue]="prof">
-        {{ prof.nombre }}
-      </option>
-    </select>
+
+  <!-- ========================================= -->
+  <!-- ORGANIZACIÓN ACTIVA -->
+  <!-- ========================================= -->
+
+  <div
+    class="workspace-switcher"
+    *ngIf="
+      !cargandoOrganizaciones &&
+      organizacionActual
+    "
+  >
+
+    <span class="workspace-label">
+      TRABAJANDO EN
+    </span>
+
+
+    <button
+      type="button"
+      class="workspace-current"
+
+      [class.open]="
+        selectorOrganizacionesAbierto
+      "
+
+      (click)="
+        toggleSelectorOrganizaciones()
+      "
+    >
+
+
+      <!-- LOGO / ICONO -->
+
+      <div class="workspace-avatar">
+
+        <img
+          *ngIf="
+            organizacionActual.logoUrl
+          "
+
+          [src]="
+            organizacionActual.logoUrl
+          "
+
+          [alt]="
+            organizacionActual.nombre
+          "
+        >
+
+
+        <span
+          *ngIf="
+            !organizacionActual.logoUrl
+          "
+        >
+          {{
+            organizacionActual.nombre
+              .charAt(0)
+              .toUpperCase()
+          }}
+        </span>
+
+      </div>
+
+
+      <!-- DATOS -->
+
+      <div class="workspace-info">
+
+        <strong>
+          {{
+            organizacionActual.nombre
+          }}
+        </strong>
+
+
+        <span>
+
+          {{
+            nombreRol(
+              organizacionActual.rol
+            )
+          }}
+
+
+          <ng-container
+            *ngIf="
+              organizacionActual.esProfesional &&
+              organizacionActual.rol !== 2
+            "
+          >
+            · Profesional
+          </ng-container>
+
+        </span>
+
+      </div>
+
+
+      <!-- FLECHA -->
+
+      <span
+        class="workspace-chevron"
+        *ngIf="
+          organizacionesContexto.length > 1
+        "
+      >
+        ⌄
+      </span>
+
+
+    </button>
+
+
+    <!-- ===================================== -->
+    <!-- DROPDOWN ORGANIZACIONES -->
+    <!-- ===================================== -->
+
+    <div
+      class="workspace-dropdown"
+
+      *ngIf="
+        selectorOrganizacionesAbierto &&
+        organizacionesContexto.length > 1
+      "
+    >
+
+      <span
+        class="workspace-dropdown-label"
+      >
+        CAMBIAR ORGANIZACIÓN
+      </span>
+
+
+      <button
+        type="button"
+        class="workspace-option"
+
+        *ngFor="
+          let organizacion
+          of organizacionesContexto
+        "
+
+        [class.active]="
+          organizacion.organizacionId ===
+          organizacionActual.organizacionId
+        "
+
+        [disabled]="
+          cambiandoOrganizacion
+        "
+
+        (click)="
+          cambiarOrganizacion(
+            organizacion
+          )
+        "
+      >
+
+        <div
+          class="workspace-option-avatar"
+        >
+
+          <img
+            *ngIf="
+              organizacion.logoUrl
+            "
+
+            [src]="
+              organizacion.logoUrl
+            "
+
+            [alt]="
+              organizacion.nombre
+            "
+          >
+
+
+          <span
+            *ngIf="
+              !organizacion.logoUrl
+            "
+          >
+            {{
+              organizacion.nombre
+                .charAt(0)
+                .toUpperCase()
+            }}
+          </span>
+
+        </div>
+
+
+        <div
+          class="workspace-option-info"
+        >
+
+          <strong>
+            {{
+              organizacion.nombre
+            }}
+          </strong>
+
+
+          <span>
+
+            {{
+              nombreRol(
+                organizacion.rol
+              )
+            }}
+
+
+            <ng-container
+              *ngIf="
+                organizacion.esProfesional &&
+                organizacion.rol !== 2
+              "
+            >
+              · Profesional
+            </ng-container>
+
+          </span>
+
+        </div>
+
+
+        <i
+          class="fas fa-check"
+
+          *ngIf="
+            organizacion.organizacionId ===
+            organizacionActual.organizacionId
+          "
+        ></i>
+
+      </button>
+
+    </div>
+
   </div>
-</div>
+
+
+  <!-- ========================================= -->
+  <!-- MENÚ -->
+  <!-- ========================================= -->
+
   <nav class="menu-container">
-    <ul class="menu-links">
-      <!-- Inicio -->
-      <li [class.locked]="!tienePermiso('Inicio')">
-        <a routerLink="/dashboard/inicio" routerLinkActive="active" class="nav-item">
-           <span class="nav-text">Inicio</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Inicio')" class="lock-icon">🔒</span>
-        </a>
-      </li>
 
-      <!-- Turnos -->
-      <li [class.locked]="!tienePermiso('Turnos')">
-        <a routerLink="/dashboard/turnos" routerLinkActive="active" class="nav-item">
-          <span class="nav-text">Turnos</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Turnos')" class="lock-icon">🔒</span>
-        </a>
-      </li>
+    <div class="menu-scroll">
 
-      <!-- Clientes -->
-      <li [class.locked]="!tienePermiso('Clientes')">
-        <a routerLink="/dashboard/clientes" routerLinkActive="active" class="nav-item">
-           <span class="nav-text">Clientes</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Clientes')" class="lock-icon">🔒</span>
-        </a>
-      </li>
 
-      <!-- Estadísticas -->
-      <li [class.locked]="!tienePermiso('Estadísticas')">
-        <a routerLink="/dashboard/estadisticas" routerLinkActive="active" class="nav-item">
-         <span class="nav-text">Estadísticas</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Estadísticas')" class="lock-icon">🔒</span>
-        </a>
-      </li>
+      <!-- ========================================= -->
+      <!-- GENERAL -->
+      <!-- ========================================= -->
 
-      <!-- Gestión de Equipo -->
-      <li [class.locked]="!tienePermiso('Gestión de Equipo')">
-        <a routerLink="/dashboard/gestion-equipo" routerLinkActive="active" class="nav-item">
-          <span class="nav-text">Gestión de Equipo</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Gestión de Equipo')" class="lock-icon">🔒</span>
-        </a>
-      </li>
-       <li [class.locked]="!tienePermiso('Periodo de inactividad')">
-        <a routerLink="/dashboard/inactividad" routerLinkActive="active" class="nav-item">
-         <span class="nav-text">Mi Consultorio</span>
-          <span *ngIf="usuarioActual?.rol === 'Secretaria' && !tienePermiso('Periodo de inactividad')" class="lock-icon">🔒</span>
-        </a>
-      </li>
-    </ul>
-       <!-- Periodo de inactividad -->
-     
+      <section
+        class="menu-section"
 
-    <ul class="menu-footer">
-      <li class="logout" (click)="cerrarSesion()">
-        <span>🚪</span> Cerrar Sesión
-      </li>
-    </ul>
+        *ngIf="
+          tienePermiso('Inicio')
+        "
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'general'
+            )
+          "
+        >
+
+          <span class="section-title">
+            GENERAL
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.general
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.general
+          "
+        >
+
+          <li>
+
+            <a
+              routerLink="/dashboard/inicio"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ⌂
+              </span>
+
+
+              <span class="nav-text">
+                Inicio
+              </span>
+
+            </a>
+
+          </li>
+
+        </ul>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- AGENDA -->
+      <!-- ========================================= -->
+
+      <section
+        class="menu-section"
+
+        *ngIf="
+          tienePermiso('Turnos') ||
+          tienePermiso('Clientes') ||
+          tieneCapacidadProfesional
+        "
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'agenda'
+            )
+          "
+        >
+
+          <span class="section-title">
+            AGENDA
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.agenda
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.agenda
+          "
+        >
+
+
+          <!-- TURNOS -->
+
+          <li
+            *ngIf="
+              tienePermiso('Turnos')
+            "
+          >
+
+            <a
+              routerLink="/dashboard/turnos"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ▣
+              </span>
+
+
+              <span class="nav-text">
+                Turnos
+              </span>
+
+            </a>
+
+          </li>
+
+
+          <!-- BLOQUEOS AGENDA -->
+
+          <li
+            *ngIf="
+              tieneCapacidadProfesional
+            "
+          >
+
+            <a
+              routerLink="/dashboard/bloqueos-agenda"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◷
+              </span>
+
+
+              <span class="nav-text">
+                Bloqueos de agenda
+              </span>
+
+            </a>
+
+          </li>
+
+
+          <!-- PACIENTES -->
+
+          <li
+            *ngIf="
+              tienePermiso('Clientes')
+            "
+          >
+
+            <a
+              routerLink="/dashboard/clientes"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◉
+              </span>
+
+
+              <span class="nav-text">
+                Pacientes
+              </span>
+
+            </a>
+
+          </li>
+
+
+        </ul>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- ANÁLISIS -->
+      <!-- ========================================= -->
+
+      <section
+        class="menu-section"
+
+        *ngIf="
+          tienePermiso(
+            'Estadísticas'
+          )
+        "
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'gestion'
+            )
+          "
+        >
+
+          <span class="section-title">
+            ANÁLISIS
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.gestion
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.gestion
+          "
+        >
+
+          <li>
+
+            <a
+              routerLink="/dashboard/estadisticas"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◒
+              </span>
+
+
+              <span class="nav-text">
+                Estadísticas
+              </span>
+
+            </a>
+
+          </li>
+
+        </ul>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- AUTOMATIZACIÓN -->
+      <!-- ========================================= -->
+
+      <section
+        class="menu-section"
+
+        *ngIf="
+          tienePermiso(
+            'Automatizaciones'
+          )
+        "
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'automatizacion'
+            )
+          "
+        >
+
+          <span class="section-title">
+            AUTOMATIZACIÓN
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.automatizacion
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.automatizacion
+          "
+        >
+
+          <li>
+
+            <a
+              routerLink="/dashboard/automatizaciones"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ✦
+              </span>
+
+
+              <span class="nav-text">
+                Automatizaciones
+              </span>
+
+            </a>
+
+          </li>
+
+        </ul>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- ORGANIZACIÓN -->
+      <!-- ========================================= -->
+
+      <section
+        class="menu-section"
+
+        *ngIf="
+          puedeAdministrarOrganizacion
+        "
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'organizacion'
+            )
+          "
+        >
+
+          <span class="section-title">
+            ORGANIZACIÓN
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.organizacion
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.organizacion
+          "
+        >
+
+
+          <!-- INFORMACIÓN GENERAL -->
+
+          <li>
+
+            <a
+              routerLink="/dashboard/inactividad"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ⚙
+              </span>
+
+
+              <span class="nav-text">
+                Información general
+              </span>
+
+            </a>
+
+          </li>
+
+
+          <!-- EQUIPO -->
+
+          <li
+            *ngIf="
+              tienePermiso(
+                'Gestión de Equipo'
+              )
+            "
+          >
+
+            <a
+              routerLink="/dashboard/gestion-equipo"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◎
+              </span>
+
+
+              <span class="nav-text">
+                Equipo
+              </span>
+
+            </a>
+
+          </li>
+
+
+          <!-- RESERVA ONLINE -->
+
+          <li>
+
+            <a
+              routerLink="/dashboard/reserva-online"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ↗
+              </span>
+
+
+              <span class="nav-text">
+                Reserva online
+              </span>
+
+            </a>
+
+          </li>
+
+
+        </ul>
+
+      </section>
+
+
+      <!-- ========================================= -->
+      <!-- CUENTA -->
+      <!-- ========================================= -->
+
+      <section
+        class="menu-section"
+      >
+
+        <button
+          type="button"
+          class="section-header"
+
+          (click)="
+            toggleSeccion(
+              'cuenta'
+            )
+          "
+        >
+
+          <span class="section-title">
+            CUENTA
+          </span>
+
+
+          <span
+            class="section-arrow"
+
+            [class.open]="
+              seccionesAbiertas.cuenta
+            "
+          >
+            ›
+          </span>
+
+        </button>
+
+
+        <ul
+          class="menu-links"
+
+          *ngIf="
+            seccionesAbiertas.cuenta
+          "
+        >
+
+
+          <!-- MI PERFIL -->
+
+          <li>
+
+            <a
+              routerLink="/dashboard/mi-perfil"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◉
+              </span>
+
+
+              <span class="nav-text">
+                Mi perfil
+              </span>
+
+            </a>
+
+          </li>
+
+
+          <!-- SUSCRIPCIÓN -->
+
+          <li
+            *ngIf="
+              tienePermiso(
+                'Suscripción'
+              )
+            "
+          >
+
+            <a
+              routerLink="/dashboard/suscripcion"
+              routerLinkActive="active"
+              class="nav-item"
+            >
+
+              <span class="nav-icon">
+                ◇
+              </span>
+
+
+              <span class="nav-text">
+                Suscripción
+              </span>
+
+            </a>
+
+          </li>
+
+
+        </ul>
+
+      </section>
+
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- FOOTER -->
+    <!-- ========================================= -->
+
+    <div class="menu-footer">
+
+      <button
+        type="button"
+        class="logout"
+
+        (click)="
+          cerrarSesion()
+        "
+      >
+
+        <span class="logout-icon">
+          ↪
+        </span>
+
+
+        <span>
+          Cerrar sesión
+        </span>
+
+      </button>
+
+    </div>
+
+
   </nav>
+
 </aside>

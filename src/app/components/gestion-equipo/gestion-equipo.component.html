@@ -1,126 +1,923 @@
-<div class="equipo-container">
-  <div class="header-section">
-    <h1>Gestión de Equipo</h1>
-    <p>Asigná permisos y gestioná el acceso a las secciones del sistema.</p>
-  </div>
+<div class="equipo-page">
 
-  <!-- Alta de Personal -->
-  <div class="card">
-    <div class="form-grid">
-      <div class="form-section">
-        <h4 class="title-purple"><i class="fas fa-user-plus"></i> Registrar Integrante</h4>
-        <div class="input-field">
-          <input type="text" placeholder="Nombre Completo" [(ngModel)]="nuevoColaborador.nombre">
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        ORGANIZACIÓN
+      </span>
+
+      <h1>
+        Gestión de equipo
+      </h1>
+
+      <p>
+        Administrá profesionales, secretarias y sus accesos a AmiUp.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==========================================
+       RESUMEN DEL EQUIPO
+  =========================================== -->
+
+  <section class="team-summary">
+
+    <!-- PROFESIONALES -->
+
+    <article class="summary-card">
+
+      <div class="summary-top">
+
+        <div class="summary-icon">
+          <i class="fas fa-user-md"></i>
         </div>
-        <div class="input-field">
-          <input type="email" placeholder="Email / Usuario" [(ngModel)]="nuevoColaborador.usuario">
-        </div>
-        <div class="input-field password-box">
-          <input [type]="mostrarPassword ? 'text' : 'password'" placeholder="Contraseña" [(ngModel)]="nuevoColaborador.pass">
-          <span class="eye-icon" (click)="togglePassword()">
-            <i class="fa" [ngClass]="mostrarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-          </span>
-        </div>
+
+        <span class="summary-label">
+          PROFESIONALES
+        </span>
+
       </div>
 
-      <div class="form-section divider-left">
-        <h4 class="title-purple"><i class="fas fa-key"></i> Accesos Permitidos</h4>
-        <div class="permisos-list">
-          <div class="permiso-row" *ngFor="let p of permisosBase">
-            <span>{{p.nombre}}</span>
-            <label class="switch">
-              <input type="checkbox" [(ngModel)]="p.activo">
-              <span class="slider"></span>
-            </label>
+
+      <div class="summary-main">
+
+        <strong>
+          {{ profesionalesActuales }}
+          <span>/ {{ maxProfesionales }}</span>
+        </strong>
+
+      </div>
+
+
+      <div class="progress-bar">
+
+        <div
+          class="progress-fill"
+          [style.width.%]="porcentajeProfesionales"
+        ></div>
+
+      </div>
+
+
+      <span class="summary-help">
+        Profesionales incluidos en tu plan.
+      </span>
+
+    </article>
+
+
+    <!-- SECRETARIAS -->
+
+    <article class="summary-card">
+
+      <div class="summary-top">
+
+        <div class="summary-icon">
+          <i class="fas fa-user-tie"></i>
+        </div>
+
+        <span class="summary-label">
+          SECRETARIAS
+        </span>
+
+      </div>
+
+
+      <div class="summary-main">
+
+        <strong>
+          {{ secretariasActuales }}
+          <span>/ {{ maxSecretarias }}</span>
+        </strong>
+
+      </div>
+
+
+      <div class="progress-bar">
+
+        <div
+          class="progress-fill"
+          [style.width.%]="porcentajeSecretarias"
+        ></div>
+
+      </div>
+
+
+      <span class="summary-help">
+        Secretarías incluidas en tu plan.
+      </span>
+
+    </article>
+
+  </section>
+
+
+  <!-- ==========================================
+       ALERTA DE LÍMITE
+  =========================================== -->
+
+  <div
+    class="limit-alert"
+    *ngIf="mostrarAlertaLimite"
+  >
+
+    <div class="limit-icon">
+      !
+    </div>
+
+    <div>
+
+      <strong>
+        Alcanzaste el límite de tu plan
+      </strong>
+
+      <p>
+        Alcanzaste uno de los cupos disponibles. Para sumar más integrantes,
+        necesitás ampliar tu plan.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+       INTEGRANTES
+  =========================================== -->
+
+  <section class="team-card">
+
+    <div class="team-card-header">
+
+      <div>
+
+        <span class="card-label">
+          EQUIPO
+        </span>
+
+        <h2>
+          Integrantes
+        </h2>
+
+        <p>
+          Personas que ya tienen acceso a esta organización.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- BUSCADOR -->
+
+    <div class="search-container">
+
+      <i class="fas fa-search"></i>
+
+      <input
+        type="text"
+        placeholder="Buscar por nombre o email..."
+        [(ngModel)]="busqueda"
+      >
+
+    </div>
+
+
+    <!-- LISTA DE INTEGRANTES -->
+
+    <div class="team-list">
+
+      <div
+        class="team-loading"
+        *ngIf="cargandoEquipo"
+      >
+        <i class="fas fa-spinner fa-spin"></i>
+        Cargando integrantes...
+      </div>
+
+      <div
+        class="team-row"
+        *ngFor="let integrante of integrantesFiltrados"
+      >
+
+        <!-- IDENTIDAD -->
+
+        <div class="member-info">
+
+          <div class="member-avatar">
+            {{ obtenerInicial(integrante.nombre) }}
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="card-footer">
-      <button class="btn-main" (click)="confirmarAcceso()">Registrar en Equipo</button>
-    </div>
-  </div>
 
-  <!-- Listado -->
-  <div class="card mt-20">
-    <table class="equipo-table">
-      <thead>
-        <tr>
-          <th>Colaborador</th>
-          <th>Usuario</th>
-          <th>Estado</th>
-          <th class="text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let c of colaboradores">
-          <td>
-            <div class="user-cell">
-              <div class="avatar">{{c.nombre.charAt(0)}}</div>
-              <div>
-                <strong>{{c.nombre}}</strong><br>
-                <small class="text-muted">{{c.rol}}</small>
-              </div>
-            </div>
-          </td>
-          <td>{{c.usuario}}</td>
-          <td>
-            <span class="badge-status" [ngClass]="c.estado === 'Conectado' ? 'online' : 'offline'">
-              {{c.estado}}
+          <div>
+
+            <strong>
+              {{ integrante.nombre }}
+            </strong>
+
+            <span>
+              {{ integrante.email }}
             </span>
-          </td>
-          <td class="text-right">
-            <button class="btn-circle edit" (click)="abrirEdicion(c)"><i class="fas fa-pen"></i></button>
-            <button class="btn-circle delete" (click)="eliminarColaborador(c)"><i class="fas fa-trash"></i></button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
-  <!-- MODAL EDITAR TODO (MENOS ESTADO) -->
-  <div class="modal-backdrop" *ngIf="mostrarModalEdit">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>Editar Colaborador</h3>
-      <button class="close-x" (click)="cerrarModal()">&times;</button>
-    </div>
-
-    <div class="modal-body">
-      <div class="edit-grid">
-        <!-- COLUMNA IZQUIERDA -->
-        <div class="edit-col">
-          <label>Nombre Completo</label>
-          <input type="text" [(ngModel)]="colaboradorEdicion.nombre">
-          
-          <label>Usuario / Email</label>
-          <input type="text" [(ngModel)]="colaboradorEdicion.usuario">
-          
-          <label>Nueva Contraseña</label>
-          <input type="text" [(ngModel)]="colaboradorEdicion.pass">
-
-          <!-- BOTONES DENTRO DE LA COLUMNA -->
-          <div class="modal-actions-inline">
-            <button class="btn-sec" (click)="cerrarModal()">Cancelar</button>
-            <button class="btn-main" (click)="guardarCambios()">Guardar Todo</button>
           </div>
+
         </div>
 
-        <!-- COLUMNA DERECHA -->
-       <div class="edit-col">
-  <label>Permisos</label>
-  <div class="permisos-list">
-    <!-- USAMOS colaboradorEdicion.permisos en lugar de permisosBase -->
-    <div class="permiso-row" *ngFor="let p of colaboradorEdicion.permisos">
-      <span>{{p.nombre}}</span>
-      <label class="switch">
-        <input type="checkbox" [(ngModel)]="p.activo">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-</div>
+
+        <!-- ROL -->
+
+        <div class="member-role">
+
+          <span
+            class="role-badge"
+            [class.profesional]="integrante.rol === 'Profesional'"
+            [class.secretaria]="integrante.rol === 'Secretaria'"
+          >
+
+            {{ integrante.rol }}
+
+          </span>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+        <div class="member-status">
+
+          <span
+            class="status-badge"
+            [class.active]="integrante.estado === 'Activo'"
+[class.inactive]="integrante.estado === 'Inactivo'"
+          >
+
+            <span class="status-dot"></span>
+
+            {{ integrante.estado }}
+
+          </span>
+
+        </div>
+
+
+        <!-- ACCIONES -->
+
+        <div class="member-actions">
+
+          <button
+            *ngIf="integrante.estado === 'Activo'"
+            type="button"
+            class="action-button danger"
+            title="Quitar acceso"
+            (click)="eliminarIntegrante(integrante)"
+          >
+
+            <i class="fas fa-user-minus"></i>
+
+          </button>
+
+        </div>
+
       </div>
+
+
+      <!-- SIN RESULTADOS -->
+
+      <div
+        class="empty-team"
+        *ngIf="!cargandoEquipo && integrantesFiltrados.length === 0"
+      >
+
+        <div class="empty-icon">
+          <i class="fas fa-users"></i>
+        </div>
+
+        <h3>
+          Todavía no hay integrantes
+        </h3>
+
+        <p>
+          Cuando alguien se registre con un código
+          de invitación, aparecerá acá.
+        </p>
+
+      </div>
+
     </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       CÓDIGOS DE INVITACIÓN
+  =========================================== -->
+
+  <section class="team-card invitations-card">
+
+    <!-- HEADER -->
+
+    <div class="team-card-header">
+
+      <div>
+
+        <span class="card-label">
+          INVITACIONES
+        </span>
+
+        <h2>
+          Códigos de invitación
+        </h2>
+
+        <p>
+          Creá un código para incorporar varias personas
+          a tu organización.
+        </p>
+
+      </div>
+
+
+      <!-- ÚNICO BOTÓN PARA GENERAR -->
+
+      <div class="team-actions">
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="abrirAgregar('Profesional')"
+        >
+
+          <i class="fas fa-plus"></i>
+
+          Generar código
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================================
+         LISTADO DE CÓDIGOS
+    ========================================= -->
+
+    <div class="invitation-list">
+
+      <div
+        class="team-loading"
+        *ngIf="cargandoInvitaciones"
+      >
+        <i class="fas fa-spinner fa-spin"></i>
+        Cargando invitaciones...
+      </div>
+
+      <div
+        class="invitation-row"
+        *ngFor="let invitacion of invitaciones"
+      >
+
+        <!-- CÓDIGO -->
+
+        <div class="invitation-code">
+
+          <span class="invitation-label">
+            CÓDIGO
+          </span>
+
+          <strong>
+            {{ invitacion.codigo }}
+          </strong>
+
+        </div>
+
+
+        <!-- ROL -->
+
+        <div class="invitation-role">
+
+          <span class="invitation-label">
+            DESTINADO A
+          </span>
+
+          <span
+            class="role-badge"
+            [class.profesional]="
+              obtenerRolTexto(invitacion.rol) === 'Profesional'
+            "
+            [class.secretaria]="
+              obtenerRolTexto(invitacion.rol) === 'Secretaria'
+            "
+          >
+
+            {{ obtenerRolTexto(invitacion.rol) }}
+
+          </span>
+
+        </div>
+
+
+        <!-- USOS -->
+
+        <div class="invitation-uses">
+
+          <span class="invitation-label">
+            USOS
+          </span>
+
+          <strong>
+
+            {{ invitacion.usosActuales }}
+
+            /
+
+            {{ invitacion.usosMaximos }}
+
+          </strong>
+
+        </div>
+
+
+        <!-- VENCIMIENTO -->
+
+        <div class="invitation-expiration">
+
+          <span class="invitation-label">
+            VENCE
+          </span>
+
+          <strong>
+            {{ invitacion.expiraEn | date:'dd/MM/yyyy' }}
+          </strong>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+       <div class="invitation-status">
+
+  <span
+    class="status-badge"
+
+    [class.active]="
+      invitacion.estado === EstadoInvitacion.Activa
+    "
+
+    [class.pending]="
+      invitacion.estado === EstadoInvitacion.Utilizada
+    "
+
+    [class.inactive]="
+      invitacion.estado === EstadoInvitacion.Expirada ||
+      invitacion.estado === EstadoInvitacion.Cancelada
+    "
+  >
+
+    <span class="status-dot"></span>
+
+    {{ obtenerEstadoTexto(invitacion.estado) }}
+
+  </span>
+
+</div>
+
+
+        <!-- COPIAR -->
+
+        <!-- ACCIONES -->
+
+<div class="invitation-actions">
+
+  <!-- COPIAR -->
+
+  <button
+    type="button"
+    class="action-button copy-button"
+    title="Copiar código"
+    (click)="copiarCodigo(invitacion.codigo)"
+  >
+
+    <i class="fas fa-copy"></i>
+
+  </button>
+
+
+  <!-- REVOCAR -->
+
+  <button
+    type="button"
+    class="action-button danger"
+    title="Revocar código"
+    *ngIf="esInvitacionActiva(invitacion)"
+    (click)="cancelarInvitacion(invitacion)"
+  >
+
+    <i class="fas fa-ban"></i>
+
+  </button>
+
+</div>
+
+      </div>
+
+
+      <!-- ========================================
+           SIN INVITACIONES
+      ========================================= -->
+
+      <div
+        class="empty-team"
+        *ngIf="!cargandoInvitaciones && invitaciones.length === 0"
+      >
+
+        <div class="empty-icon">
+          <i class="fas fa-ticket-alt"></i>
+        </div>
+
+        <h3>
+          Todavía no tenés códigos
+        </h3>
+
+        <p>
+          Creá un código para invitar profesionales
+          o secretarias a tu organización.
+        </p>
+
+        <span class="empty-help">
+          Un mismo código puede utilizarse varias veces.
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ==========================================
+       MODAL CREAR INVITACIÓN
+  =========================================== -->
+
+  <div
+    class="modal-backdrop"
+    *ngIf="mostrarModalAgregar"
+    (click)="cerrarModalAgregar()"
+  >
+
+    <div
+      class="modal-box"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- HEADER MODAL -->
+
+      <div class="modal-header">
+
+        <div>
+
+          <span class="modal-eyebrow">
+            NUEVA INVITACIÓN
+          </span>
+
+          <h2>
+            Generar código
+          </h2>
+
+          <p>
+            Creá un código para que nuevos integrantes
+            puedan incorporarse a tu organización.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="close-button"
+          (click)="cerrarModalAgregar()"
+        >
+
+          ×
+
+        </button>
+
+      </div>
+
+
+      <!-- BODY -->
+
+      <div class="modal-body">
+
+
+        <!-- ======================================
+             TIPO DE INTEGRANTE
+        ======================================= -->
+
+        <div class="form-section">
+
+          <label class="form-label">
+            ¿Para quién es la invitación?
+          </label>
+
+
+          <div class="type-selector">
+
+
+            <!-- PROFESIONAL -->
+
+            <button
+              type="button"
+              [class.selected]="
+                tipoNuevoIntegrante === 'Profesional'
+              "
+              [disabled]="limiteProfesionalesAlcanzado"
+              (click)="
+                seleccionarTipoIntegrante('Profesional')
+              "
+            >
+
+              <i class="fas fa-user-md"></i>
+
+              <div>
+
+                <strong>
+                  Profesional
+                </strong>
+
+                <span>
+                  Gestiona pacientes, turnos y su agenda.
+                </span>
+
+              </div>
+
+            </button>
+
+
+            <!-- SECRETARIA -->
+
+            <button
+              type="button"
+              [class.selected]="
+                tipoNuevoIntegrante === 'Secretaria'
+              "
+              [disabled]="limiteSecretariasAlcanzado"
+              (click)="
+                seleccionarTipoIntegrante('Secretaria')
+              "
+            >
+
+              <i class="fas fa-user-tie"></i>
+
+              <div>
+
+                <strong>
+                  Secretaria
+                </strong>
+
+                <span>
+                  Administra agendas y tareas asignadas.
+                </span>
+
+              </div>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             CONFIGURACIÓN DEL CÓDIGO
+        ======================================= -->
+
+        <div class="settings-grid">
+
+
+          <!-- USOS -->
+
+          <div class="form-group">
+
+            <label>
+              Cantidad máxima de usos
+            </label>
+
+            <div class="number-control">
+
+              <button
+                type="button"
+                (click)="disminuirUsos()"
+                [disabled]="nuevaInvitacion.usosMaximos <= 1"
+              >
+                −
+              </button>
+
+              <strong>
+                {{ nuevaInvitacion.usosMaximos }}
+              </strong>
+
+              <button
+                type="button"
+                (click)="aumentarUsos()"
+                [disabled]="nuevaInvitacion.usosMaximos >= 10"
+              >
+                +
+              </button>
+
+            </div>
+
+            <span class="field-help">
+              El mismo código podrá ser utilizado por
+              varias personas.
+            </span>
+
+          </div>
+
+
+          <!-- DÍAS -->
+
+          <div class="form-group">
+
+            <label>
+              Validez del código
+            </label>
+
+            <div class="number-control">
+
+              <button
+                type="button"
+                (click)="disminuirDias()"
+                [disabled]="nuevaInvitacion.diasValidez <= 1"
+              >
+                −
+              </button>
+
+              <strong>
+                {{ nuevaInvitacion.diasValidez }}
+              </strong>
+
+              <button
+                type="button"
+                (click)="aumentarDias()"
+                [disabled]="nuevaInvitacion.diasValidez >= 30"
+              >
+                +
+              </button>
+
+            </div>
+
+            <span class="field-help">
+              Días hasta que el código expire.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             INFORMACIÓN
+        ======================================= -->
+
+        <div class="invitation-info">
+
+          <div class="invitation-icon">
+            <i class="fas fa-key"></i>
+          </div>
+
+          <div>
+
+            <strong>
+              ¿Cómo funciona?
+            </strong>
+
+            <p>
+              Compartí el código con las personas que
+              quieras incorporar. Si ya tienen cuenta,
+              podrán unirse directamente. Si son nuevas
+              en AmiUp, podrán crear su cuenta usando
+              este mismo código.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             CÓDIGO GENERADO
+        ======================================= -->
+
+        <div
+          class="generated-code"
+          *ngIf="invitacionGenerada"
+        >
+
+          <span class="generated-label">
+            CÓDIGO GENERADO
+          </span>
+
+          <div class="generated-code-row">
+
+            <strong>
+              {{ invitacionGenerada.codigo }}
+            </strong>
+
+            <button
+              type="button"
+              class="copy-code-button"
+              (click)="
+                copiarCodigo(
+                  invitacionGenerada.codigo
+                )
+              "
+            >
+
+              <i class="fas fa-copy"></i>
+
+              Copiar
+
+            </button>
+
+          </div>
+
+
+          <div class="generated-details">
+
+            <span>
+              {{ obtenerRolTexto(invitacionGenerada.rol) }}
+            </span>
+
+            <span>
+              {{ invitacionGenerada.usosMaximos }}
+              usos
+            </span>
+
+            <span>
+              Vence
+              {{ invitacionGenerada.expiraEn | date:'dd/MM/yyyy' }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ======================================
+           FOOTER
+      ======================================= -->
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="cerrarModalAgregar()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="generarInvitacion()"
+          [disabled]="generandoInvitacion"
+        >
+
+          <i
+            class="fas"
+            [class.fa-plus]="!generandoInvitacion"
+            [class.fa-spinner]="generandoInvitacion"
+            [class.fa-spin]="generandoInvitacion"
+          ></i>
+
+
+          <span *ngIf="!generandoInvitacion">
+            Generar código
+          </span>
+
+
+          <span *ngIf="generandoInvitacion">
+            Generando...
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
+
 </div>

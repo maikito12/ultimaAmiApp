@@ -1,0 +1,185 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.alerta-stack {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: min(390px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alerta-card {
+  position: relative;
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 28px;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 13px 15px 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dfe8e4;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(22, 55, 46, 0.10);
+  pointer-events: auto;
+  animation: alerta-entrada 0.22s ease-out both;
+}
+
+.alerta-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.alerta-content {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.alerta-label {
+  display: block;
+  margin-bottom: 3px;
+  color: #97a39d;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.alerta-content strong {
+  display: block;
+  color: #30473d;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.alerta-content p {
+  margin: 4px 0 0;
+  color: #788780;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.alerta-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #98a39e;
+  font-family: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.alerta-close:hover {
+  background: #f3f6f4;
+  color: #52655c;
+}
+
+.alerta-card.success .alerta-icon {
+  background: #e7f3ed;
+  color: #1f6b54;
+}
+
+.alerta-card.error .alerta-icon {
+  background: #f8ecea;
+  color: #a04f49;
+}
+
+.alerta-card.warning .alerta-icon {
+  background: #fff4df;
+  color: #9a681b;
+}
+
+.alerta-card.info .alerta-icon {
+  background: #edf3f1;
+  color: #42675b;
+}
+
+.alerta-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  transform-origin: left center;
+  background: #17483d;
+  opacity: 0.45;
+  animation-name: alerta-progreso;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.alerta-card.error .alerta-progress {
+  background: #a04f49;
+}
+
+.alerta-card.warning .alerta-progress {
+  background: #a97827;
+}
+
+.alerta-card.info .alerta-progress {
+  background: #5f8175;
+}
+
+@keyframes alerta-entrada {
+
+  from {
+    opacity: 0;
+    transform:
+      translateY(-8px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+@keyframes alerta-progreso {
+
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 640px) {
+
+  .alerta-stack {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .alerta-card {
+    grid-template-columns:
+      36px minmax(0, 1fr) 26px;
+  }
+}

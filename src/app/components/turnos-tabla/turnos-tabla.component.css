@@ -1,425 +1,2801 @@
-/* ==========================================================================
-   1. ESTRUCTURA GLOBAL (EMULANDO INICIO AL 100%)
-   ========================================================================== */
-.inicio-wrapper {
-  max-width: 100%; /* Quitamos el tope de 1200px */
-  margin: 0 auto;
-  padding: 20px 30px; /* Igual al padding de tu Inicio */
-  animation: fadeIn 0.6s ease-out;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Forzamos tipografía moderna */
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+
+/* =========================================================
+   PÁGINA
+   ========================================================= */
+
+.turnos-page {
+  --primary: #17483d;
+  --primary-hover: #123c33;
+  --primary-soft: #edf5f2;
+
+  --title: #073b34;
+  --text: #33443f;
+  --text-secondary: #71817c;
+  --text-muted: #93a09c;
+
+  --border: #dfe7e3;
+  --border-soft: #edf1ef;
+
+  --background: #f8faf9;
+  --surface: #ffffff;
+
+  --danger: #b42318;
+  --danger-soft: #fff1f0;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  padding: 34px 36px 60px;
+
+  background: var(--background);
+
+  color: var(--text);
+
+  font-family:
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
-/* --- 2. HEADER --- */
-.header-inicio { 
-  margin-bottom: 2.5rem; 
-}
-.header-inicio h1 { 
-  font-size: 2.2rem; 
-  color: #1e293b; 
-  font-weight: 800; 
-  margin: 0; 
-}
-.header-inicio p { 
-  color: #64748b; 
-  font-size: 1.1rem; 
-  margin-top: 5px; 
-}
-/* --- 2. HEADER Y STATS --- */
-.header-inicio { margin-bottom: 2.5rem; }
-.header-inicio h1 { font-size: 2.2rem; color: #1e293b; font-weight: 800; margin: 0; }
-.header-inicio p { color: #64748b; font-size: 1.1rem; margin-top: 5px; }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-.card-stat {
-  background: white; padding: 1.5rem; border-radius: 20px;
-  display: flex; align-items: center; gap: 1.5rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9;
-  transition: transform 0.3s ease;
-}
-
-/* --- 3. BARRA DE FILTROS (TU ORIGINAL - INTACTO) --- */
-/* ==========================================================================
-   CONTENEDOR DE FILTROS Y BÚSQUEDA (ADAPTADO)
-   ========================================================================== */
-.filters-container {
+.page-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  background-color: #ffffff;
-  padding: 16px 24px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  margin-bottom: 24px;
+
+  gap: 24px;
+
+  margin-bottom: 22px;
 }
 
-/* Caja del buscador */
-.search-box {
+.header-copy {
+  min-width: 0;
+}
+
+.header-copy h1 {
+  margin: 0;
+
+  color: var(--title);
+
+  font-size: 30px;
+  font-weight: 700;
+
+  line-height: 1.15;
+
+  letter-spacing: -0.5px;
+}
+
+.header-copy p {
+  margin: 7px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   BOTÓN NUEVO TURNO
+   ========================================================= */
+
+.btn-new-turno {
+  min-height: 40px;
+
+  padding: 0 16px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border: 1px solid var(--primary);
+  border-radius: 9px;
+
+  background: var(--primary);
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 8px rgba(23, 72, 61, 0.10);
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-new-turno:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 13px rgba(23, 72, 61, 0.14);
+}
+
+.plus-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   CONTEXTO DE AGENDA
+   ========================================================= */
+
+.agenda-context {
+  width: 100%;
+
+  margin-bottom: 12px;
+
+  padding: 11px 13px;
+
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
-  background-color: #f1f5f9;
-  padding: 10px 16px;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
   border-radius: 12px;
-  flex-grow: 1;
-  max-width: 480px;
-  border: 1px solid #e2e8f0;
+}
+
+
+/* =========================================================
+   MODO AGENDA
+   ========================================================= */
+
+.agenda-mode {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.context-label {
+  color: #78928a;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.35px;
+
+  text-transform: uppercase;
+}
+
+.mode-switch {
+  padding: 3px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 3px;
+
+  background: #f1f5f3;
+
+  border: 1px solid #e1e8e5;
+  border-radius: 9px;
+}
+
+.mode-switch button {
+  min-height: 32px;
+
+  padding: 0 13px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #71817c;
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.mode-switch button:hover {
+  color: var(--primary);
+}
+
+.mode-switch button.active {
+  background: #ffffff;
+
+  color: var(--primary);
+
+  box-shadow:
+    0 1px 4px rgba(15, 23, 42, 0.07);
+}
+
+
+/* =========================================================
+   FILTRO PROFESIONAL
+   ========================================================= */
+
+.professional-filter {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+}
+
+.professional-filter label {
+  color: #78928a;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.professional-select select {
+  min-width: 210px;
+  max-width: 280px;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.agenda-toolbar {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 14px;
+
+  margin-bottom: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+  border-radius: 13px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+}
+
+.toolbar-left {
+  flex: 1;
+}
+
+.toolbar-right {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BUSCADOR
+   ========================================================= */
+
+.search-box {
+  width: 100%;
+  max-width: 360px;
+  height: 41px;
+
+  padding: 0 13px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  background: #fbfcfc;
+
+  border: 1px solid #dce5e1;
+  border-radius: 9px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+  background: #ffffff;
+
+  border-color: #9db9ae;
+
+  box-shadow:
+    0 0 0 3px rgba(23, 72, 61, 0.05);
 }
 
 .search-icon {
-  margin-right: 10px;
-  font-size: 1.1rem;
+  flex-shrink: 0;
+
+  color: #78928a;
+
+  font-size: 15px;
 }
 
 .search-box input {
-  border: none;
-  background: transparent;
   width: 100%;
-  font-size: 0.95rem;
-  color: #334155;
-  outline: none;
-}
+  min-width: 0;
 
-/* Bloque derecho: Fecha e Input */
-.date-picker-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* El input tipo Fecha estilizado */
-.custom-date-input {
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 600; /* Heredado de tu propuesta para que se lea firme */
-  color: #334155;
+  border: none;
   outline: none;
-  cursor: pointer;
+
+  background: transparent;
+
+  color: var(--text);
+
   font-family: inherit;
+  font-size: 12px;
 }
 
-/* Botón Limpiar Filtros con tus colores personalizados */
-.btn-clear-filters {
-  background-color: #fff1f2;     /* Fondo clarito sutil */
-  color: #a31de1;                 /* Tu violeta de marca */
-  border: 1px solid transparent;  /* Bordes limpios sin cortes raros */
-  padding: 10px 16px;             /* Alineación perfecta con el input de fecha */
-  border-radius: 12px;            /* Curvatura moderna idéntica a los inputs */
-  font-size: 0.95rem;
-  font-weight: 700;               /* Resaltado fuerte */
+.search-box input::placeholder {
+  color: #a3aeaa;
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+.select-wrapper {
+  min-width: 0;
+}
+
+.select-wrapper select {
+  min-width: 145px;
+  height: 41px;
+
+  padding: 0 32px 0 11px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dce5e1;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #fbfcfc;
+
+  color: #52645e;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
   cursor: pointer;
-  transition: all 0.2s ease;      /* Suavizado para las animaciones */
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.select-wrapper select:focus {
+  background: #ffffff;
+
+  border-color: #9db9ae;
+
+  box-shadow:
+    0 0 0 3px rgba(23, 72, 61, 0.05);
+}
+
+
+/* =========================================================
+   LIMPIAR FILTROS
+   ========================================================= */
+
+.btn-clear-filters {
+  min-height: 39px;
+
+  padding: 0 9px;
+
+  flex-shrink: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #71817c;
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition: color 0.2s ease;
 }
 
 .btn-clear-filters:hover {
-  background-color: #ffe4e6;     /* Se intensifica levemente el fondo */
-  color: #8a2be2;                 /* Vira al violeta de los botones principales */
-  transform: translateY(-1px);    /* Micro-interacción premium hacia arriba */
-}
-/* --- 4. TABLA DE TURNOS (ACOMODADA Y CENTRADA) --- */
-.main-table-container {
-  background: white; padding: 1.5rem; border-radius: 24px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;
+  color: var(--primary);
 }
 
-.custom-table { width: 100%; border-collapse: collapse; table-layout: fixed !important; }
 
-/* Anchos fijos para que coincidan cabeceras y celdas */
-.custom-table th:nth-child(1), .custom-table td:nth-child(1) { width: 115px; }
-.custom-table th:nth-child(2), .custom-table td:nth-child(2) { width: 95px; }
-.custom-table th:nth-child(3), .custom-table td:nth-child(3) { width: 23%; }
-.custom-table th:nth-child(4), .custom-table td:nth-child(4) { width: 20%; }
-.custom-table th:nth-child(5), .custom-table td:nth-child(5) { width: 130px; text-align: center; } 
-.custom-table th:nth-child(6), .custom-table td:nth-child(6) { width: 180px; text-align: center; } 
+/* =========================================================
+   FECHA
+   ========================================================= */
 
-.custom-table th {
-  padding: 12px 15px; color: #94a3b8; font-size: 0.75rem;
-  font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #f1f5f9;
+.date-control {
+  flex-shrink: 0;
 }
-.custom-table td { padding: 15px; border-bottom: 1px solid #f8fafc; color: #334155; vertical-align: middle; }
 
-.section-header-row td { padding: 30px 15px 10px 15px !important; border: none !important; }
-.title-section { font-size: 0.95rem; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 15px; width: 100%; }
-.title-section::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+.date-control input {
+  height: 41px;
 
-.bold { font-weight: 700; color: #1e293b; }
-.txt-hour-main { font-weight: 700; color: #8a2be2; background: #f5f0ff; padding: 4px 10px; border-radius: 6px; }
+  padding: 0 10px;
 
-/* --- 5. ESTADOS Y BOTONES (RECUPERANDO EL ESTILO Y HOVERS) --- */
+  box-sizing: border-box;
 
-/* ESTADOS: Con soporte para mayúsculas/minúsculas */
+  border: 1px solid #dce5e1;
+  border-radius: 9px;
 
-.btn-cancel-danger:disabled {
-  color: #cbd5e1;
-  cursor: not-allowed;
-  background: transparent;
+  outline: none;
+
+  background: #fbfcfc;
+
+  color: #52645e;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
-/* Base del badge */
-.badge-status {
-  display: inline-flex !important;
+
+.date-control input:focus {
+  border-color: #9db9ae;
+
+  box-shadow:
+    0 0 0 3px rgba(23, 72, 61, 0.05);
+}
+
+
+/* =========================================================
+   BOTÓN HOY
+   ========================================================= */
+
+.btn-today {
+  height: 41px;
+
+  padding: 0 12px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #dce5e1;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #52645e;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-today:hover {
+  background: var(--primary-soft);
+
+  border-color: #b7c7c2;
+
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   SWITCH VISTA
+   ========================================================= */
+
+.view-switch {
+  padding: 3px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  background: #f1f5f3;
+
+  border: 1px solid #e1e8e5;
+  border-radius: 9px;
+}
+
+.view-switch button {
+  min-height: 33px;
+
+  padding: 0 10px;
+
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  min-width: 105px;
-  border: 1px solid transparent;
+
+  gap: 5px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #71817c;
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* Estado: Atendido (Verde) */
-.status-ok { 
-  background: #dcfce7 !important; 
-  color: #166534 !important; 
+.view-switch button.active {
+  background: #ffffff;
+
+  color: var(--primary);
+
+  box-shadow:
+    0 1px 4px rgba(15, 23, 42, 0.06);
 }
 
-/* Pendiente: Naranja */
-.status-pendiente { 
-  background: #ffedd5 !important; 
-  color: #9a3412 !important; 
+
+/* =========================================================
+   RESUMEN AGENDA
+   ========================================================= */
+
+.agenda-summary {
+  width: 100%;
+
+  margin-bottom: 12px;
+
+  padding: 0 4px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
 }
 
-/* Confirmado: Violeta */
-.status-confirmado { 
-  background: #f3e8ff !important; 
-  color: #6b21a8 !important; 
+.summary-main,
+.summary-date {
+  display: flex;
+  align-items: baseline;
+
+  gap: 5px;
 }
 
-/* Cancelado: Rojo */
-.status-cancelado { 
-  background: #fee2e2 !important; 
-  color: #b91c1c !important; 
-}
-/* ACCIONES Y BOTONES CON HOVER */
-.actions-flex { display: flex; justify-content: center; gap: 10px; align-items: center; }
+.summary-main strong {
+  color: var(--title);
 
-.btn-action-ficha {
-  background: white; color: #8a2be2; border: 1px solid #e9d5ff;
-  padding: 6px 14px !important; border-radius: 10px; font-weight: 700;
-  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; 
-  transition: all 0.2s ease; font-size: 0.75rem;
-  box-shadow: 0 2px 4px rgba(138, 43, 226, 0.05);
-}
-.btn-action-ficha:hover { 
-  background: #8a2be2; color: white; border-color: #8a2be2;
-  transform: translateY(-1px); box-shadow: 0 4px 8px rgba(138, 43, 226, 0.2);
+  font-size: 13px;
+  font-weight: 750;
 }
 
-.btn-cancel-danger {
-  background: transparent; color: #ff0000; border: none;
-  padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; 
-  font-weight: 700; cursor: pointer; transition: all 0.2s ease;
-}
-.btn-cancel-danger:hover { 
-  background: #e69898; color: #f80000; 
+.summary-main span {
+  color: var(--text-secondary);
+
+  font-size: 10px;
 }
 
-/* AREA DE ADJUNTOS EN LA MODAL */
-.attachments-area { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
-.attachment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.btn-add-mini { background: #f5f3ff; color: #8a2be2; border: 1px dashed #c084fc; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
-.attachment-strip { display: flex; flex-wrap: wrap; gap: 8px; }
-.file-chip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 5px 10px; display: flex; align-items: center; gap: 8px; }
-.chip-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+.summary-date span {
+  color: var(--text-muted);
 
-/* --- 6. MODAL (TU ORIGINAL - INTACTO) --- */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.6); display: flex; align-items: center;
-  justify-content: center; z-index: 1000; backdrop-filter: blur(8px);
+  font-size: 9px;
 }
-.modal-compact {
-  background: white; width: 90%; max-width: 520px; border-radius: 30px;
-  overflow: hidden; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
-  display: flex; flex-direction: column;
+
+.summary-date strong {
+  color: #52645e;
+
+  font-size: 10px;
+  font-weight: 650;
 }
-.modal-header-mini { background: #8a2be2; padding: 1.4rem 1.8rem; color: white; display: flex; justify-content: space-between; align-items: center; }
-.patient-title h3 { margin: 0; font-size: 1.2rem; font-weight: 800; }
-.id-badge { font-size: 0.7rem; opacity: 0.8; font-weight: 600; display: block; }
-.close-btn-circle { background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-.modal-body-scroll { padding: 1.8rem; max-height: 60vh; overflow-y: auto; }
-.data-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
-.data-item-small { background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid #edf2f7; }
-.data-label { display: block; font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-.data-value { font-size: 0.95rem; color: #1e293b; font-weight: 600; }
-.consultation-box textarea { width: 100%; height: 100px; padding: 12px; border-radius: 14px; border: 1px solid #e2e8f0; background: #f8fafc; resize: none; font-size: 0.95rem; }
-.modal-footer-compact { padding: 1.2rem 1.8rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; background: #fcfcfc; }
-.btn-status-toggle { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 10px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-.btn-primary-gradient { background: linear-gradient(135deg, #8a2be2, #6a1b9a); color: white; border: none; padding: 12px 22px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.2); }
-.atendido-badge-modal { background: #dcfce7; color: #166534; font-weight: 700; padding: 8px 15px; border-radius: 10px; }
-.btn-secondary-flat { background: transparent; border: none; color: #64748b; font-weight: 600; cursor: pointer; }
-
-/* Auxiliares */
-.text-center { text-align: center !important; }
 
 
-.pdf-icon-placeholder {
-  width: 32px;
-  height: 32px;
-  background: #fff1f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading-state {
+  min-height: 280px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+
+  gap: 12px;
+
+  color: #7c8d87;
+
+  font-size: 12px;
 }
 
-.pdf-icon-placeholder .icon {
-  font-size: 14px;
+.spinner {
+  width: 30px;
+  height: 30px;
+
+  border: 3px solid #dfe8e4;
+  border-top-color: var(--primary);
+
+  border-radius: 50%;
+
+  animation:
+    turnosSpin 0.75s linear infinite;
 }
 
-.pdf-icon-placeholder small {
-  font-size: 7px;
-  font-weight: 800;
-  color: #dc2626;
-  margin-top: -2px;
+@keyframes turnosSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
-/* ==========================================================================
-   ESTILOS PARA EL SELECT DE ESTADOS INTERACTIVO
-   ========================================================================== */
-.select-status-inline {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+/* =========================================================
+   TABLE CARD
+   ========================================================= */
+
+.table-card {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.table-scroll {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: visible;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.turnos-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  table-layout: fixed;
+}
+
+
+/* =========================================================
+   ANCHOS DE COLUMNAS
+   ========================================================= */
+
+.turnos-table .col-time {
+  width: 8%;
+}
+
+.turnos-table .col-patient {
+  width: 18%;
+}
+
+.turnos-table .col-professional {
+  width: 14%;
+}
+
+.turnos-table .col-specialty {
+  width: 12%;
+}
+
+.turnos-table .col-branch {
+  width: 11%;
+}
+
+.turnos-table .col-status {
+  width: 11%;
+}
+
+.turnos-table .col-actions {
+  width: 26%;
+}
+
+
+/* =========================================================
+   CABECERA TABLA
+   ========================================================= */
+
+.turnos-table thead {
+  background: #f8faf9;
+}
+
+.turnos-table th {
+  padding: 11px 9px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: #78928a;
+
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase; /* Fuerza las mayúsculas idénticas a tus capturas */
-  border: 1px solid transparent;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-  text-align: center;
-  appearance: none; /* Remueve la flecha por defecto del sistema */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  display: inline-block;
-  width: 130px; /* Ancho fijo ideal para que no salten las columnas */
-}
 
-/* Hover sutil si el select está activo */
-.select-status-inline:not(:disabled):hover {
-  filter: brightness(0.95);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
+  letter-spacing: 0.55px;
 
-/* Estado deshabilitado (Cuando el turno está Atendido o Cancelado) */
-.select-status-inline:disabled {
-  background-color: #f1f5f9 !important;
-  color: #94a3b8 !important;
-  border-color: #cbd5e1 !important;
-  cursor: not-allowed;
-  opacity: 0.75;
+  text-align: left;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
 }
 
 
-/* ==========================================================================
-   PALETA DE COLORES PERSONALIZADA (SOLICITADA)
-   ========================================================================== */
+/* =========================================================
+   CELDAS TABLA
+   ========================================================= */
 
-/* PENDIENTE: Naranjita suave, no muy fuerte */
-.status-pendiente {
-  background-color: #ffedd5;
-  color: #ea580c;
+.turnos-table td {
+  min-width: 0;
+
+  padding: 12px 9px;
+
+  border-bottom: 1px solid var(--border-soft);
+
+  color: #40534d;
+
+  font-size: 10px;
+
+  vertical-align: middle;
 }
 
-/* CONFIRMADO: Violetita premium */
-.status-confirmado {
-  background-color: #f3e8ff;
-  color: #7c3aed;
+.turnos-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-/* EN ESPERA: Azulcito pastel */
-.status-espera {
-  background-color: #e0f2fe;
-  color: #0369a1;
+.turnos-table tbody tr {
+  transition:
+    background 0.18s ease;
 }
 
-/* ATENDIDO: Verde sutil */
-.status-ok {
-  background-color: #dcfce7;
-  color: #15803d;
+.turnos-table tbody tr:hover {
+  background: #fbfcfc;
 }
 
-/* NO ASISTIÓ: Gris neutral oscuro */
-.status-falta {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-/* CANCELADO: Rojo sutil */
-.status-cancelado {
-  background-color: #fee2e2;
-  color: #b91c1c;
+.row-cancelado {
+  opacity: 0.58;
 }
 
 
-/* ==========================================================================
-   BOTÓN CANCELAR (ESTILO OUTLINE - LETRAS ROJAS)
-   ========================================================================== */
-.btn-cancel-danger {
-  background: transparent;
-  color: #ef4444;
-  border: 1px solid #fca5a5; /* Borde rojo suavizado */
-  padding: 6px 14px;
+/* =========================================================
+   ELLIPSIS
+   ========================================================= */
+
+.text-ellipsis {
+  max-width: 100%;
+
+  display: block;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   HORA
+   ========================================================= */
+
+.time-cell {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.time-main {
+  color: #173f36;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.time-date {
+  color: #98a39f;
+
+  font-size: 8px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PACIENTE
+   ========================================================= */
+
+.patient-cell {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.patient-avatar {
+  width: 31px;
+  height: 31px;
+
+  flex: 0 0 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 8px;
-  font-size: 0.85rem;
+
+  background: #e8f1ed;
+
+  color: var(--primary);
+
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.patient-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.patient-info strong {
+  max-width: 100%;
+
+  overflow: hidden;
+
+  color: #33443f;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.patient-info span {
+  overflow: hidden;
+
+  color: #98a39f;
+
+  font-size: 8px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   CONTINÚA EN PARTE 2/3
+   ========================================================= */
+
+   /* =========================================================
+   CELDAS DE TEXTO
+   ========================================================= */
+
+.primary-cell {
+  max-width: 100%;
+
+  display: block;
+
+  overflow: hidden;
+
+  color: #40534d;
+
+  font-size: 10px;
   font-weight: 600;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.secondary-cell {
+  max-width: 100%;
+
+  display: block;
+
+  overflow: hidden;
+
+  color: #71817c;
+
+  font-size: 9px;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   BADGES ESTADO
+   ========================================================= */
+
+.status-badge {
+  min-height: 24px;
+  max-width: 100%;
+
+  padding: 0 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+
+  flex: 0 0 5px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+/* =========================================================
+   PENDIENTE
+   ========================================================= */
+
+.status-pendiente {
+  background: #fff7e8;
+
+  color: #9a651d;
+}
+
+
+/* =========================================================
+   CONFIRMADO
+   ========================================================= */
+
+.status-confirmado {
+  background: #edf5f2;
+
+  color: #315d51;
+}
+
+
+/* =========================================================
+   EN SALA
+   ========================================================= */
+
+.status-espera,
+.status-ensala,
+.status-sala {
+  background: #eef6f4;
+
+  color: #477267;
+}
+
+
+/* =========================================================
+   EN ATENCIÓN
+   ========================================================= */
+
+.status-atencion,
+.status-enatencion {
+  background: #e6f1ed;
+
+  color: #17483d;
+}
+
+
+/* =========================================================
+   ATENDIDO
+   ========================================================= */
+
+.status-atendido,
+.status-ok {
+  background: #e8f5ed;
+
+  color: #287248;
+}
+
+
+/* =========================================================
+   NO ASISTIÓ
+   ========================================================= */
+
+.status-noasistio,
+.status-no-asistio,
+.status-falta {
+  background: #f1f3f2;
+
+  color: #67736f;
+}
+
+
+/* =========================================================
+   CANCELADO
+   ========================================================= */
+
+.status-cancelado {
+  background: #fff1f0;
+
+  color: #b42318;
+}
+
+
+/* =========================================================
+   ALINEACIÓN
+   ========================================================= */
+
+.align-right {
+  text-align: right !important;
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.row-actions {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+/* =========================================================
+   ACCIONES PRINCIPALES
+   ========================================================= */
+
+.row-actions-main {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 5px;
+
+  flex-wrap: nowrap;
+}
+
+
+/* =========================================================
+   BOTONES DE ESTADO
+   ========================================================= */
+
+.btn-state {
+  min-height: 28px;
+
+  padding: 0 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 650;
+
+  white-space: nowrap;
+
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
 }
 
-/* Hover: Se rellena sutilmente con fondo rojo transparente */
-.btn-cancel-danger:not(:disabled):hover {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-}
-
-/* Click */
-.btn-cancel-danger:not(:disabled):active {
-  transform: scale(0.97);
-}
-
-/* Estado bloqueado (Gris plano sin interacción) */
-.btn-cancel-danger:disabled {
-  background-color: #f1f5f9;
-  color: #cbd5e1;
-  border-color: #e2e8f0;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+.btn-state:hover {
+  transform: translateY(-1px);
 }
 
 
-/* ==========================================================================
-   ESTILO PARA FILAS DE TURNOS CANCELADOS
-   ========================================================================== */
-.cancelado-row {
-  background-color: #fafafa;
-  opacity: 0.65;
+/* =========================================================
+   CONFIRMAR
+   ========================================================= */
+
+.btn-confirm {
+  border: 1px solid #c5d8d2;
+
+  background: #f3f8f6;
+
+  color: #315d51;
 }
 
-/* Tacha los datos clave para identificarlo de un vistazo */
-.cancelado-row td.bold,
-.cancelado-row .txt-hour-main,
-.cancelado-row .txt-hour-sub {
-  text-decoration: line-through;
-  color: #94a3b8;
+.btn-confirm:hover {
+  background: #e9f3ef;
+
+  border-color: #9db8ae;
+}
+
+
+/* =========================================================
+   CHECK-IN
+   ========================================================= */
+
+.btn-checkin {
+  border: 1px solid #bdd3cb;
+
+  background: #edf5f2;
+
+  color: #315d51;
+}
+
+.btn-checkin:hover {
+  background: #e1efea;
+}
+
+
+/* =========================================================
+   INICIAR
+   ========================================================= */
+
+.btn-start {
+  border: 1px solid var(--primary);
+
+  background: #ffffff;
+
+  color: var(--primary);
+}
+
+.btn-start:hover {
+  background: var(--primary-soft);
+}
+
+
+/* =========================================================
+   FINALIZAR
+   ========================================================= */
+
+.btn-finish {
+  border: 1px solid var(--primary);
+
+  background: var(--primary);
+
+  color: #ffffff;
+}
+
+.btn-finish:hover {
+  background: var(--primary-hover);
+
+  border-color: var(--primary-hover);
+}
+
+
+/* =========================================================
+   VER TURNO
+   ========================================================= */
+
+.btn-view {
+  min-height: 28px;
+
+  padding: 0 7px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  border: 1px solid #dce5e1;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #52645e;
+
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 650;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-view:hover {
+  background: var(--primary-soft);
+
+  border-color: #9db8ae;
+
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   ACCIONES SECUNDARIAS
+   ========================================================= */
+
+.actions-secondary {
+  min-height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 7px;
+}
+
+.action-text {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #71817c;
+
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease;
+}
+
+.action-text:hover {
+  color: var(--primary);
+}
+
+.action-text.danger {
+  color: #a65a52;
+}
+
+.action-text.danger:hover {
+  color: var(--danger);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+  min-height: 310px;
+
+  padding: 36px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+
+  margin-bottom: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #e8f1ed;
+
+  color: var(--primary);
+
+  font-size: 18px;
+}
+
+.empty-state h3 {
+  margin: 0;
+
+  color: #33443f;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  max-width: 380px;
+
+  margin: 6px 0 16px;
+
+  color: #8a9994;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+.empty-state button {
+  min-height: 37px;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+
+  background: var(--primary);
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.empty-state button:hover {
+  background: var(--primary-hover);
+
+  border-color: var(--primary-hover);
+}
+
+
+/* =========================================================
+   CALENDARIO
+   ========================================================= */
+
+.calendar-card {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+
+/* =========================================================
+   HEADER CALENDARIO
+   ========================================================= */
+
+.calendar-header {
+  padding: 17px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.calendar-title {
+  min-width: 0;
+}
+
+.calendar-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #78928a;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.8px;
+
+  text-transform: uppercase;
+}
+
+.calendar-header h2 {
+  margin: 0;
+
+  color: var(--title);
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   NAVEGACIÓN CALENDARIO
+   ========================================================= */
+
+.calendar-navigation {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.calendar-navigation button {
+  min-width: 34px;
+  height: 34px;
+
+  padding: 0 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #52645e;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.calendar-navigation button:hover {
+  background: var(--primary-soft);
+
+  border-color: #b7c7c2;
+
+  color: var(--primary);
+}
+
+.calendar-navigation .today-small {
+  min-width: 50px;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   RESUMEN SEMANAL
+   ========================================================= */
+
+.calendar-week-summary {
+  min-height: 32px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid var(--border-soft);
+
+  background: #fcfdfd;
+
+  color: #87968f;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTENEDOR CALENDARIO
+   ========================================================= */
+
+.calendar-scroll {
+  width: 100%;
+  min-width: 0;
+
+  /*
+   * IMPORTANTE:
+   *
+   * En desktop NO forzamos scroll.
+   * Los siete días entran en el ancho disponible.
+   *
+   * En responsive vamos a habilitar el scroll
+   * solamente cuando realmente haga falta.
+   */
+  overflow-x: visible;
+}
+
+
+/* =========================================================
+   SEMANA
+   ========================================================= */
+
+.week-grid {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  /*
+   * ESTE ES EL CAMBIO IMPORTANTE.
+   *
+   * Antes:
+   * repeat(7, minmax(150px, 1fr))
+   * + min-width: 1050px.
+   *
+   * Ahora las siete columnas pueden comprimirse
+   * dentro del ancho disponible.
+   */
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   COLUMNA DÍA
+   ========================================================= */
+
+.day-column {
+  min-width: 0;
+
+  overflow: hidden;
+
+  border-right: 1px solid var(--border-soft);
+
+  background: #ffffff;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+.day-column.selected-day {
+  background: #fcfefd;
+
+  box-shadow:
+    inset 0 2px 0 rgba(23, 72, 61, 0.18);
+}
+
+
+/* =========================================================
+   HEADER DÍA
+   ========================================================= */
+
+.day-header {
+  width: 100%;
+  min-width: 0;
+  min-height: 112px;
+
+  padding: 10px 6px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  border: none;
+  border-bottom: 1px solid var(--border-soft);
+
+  background: #fafcfb;
+
+  color: inherit;
+
+  font-family: inherit;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.day-header:hover {
+  background: #f6faf8;
+}
+
+.day-header.today {
+  background: #f3f8f6;
+}
+
+.day-header.selected {
+  background: #edf5f2;
+
+  box-shadow:
+    inset 0 -2px 0 var(--primary);
+}
+
+
+/* =========================================================
+   CABECERA SUPERIOR DEL DÍA
+   ========================================================= */
+
+.day-header-top {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+}
+
+.day-name {
+  overflow: hidden;
+
+  color: #87968f;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.45px;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   INDICADOR HOY
+   ========================================================= */
+
+.today-indicator {
+  padding: 2px 4px;
+
+  border-radius: 999px;
+
+  background: #dcebe6;
+
+  color: var(--primary);
+
+  font-size: 6px;
+  font-weight: 750;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   NÚMERO DEL DÍA
+   ========================================================= */
+
+.day-number {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  color: #33443f;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.day-header.today .day-number {
+  background: var(--primary);
+
+  color: #ffffff;
+}
+
+.day-header.selected:not(.today) .day-number {
+  background: #dfece7;
+
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   MES
+   ========================================================= */
+
+.day-month {
+  color: #9aa6a2;
+
+  font-size: 7px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   RESUMEN DEL DÍA
+   ========================================================= */
+
+.day-summary {
+  width: 100%;
+
+  margin-top: 3px;
+
+  display: block;
+
+  overflow: hidden;
+
+  color: #5f756e;
+
+  font-size: 7px;
+  font-weight: 650;
+
+  line-height: 1.3;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.day-summary.empty {
+  color: #a2ada9;
+
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   BODY DÍA
+   ========================================================= */
+
+.day-body {
+  min-width: 0;
+  min-height: 440px;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  background: transparent;
+}
+
+
+/* =========================================================
+   DÍA VACÍO
+   ========================================================= */
+
+.calendar-empty-day {
+  min-height: 92px;
+
+  padding: 8px 2px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  box-sizing: border-box;
+
+  color: #a1aba7;
+
+  font-size: 8px;
+
+  text-align: center;
+}
+
+.empty-day-icon {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background: #f4f7f6;
+
+  color: #9caaa5;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   EVENTO CALENDARIO
+   ========================================================= */
+
+.calendar-event {
+  min-width: 0;
+
+  margin-bottom: 6px;
+
+  padding: 8px 7px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  border: 1px solid #dfe7e3;
+  border-left: 3px solid #78928a;
+
+  border-radius: 8px;
+
+  background: #fbfcfc;
+
+  outline: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.calendar-event:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.05);
+}
+
+.calendar-event:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(23, 72, 61, 0.14);
+}
+
+
+/* =========================================================
+   EVENTO - PENDIENTE
+   ========================================================= */
+
+.calendar-event.status-pendiente {
+  border-left-color: #b47a2b;
+
+  background: #fffaf2;
+}
+
+
+/* =========================================================
+   EVENTO - CONFIRMADO
+   ========================================================= */
+
+.calendar-event.status-confirmado {
+  border-left-color: #477267;
+
+  background: #f5f9f7;
+}
+
+
+/* =========================================================
+   EVENTO - EN SALA
+   ========================================================= */
+
+.calendar-event.status-espera,
+.calendar-event.status-ensala,
+.calendar-event.status-sala {
+  border-left-color: #5b8077;
+
+  background: #f2f8f6;
+}
+
+
+/* =========================================================
+   EVENTO - EN ATENCIÓN
+   ========================================================= */
+
+.calendar-event.status-atencion,
+.calendar-event.status-enatencion {
+  border-left-color: var(--primary);
+
+  background: #edf5f2;
+}
+
+
+/* =========================================================
+   EVENTO - ATENDIDO
+   ========================================================= */
+
+.calendar-event.status-atendido,
+.calendar-event.status-ok {
+  border-left-color: #3d8058;
+
+  background: #f1f8f3;
+}
+
+
+/* =========================================================
+   EVENTO - NO ASISTIÓ
+   ========================================================= */
+
+.calendar-event.status-falta,
+.calendar-event.status-noasistio,
+.calendar-event.status-no-asistio {
+  border-left-color: #7b8581;
+
+  background: #f5f6f6;
+}
+
+
+/* =========================================================
+   EVENTO - CANCELADO
+   ========================================================= */
+
+.calendar-event.status-cancelado {
+  border-left-color: #b42318;
+
+  background: #fff4f3;
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   CONTINÚA EN PARTE 3/3
+   ========================================================= */
+
+   /* =========================================================
+   PARTE SUPERIOR DEL EVENTO
+   ========================================================= */
+
+.event-top {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 5px;
+}
+
+
+/* =========================================================
+   HORA DEL EVENTO
+   ========================================================= */
+
+.event-time {
+  min-width: 0;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 750;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PUNTO DE ESTADO
+   ========================================================= */
+
+.event-status-dot {
+  width: 5px;
+  height: 5px;
+
+  flex: 0 0 5px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+
+  color: #78928a;
+}
+
+.calendar-event.status-pendiente .event-status-dot {
+  color: #b47a2b;
+}
+
+.calendar-event.status-confirmado .event-status-dot {
+  color: #477267;
+}
+
+.calendar-event.status-espera .event-status-dot,
+.calendar-event.status-ensala .event-status-dot,
+.calendar-event.status-sala .event-status-dot {
+  color: #5b8077;
+}
+
+.calendar-event.status-atencion .event-status-dot,
+.calendar-event.status-enatencion .event-status-dot {
+  color: var(--primary);
+}
+
+.calendar-event.status-atendido .event-status-dot,
+.calendar-event.status-ok .event-status-dot {
+  color: #3d8058;
+}
+
+.calendar-event.status-falta .event-status-dot,
+.calendar-event.status-noasistio .event-status-dot,
+.calendar-event.status-no-asistio .event-status-dot {
+  color: #7b8581;
+}
+
+.calendar-event.status-cancelado .event-status-dot {
+  color: #b42318;
+}
+
+
+/* =========================================================
+   PACIENTE DEL EVENTO
+   ========================================================= */
+
+.event-patient {
+  width: 100%;
+  min-width: 0;
+
+  display: block;
+
+  overflow: hidden;
+
+  color: #33443f;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  line-height: 1.3;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ESPECIALIDAD / PROFESIONAL / SUCURSAL
+   ========================================================= */
+
+.event-specialty,
+.event-professional,
+.event-branch {
+  width: 100%;
+  min-width: 0;
+
+  display: block;
+
+  overflow: hidden;
+
+  color: #7a8984;
+
+  font-size: 8px;
+
+  line-height: 1.35;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.event-specialty {
+  color: #60756e;
+
+  font-weight: 600;
+}
+
+.event-professional {
+  color: #7a8984;
+}
+
+.event-branch {
+  color: #98a39f;
+}
+
+
+/* =========================================================
+   FOOTER DEL EVENTO
+   ========================================================= */
+
+.event-footer {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 3px;
+
+  padding-top: 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 5px;
+
+  border-top: 1px solid rgba(100, 116, 139, 0.08);
+}
+
+
+/* =========================================================
+   ESTADO EVENTO
+   ========================================================= */
+
+.event-status {
+  min-width: 0;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #60736d;
+
+  font-size: 7px;
+  font-weight: 650;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.event-arrow {
+  flex-shrink: 0;
+
+  color: #9ba8a3;
+
+  font-size: 10px;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.calendar-event:hover .event-arrow {
+  color: var(--primary);
+
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.table-scroll::-webkit-scrollbar,
+.calendar-scroll::-webkit-scrollbar {
+  height: 7px;
+}
+
+.table-scroll::-webkit-scrollbar-track,
+.calendar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-scroll::-webkit-scrollbar-thumb,
+.calendar-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background: #d4dfdb;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover,
+.calendar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #bdcbc6;
+}
+
+
+/* =========================================================
+   DESKTOP INTERMEDIO
+   ========================================================= */
+
+@media (max-width: 1280px) {
+
+  .turnos-page {
+    padding-left: 26px;
+    padding-right: 26px;
+  }
+
+
+  /* -------------------------------------------------------
+     TOOLBAR
+     ------------------------------------------------------- */
+
+  .search-box {
+    max-width: 300px;
+  }
+
+  .select-wrapper select {
+    min-width: 132px;
+  }
+
+
+  /* -------------------------------------------------------
+     TABLA
+     ------------------------------------------------------- */
+
+  .turnos-table th {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .turnos-table td {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .patient-avatar {
+    width: 29px;
+    height: 29px;
+
+    flex-basis: 29px;
+  }
+
+  .btn-state,
+  .btn-view {
+    padding-left: 6px;
+    padding-right: 6px;
+
+    font-size: 7.5px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - 1100
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  /* -------------------------------------------------------
+     CONTEXTO
+     ------------------------------------------------------- */
+
+  .agenda-context {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .professional-filter {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .professional-select {
+    flex: 1;
+  }
+
+  .professional-select select {
+    width: 100%;
+    max-width: none;
+  }
+
+
+  /* -------------------------------------------------------
+     TOOLBAR
+     ------------------------------------------------------- */
+
+  .agenda-toolbar {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    width: 100%;
+  }
+
+  .toolbar-right {
+    justify-content: flex-end;
+  }
+
+  .search-box {
+    max-width: none;
+  }
+
+
+  /* -------------------------------------------------------
+     TABLA
+     -------------------------------------------------------
+     A partir de este ancho ya no conviene seguir
+     comprimiendo las siete columnas de información.
+     Habilitamos scroll solamente acá.
+     ------------------------------------------------------- */
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .turnos-table {
+    min-width: 980px;
+
+    table-layout: fixed;
+  }
+
+
+  /* -------------------------------------------------------
+     CALENDARIO
+     -------------------------------------------------------
+     Todavía intentamos mantener los siete días visibles.
+     ------------------------------------------------------- */
+
+  .day-header {
+    min-height: 108px;
+
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .day-body {
+    padding: 5px;
+  }
+
+  .calendar-event {
+    padding: 7px 6px;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .turnos-page {
+    padding:
+      28px 22px
+      50px;
+  }
+
+
+  /* -------------------------------------------------------
+     RESUMEN
+     ------------------------------------------------------- */
+
+  .agenda-summary {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+
+  /* -------------------------------------------------------
+     TOOLBAR
+     ------------------------------------------------------- */
+
+  .toolbar-left,
+  .toolbar-right {
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1 1 100%;
+  }
+
+
+  /* -------------------------------------------------------
+     CALENDARIO
+     -------------------------------------------------------
+     En tablet sí habilitamos scroll horizontal.
+     Cada día conserva un ancho útil.
+     ------------------------------------------------------- */
+
+  .calendar-scroll {
+    overflow-x: auto;
+  }
+
+  .week-grid {
+    width: auto;
+
+    min-width: 910px;
+
+    grid-template-columns:
+      repeat(7, minmax(130px, 1fr));
+  }
+
+  .day-header {
+    min-height: 112px;
+  }
+
+  .day-body {
+    min-height: 400px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+  .turnos-page {
+    padding:
+      24px 18px
+      45px;
+  }
+
+
+  /* -------------------------------------------------------
+     HEADER
+     ------------------------------------------------------- */
+
+  .page-header {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+  .header-copy h1 {
+    font-size: 26px;
+  }
+
+  .header-copy p {
+    font-size: 13px;
+  }
+
+  .btn-new-turno {
+    width: 100%;
+  }
+
+
+  /* -------------------------------------------------------
+     CONTEXTO
+     ------------------------------------------------------- */
+
+  .agenda-context {
+    padding: 11px;
+
+    gap: 12px;
+  }
+
+  .agenda-mode {
+    width: 100%;
+
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .mode-switch {
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+
+  .mode-switch button {
+    flex: 1;
+  }
+
+  .professional-filter {
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .professional-filter label {
+    font-size: 9px;
+  }
+
+
+  /* -------------------------------------------------------
+     TOOLBAR
+     ------------------------------------------------------- */
+
+  .agenda-toolbar {
+    padding: 12px;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .search-box,
+  .select-wrapper,
+  .select-wrapper select,
+  .date-control,
+  .date-control input,
+  .btn-today {
+    width: 100%;
+  }
+
+  .btn-clear-filters {
+    width: 100%;
+
+    min-height: 34px;
+
+    text-align: left;
+  }
+
+  .view-switch {
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+
+  .view-switch button {
+    flex: 1;
+  }
+
+
+  /* -------------------------------------------------------
+     RESUMEN
+     ------------------------------------------------------- */
+
+  .agenda-summary {
+    padding: 0 2px;
+  }
+
+
+  /* -------------------------------------------------------
+     TABLA
+     ------------------------------------------------------- */
+
+  .turnos-table {
+    min-width: 900px;
+  }
+
+
+  /* -------------------------------------------------------
+     CALENDARIO HEADER
+     ------------------------------------------------------- */
+
+  .calendar-header {
+    padding: 15px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .calendar-header h2 {
+    font-size: 17px;
+  }
+
+  .calendar-navigation {
+    width: 100%;
+  }
+
+  .calendar-navigation .today-small {
+    flex: 1;
+  }
+
+  .calendar-week-summary {
+    padding: 0 15px;
+  }
+
+
+  /* -------------------------------------------------------
+     CALENDARIO
+     ------------------------------------------------------- */
+
+  .week-grid {
+    min-width: 840px;
+
+    grid-template-columns:
+      repeat(7, minmax(120px, 1fr));
+  }
+
+  .day-body {
+    min-height: 350px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE CHICO
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+  .turnos-page {
+    padding:
+      20px 14px
+      40px;
+  }
+
+  .header-copy h1 {
+    font-size: 24px;
+  }
+
+  .header-copy p {
+    font-size: 12px;
+  }
+
+  .agenda-context,
+  .agenda-toolbar {
+    border-radius: 11px;
+  }
+
+  .summary-main {
+    align-items: center;
+  }
+
+  .summary-date {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 1px;
+  }
+
+  .calendar-card,
+  .table-card {
+    border-radius: 12px;
+  }
+
+}
+
+
+/* =========================================================
+   PANTALLAS GRANDES
+   ========================================================= */
+
+@media (min-width: 1500px) {
+
+  .turnos-page {
+    padding-left: 46px;
+    padding-right: 46px;
+  }
+
+  .turnos-table .col-time {
+    width: 8%;
+  }
+
+  .turnos-table .col-patient {
+    width: 19%;
+  }
+
+  .turnos-table .col-professional {
+    width: 15%;
+  }
+
+  .turnos-table .col-specialty {
+    width: 13%;
+  }
+
+  .turnos-table .col-branch {
+    width: 12%;
+  }
+
+  .turnos-table .col-status {
+    width: 11%;
+  }
+
+  .turnos-table .col-actions {
+    width: 22%;
+  }
+
+  .day-body {
+    min-height: 470px;
+  }
+
+  .calendar-event {
+    padding: 9px 8px;
+  }
+
+  .event-patient {
+    font-size: 10.5px;
+  }
+
 }

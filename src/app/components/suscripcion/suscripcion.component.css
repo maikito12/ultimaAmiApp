@@ -1,0 +1,2041 @@
+/* ==========================================
+   PÁGINA
+========================================== */
+
+.suscripcion-page {
+  width: 100%;
+  max-width: 1180px;
+
+  margin: 0 auto;
+
+  padding-bottom: 40px;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #89958f;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  letter-spacing: 1px;
+}
+
+.page-header h1 {
+  margin: 0;
+
+  color: #173f35;
+
+  font-size: 32px;
+  font-weight: 700;
+
+  letter-spacing: -0.7px;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+
+  color: #74817c;
+
+  font-size: 16px;
+}
+
+
+/* ==========================================
+   ALERTA PENDIENTE
+========================================== */
+
+.alert-pendiente {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-bottom: 22px;
+
+  padding: 15px 18px;
+
+  background: #f8faf8;
+
+  border: 1px solid #dfe9e4;
+
+  border-radius: 12px;
+}
+
+.alert-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #e8f1ed;
+
+  color: #173f35;
+
+  font-weight: 700;
+}
+
+.alert-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.alert-content strong {
+  color: #263630;
+
+  font-size: 15px;
+}
+
+.alert-content span {
+  color: #718079;
+
+  font-size: 14px;
+}
+
+
+/* ==========================================
+   GRID
+========================================== */
+
+.subscription-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(300px, 0.8fr);
+
+  gap: 20px;
+
+  align-items: start;
+}
+
+
+/* ==========================================
+   TARJETAS
+========================================== */
+
+.plan-card,
+.info-card,
+.history-card,
+.trial-card {
+  background: #ffffff;
+
+  border: 1px solid #e3ebe7;
+
+  border-radius: 16px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   PLAN
+========================================== */
+
+.plan-card {
+  padding: 26px;
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.card-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #95a19c;
+
+  font-size: 11px;
+  font-weight: 750;
+
+  letter-spacing: 0.9px;
+}
+
+.plan-card h2 {
+  margin: 0;
+
+  color: #173f35;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+/* ==========================================
+   ESTADO
+========================================== */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 10px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+.status.pending {
+  background: #f4f6f5;
+
+  color: #68756f;
+}
+
+.status.active {
+  background: #e9f5ef;
+
+  color: #247052;
+}
+
+.status.trial {
+  background: #edf4f1;
+
+  color: #35695a;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+/* ==========================================
+   PRECIO
+========================================== */
+
+.price-container {
+  display: flex;
+  align-items: baseline;
+
+  margin-top: 30px;
+
+  color: #173f35;
+}
+
+.currency {
+  margin-right: 4px;
+
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.price {
+  font-size: 44px;
+  font-weight: 750;
+
+  letter-spacing: -1.5px;
+}
+
+.period {
+  margin-left: 7px;
+
+  color: #89958f;
+
+  font-size: 15px;
+}
+
+.price-description {
+  margin-top: 5px;
+
+  color: #7a8781;
+
+  font-size: 14px;
+}
+
+
+/* ==========================================
+   DETALLES
+========================================== */
+
+.plan-details {
+  margin-top: 28px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #edf1ef;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 0;
+}
+
+.detail-row span {
+  color: #7a8781;
+
+  font-size: 14px;
+}
+
+.detail-row strong {
+  color: #33413c;
+
+  font-size: 14px;
+  font-weight: 650;
+}
+
+
+/* ==========================================
+   ACCIONES
+========================================== */
+
+.plan-actions {
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 22px;
+}
+
+.btn-primary,
+.btn-secondary {
+  border: none;
+
+  border-radius: 9px;
+
+  padding: 11px 16px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.btn-primary {
+  background: #173f35;
+
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #245448;
+}
+
+.btn-secondary {
+  background: #f2f6f4;
+
+  color: #31554b;
+}
+
+.btn-secondary:hover {
+  background: #e8efeb;
+}
+
+
+/* ==========================================
+   INFO CARD
+========================================== */
+
+.info-card {
+  padding: 24px;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.heading-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #edf4f1;
+
+  color: #173f35;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.card-heading h3 {
+  margin: 0;
+
+  color: #263630;
+
+  font-size: 16px;
+}
+
+.card-heading p {
+  margin: 3px 0 0;
+
+  color: #8a9691;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================
+   INFO ITEMS
+========================================== */
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 16px 0;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.info-item span {
+  color: #7a8781;
+
+  font-size: 14px;
+}
+
+.info-item strong {
+  color: #33413c;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  text-align: right;
+}
+
+.info-item .muted {
+  color: #929d98;
+
+  font-weight: 500;
+}
+
+
+/* ==========================================
+   AYUDA
+========================================== */
+
+.info-divider {
+  height: 1px;
+
+  margin: 8px 0 18px;
+}
+
+.help-box {
+  display: flex;
+
+  gap: 10px;
+
+  padding: 13px;
+
+  background: #f7faf8;
+
+  border-radius: 10px;
+}
+
+.help-icon {
+  width: 27px;
+  height: 27px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #e7efeb;
+
+  color: #315b4e;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.help-box strong {
+  color: #41504a;
+
+  font-size: 13px;
+}
+
+.help-box p {
+  margin: 3px 0 0;
+
+  color: #7c8983;
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+
+/* ==========================================
+   PRUEBA
+========================================== */
+
+.trial-card {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  margin-top: 20px;
+
+  padding: 20px 22px;
+
+  background: #f8fbf9;
+}
+
+.trial-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: #e7f1ec;
+
+  color: #2e6755;
+
+  font-size: 19px;
+}
+
+.trial-content {
+  flex: 1;
+}
+
+.trial-label {
+  color: #8c9993;
+
+  font-size: 10px;
+  font-weight: 750;
+
+  letter-spacing: 0.8px;
+}
+
+.trial-content h3 {
+  margin: 3px 0;
+
+  color: #29433a;
+
+  font-size: 16px;
+}
+
+.trial-content p {
+  margin: 0;
+
+  color: #7c8983;
+
+  font-size: 13px;
+}
+
+.trial-date {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 3px;
+}
+
+.trial-date span {
+  color: #8b9792;
+
+  font-size: 12px;
+}
+
+.trial-date strong {
+  color: #31564b;
+
+  font-size: 15px;
+}
+
+
+/* ==========================================
+   HISTORIAL
+========================================== */
+
+.history-card {
+  margin-top: 20px;
+
+  padding: 24px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.history-header h2 {
+  margin: 0;
+
+  color: #263630;
+
+  font-size: 20px;
+}
+
+.link-button {
+  border: none;
+
+  background: transparent;
+
+  color: #315b4e;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+
+/* ==========================================
+   EMPTY HISTORY
+========================================== */
+
+.empty-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 42px 20px;
+
+  text-align: center;
+}
+
+.empty-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: #f1f5f3;
+
+  color: #819089;
+
+  font-size: 18px;
+}
+
+.empty-history h3 {
+  margin: 0 0 5px;
+
+  color: #4c5a54;
+
+  font-size: 15px;
+}
+
+.empty-history p {
+  margin: 0;
+
+  color: #89958f;
+
+  font-size: 13px;
+}
+/* ==========================================
+   MERCADO PAGO
+========================================== */
+
+.payment-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-top: 20px;
+  padding: 22px 24px;
+
+  background: #ffffff;
+  border: 1px solid #e3ebe7;
+  border-radius: 16px;
+
+  box-sizing: border-box;
+}
+
+.payment-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background: #edf4f1;
+  color: #173f35;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.payment-content {
+  flex: 1;
+}
+
+.payment-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #89958f;
+
+  font-size: 11px;
+  font-weight: 750;
+
+  letter-spacing: 1px;
+}
+
+.payment-content h3 {
+  margin: 0 0 5px;
+
+  color: #173f35;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.payment-content p {
+  margin: 0;
+
+  color: #74817c;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.payment-card .btn-primary {
+  flex-shrink: 0;
+}
+/* ==========================================
+   CHECKOUT / ELEGIR PLAN
+========================================== */
+
+.checkout-container {
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+/* HEADER */
+
+.checkout-header {
+  margin-bottom: 26px;
+}
+
+.checkout-header .eyebrow {
+  margin-bottom: 7px;
+}
+
+.checkout-header h1 {
+  margin: 0;
+
+  color: #173f35;
+
+  font-size: 32px;
+  font-weight: 700;
+
+  letter-spacing: -0.7px;
+}
+
+.checkout-header p {
+  max-width: 650px;
+
+  margin: 8px 0 0;
+
+  color: #74817c;
+
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   TARJETA DEL PLAN
+========================================== */
+
+.checkout-card {
+  width: 100%;
+
+  padding: 30px;
+
+  background: #ffffff;
+
+  border: 1px solid #e3ebe7;
+  border-radius: 18px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   HEADER DEL PLAN
+========================================== */
+
+.checkout-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding-bottom: 26px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.checkout-card-header h2 {
+  margin: 6px 0 7px;
+
+  color: #173f35;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.checkout-card-header p {
+  margin: 0;
+
+  max-width: 500px;
+
+  color: #74817c;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   PRECIO DEL PLAN
+========================================== */
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+
+  white-space: nowrap;
+
+  color: #173f35;
+}
+
+.plan-price .currency {
+  margin-right: 4px;
+
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.plan-price .price {
+  font-size: 42px;
+  font-weight: 750;
+
+  letter-spacing: -1.5px;
+}
+
+.plan-price .period {
+  margin-left: 6px;
+
+  color: #89958f;
+
+  font-size: 14px;
+}
+
+
+/* ==========================================
+   PROFESIONALES
+========================================== */
+
+.professionals-section {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 26px 0;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.section-title {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.section-title > span {
+  color: #263630;
+
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.section-title small {
+  color: #89958f;
+
+  font-size: 13px;
+}
+
+
+/* ==========================================
+   CONTADOR
+========================================== */
+
+.counter {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 5px;
+
+  background: #f4f7f5;
+
+  border: 1px solid #e3ebe7;
+
+  border-radius: 11px;
+}
+
+.counter button {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #173f35;
+
+  font-size: 20px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.counter button:hover:not(:disabled) {
+  background: #edf4f1;
+
+  transform: translateY(-1px);
+}
+
+.counter button:disabled {
+  color: #b6c0bc;
+
+  cursor: not-allowed;
+}
+
+.counter-value {
+  min-width: 28px;
+
+  text-align: center;
+
+  color: #173f35;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+
+/* ==========================================
+   COTIZACIÓN
+========================================== */
+
+.quote-box {
+  margin-top: 24px;
+
+  padding: 20px 22px;
+
+  background: #f8faf9;
+
+  border: 1px solid #e8efeb;
+
+  border-radius: 12px;
+}
+
+.quote-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 9px 0;
+}
+
+.quote-row span {
+  color: #74817c;
+
+  font-size: 14px;
+}
+
+.quote-row strong {
+  color: #33413c;
+
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.quote-row .discount {
+  color: #247052;
+}
+
+
+/* ==========================================
+   SEPARADOR
+========================================== */
+
+.quote-divider {
+  height: 1px;
+
+  margin: 10px 0;
+
+  background: #dfe8e3;
+}
+
+
+/* ==========================================
+   TOTAL
+========================================== */
+
+.quote-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-top: 4px;
+}
+
+.quote-total span {
+  color: #263630;
+
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.quote-total strong {
+  color: #173f35;
+
+  font-size: 23px;
+  font-weight: 750;
+}
+
+
+/* ==========================================
+   CARGANDO COTIZACIÓN
+========================================== */
+
+.quote-loading {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 24px;
+
+  padding: 20px;
+
+  background: #f8faf9;
+
+  border: 1px solid #e8efeb;
+
+  border-radius: 12px;
+
+  color: #74817c;
+
+  font-size: 14px;
+}
+
+
+/* ==========================================
+   PLAN PERSONALIZADO
+========================================== */
+
+.custom-plan {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+
+  margin-top: 24px;
+
+  padding: 18px;
+
+  background: #f8faf9;
+
+  border: 1px solid #dfe9e4;
+
+  border-radius: 12px;
+}
+
+.custom-icon {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  background: #e7f1ec;
+
+  color: #173f35;
+
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.custom-plan strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #263630;
+
+  font-size: 15px;
+}
+
+.custom-plan p {
+  margin: 0;
+
+  color: #74817c;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   BOTÓN CHECKOUT
+========================================== */
+
+.checkout-button {
+  width: 100%;
+
+  margin-top: 24px;
+
+  padding: 14px 20px;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+}
+
+.checkout-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* ==========================================
+   SPINNER
+========================================== */
+
+.loading-spinner.small {
+  width: 18px;
+  height: 18px;
+
+  border-width: 2px;
+}
+
+.quote-container {
+  position: relative;
+}
+
+.quote-updating {
+  position: absolute;
+
+  top: 12px;
+  right: 16px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  z-index: 2;
+
+  color: #74817c;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.quote-updating .loading-spinner {
+  width: 14px;
+  height: 14px;
+
+  border-width: 2px;
+}
+
+/* ==========================================
+   SECRETARIAS INCLUIDAS
+========================================== */
+
+.secretaries-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 22px 0;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.secretaries-value {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+
+  padding: 9px 14px;
+
+  background: #f4f7f5;
+
+  border: 1px solid #e3ebe7;
+
+  border-radius: 10px;
+}
+
+.secretaries-number {
+  color: #173f35;
+
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.secretaries-label {
+  color: #74817c;
+
+  font-size: 13px;
+}
+/* ==========================================
+   RESPONSIVE CHECKOUT
+========================================== */
+
+@media (max-width: 700px) {
+
+  .checkout-card {
+    padding: 22px;
+  }
+
+  .checkout-card-header {
+    flex-direction: column;
+  }
+
+  .plan-price {
+    margin-top: 5px;
+  }
+
+  .professionals-section {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .counter {
+    align-self: flex-start;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .checkout-header h1 {
+    font-size: 28px;
+  }
+
+  .checkout-header p {
+    font-size: 15px;
+  }
+
+  .checkout-card {
+    padding: 18px;
+  }
+
+  .checkout-card-header h2 {
+    font-size: 22px;
+  }
+
+  .plan-price .price {
+    font-size: 36px;
+  }
+
+  .quote-total strong {
+    font-size: 20px;
+  }
+
+}
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+
+  .subscription-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .suscripcion-page {
+    padding: 0 4px 30px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .page-header p {
+    font-size: 15px;
+  }
+
+  .alert-pendiente {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .alert-pendiente .btn-primary {
+    width: 100%;
+  }
+
+  .plan-card,
+  .info-card,
+  .history-card {
+    padding: 20px;
+  }
+
+  .plan-card-header {
+    flex-direction: column;
+  }
+
+  .price {
+    font-size: 38px;
+  }
+
+  .plan-actions {
+    flex-direction: column;
+  }
+
+  .plan-actions button {
+    width: 100%;
+  }
+
+  .trial-card {
+    align-items: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+  .trial-date {
+    width: 100%;
+
+    align-items: flex-start;
+
+    margin-left: 58px;
+  }
+.payment-card {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.payment-card .btn-primary {
+  width: 100%;
+}
+}
+
+
+.custom-content {
+  flex: 1;
+}
+
+.custom-contact-button {
+  margin-top: 16px;
+
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #173f35;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.custom-contact-button:hover {
+  background: #125044;
+
+  transform: translateY(-1px);
+}
+
+.custom-contact-button:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+.whatsapp-section {
+  margin-top: 20px;
+  padding: 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #e3ebe7;
+  border-radius: 16px;
+
+  box-sizing: border-box;
+}
+
+.whatsapp-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.whatsapp-section-header h2 {
+  margin: 0;
+
+  color: #263630;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.whatsapp-section-header p {
+  max-width: 720px;
+
+  margin: 6px 0 0;
+
+  color: #74817c;
+
+  line-height: 1.5;
+}
+
+.whatsapp-loading {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 22px 0;
+
+  color: #74817c;
+
+  font-size: 14px;
+}
+
+.whatsapp-usage-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 12px;
+
+  padding: 22px 0;
+}
+
+.whatsapp-stat {
+  min-width: 0;
+
+  padding: 16px;
+
+  background: #f8faf9;
+
+  border: 1px solid #e7eeeb;
+  border-radius: 12px;
+}
+
+.whatsapp-stat > span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #77857f;
+
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.whatsapp-stat strong {
+  display: block;
+
+  color: #173f35;
+
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.whatsapp-stat small {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #8a9691;
+
+  line-height: 1.4;
+}
+
+.whatsapp-stat.accent {
+  background: #f0f7f4;
+
+  border-color: #d8e8e1;
+}
+
+.whatsapp-stat.total {
+  background: #173f35;
+
+  border-color: #173f35;
+}
+
+.whatsapp-stat.total > span,
+.whatsapp-stat.total strong,
+.whatsapp-stat.total small {
+  color: #ffffff;
+}
+
+.whatsapp-stat.total small {
+  opacity: 0.76;
+}
+
+
+/* =========================================================
+   PAQUETES WHATSAPP
+========================================================= */
+
+.whatsapp-packages-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid #edf1ef;
+}
+
+.whatsapp-packages-heading h3,
+.whatsapp-purchases h3 {
+  margin: 0;
+
+  color: #263630;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.whatsapp-packages-heading p,
+.whatsapp-purchases p {
+  margin: 5px 0 0;
+
+  color: #84918c;
+}
+
+.whatsapp-packages-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-top: 16px;
+}
+
+.whatsapp-package-card {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 210px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2ebe7;
+  border-radius: 13px;
+}
+
+.package-label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #8b9892;
+
+  font-weight: 750;
+  letter-spacing: 0.7px;
+}
+
+.whatsapp-package-card h3 {
+  margin: 0;
+
+  color: #173f35;
+
+  font-size: 25px;
+  font-weight: 750;
+}
+
+.whatsapp-package-card p {
+  margin: 4px 0 0;
+
+  color: #7c8983;
+
+  line-height: 1.45;
+}
+
+.package-price {
+  display: block;
+
+  margin-top: auto;
+  padding-top: 18px;
+
+  color: #263630;
+
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.package-button {
+  width: 100%;
+
+  margin-top: 12px;
+}
+
+.custom-package {
+  background: #f8faf9;
+}
+
+.custom-package .package-button {
+  margin-top: auto;
+}
+
+
+/* =========================================================
+   HISTORIAL WHATSAPP
+========================================================= */
+
+.whatsapp-purchases {
+  margin-top: 24px;
+  padding-top: 22px;
+
+  border-top: 1px solid #edf1ef;
+}
+
+.whatsapp-purchases-header {
+  margin-bottom: 12px;
+}
+
+.whatsapp-empty {
+  padding: 22px;
+
+  background: #f8faf9;
+
+  border: 1px dashed #dbe6e1;
+  border-radius: 11px;
+
+  color: #819089;
+
+  font-size: 14px;
+  text-align: center;
+}
+
+.whatsapp-purchase-list {
+  border: 1px solid #e5ece9;
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+.whatsapp-purchase-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #edf1ef;
+}
+
+.whatsapp-purchase-row:last-child {
+  border-bottom: 0;
+}
+
+.whatsapp-purchase-row > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.whatsapp-purchase-row strong {
+  color: #34433d;
+
+  font-size: 14px;
+}
+
+.whatsapp-purchase-row span {
+  color: #87938e;
+}
+
+.purchase-right {
+  align-items: flex-end;
+}
+
+.purchase-status {
+  display: inline-flex;
+
+  width: fit-content;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 12px !important;
+  font-weight: 700;
+}
+
+.purchase-pending {
+  background: #fff7e7;
+
+  color: #9d6a13 !important;
+}
+
+.purchase-paid {
+  background: #e9f5ef;
+
+  color: #247052 !important;
+}
+
+.purchase-cancelled {
+  background: #fff0f0;
+
+  color: #b64b4b !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE WHATSAPP
+========================================================= */
+
+@media (max-width: 1050px) {
+
+  .whatsapp-usage-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .whatsapp-packages-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .whatsapp-section {
+    padding: 18px;
+  }
+
+  .whatsapp-section-header {
+    flex-direction: column;
+  }
+
+  .whatsapp-section-header .btn-secondary {
+    width: 100%;
+  }
+
+  .whatsapp-usage-grid,
+  .whatsapp-packages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .whatsapp-purchase-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .purchase-right {
+    width: 100%;
+
+    align-items: flex-start;
+  }
+
+}
+
+/* =========================================================
+   TIPOGRAFÍA UNIFICADA - SUSCRIPCIÓN
+========================================================= */
+
+.suscripcion-page,
+.suscripcion-page button,
+.suscripcion-page input,
+.suscripcion-page select,
+.suscripcion-page textarea {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* TÍTULO PRINCIPAL */
+
+.page-header h1,
+.checkout-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+/* TÍTULOS DE SECCIÓN */
+
+.plan-card h2,
+.history-header h2,
+.whatsapp-section-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.card-heading h3,
+.payment-content h3,
+.trial-content h3,
+.checkout-card-header h2,
+.whatsapp-packages-heading h3,
+.whatsapp-purchases h3 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* LABELS */
+
+.eyebrow,
+.card-label,
+.payment-label,
+.trial-label,
+.package-label,
+.status-label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* TEXTO NORMAL */
+
+.page-header p,
+.checkout-header p,
+.checkout-card-header p,
+.payment-content p,
+.whatsapp-section-header p,
+.whatsapp-package-card p,
+.whatsapp-packages-heading p,
+.whatsapp-purchases p,
+.help-box p,
+.custom-plan p,
+.trial-content p,
+.price-description,
+.info-item span,
+.info-item strong,
+.detail-row span,
+.detail-row strong,
+.quote-row span,
+.quote-row strong,
+.whatsapp-purchase-row strong,
+.whatsapp-empty {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* TEXTO AUXILIAR */
+
+.section-title small,
+.whatsapp-stat small,
+.whatsapp-purchase-row span,
+.trial-date span {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* BOTONES */
+
+.btn-primary,
+.btn-secondary,
+.link-button,
+.custom-contact-button,
+.package-button {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+/* ESTADOS */
+
+.status,
+.purchase-status {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* PRECIOS Y NÚMEROS */
+
+.price,
+.plan-price .price {
+  font-size: 38px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.package-price {
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.whatsapp-stat strong {
+  font-size: 22px;
+  font-weight: 750;
+}
+
+.quote-total strong {
+  font-size: 20px;
+  font-weight: 750;
+}
+
+@media (max-width: 650px) {
+  .page-header h1,
+  .checkout-header h1 {
+    font-size: 26px;
+  }
+
+  .plan-card h2,
+  .history-header h2,
+  .whatsapp-section-header h2 {
+    font-size: 18px;
+  }
+
+  .price,
+  .plan-price .price {
+    font-size: 34px;
+  }
+}

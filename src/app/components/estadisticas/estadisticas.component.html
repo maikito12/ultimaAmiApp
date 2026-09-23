@@ -1,117 +1,1035 @@
-<div class="dashboard-wrapper">
-    <header class="db-header-filtros">
-        <div class="title-group">
-            <h1>Panel de Análisis Estadístico</h1>
-            <p>Analizá la productividad de tu consultorio y optimizá la gestión de tus turnos.</p>
-        </div>
-        
-        <div class="filter-bar">
-            <select [(ngModel)]="filtro.periodo" (change)="aplicarFiltros()">
-                <option value="esta_semana">Esta Semana</option>
-                <option value="este_mes">Este Mes</option>
-                <option value="ultimo_trimestre">Último Trimestre</option>
-                <option value="personalizado">Rango Personalizado</option>
-            </select>
-            
-            <div *ngIf="filtro.periodo === 'personalizado'" style="display: flex; align-items: center; gap: 8px;">
-                <input type="date" [(ngModel)]="filtro.fechaInicio" (change)="aplicarFiltros()">
-                <span>a</span>
-                <input type="date" [(ngModel)]="filtro.fechaFin" (change)="aplicarFiltros()">
-            </div>
-            
-            <select [(ngModel)]="filtro.sucursal" (change)="aplicarFiltros()">
-                <option value="todas">Todas las Sedes</option>
-                <option value="central">Sede Central</option>
-                <option value="norte">Sede Norte</option>
-            </select>
-            
-            <button class="btn-primary-soft" (click)="aplicarFiltros()">Filtrar</button>
-            <button class="btn-primary-soft" (click)="restablecerFiltros()">Limpiar</button>
-        </div>
-    </header>
+<section class="estadisticas-page">
 
-    <div class="kpi-grid">
-        <div class="kpi-card" *ngFor="let m of metrics" [ngClass]="m.color">
-            <div class="kpi-content">
-                <p>{{ m.label }}</p>
-                <h2>{{ m.valor }}</h2>
-                <span class="kpi-sub">{{ m.sub }}</span>
-            </div>
-        </div>
+  <!-- =======================================================
+       HEADER
+       ======================================================= -->
+
+  <header class="page-header">
+
+    <div>
+      <span class="eyebrow">
+        ANÁLISIS
+      </span>
+
+      <h1>
+        Estadísticas
+      </h1>
+
+      <p>
+        {{ subtitulo }}
+      </p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 25px 0; width: 100%;">
-        
-        <div class="seg-card" *ngFor="let seg of segmentacion" style="background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-            <h4 style="margin-top: 0; margin-bottom: 15px; color: #4a5568; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ seg.titulo }}</h4>
-            <div class="seg-item" *ngFor="let item of seg.data" style="margin-bottom: 12px;">
-                <div class="seg-info" style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
-                    <span style="font-weight: 600; color: #2d3748;">{{ item.label }}</span>
-                    <span style="color: #718096; font-weight: 700;">{{ item.val }}%</span>
-                </div>
-                <div class="seg-bar-bg" style="background: #edf2f7; border-radius: 8px; height: 8px; width: 100%; overflow: hidden;">
-                    <div class="seg-bar-fill" 
-                         [style.width.%]="item.val"
-                         [ngClass]="{'orange-bar': seg.titulo.includes('Canal'), 'green-bar': seg.titulo.includes('Flujo')}"
-                         style="height: 100%; border-radius: 8px; transition: width 0.5s ease-in-out;">
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="seg-card" style="background: #ffffff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-            <h4 style="margin-top: 0; margin-bottom: 15px; color: #4a5568; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Distribución por Edad</h4>
-            <div class="seg-item" *ngFor="let item of datosEdad" style="margin-bottom: 12px;">
-                <div class="seg-info" style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
-                    <span style="font-weight: 600; color: #2d3748;">{{ item.label }} años</span>
-                    <span style="color: #718096; font-weight: 700;">{{ item.val | number:'1.0-0' }}%</span>
-                </div>
-                <div class="seg-bar-bg" style="background: #edf2f7; border-radius: 8px; height: 8px; width: 100%; overflow: hidden;">
-                    <div class="seg-bar-fill" [style.width.%]="item.val" style="background: #805ad5; height: 100%; border-radius: 8px;"></div>
-                </div>
-            </div>
-        </div>
+    <div class="header-meta">
+
+      <strong *ngIf="periodoTexto">
+        {{ periodoTexto }}
+      </strong>
+
+      <span>
+        {{ fechaActualizacion }}
+      </span>
+
     </div>
 
-    <div class="charts-container">
-        <div class="chart-box">
-            <div class="box-header">
-                <h3>Ocupación por Horario</h3>
-            </div>
-            <div class="heat-map">
-                <div class="heat-row" *ngFor="let h of distribucionHoraria">
-                    <span class="hour-label">{{ h.rango }}</span>
-                    <div class="heat-bar-bg">
-                        <div class="heat-bar-fill" [style.width.%]="h.cupo"></div>
-                    </div>
-                    <span class="percent-label">{{ h.cupo }}%</span>
-                </div>
-            </div>
+  </header>
+
+
+  <!-- =======================================================
+       FILTROS
+       ======================================================= -->
+
+  <section class="filter-panel">
+
+    <div class="filter-grid">
+
+      <label class="field">
+
+        <span>
+          Período
+        </span>
+
+        <select
+          [(ngModel)]="filtro.periodo"
+          [disabled]="cargando"
+          (change)="aplicarFiltros()"
+        >
+
+          <option value="hoy">
+            Hoy
+          </option>
+
+          <option value="ultimos_7_dias">
+            Últimos 7 días
+          </option>
+
+          <option value="este_mes">
+            Este mes
+          </option>
+
+          <option value="mes_pasado">
+            Mes pasado
+          </option>
+
+          <option value="personalizado">
+            Personalizado
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label
+        class="field"
+        *ngIf="mostrarFiltroProfesional"
+      >
+
+        <span>
+          Profesional
+        </span>
+
+        <select
+          [(ngModel)]="filtro.profesionalId"
+          [disabled]="cargando"
+          (change)="aplicarFiltros()"
+        >
+
+          <option
+            *ngFor="let profesional of profesionales"
+            [value]="profesional.id"
+          >
+            {{ profesional.nombre }}
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label class="field">
+
+        <span>
+          Sucursal
+        </span>
+
+        <select
+          [(ngModel)]="filtro.sucursalId"
+          [disabled]="cargando"
+          (change)="aplicarFiltros()"
+        >
+
+          <option
+            *ngFor="let sucursal of sucursales"
+            [value]="sucursal.id"
+          >
+            {{ sucursal.nombre }}
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label class="field">
+
+        <span>
+          Especialidad
+        </span>
+
+        <select
+          [(ngModel)]="filtro.especialidadId"
+          [disabled]="cargando"
+          (change)="aplicarFiltros()"
+        >
+
+          <option
+            *ngFor="let especialidad of especialidades"
+            [value]="especialidad.id"
+          >
+            {{ especialidad.nombre }}
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <button
+        type="button"
+        class="btn-reset"
+        [disabled]="cargando"
+        (click)="restablecerFiltros()"
+      >
+        Restablecer
+      </button>
+
+    </div>
+
+
+    <div
+      class="custom-dates"
+      *ngIf="mostrarFechasPersonalizadas"
+    >
+
+      <label class="field">
+
+        <span>
+          Desde
+        </span>
+
+        <input
+          type="date"
+          [(ngModel)]="filtro.fechaInicio"
+          [disabled]="cargando"
+        >
+
+      </label>
+
+
+      <label class="field">
+
+        <span>
+          Hasta
+        </span>
+
+        <input
+          type="date"
+          [(ngModel)]="filtro.fechaFin"
+          [disabled]="cargando"
+        >
+
+      </label>
+
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="cargando"
+        (click)="aplicarFechasPersonalizadas()"
+      >
+        Aplicar
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       KPIS
+       ======================================================= -->
+
+  <div class="kpi-grid">
+
+    <article
+      class="kpi-card"
+      *ngFor="let kpi of kpis; trackBy: trackById"
+      [attr.data-type]="kpi.tipo"
+    >
+
+      <div class="kpi-top">
+
+        <span class="kpi-label">
+          {{ kpi.label }}
+        </span>
+
+        <span class="kpi-dot"></span>
+
+      </div>
+
+
+      <strong class="kpi-value">
+        {{ kpi.valor }}
+      </strong>
+
+
+      <span class="kpi-detail">
+        {{ kpi.detalle }}
+      </span>
+
+    </article>
+
+  </div>
+
+
+  <!-- =======================================================
+       FILA PRINCIPAL
+       ======================================================= -->
+
+  <div class="main-grid">
+
+    <!-- EVOLUCIÓN -->
+
+    <section class="panel trend-panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            VOLUMEN
+          </span>
+
+          <h2>
+            Turnos durante el período
+          </h2>
         </div>
 
-        <div class="chart-box">
-            <div class="box-header">
-                <h3>Clientes Recurrentes</h3>
-                <button class="btn-text" (click)="verTodosLosPacientes()">Ver todos →</button>
-            </div>
-            <div class="table-container">
-                <table class="mini-table">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Visitas</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let p of rankingPacientes.slice(0,4)">
-                            <td>{{ p.nombre }}</td>
-                            <td>{{ p.visitas }}</td>
-                            <td><span class="tag" [ngClass]="p.status.toLowerCase()">{{ p.status }}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+        <span class="panel-helper">
+          Pico: {{ picoTurnos }}
+        </span>
+
+      </div>
+
+
+      <div
+        class="chart-empty"
+        *ngIf="evolucionTurnos.length === 0"
+      >
+        No hay datos para este período.
+      </div>
+
+
+      <div
+        class="chart-area"
+        *ngIf="evolucionTurnos.length > 0"
+      >
+
+        <div class="chart-grid-lines">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-    </div> 
-</div>
+
+
+        <div class="bar-chart">
+
+          <div
+            class="bar-column"
+            *ngFor="
+              let item of evolucionTurnos;
+              let i = index
+            "
+          >
+
+            <div class="bar-wrap">
+
+              <span
+                class="bar"
+                [style.height.%]="alturaBarra(item.valor)"
+                [attr.title]="item.valor + ' turnos · ' + item.fecha"
+              >
+              </span>
+
+            </div>
+
+
+            <small [class.invisible]="!mostrarLabelDia(i)">
+              {{ item.label }}
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="chart-foot">
+
+        <span>
+          Días del período
+        </span>
+
+        <strong>
+          {{ kpis[0]?.valor || 0 }} turnos
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- RESULTADO -->
+
+    <section class="panel attendance-panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            RESULTADO
+          </span>
+
+          <h2>
+            Turnos resueltos
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div class="attendance-content">
+
+        <div
+          class="donut"
+          [style.background]="estiloDonut"
+        >
+
+          <div class="donut-center">
+
+            <strong>
+              {{ porcentajeAtendidosResueltos }}%
+            </strong>
+
+            <span>
+              atendidos
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="legend-list">
+
+          <div
+            class="legend-item"
+            *ngFor="let item of estadosPrincipales"
+          >
+
+            <span
+              class="legend-dot"
+              [class.atendidos]="item.id === 'atendidos'"
+              [class.cancelados]="item.id === 'cancelados'"
+              [class.no-asistieron]="item.id === 'no-asistio'"
+            >
+            </span>
+
+
+            <div>
+
+              <strong>
+                {{ item.label }}
+              </strong>
+
+              <small>
+                {{ item.cantidad }}
+                ·
+                {{ formatearPorcentaje(item.porcentaje) }}%
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- =======================================================
+       CANAL / HORARIOS / OBRA SOCIAL
+       ======================================================= -->
+
+  <div class="secondary-grid">
+
+    <!-- ORIGEN -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            CANAL
+          </span>
+
+          <h2>
+            Cómo llegan los turnos
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="metric-list"
+        *ngIf="origenesReserva.length > 0; else sinOrigen"
+      >
+
+        <div
+          class="metric-row"
+          *ngFor="
+            let item of origenesReserva;
+            trackBy: trackByLabel
+          "
+        >
+
+          <div class="metric-head">
+
+            <span>
+              {{ item.origen }}
+            </span>
+
+            <strong>
+              {{ formatearPorcentaje(item.porcentaje) }}%
+            </strong>
+
+          </div>
+
+
+          <div class="progress-track">
+
+            <span
+              class="progress-fill"
+              [style.width.%]="item.porcentaje"
+            >
+            </span>
+
+          </div>
+
+
+          <small>
+            {{ item.cantidad }} turnos
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinOrigen>
+        <div class="mini-empty">
+          Todavía no hay turnos en este período.
+        </div>
+      </ng-template>
+
+    </section>
+
+
+    <!-- HORARIOS -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            DEMANDA
+          </span>
+
+          <h2>
+            Horarios más elegidos
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="ranking-list"
+        *ngIf="horarios.length > 0; else sinHorarios"
+      >
+
+        <div
+          class="ranking-row"
+          *ngFor="
+            let item of horarios;
+            trackBy: trackByLabel
+          "
+        >
+
+          <span class="ranking-label">
+            {{ item.hora }}
+          </span>
+
+
+          <div class="ranking-track">
+
+            <span
+              class="ranking-fill"
+              [style.width.%]="anchoRelativo(item.cantidad, horarios)"
+            >
+            </span>
+
+          </div>
+
+
+          <strong>
+            {{ item.cantidad }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinHorarios>
+        <div class="mini-empty">
+          No hay horarios para analizar.
+        </div>
+      </ng-template>
+
+    </section>
+
+
+    <!-- OBRA SOCIAL -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            COBERTURA
+          </span>
+
+          <h2>
+            Obras sociales más usadas
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="metric-list"
+        *ngIf="obrasSociales.length > 0; else sinObras"
+      >
+
+        <div
+          class="metric-row"
+          *ngFor="
+            let item of obrasSociales;
+            trackBy: trackById
+          "
+        >
+
+          <div class="metric-head">
+
+            <span class="truncate">
+              {{ item.nombre }}
+            </span>
+
+            <strong>
+              {{ formatearPorcentaje(item.porcentaje) }}%
+            </strong>
+
+          </div>
+
+
+          <div class="progress-track">
+
+            <span
+              class="progress-fill soft"
+              [style.width.%]="item.porcentaje"
+            >
+            </span>
+
+          </div>
+
+
+          <small>
+            {{ item.cantidad }} turnos
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinObras>
+        <div class="mini-empty">
+          No hay coberturas registradas en el período.
+        </div>
+      </ng-template>
+
+    </section>
+
+  </div>
+
+
+  <!-- =======================================================
+       DÍA / SUCURSAL / ESPECIALIDAD
+       ======================================================= -->
+
+  <div class="secondary-grid extra-grid">
+
+    <!-- DÍA DE SEMANA -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            SEMANA
+          </span>
+
+          <h2>
+            Días con más actividad
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="ranking-list"
+        *ngIf="porDiaSemana.length > 0; else sinDias"
+      >
+
+        <div
+          class="ranking-row"
+          *ngFor="
+            let item of porDiaSemana;
+            trackBy: trackByLabel
+          "
+        >
+
+          <span class="ranking-label">
+            {{ item.dia }}
+          </span>
+
+
+          <div class="ranking-track">
+
+            <span
+              class="ranking-fill"
+              [style.width.%]="anchoRelativo(item.cantidad, porDiaSemana)"
+            >
+            </span>
+
+          </div>
+
+
+          <strong>
+            {{ item.cantidad }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinDias>
+        <div class="mini-empty">
+          No hay actividad para comparar.
+        </div>
+      </ng-template>
+
+    </section>
+
+
+    <!-- SUCURSALES -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            SUCURSALES
+          </span>
+
+          <h2>
+            Distribución por sede
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="metric-list"
+        *ngIf="porSucursal.length > 0; else sinSucursales"
+      >
+
+        <div
+          class="metric-row"
+          *ngFor="
+            let item of porSucursal;
+            trackBy: trackById
+          "
+        >
+
+          <div class="metric-head">
+
+            <span class="truncate">
+              {{ item.sucursal }}
+            </span>
+
+            <strong>
+              {{ formatearPorcentaje(item.porcentaje) }}%
+            </strong>
+
+          </div>
+
+
+          <div class="progress-track">
+
+            <span
+              class="progress-fill"
+              [style.width.%]="item.porcentaje"
+            >
+            </span>
+
+          </div>
+
+
+          <small>
+            {{ item.cantidad }} turnos
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinSucursales>
+        <div class="mini-empty">
+          No hay sucursales con actividad.
+        </div>
+      </ng-template>
+
+    </section>
+
+
+    <!-- ESPECIALIDADES -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            ESPECIALIDADES
+          </span>
+
+          <h2>
+            Demanda por especialidad
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="metric-list"
+        *ngIf="porEspecialidad.length > 0; else sinEspecialidades"
+      >
+
+        <div
+          class="metric-row"
+          *ngFor="
+            let item of porEspecialidad;
+            trackBy: trackById
+          "
+        >
+
+          <div class="metric-head">
+
+            <span class="truncate">
+              {{ item.especialidad }}
+            </span>
+
+            <strong>
+              {{ formatearPorcentaje(item.porcentaje) }}%
+            </strong>
+
+          </div>
+
+
+          <div class="progress-track">
+
+            <span
+              class="progress-fill soft"
+              [style.width.%]="item.porcentaje"
+            >
+            </span>
+
+          </div>
+
+
+          <small>
+            {{ item.cantidad }} turnos
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <ng-template #sinEspecialidades>
+        <div class="mini-empty">
+          No hay especialidades con actividad.
+        </div>
+      </ng-template>
+
+    </section>
+
+  </div>
+
+
+  <!-- =======================================================
+       PROFESIONALES / ESTADOS
+       ======================================================= -->
+
+  <div class="bottom-grid">
+
+    <!-- PROFESIONALES: SOLO ADMIN -->
+
+    <section
+      class="panel"
+      *ngIf="porProfesional.length > 0"
+    >
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            EQUIPO
+          </span>
+
+          <h2>
+            Actividad por profesional
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div class="professional-table-wrap">
+
+        <table class="professional-table">
+
+          <thead>
+            <tr>
+              <th>Profesional</th>
+              <th>Turnos</th>
+              <th>Atendidos</th>
+              <th>Participación</th>
+            </tr>
+          </thead>
+
+
+          <tbody>
+
+            <tr
+              *ngFor="
+                let item of porProfesional;
+                trackBy: trackById
+              "
+            >
+
+              <td>
+                <strong>
+                  {{ item.profesional }}
+                </strong>
+              </td>
+
+              <td>
+                {{ item.cantidad }}
+              </td>
+
+              <td>
+                {{ item.atendidos }}
+              </td>
+
+              <td>
+                {{ formatearPorcentaje(item.porcentajeDelTotal) }}%
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- ESTADOS COMPLETOS -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <span class="panel-kicker">
+            ESTADOS
+          </span>
+
+          <h2>
+            Estado actual de los turnos
+          </h2>
+        </div>
+
+      </div>
+
+
+      <div
+        class="state-grid"
+        *ngIf="porEstadoCompleto.length > 0; else sinEstados"
+      >
+
+        <article
+          class="state-card"
+          *ngFor="
+            let item of porEstadoCompleto;
+            trackBy: trackByLabel
+          "
+        >
+
+          <span>
+            {{ item.estado }}
+          </span>
+
+          <strong>
+            {{ item.cantidad }}
+          </strong>
+
+          <small>
+            {{ formatearPorcentaje(item.porcentaje) }}%
+          </small>
+
+        </article>
+
+      </div>
+
+
+      <ng-template #sinEstados>
+        <div class="mini-empty">
+          No hay estados para mostrar.
+        </div>
+      </ng-template>
+
+    </section>
+
+  </div>
+
+
+  <!-- =======================================================
+       LOADING
+       ======================================================= -->
+
+  <div
+    class="loading-layer"
+    *ngIf="cargando"
+  >
+
+    <div class="spinner"></div>
+
+  </div>
+
+</section>

@@ -1,0 +1,402 @@
+:host {
+  display: contents;
+}
+
+.dialogo-overlay,
+.dialogo-overlay * {
+  box-sizing: border-box;
+}
+
+.dialogo-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 2147483000;
+
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(24, 39, 34, 0.42);
+
+  backdrop-filter:
+    blur(2px);
+
+  pointer-events: auto;
+
+  overflow-y: auto;
+
+  animation:
+    dialogo-fondo 0.16s ease-out both;
+}
+
+
+.dialogo-card {
+  width:
+    min(
+      500px,
+      calc(100vw - 40px)
+    );
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border:
+    1px solid #dfe8e4;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 24px 70px rgba(15, 45, 36, 0.18);
+
+  animation:
+    dialogo-entrada 0.2s ease-out both;
+}
+
+
+.dialogo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding:
+    22px 22px 18px;
+}
+
+
+.dialogo-heading {
+  min-width: 0;
+}
+
+
+.dialogo-eyebrow {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #9aa49f;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.9px;
+}
+
+
+.dialogo-heading h2 {
+  margin: 0;
+
+  color: #30473d;
+
+  font-size: 20px;
+  font-weight: 720;
+
+  letter-spacing: -0.35px;
+
+  line-height: 1.2;
+}
+
+
+.dialogo-heading p {
+  max-width: 420px;
+
+  margin:
+    8px 0 0;
+
+  color: #7d8984;
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+
+.dialogo-close {
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: none;
+  border-radius: 8px;
+
+  color: #98a39e;
+
+  font-family: inherit;
+  font-size: 19px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+
+.dialogo-close:hover {
+  background: #f2f6f4;
+
+  color: #4f6259;
+}
+
+
+.dialogo-body {
+  padding:
+    0 22px 20px;
+}
+
+
+.dialogo-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.dialogo-field > span {
+  color: #53645c;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.dialogo-field input {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  height: 46px;
+
+  padding:
+    0 13px;
+
+  background: #ffffff;
+
+  border:
+    1px solid #d7e2dd;
+
+  border-radius: 9px;
+
+  color: #34483f;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+
+.dialogo-field input::placeholder {
+  color: #a4ada9;
+}
+
+
+.dialogo-field input:focus {
+  border-color: #91b6a8;
+
+  box-shadow:
+    0 0 0 3px rgba(23, 72, 61, 0.06);
+}
+
+
+.dialogo-error {
+  color: #a04f49;
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+
+.dialogo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  padding:
+    15px 22px 18px;
+
+  background: #fafcfb;
+
+  border-top:
+    1px solid #edf1ef;
+}
+
+
+.dialogo-button {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0 15px;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 680;
+
+  cursor: pointer;
+
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.14s ease;
+}
+
+
+.dialogo-button-secondary {
+  background: #ffffff;
+
+  border:
+    1px solid #dce5e1;
+
+  color: #53675e;
+}
+
+
+.dialogo-button-secondary:hover {
+  background: #f7faf8;
+}
+
+
+.dialogo-button-primary {
+  background: #17483d;
+
+  border:
+    1px solid #17483d;
+
+  color: #ffffff;
+}
+
+
+.dialogo-button-primary:hover {
+  background: #123b32;
+
+  border-color: #123b32;
+
+  transform:
+    translateY(-1px);
+}
+
+
+.dialogo-button-primary.danger {
+  background: #984f48;
+
+  border-color: #984f48;
+}
+
+
+.dialogo-button-primary.danger:hover {
+  background: #82413b;
+
+  border-color: #82413b;
+}
+
+
+.dialogo-card.danger {
+  border-color: #eadbd8;
+}
+
+
+@keyframes dialogo-fondo {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+@keyframes dialogo-entrada {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(8px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .dialogo-overlay {
+    align-items: center;
+
+    padding: 12px;
+  }
+
+
+  .dialogo-card {
+    width: 100%;
+
+    border-radius:
+      14px 14px 10px 10px;
+  }
+
+
+  .dialogo-header {
+    padding:
+      20px 18px 16px;
+  }
+
+
+  .dialogo-body {
+    padding:
+      0 18px 18px;
+  }
+
+
+  .dialogo-footer {
+    padding:
+      14px 18px 16px;
+  }
+
+
+  .dialogo-button {
+    flex: 1;
+  }
+}

@@ -1,0 +1,479 @@
+<div class="bloqueos-page">
+
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        AGENDA
+      </span>
+
+      <h1>
+        Bloqueos de agenda
+      </h1>
+
+      <p>
+        Administrá los días y horarios en los que no vas a
+        recibir turnos.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="primary-button"
+      (click)="abrirNuevoBloqueo()"
+      *ngIf="!mostrarFormulario"
+    >
+      <i class="fas fa-plus"></i>
+      Nuevo bloqueo
+    </button>
+
+  </header>
+
+
+  <!-- ========================================= -->
+  <!-- NUEVO BLOQUEO -->
+  <!-- ========================================= -->
+
+  <section
+    class="block-form-card"
+    *ngIf="mostrarFormulario"
+  >
+
+    <div class="block-form-heading">
+
+      <div>
+
+        <span class="card-label">
+          NUEVO BLOQUEO
+        </span>
+
+        <h2>
+          ¿Cuándo no vas a atender?
+        </h2>
+
+        <p>
+          El horario bloqueado dejará de aparecer
+          automáticamente en la reserva online.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="close-button"
+        [disabled]="guardando"
+        (click)="cancelarNuevoBloqueo()"
+      >
+        <i class="fas fa-xmark"></i>
+      </button>
+
+    </div>
+
+
+    <div class="form-grid">
+
+      <!-- FECHA DESDE -->
+
+      <div class="form-group">
+
+        <label>
+          Desde
+          <span class="required">*</span>
+        </label>
+
+        <input
+          type="date"
+          [(ngModel)]="nuevoBloqueo.fechaDesde"
+          [min]="fechaMinima"
+        >
+
+      </div>
+
+
+      <!-- FECHA HASTA -->
+
+      <div class="form-group">
+
+        <label>
+          Hasta
+          <span class="required">*</span>
+        </label>
+
+        <input
+          type="date"
+          [(ngModel)]="nuevoBloqueo.fechaHasta"
+          [min]="
+            nuevoBloqueo.fechaDesde ||
+            fechaMinima
+          "
+        >
+
+      </div>
+
+
+      <!-- SUCURSAL -->
+
+      <div class="form-group full">
+
+        <label>
+          Sucursal
+        </label>
+
+        <select
+          [(ngModel)]="nuevoBloqueo.sucursalId"
+        >
+
+          <option value="">
+            Todas las sucursales donde atiendo
+          </option>
+
+          <option
+            *ngFor="let sucursal of sucursales"
+            [value]="sucursal.sucursalId"
+          >
+            {{ sucursal.sucursal }}
+          </option>
+
+        </select>
+
+        <small>
+          Si elegís todas, el bloqueo se aplicará a tu agenda
+          completa durante ese período.
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <!-- TODO EL DÍA -->
+
+    <div class="all-day-row">
+
+      <div class="all-day-copy">
+
+        <div class="all-day-icon">
+          <i class="far fa-calendar"></i>
+        </div>
+
+        <div>
+          <strong>
+            Bloquear todo el día
+          </strong>
+
+          <span>
+            No se ofrecerá ningún horario durante las
+            fechas seleccionadas.
+          </span>
+        </div>
+
+      </div>
+
+
+      <label class="agenda-switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="nuevoBloqueo.todoElDia"
+          (ngModelChange)="cambiarTodoElDia()"
+        >
+
+        <span class="agenda-switch-slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <!-- HORARIO PARCIAL -->
+
+    <div
+      class="time-range"
+      *ngIf="!nuevoBloqueo.todoElDia"
+    >
+
+      <div class="form-group">
+
+        <label>
+          Hora desde
+          <span class="required">*</span>
+        </label>
+
+        <input
+          type="time"
+          [(ngModel)]="nuevoBloqueo.horaDesde"
+        >
+
+      </div>
+
+
+      <div class="time-separator">
+        —
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Hora hasta
+          <span class="required">*</span>
+        </label>
+
+        <input
+          type="time"
+          [(ngModel)]="nuevoBloqueo.horaHasta"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- MOTIVO -->
+
+    <div class="form-group block-reason">
+
+      <label>
+        Motivo
+      </label>
+
+      <textarea
+        maxlength="300"
+        [(ngModel)]="nuevoBloqueo.motivo"
+        placeholder="Ej: Vacaciones, congreso, trámite personal..."
+      ></textarea>
+
+      <div class="character-counter">
+        {{ nuevoBloqueo.motivo.length }}/300
+      </div>
+
+    </div>
+
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="secondary-button"
+        [disabled]="guardando"
+        (click)="cancelarNuevoBloqueo()"
+      >
+        Cancelar
+      </button>
+
+
+      <button
+        type="button"
+        class="primary-button"
+        [disabled]="guardando"
+        (click)="guardarBloqueo()"
+      >
+
+        <i
+          class="fas fa-spinner fa-spin"
+          *ngIf="guardando"
+        ></i>
+
+        <i
+          class="fas fa-ban"
+          *ngIf="!guardando"
+        ></i>
+
+        {{
+          guardando
+            ? 'Guardando...'
+            : 'Bloquear agenda'
+        }}
+
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ========================================= -->
+  <!-- CARGANDO -->
+  <!-- ========================================= -->
+
+  <section
+    class="state-card"
+    *ngIf="cargando"
+  >
+
+    <div class="loading-spinner"></div>
+
+    <strong>
+      Cargando bloqueos
+    </strong>
+
+    <span>
+      Estamos consultando tu agenda.
+    </span>
+
+  </section>
+
+
+  <!-- ========================================= -->
+  <!-- SIN BLOQUEOS -->
+  <!-- ========================================= -->
+
+  <section
+    class="state-card empty"
+    *ngIf="
+      !cargando &&
+      bloqueos.length === 0
+    "
+  >
+
+    <div class="state-icon">
+      <i class="far fa-calendar-check"></i>
+    </div>
+
+    <strong>
+      No tenés bloqueos activos
+    </strong>
+
+    <span>
+      Actualmente toda tu disponibilidad configurada
+      puede utilizarse para recibir turnos.
+    </span>
+
+    <button
+      type="button"
+      class="secondary-button"
+      (click)="abrirNuevoBloqueo()"
+      *ngIf="!mostrarFormulario"
+    >
+      Crear primer bloqueo
+    </button>
+
+  </section>
+
+
+  <!-- ========================================= -->
+  <!-- LISTADO -->
+  <!-- ========================================= -->
+
+  <section
+    class="blocks-card"
+    *ngIf="
+      !cargando &&
+      bloqueos.length > 0
+    "
+  >
+
+    <div class="blocks-card-header">
+
+      <div>
+        <span class="card-label">
+          BLOQUEOS ACTIVOS
+        </span>
+
+        <h2>
+          Tu agenda no disponible
+        </h2>
+      </div>
+
+
+      <span class="blocks-count">
+        {{ bloqueos.length }}
+        {{
+          bloqueos.length === 1
+            ? 'bloqueo'
+            : 'bloqueos'
+        }}
+      </span>
+
+    </div>
+
+
+    <div class="blocks-list">
+
+      <article
+        class="block-item"
+        *ngFor="let bloqueo of bloqueos"
+      >
+
+        <div class="block-date">
+
+          <div class="block-date-icon">
+            <i class="far fa-calendar"></i>
+          </div>
+
+          <div>
+            <small>
+              FECHA
+            </small>
+
+            <strong>
+              {{ textoRangoFechas(bloqueo) }}
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="block-detail">
+
+          <small>
+            HORARIO
+          </small>
+
+          <strong>
+            {{ textoHorario(bloqueo) }}
+          </strong>
+
+        </div>
+
+
+        <div class="block-detail">
+
+          <small>
+            SUCURSAL
+          </small>
+
+          <strong>
+            {{ textoSucursal(bloqueo) }}
+          </strong>
+
+        </div>
+
+
+        <div class="block-detail reason">
+
+          <small>
+            MOTIVO
+          </small>
+
+          <strong>
+            {{ bloqueo.motivo || 'Sin motivo' }}
+          </strong>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="delete-button"
+          title="Eliminar bloqueo"
+          (click)="eliminarBloqueo(bloqueo)"
+        >
+          <i class="far fa-trash-can"></i>
+        </button>
+
+      </article>
+
+    </div>
+
+  </section>
+
+</div>

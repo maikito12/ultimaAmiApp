@@ -1,0 +1,58 @@
+<div
+  class="alerta-stack"
+  aria-live="polite"
+  aria-atomic="false"
+>
+
+  <article
+    class="alerta-card"
+    *ngFor="
+      let alerta of (alertas$ | async);
+      trackBy: trackById
+    "
+    [class.success]="alerta.tipo === 'success'"
+    [class.error]="alerta.tipo === 'error'"
+    [class.warning]="alerta.tipo === 'warning'"
+    [class.info]="alerta.tipo === 'info'"
+    role="status"
+  >
+
+    <div class="alerta-icon">
+      {{ icono(alerta.tipo) }}
+    </div>
+
+    <div class="alerta-content">
+
+      <span class="alerta-label">
+        {{ etiqueta(alerta.tipo) }}
+      </span>
+
+      <strong>
+        {{ alerta.titulo }}
+      </strong>
+
+      <p *ngIf="alerta.mensaje">
+        {{ alerta.mensaje }}
+      </p>
+
+    </div>
+
+    <button
+      *ngIf="alerta.cerrable"
+      type="button"
+      class="alerta-close"
+      aria-label="Cerrar alerta"
+      (click)="cerrar(alerta.id)"
+    >
+      ×
+    </button>
+
+    <div
+      *ngIf="alerta.duracionMs > 0"
+      class="alerta-progress"
+      [style.animation-duration.ms]="alerta.duracionMs"
+    ></div>
+
+  </article>
+
+</div>

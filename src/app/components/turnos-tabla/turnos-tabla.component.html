@@ -1,199 +1,984 @@
-<div class="inicio-wrapper">
-  <header class="header-inicio">
-    <div class="welcome-text">
-    <h1>Agenda de Turnos</h1>
-    <p>Visualizá tu cronograma completo y controlá el flujo de pacientes.</p>
+<div class="turnos-page">
+
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
+
+  <header class="page-header">
+
+    <div class="header-copy">
+      <h1>Agenda de Turnos</h1>
+
+      <p>
+        Visualizá y gestioná los turnos de tu organización.
+      </p>
     </div>
+
+    <button
+      type="button"
+      class="btn-new-turno"
+      (click)="nuevoTurno()"
+    >
+      <span class="plus-icon">+</span>
+      Nuevo turno
+    </button>
+
   </header>
 
-  <div class="filters-container">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" [(ngModel)]="filtroTexto" (input)="aplicarFiltros()" placeholder="Buscar por Paciente o DNI...">
-    </div>
-    
-    <div class="date-picker-box">
-      <input type="date" [(ngModel)]="filtroFecha" (change)="aplicarFiltros()" class="custom-date-input">
-      <button class="btn-clear-filters" (click)="limpiarFiltros()">Limpiar Filtros</button>
-    </div>
-  </div>
 
-  <div class="main-table-container">
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Paciente</th>
-          <th>Sucursal</th>
-          <th class="text-center">Estado</th>
-          <th class="text-right">Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        
-        <tr class="section-header-row" *ngIf="turnosHoy.length > 0">
-          <td colspan="6"><div class="title-section">Turnos de Hoy</div></td>
-        </tr>
-        
-        <tr *ngFor="let turno of turnosHoy"
-            [class.cancelado-row]="turno.estado === 'cancelado'">
-          <td class="bold">{{ turno.fecha }}</td>
-          <td class="txt-hour-main">{{ turno.hora }} hs</td>
-          <td>{{ turno.pacienteNombre }}</td>
-          <td>{{ turno.sucursal || turno.sucursalNombre }}</td>
-          
-          <td class="text-center">
-            <select class="select-status-inline" 
-                    [ngModel]="turno.estado" 
-                    (change)="cambiarEstadoTurno(turno, $event)"
-                    [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
-                    [ngClass]="{
-                      'status-pendiente': turno.estado === 'pendiente',
-                      'status-confirmado': turno.estado === 'confirmado',
-                      'status-espera': turno.estado === 'en_espera',
-                      'status-ok': turno.estado === 'atendido',
-                      'status-falta': turno.estado === 'no_asistio',
-                      'status-cancelado': turno.estado === 'cancelado'
-                    }">
-              <option value="en_espera">En espera</option>
-              <option value="no_asistio">No asistió</option>
+  <!-- ===================================================== -->
+  <!-- CONTEXTO DE AGENDA -->
+  <!-- ===================================================== -->
 
-              <option *ngIf="turno.estado === 'pendiente'" value="pendiente">Pendiente</option>
-              <option *ngIf="turno.estado === 'confirmado'" value="confirmado">Confirmado</option>
-              <option *ngIf="turno.estado === 'atendido'" value="atendido">Atendido</option>
-              <option *ngIf="turno.estado === 'cancelado'" value="cancelado">Cancelado</option>
-            </select>
-          </td>
-          
-          <td class="text-right">
-            <div class="actions-flex" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-              <button class="btn-cancel-danger" 
-                      (click)="cancelarTurno(turno)" 
-                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'">
-                Cancelar
-              </button>
-              <button class="btn-action-ficha" (click)="verDetalle(turno)">
-                <span>Ver Ficha</span>
-              </button>
-            </div>
-          </td>
-        </tr>
+  <section
+    class="agenda-context"
+    *ngIf="
+      puedeCambiarModoAgenda() ||
+      puedeFiltrarProfesionales()
+    "
+  >
 
-        <tr class="section-header-row" *ngIf="proximosTurnos.length > 0">
-          <td colspan="6"><div class="title-section">Próximos Turnos</div></td>
-        </tr>
-        
-        <tr *ngFor="let turno of proximosTurnos"
-            [class.cancelado-row]="turno.estado === 'cancelado'">
-          <td class="txt-date-sub">{{ turno.fecha }}</td>
-          <td class="txt-hour-sub">{{ turno.hora }} hs</td>
-          <td>{{ turno.pacienteNombre }}</td>
-          <td>{{ turno.sucursal || turno.sucursalNombre }}</td>
-          
-          <td class="text-center">
-            <select class="select-status-inline" 
-                    [ngModel]="turno.estado" 
-                    (change)="cambiarEstadoTurno(turno, $event)"
-                    [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'"
-                    [ngClass]="{
-                      'status-pendiente': turno.estado === 'pendiente',
-                      'status-confirmado': turno.estado === 'confirmado',
-                      'status-espera': turno.estado === 'en_espera',
-                      'status-ok': turno.estado === 'atendido',
-                      'status-falta': turno.estado === 'no_asistio',
-                      'status-cancelado': turno.estado === 'cancelado'
-                    }">
-              <option value="en_espera">En espera</option>
-              <option value="no_asistio">No asistió</option>
+    <!-- =================================================== -->
+    <!-- TODOS / MI AGENDA -->
+    <!-- =================================================== -->
 
-              <option *ngIf="turno.estado === 'pendiente'" value="pendiente">Pendiente</option>
-              <option *ngIf="turno.estado === 'confirmado'" value="confirmado">Confirmado</option>
-              <option *ngIf="turno.estado === 'atendido'" value="atendido">Atendido</option>
-              <option *ngIf="turno.estado === 'cancelado'" value="cancelado">Cancelado</option>
-            </select>
-          </td>
-          
-          <td class="text-right">
-            <div class="actions-flex" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
-              <button class="btn-cancel-danger" 
-                      (click)="cancelarTurno(turno)" 
-                      [disabled]="turno.estado === 'atendido' || turno.estado === 'cancelado'">
-                Cancelar
-              </button>
-              <button class="btn-action-ficha" (click)="verDetalle(turno)">
-                <span>Ver Ficha</span> 
-              </button>
-            </div>
-          </td>
-        </tr>
-        
-      </tbody>
-    </table>
-  </div>
+    <div
+      class="agenda-mode"
+      *ngIf="puedeCambiarModoAgenda()"
+    >
 
-  <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
-    <div class="modal-compact" (click)="$event.stopPropagation()">
-      <div class="modal-header-mini">
-        <div class="patient-title">
-          <span class="id-badge">DNI: {{ pacienteSeleccionado.pacienteDni }}</span>
-          <h3>{{ pacienteSeleccionado.pacienteNombre }}</h3>
-        </div>
-        <button class="close-btn-circle" (click)="cerrarModal()">×</button>
-      </div>
+      <span class="context-label">
+        Agenda
+      </span>
 
-      <div class="modal-body-scroll">
-        <div class="data-summary-grid">
-          <div class="data-item-small" *ngFor="let campo of pacienteSeleccionado.camposExtras">
-            <span class="data-label">{{ campo.label }}</span>
-            <span class="data-value">{{ campo.valor }}</span>
-          </div>
-        </div>
+      <div class="mode-switch">
 
-        <div class="consultation-box">
-          <label class="data-label">Observaciones Clínicas (Evolución de hoy)</label>
-          <textarea [(ngModel)]="pacienteSeleccionado.notasEvolucion" placeholder="Escribir mediciones, peso, evolución de la dieta..."></textarea>
-        </div>
-
-        <div class="attachments-area">
-          <label class="data-label">Archivos y Estudios Adjuntos</label>
-          <div class="attachment-header">
-            <button type="button" class="btn-add-mini" (click)="fileInput.click()">+ Adjuntar Archivo</button>
-            <input #fileInput type="file" (change)="onFileSelected($event)" hidden multiple>
-          </div>
-
-          <div class="attachment-strip">
-            <div class="file-chip" *ngFor="let file of pacienteSeleccionado.archivos; let i = index">
-              <img *ngIf="isImage(file)" [src]="file.previewUrl || file.base64" class="chip-thumb">
-              <div *ngIf="isPdf(file)" class="pdf-icon-placeholder">
-                <span class="icon">📄</span>
-                <small>PDF</small>
-              </div>
-              <span class="chip-name" [title]="file.name">{{ file.name }}</span>
-              <button class="btn-remove-chip" (click)="removeFile(i)">×</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="modal-footer-compact">
-        <button class="btn-status-toggle" 
-                *ngIf="pacienteSeleccionado.estado !== 'atendido'"
-                (click)="marcarAtendido(pacienteSeleccionado)">
-          <span class="dot"></span> Marcar Atendido
+        <button
+          type="button"
+          [class.active]="modoAgenda === 'todos'"
+          (click)="cambiarModoAgenda('todos')"
+        >
+          Todos
         </button>
-        
-        <div class="atendido-badge-modal" *ngIf="pacienteSeleccionado.estado === 'atendido'">
-          <i class="check-icon">✓</i>Atendido
+
+        <button
+          type="button"
+          [class.active]="modoAgenda === 'mia'"
+          (click)="cambiarModoAgenda('mia')"
+        >
+          Mi agenda
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- FILTRO PROFESIONAL -->
+    <!-- =================================================== -->
+
+    <div
+      class="professional-filter"
+      *ngIf="
+        puedeFiltrarProfesionales() &&
+        modoAgenda === 'todos'
+      "
+    >
+
+      <label for="filtro-profesional">
+        Profesional
+      </label>
+
+      <div class="select-wrapper professional-select">
+
+        <select
+          id="filtro-profesional"
+          [(ngModel)]="filtroProfesional"
+          (change)="cambiarProfesional()"
+        >
+
+          <option value="">
+            Todos los profesionales
+          </option>
+
+          <option
+            *ngFor="let profesional of profesionalesFiltro"
+            [value]="profesional.id"
+          >
+            {{ profesional.nombre }}
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- TOOLBAR -->
+  <!-- ===================================================== -->
+
+  <section class="agenda-toolbar">
+
+    <div class="toolbar-left">
+
+      <!-- ================================================= -->
+      <!-- BUSCADOR -->
+      <!-- ================================================= -->
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          ⌕
+        </span>
+
+        <input
+          type="text"
+          [(ngModel)]="filtroTexto"
+          (input)="cambiarFiltroTexto()"
+          placeholder="Buscar paciente, DNI, profesional, especialidad..."
+        >
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- ESTADO -->
+      <!-- ================================================= -->
+
+      <div class="select-wrapper">
+
+        <select
+          [(ngModel)]="filtroEstado"
+          (change)="cambiarFiltroEstado()"
+        >
+
+          <option value="">
+            Todos los estados
+          </option>
+
+          <option value="pendiente">
+            Pendiente
+          </option>
+
+          <option value="confirmado">
+            Confirmado
+          </option>
+
+          <option value="ensala">
+            En sala
+          </option>
+
+          <option value="enatencion">
+            En atención
+          </option>
+
+          <option value="atendido">
+            Atendido
+          </option>
+
+          <option value="noasistio">
+            No asistió
+          </option>
+
+          <option value="cancelado">
+            Cancelado
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- LIMPIAR FILTROS -->
+      <!-- ================================================= -->
+
+      <button
+        type="button"
+        class="btn-clear-filters"
+        *ngIf="hayFiltrosActivos()"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+
+    </div>
+
+
+    <div class="toolbar-right">
+
+      <!-- ================================================= -->
+      <!-- FECHA -->
+      <!-- ================================================= -->
+
+      <div class="date-control">
+
+        <input
+          type="date"
+          [(ngModel)]="fechaSeleccionada"
+          (change)="cambiarFecha()"
+        >
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn-today"
+        (click)="irAHoy()"
+      >
+        Hoy
+      </button>
+
+
+      <!-- ================================================= -->
+      <!-- SWITCH VISTA -->
+      <!-- ================================================= -->
+
+      <div class="view-switch">
+
+        <button
+          type="button"
+          [class.active]="vistaActual === 'tabla'"
+          (click)="cambiarVista('tabla')"
+        >
+          <span>☷</span>
+          Tabla
+        </button>
+
+        <button
+          type="button"
+          [class.active]="vistaActual === 'calendario'"
+          (click)="cambiarVista('calendario')"
+        >
+          <span>▦</span>
+          Calendario
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- RESUMEN -->
+  <!-- ===================================================== -->
+
+  <section
+    class="agenda-summary"
+    *ngIf="!cargando"
+  >
+
+    <div class="summary-main">
+
+      <strong>
+        {{ obtenerTotalTurnosVisibles() }}
+      </strong>
+
+      <span>
+        {{
+          obtenerTotalTurnosVisibles() === 1
+            ? 'turno visible'
+            : 'turnos visibles'
+        }}
+      </span>
+
+    </div>
+
+
+    <div class="summary-date">
+
+      <span>
+        Fecha seleccionada
+      </span>
+
+      <strong>
+        {{ formatearFechaVisual(fechaSeleccionada) }}
+      </strong>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- CARGANDO -->
+  <!-- ===================================================== -->
+
+  <div
+    class="loading-state"
+    *ngIf="cargando"
+  >
+
+    <div class="spinner"></div>
+
+    <span>
+      Cargando agenda...
+    </span>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- VISTA TABLA -->
+  <!-- ===================================================== -->
+
+  <section
+    class="table-card"
+    *ngIf="
+      !cargando &&
+      vistaActual === 'tabla'
+    "
+  >
+
+    <!-- =================================================== -->
+    <!-- VACÍO -->
+    <!-- =================================================== -->
+
+    <div
+      class="empty-state"
+      *ngIf="turnosFiltrados.length === 0"
+    >
+
+      <div class="empty-icon">
+        ◷
+      </div>
+
+      <h3>
+        No hay turnos
+      </h3>
+
+      <p>
+        No encontramos turnos para esta fecha
+        con los filtros seleccionados.
+      </p>
+
+      <button
+        type="button"
+        (click)="nuevoTurno()"
+      >
+        + Crear nuevo turno
+      </button>
+
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- TABLA -->
+    <!-- =================================================== -->
+
+    <div
+      class="table-scroll"
+      *ngIf="turnosFiltrados.length > 0"
+    >
+
+      <table class="turnos-table">
+
+        <colgroup>
+          <col class="col-time">
+          <col class="col-patient">
+          <col class="col-professional">
+          <col class="col-specialty">
+          <col class="col-branch">
+          <col class="col-status">
+          <col class="col-actions">
+        </colgroup>
+
+
+        <thead>
+
+          <tr>
+            <th>Hora</th>
+            <th>Paciente</th>
+            <th>Profesional</th>
+            <th>Especialidad</th>
+            <th>Sucursal</th>
+            <th>Estado</th>
+
+            <th class="align-right">
+              Acciones
+            </th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr
+            *ngFor="let turno of turnosFiltrados"
+            [class.row-cancelado]="
+              normalizarEstado(turno.estado) === 'cancelado'
+            "
+          >
+
+            <!-- =========================================== -->
+            <!-- HORA -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <div class="time-cell">
+
+                <span class="time-main">
+                  {{ obtenerHora(turno) }}
+                </span>
+
+                <span class="time-date">
+                  {{
+                    formatearFechaVisual(
+                      obtenerFechaTurno(turno)
+                    )
+                  }}
+                </span>
+
+              </div>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- PACIENTE -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <div class="patient-cell">
+
+                <div class="patient-avatar">
+                  {{ obtenerIniciales(turno) }}
+                </div>
+
+                <div class="patient-info">
+
+                  <strong
+                    [title]="obtenerPaciente(turno)"
+                  >
+                    {{ obtenerPaciente(turno) }}
+                  </strong>
+
+                  <span
+                    *ngIf="obtenerDni(turno)"
+                  >
+                    DNI {{ obtenerDni(turno) }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- PROFESIONAL -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <span
+                class="primary-cell text-ellipsis"
+                [title]="obtenerProfesional(turno)"
+              >
+                {{ obtenerProfesional(turno) }}
+              </span>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- ESPECIALIDAD -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <span
+                class="secondary-cell text-ellipsis"
+                [title]="obtenerEspecialidad(turno)"
+              >
+                {{ obtenerEspecialidad(turno) || '-' }}
+              </span>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- SUCURSAL -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <span
+                class="secondary-cell text-ellipsis"
+                [title]="obtenerSucursal(turno)"
+              >
+                {{ obtenerSucursal(turno) || '-' }}
+              </span>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- ESTADO -->
+            <!-- =========================================== -->
+
+            <td>
+
+              <span
+                class="status-badge"
+                [ngClass]="
+                  obtenerClaseEstado(
+                    turno.estado
+                  )
+                "
+              >
+
+                <span class="status-dot"></span>
+
+                {{
+                  obtenerTextoEstado(
+                    turno.estado
+                  )
+                }}
+
+              </span>
+
+            </td>
+
+
+            <!-- =========================================== -->
+            <!-- ACCIONES -->
+            <!-- =========================================== -->
+
+            <td class="align-right">
+
+              <div class="row-actions">
+
+                <!-- ======================================= -->
+                <!-- ACCIÓN PRINCIPAL -->
+                <!-- ======================================= -->
+
+                <div class="row-actions-main">
+
+                  <button
+                    type="button"
+                    class="btn-state btn-confirm"
+                    *ngIf="puedeConfirmar(turno)"
+                    (click)="confirmarTurno(turno)"
+                  >
+                    Confirmar
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="btn-state btn-checkin"
+                    *ngIf="puedeCheckIn(turno)"
+                    (click)="checkIn(turno)"
+                  >
+                    Check-in
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="btn-state btn-start"
+                    *ngIf="puedeIniciar(turno)"
+                    (click)="iniciarAtencion(turno)"
+                  >
+                    Iniciar
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="btn-state btn-finish"
+                    *ngIf="puedeFinalizar(turno)"
+                    (click)="finalizarAtencion(turno)"
+                  >
+                    Finalizar
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="btn-view"
+                    (click)="verDetalle(turno)"
+                  >
+                    Ver
+                    <span>→</span>
+                  </button>
+
+                </div>
+
+
+                <!-- ======================================= -->
+                <!-- ACCIONES SECUNDARIAS -->
+                <!-- ======================================= -->
+
+                <div class="actions-secondary">
+
+                  <button
+                    type="button"
+                    class="action-text"
+                    *ngIf="puedeNoAsistio(turno)"
+                    (click)="registrarNoAsistio(turno)"
+                  >
+                    No asistió
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="action-text danger"
+                    *ngIf="puedeCancelar(turno)"
+                    (click)="cancelarTurno(turno)"
+                  >
+                    Cancelar
+                  </button>
+
+                </div>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+  <!-- ===================================================== -->
+  <!-- VISTA CALENDARIO -->
+  <!-- ===================================================== -->
+
+  <section
+    class="calendar-card"
+    *ngIf="
+      !cargando &&
+      vistaActual === 'calendario'
+    "
+  >
+
+    <!-- =================================================== -->
+    <!-- CABECERA CALENDARIO -->
+    <!-- =================================================== -->
+
+    <div class="calendar-header">
+
+      <div class="calendar-title">
+
+        <span class="calendar-label">
+          Agenda semanal
+        </span>
+
+        <h2>
+          {{ tituloSemana() }}
+        </h2>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- NAVEGACIÓN SEMANAL -->
+      <!-- ================================================= -->
+
+      <div class="calendar-navigation">
+
+        <button
+          type="button"
+          (click)="semanaAnterior()"
+          title="Semana anterior"
+          aria-label="Semana anterior"
+        >
+          ‹
+        </button>
+
+
+        <button
+          type="button"
+          class="today-small"
+          (click)="irAHoy()"
+        >
+          Hoy
+        </button>
+
+
+        <button
+          type="button"
+          (click)="semanaSiguiente()"
+          title="Semana siguiente"
+          aria-label="Semana siguiente"
+        >
+          ›
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- RESUMEN DE LA SEMANA -->
+    <!-- =================================================== -->
+
+    <div class="calendar-week-summary">
+
+      <span>
+        {{ obtenerTotalTurnosVisibles() }}
+        {{
+          obtenerTotalTurnosVisibles() === 1
+            ? 'turno en la semana'
+            : 'turnos en la semana'
+        }}
+      </span>
+
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- CALENDARIO -->
+    <!-- =================================================== -->
+
+    <div class="calendar-scroll">
+
+      <div class="week-grid">
+
+        <!-- ================================================= -->
+        <!-- DÍA -->
+        <!-- ================================================= -->
+
+        <div
+          class="day-column"
+          *ngFor="let dia of diasSemana"
+          [class.selected-day]="esDiaSeleccionado(dia.fecha)"
+        >
+
+          <!-- =============================================== -->
+          <!-- CABECERA DÍA -->
+          <!-- =============================================== -->
+
+          <button
+            type="button"
+            class="day-header"
+            [class.today]="dia.esHoy"
+            [class.selected]="esDiaSeleccionado(dia.fecha)"
+            (click)="seleccionarDia(dia.fecha)"
+          >
+
+            <div class="day-header-top">
+
+              <span class="day-name">
+                {{ dia.nombre }}
+              </span>
+
+              <span
+                class="today-indicator"
+                *ngIf="dia.esHoy"
+              >
+                Hoy
+              </span>
+
+            </div>
+
+
+            <div class="day-number">
+              {{ dia.numero }}
+            </div>
+
+
+            <span class="day-month">
+              {{ dia.mes }}
+            </span>
+
+
+            <!-- ============================================= -->
+            <!-- RESUMEN DEL DÍA -->
+            <!-- ============================================= -->
+
+            <span
+              class="day-summary"
+              [class.empty]="
+                obtenerCantidadTurnosDia(dia.fecha) === 0
+              "
+            >
+              {{ obtenerResumenCompletoDia(dia.fecha) }}
+            </span>
+
+          </button>
+
+
+          <!-- =============================================== -->
+          <!-- CUERPO DEL DÍA -->
+          <!-- =============================================== -->
+
+          <div class="day-body">
+
+            <!-- ============================================= -->
+            <!-- SIN TURNOS -->
+            <!-- ============================================= -->
+
+            <div
+              class="calendar-empty-day"
+              *ngIf="
+                obtenerTurnosDia(dia.fecha).length === 0
+              "
+            >
+
+              <div class="empty-day-icon">
+                ◷
+              </div>
+
+              <span>
+                Sin turnos
+              </span>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- TURNO -->
+            <!-- ============================================= -->
+
+            <article
+              class="calendar-event"
+              *ngFor="
+                let turno of obtenerTurnosDia(dia.fecha)
+              "
+              [ngClass]="
+                obtenerClaseEstado(
+                  turno.estado
+                )
+              "
+              (click)="verDetalle(turno)"
+              tabindex="0"
+              role="button"
+            >
+
+              <!-- =========================================== -->
+              <!-- HORA + ESTADO -->
+              <!-- =========================================== -->
+
+              <div class="event-top">
+
+                <div class="event-time">
+                  {{ obtenerHora(turno) }}
+                </div>
+
+
+                <span
+                  class="event-status-dot"
+                  [title]="obtenerTextoEstado(turno.estado)"
+                ></span>
+
+              </div>
+
+
+              <!-- =========================================== -->
+              <!-- PACIENTE -->
+              <!-- =========================================== -->
+
+              <strong
+                class="event-patient"
+                [title]="obtenerPaciente(turno)"
+              >
+                {{ obtenerPaciente(turno) }}
+              </strong>
+
+
+              <!-- =========================================== -->
+              <!-- ESPECIALIDAD -->
+              <!-- =========================================== -->
+
+              <span
+                class="event-specialty"
+                *ngIf="obtenerEspecialidad(turno)"
+                [title]="obtenerEspecialidad(turno)"
+              >
+                {{ obtenerEspecialidad(turno) }}
+              </span>
+
+
+              <!-- =========================================== -->
+              <!-- PROFESIONAL -->
+              <!-- =========================================== -->
+
+              <span
+                class="event-professional"
+                *ngIf="
+                  modoAgenda === 'todos' &&
+                  obtenerProfesional(turno)
+                "
+                [title]="obtenerProfesional(turno)"
+              >
+                {{ obtenerProfesional(turno) }}
+              </span>
+
+
+              <!-- =========================================== -->
+              <!-- SUCURSAL -->
+              <!-- =========================================== -->
+
+              <span
+                class="event-branch"
+                *ngIf="obtenerSucursal(turno)"
+                [title]="obtenerSucursal(turno)"
+              >
+                {{ obtenerSucursal(turno) }}
+              </span>
+
+
+              <!-- =========================================== -->
+              <!-- ESTADO -->
+              <!-- =========================================== -->
+
+              <div class="event-footer">
+
+                <span
+                  class="event-status"
+                  [ngClass]="
+                    obtenerClaseEstado(
+                      turno.estado
+                    )
+                  "
+                >
+                  {{ obtenerTextoEstado(turno.estado) }}
+                </span>
+
+
+                <span class="event-arrow">
+                  →
+                </span>
+
+              </div>
+
+            </article>
+
+          </div>
+
         </div>
 
-        <div class="footer-actions">
-          <button class="btn-secondary-flat" (click)="cerrarModal()">Cerrar</button>
-          <button class="btn-primary-gradient" (click)="guardarCambios()">
-            Guardar y Finalizar
-          </button>
-        </div>
       </div>
+
     </div>
-  </div>
+
+  </section>
+
+
+  <!-- ===================================================== -->
+  <!-- FIN AGENDA -->
+  <!-- ===================================================== -->
+
 </div>
+

@@ -1,0 +1,2622 @@
+<div class="perfil-page">
+
+  <!-- ========================================= -->
+  <!-- CARGANDO -->
+  <!-- ========================================= -->
+
+  <div
+    class="loading-container"
+    *ngIf="cargando"
+  >
+    <div class="loading-spinner"></div>
+
+    <p>
+      Cargando tu perfil...
+    </p>
+  </div>
+
+
+  <!-- ========================================= -->
+  <!-- CONTENIDO -->
+  <!-- ========================================= -->
+
+  <ng-container *ngIf="!cargando">
+
+
+    <!-- ======================================= -->
+    <!-- HEADER -->
+    <!-- ======================================= -->
+
+    <header class="page-header">
+
+      <div>
+
+        <span class="eyebrow">
+          MI PERFIL
+        </span>
+
+        <ng-container
+          *ngIf="
+            !esProfesional ||
+            !configuracionCompleta
+          "
+        >
+          <h1>
+            Configurá tu perfil profesional
+          </h1>
+
+          <p>
+            Completá tus datos profesionales, lugares de atención
+            y disponibilidad.
+          </p>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            esProfesional &&
+            configuracionCompleta
+          "
+        >
+          <h1>
+            Tu perfil profesional
+          </h1>
+
+          <p>
+            Administrá tu información profesional, especialidades
+            y disponibilidad.
+          </p>
+        </ng-container>
+
+      </div>
+
+    </header>
+
+
+    <!-- ======================================= -->
+    <!-- ORGANIZACIONES E INVITACIONES -->
+    <!-- ======================================= -->
+
+    <section class="organization-access-card">
+
+      <div class="organization-access-main">
+
+        <div class="organization-access-icon">
+          <i class="fas fa-key"></i>
+        </div>
+
+        <div class="organization-access-copy">
+
+          <span class="card-label">
+            ORGANIZACIONES
+          </span>
+
+          <h2>
+            ¿Te invitaron a otra organización?
+          </h2>
+
+          <p>
+            Ingresá el código que te compartieron para sumarte
+            a otra clínica, consultorio o equipo sin crear una cuenta nueva.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="secondary-button organization-access-button"
+        [disabled]="uniendoseOrganizacion"
+        (click)="ingresarCodigoInvitacion()"
+      >
+        <i
+          class="fas"
+          [class.fa-key]="!uniendoseOrganizacion"
+          [class.fa-spinner]="uniendoseOrganizacion"
+          [class.fa-spin]="uniendoseOrganizacion"
+        ></i>
+
+        {{
+          uniendoseOrganizacion
+            ? 'Uniéndome...'
+            : 'Ingresar código'
+        }}
+      </button>
+
+    </section>
+
+
+    <!-- ======================================= -->
+    <!-- TODAVÍA NO ES PROFESIONAL -->
+    <!-- ======================================= -->
+
+    <section
+      class="become-professional-card"
+      *ngIf="!esProfesional"
+    >
+
+      <div class="become-icon">
+        <i class="fas fa-user-md"></i>
+      </div>
+
+
+      <div class="become-content">
+
+        <span class="card-label">
+          PERFIL PROFESIONAL
+        </span>
+
+        <h2>
+          ¿También atendés pacientes?
+        </h2>
+
+        <p>
+          Creá tu perfil profesional para gestionar tu agenda,
+          configurar tus especialidades y empezar a recibir
+          turnos desde AmiApp.
+        </p>
+
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="convirtiendo"
+          (click)="convertirmeEnProfesional()"
+        >
+
+          <span *ngIf="!convirtiendo">
+            Convertirme en profesional
+          </span>
+
+          <span *ngIf="convirtiendo">
+            Creando perfil...
+          </span>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================= -->
+    <!-- WIZARD PROFESIONAL -->
+    <!-- SOLO APARECE SI YA ES PROFESIONAL -->
+    <!-- ======================================= -->
+
+    <ng-container *ngIf="esProfesional">
+
+      <!-- ======================================= -->
+      <!-- PERFIL COMPLETO - MODO RESUMEN -->
+      <!-- ======================================= -->
+
+      <ng-container
+        *ngIf="configuracionCompleta && !seccionEditando"
+      >
+
+        <section class="profile-summary">
+
+          <!-- HEADER DEL PERFIL -->
+
+          <div class="profile-summary-header">
+
+            <div class="profile-summary-person">
+
+              <div class="profile-summary-avatar">
+
+                <img
+                  *ngIf="perfil.fotoUrl"
+                  [src]="perfil.fotoUrl"
+                  [alt]="perfil.nombrePublico"
+                >
+
+                <i
+                  *ngIf="!perfil.fotoUrl"
+                  class="fas fa-user-md"
+                ></i>
+
+              </div>
+
+              <div class="profile-summary-identity">
+
+                <span class="card-label">
+                  PERFIL PROFESIONAL
+                </span>
+
+                <h2>
+                  {{ perfil.nombrePublico }}
+                </h2>
+
+                <span
+                  class="profile-summary-license"
+                  *ngIf="perfil.matricula"
+                >
+                  <i class="fas fa-id-card"></i>
+                  Matrícula {{ perfil.matricula }}
+                </span>
+
+              </div>
+
+            </div>
+
+            <button
+              type="button"
+              class="secondary-button"
+              (click)="editarConfiguracion()"
+            >
+              <i class="fas fa-pen"></i>
+              Editar perfil
+            </button>
+
+          </div>
+
+          <!-- DESCRIPCIÓN -->
+
+          <div
+            class="profile-summary-description"
+            *ngIf="perfil.descripcion"
+          >
+
+            <span class="summary-section-label">
+              SOBRE MÍ
+            </span>
+
+            <p>
+              {{ perfil.descripcion }}
+            </p>
+
+          </div>
+
+          <!-- ESPECIALIDADES -->
+
+          <div class="profile-summary-section">
+
+            <div class="profile-summary-section-header">
+
+              <div>
+                <span class="summary-section-label">
+                  ESPECIALIDADES
+                </span>
+
+                <h3>
+                  Atención profesional
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                class="summary-edit-button"
+                (click)="abrirEdicionSeccion('especialidades')"
+              >
+                Editar
+              </button>
+
+            </div>
+
+            <div class="summary-specialties">
+
+              <ng-container
+                *ngFor="let especialidad of listaEspecialidades"
+              >
+
+                <div
+                  class="summary-specialty"
+                  *ngIf="especialidadSeleccionada(especialidad.id)"
+                >
+
+                  <div class="summary-specialty-main">
+
+                    <div
+                      class="summary-specialty-icon"
+                      [style.background]="
+                        (especialidad.color || '#17483d') + '15'
+                      "
+                      [style.color]="
+                        especialidad.color || '#17483d'
+                      "
+                    >
+                      <i
+                        [class]="
+                          especialidad.icono ||
+                          'fas fa-stethoscope'
+                        "
+                      ></i>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {{ especialidad.nombre }}
+                      </strong>
+
+                      <span>
+                        Especialidad profesional
+                      </span>
+                    </div>
+
+                  </div>
+
+                  <div class="summary-duration">
+                    <i class="far fa-clock"></i>
+
+                    {{ duracionPorEspecialidad[especialidad.id] }} min
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+          <!-- LUGARES DE ATENCIÓN -->
+
+          <div class="profile-summary-section">
+
+            <div class="profile-summary-section-header">
+
+              <div>
+                <span class="summary-section-label">
+                  LUGARES DE ATENCIÓN
+                </span>
+
+                <h3>
+                  Dónde atendés
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                class="summary-edit-button"
+                (click)="abrirEdicionSeccion('sucursales')"
+              >
+                Editar
+              </button>
+
+            </div>
+
+            <div class="summary-locations">
+
+              <ng-container
+                *ngFor="let sucursal of listaSucursales"
+              >
+
+                <div
+                  class="summary-location"
+                  *ngIf="sucursalSeleccionada(sucursal.id)"
+                >
+
+                  <div class="summary-location-icon">
+                    <i class="fas fa-location-dot"></i>
+                  </div>
+
+                  <div class="summary-location-info">
+
+                    <strong>
+                      {{ sucursal.nombre }}
+                    </strong>
+
+                    <span>
+                      {{ sucursal.calle }}
+                      {{ sucursal.altura }}
+
+                      <ng-container *ngIf="sucursal.pisoDepto">
+                        · {{ sucursal.pisoDepto }}
+                      </ng-container>
+                    </span>
+
+                    <small>
+                      {{ sucursal.ciudad }}
+                    </small>
+
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+          <!-- DISPONIBILIDAD -->
+
+          <div class="profile-summary-section">
+
+            <div class="profile-summary-section-header">
+
+              <div>
+                <span class="summary-section-label">
+                  DISPONIBILIDAD
+                </span>
+
+                <h3>
+                  Tus horarios de atención
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                class="summary-edit-button"
+                (click)="abrirEdicionSeccion('horarios')"
+              >
+                Editar
+              </button>
+
+            </div>
+
+            <div class="summary-schedules">
+
+              <div
+                class="summary-schedule-group"
+                *ngFor="let grupo of horariosAgrupados"
+              >
+
+                <div class="summary-schedule-header">
+
+                  <div class="summary-schedule-location">
+
+                    <div class="summary-location-icon">
+                      <i class="fas fa-building"></i>
+                    </div>
+
+                    <div>
+
+                      <strong>
+                        {{ obtenerNombreSucursal(grupo.sucursalId) }}
+                      </strong>
+
+                      <span>
+                        {{
+                          obtenerNombreEspecialidadProfesional(
+                            grupo.profesionalEspecialidadId
+                          )
+                        }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="summary-schedule-days">
+
+                  <div
+                    class="summary-schedule-day"
+                    *ngFor="let horario of grupo.horarios"
+                  >
+
+                    <div class="summary-day-name">
+
+                      <span class="summary-day-circle">
+                        {{ diasSemana[horario.diaSemana - 1]?.corto }}
+                      </span>
+
+                      <strong>
+                        {{ diasSemana[horario.diaSemana - 1]?.nombre }}
+                      </strong>
+
+                    </div>
+
+                    <div class="summary-day-time">
+
+                      <i class="far fa-clock"></i>
+
+                      {{ horario.horaInicio.substring(0, 5) }}
+                      —
+                      {{ horario.horaFin.substring(0, 5) }}
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        <!-- ======================================= -->
+        <!-- RESERVA ONLINE - RESUMEN -->
+        <!-- ======================================= -->
+
+        <div class="profile-summary-section">
+
+          <div class="profile-summary-section-header">
+
+            <div>
+              <span class="summary-section-label">
+                RESERVA ONLINE
+              </span>
+
+              <h3>
+                Cómo recibís turnos desde la página pública
+              </h3>
+            </div>
+
+            <span
+              class="online-save-status"
+              *ngIf="guardandoReservaOnline"
+            >
+              <i class="fas fa-spinner fa-spin"></i>
+              Guardando...
+            </span>
+
+          </div>
+
+
+          <div
+            class="online-settings-loading"
+            *ngIf="cargandoReservaOnline"
+          >
+            <div class="loading-spinner"></div>
+            <span>Cargando configuración...</span>
+          </div>
+
+
+          <div
+            class="online-settings-list"
+            *ngIf="!cargandoReservaOnline"
+          >
+
+            <!-- RECIBIR TURNOS ONLINE -->
+
+            <div class="online-setting-row">
+
+              <div class="online-setting-main">
+
+                <div class="online-setting-icon">
+                  <i class="far fa-calendar-check"></i>
+                </div>
+
+                <div class="online-setting-copy">
+                  <strong>
+                    Recibir turnos online
+                  </strong>
+
+                  <span>
+                    Permite que los pacientes reserven turnos
+                    directamente con vos desde AmiApp.
+                  </span>
+                </div>
+
+              </div>
+
+
+              <label class="profile-switch">
+
+                <input
+                  type="checkbox"
+                  [(ngModel)]="reservaOnline.aceptaTurnosOnline"
+                  [disabled]="guardandoReservaOnline"
+                  (ngModelChange)="actualizarReservaOnline()"
+                >
+
+                <span class="profile-switch-slider"></span>
+
+              </label>
+
+            </div>
+
+
+            <!-- MOSTRAR EN RESERVA PÚBLICA -->
+
+            <div
+              class="online-setting-row"
+              [class.disabled]="
+                !reservaOnline.aceptaTurnosOnline
+              "
+            >
+
+              <div class="online-setting-main">
+
+                <div class="online-setting-icon">
+                  <i class="fas fa-user-doctor"></i>
+                </div>
+
+                <div class="online-setting-copy">
+                  <strong>
+                    Mostrarme en la reserva pública
+                  </strong>
+
+                  <span>
+                    Tu perfil aparecerá para que los pacientes
+                    puedan elegirte al reservar un turno.
+                  </span>
+
+                  <small
+                    *ngIf="
+                      !reservaOnline.aceptaTurnosOnline
+                    "
+                  >
+                    Se aplicará cuando vuelvas a habilitar
+                    los turnos online.
+                  </small>
+                </div>
+
+              </div>
+
+
+              <label class="profile-switch">
+
+                <input
+                  type="checkbox"
+                  [(ngModel)]="
+                    reservaOnline.mostrarEnReservaOnline
+                  "
+                  [disabled]="
+                    guardandoReservaOnline ||
+                    !reservaOnline.aceptaTurnosOnline
+                  "
+                  (ngModelChange)="actualizarReservaOnline()"
+                >
+
+                <span class="profile-switch-slider"></span>
+
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="online-public-status"
+            [class.active]="
+              reservaOnline.aceptaTurnosOnline &&
+              reservaOnline.mostrarEnReservaOnline
+            "
+            *ngIf="!cargandoReservaOnline"
+          >
+
+            <i
+              class="fas"
+              [class.fa-circle-check]="
+                reservaOnline.aceptaTurnosOnline &&
+                reservaOnline.mostrarEnReservaOnline
+              "
+              [class.fa-circle-pause]="
+                !reservaOnline.aceptaTurnosOnline ||
+                !reservaOnline.mostrarEnReservaOnline
+              "
+            ></i>
+
+            <span
+              *ngIf="
+                reservaOnline.aceptaTurnosOnline &&
+                reservaOnline.mostrarEnReservaOnline
+              "
+            >
+              Tu perfil está habilitado para recibir
+              reservas online.
+            </span>
+
+            <span
+              *ngIf="
+                !reservaOnline.aceptaTurnosOnline ||
+                !reservaOnline.mostrarEnReservaOnline
+              "
+            >
+              Tu perfil no está disponible actualmente
+              en la reserva pública.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================= -->
+        <!-- OBRAS SOCIALES - RESUMEN -->
+        <!-- ======================================= -->
+
+        <div class="profile-summary-section">
+
+          <div class="profile-summary-section-header">
+
+            <div>
+              <span class="summary-section-label">
+                OBRAS SOCIALES
+              </span>
+
+              <h3>
+                Coberturas que atendés
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              class="summary-edit-button"
+              (click)="abrirEdicionSeccion('obras-sociales')"
+            >
+              Editar
+            </button>
+
+          </div>
+
+          <div class="insurance-loading" *ngIf="cargandoObrasSociales">
+            <div class="loading-spinner"></div>
+            <span>Cargando obras sociales...</span>
+          </div>
+
+          <div
+            class="insurance-empty"
+            *ngIf="!cargandoObrasSociales && listaObrasSociales.length === 0"
+          >
+            <div class="insurance-empty-icon">
+              <i class="fas fa-shield-heart"></i>
+            </div>
+            <div>
+              <strong>No hay obras sociales configuradas</strong>
+              <span>La organización todavía no cargó obras sociales disponibles.</span>
+            </div>
+          </div>
+
+          <div
+            class="insurance-content"
+            *ngIf="!cargandoObrasSociales && listaObrasSociales.length > 0"
+          >
+
+            <div
+              class="insurance-selection-summary"
+              *ngIf="obrasSocialesSeleccionadas.size === 0"
+            >
+              <div class="insurance-summary-icon">
+                <i class="fas fa-user-doctor"></i>
+              </div>
+              <div>
+                <strong>Atención particular</strong>
+                <span>Actualmente no tenés obras sociales asociadas a tu perfil.</span>
+              </div>
+            </div>
+
+            <div class="insurance-grid" *ngIf="obrasSocialesSeleccionadas.size > 0">
+              <ng-container *ngFor="let obraSocial of listaObrasSociales">
+                <div
+                  class="insurance-card selected"
+                  *ngIf="obraSocialSeleccionada(obraSocial.id)"
+                >
+                  <div class="insurance-card-main">
+                    <div class="insurance-icon">
+                      <i class="fas fa-shield-heart"></i>
+                    </div>
+                    <div class="insurance-info">
+                      <strong>{{ obraSocial.nombre }}</strong>
+                      <span *ngIf="obraSocial.siglas">{{ obraSocial.siglas }}</span>
+                    </div>
+                  </div>
+                  <div class="insurance-check checked">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+          </div>
+
+        </div>
+
+          <!-- ESTADO -->
+
+          <div class="profile-summary-ready">
+
+            <div class="profile-ready-icon">
+              <i class="fas fa-check"></i>
+            </div>
+
+            <div>
+              <strong>
+                Tu perfil está listo
+              </strong>
+
+              <span>
+                Tu información profesional y disponibilidad están
+                configuradas correctamente.
+              </span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </ng-container>
+
+      <!-- ======================================= -->
+      <!-- EDICIÓN - OBRAS SOCIALES -->
+      <!-- ======================================= -->
+
+      <section
+        class="form-card"
+        *ngIf="configuracionCompleta && seccionEditando === 'obras-sociales'"
+      >
+
+        <span class="card-label">EDITAR OBRAS SOCIALES</span>
+
+        <h2>Obras sociales</h2>
+
+        <p class="section-description">
+          Seleccioná las coberturas que aceptás dentro de esta organización.
+          Si no seleccionás ninguna, tu perfil figurará como atención particular.
+        </p>
+
+        <div class="insurance-loading" *ngIf="cargandoObrasSociales">
+          <div class="loading-spinner"></div>
+          <span>Cargando obras sociales...</span>
+        </div>
+
+        <div
+          class="insurance-empty"
+          *ngIf="!cargandoObrasSociales && listaObrasSociales.length === 0"
+        >
+          <div class="insurance-empty-icon">
+            <i class="fas fa-shield-heart"></i>
+          </div>
+          <div>
+            <strong>No hay obras sociales configuradas</strong>
+            <span>La organización todavía no cargó obras sociales disponibles.</span>
+          </div>
+        </div>
+
+        <div
+          class="insurance-content"
+          *ngIf="!cargandoObrasSociales && listaObrasSociales.length > 0"
+        >
+
+          <div class="insurance-grid">
+            <button
+              type="button"
+              class="insurance-card"
+              *ngFor="let obraSocial of listaObrasSociales"
+              [class.selected]="obraSocialSeleccionada(obraSocial.id)"
+              (click)="toggleObraSocial(obraSocial.id)"
+            >
+              <div class="insurance-card-main">
+                <div class="insurance-icon">
+                  <i class="fas fa-shield-heart"></i>
+                </div>
+                <div class="insurance-info">
+                  <strong>{{ obraSocial.nombre }}</strong>
+                  <span *ngIf="obraSocial.siglas">{{ obraSocial.siglas }}</span>
+                </div>
+              </div>
+              <div
+                class="insurance-check"
+                [class.checked]="obraSocialSeleccionada(obraSocial.id)"
+              >
+                <i
+                  class="fas fa-check"
+                  *ngIf="obraSocialSeleccionada(obraSocial.id)"
+                ></i>
+              </div>
+            </button>
+          </div>
+
+          <div class="insurance-selection-summary">
+            <div class="insurance-summary-icon">
+              <i
+                class="fas"
+                [class.fa-check-circle]="obrasSocialesSeleccionadas.size > 0"
+                [class.fa-user-doctor]="obrasSocialesSeleccionadas.size === 0"
+              ></i>
+            </div>
+            <div>
+              <strong *ngIf="obrasSocialesSeleccionadas.size > 0">
+                {{ obrasSocialesSeleccionadas.size }}
+                {{
+                  obrasSocialesSeleccionadas.size === 1
+                    ? 'obra social seleccionada'
+                    : 'obras sociales seleccionadas'
+                }}
+              </strong>
+              <strong *ngIf="obrasSocialesSeleccionadas.size === 0">
+                Atención particular
+              </strong>
+              <span *ngIf="obrasSocialesSeleccionadas.size > 0">
+                Estas coberturas aparecerán asociadas a tu perfil.
+              </span>
+              <span *ngIf="obrasSocialesSeleccionadas.size === 0">
+                No seleccionaste ninguna cobertura.
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="guardandoObrasSociales"
+            (click)="cancelarEdicion()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="guardandoObrasSociales"
+            (click)="guardarObrasSociales()"
+          >
+            <ng-container *ngIf="!guardandoObrasSociales">Guardar cambios</ng-container>
+            <ng-container *ngIf="guardandoObrasSociales">Guardando...</ng-container>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ======================================= -->
+      <!-- ONBOARDING / EDICIÓN DE UNA SECCIÓN -->
+      <!-- ======================================= -->
+
+      <ng-container
+        *ngIf="
+          !configuracionCompleta ||
+          (
+            seccionEditando &&
+            seccionEditando !== 'obras-sociales'
+          )
+        "
+      >
+
+      <!-- ===================================== -->
+      <!-- PROGRESO -->
+      <!-- ===================================== -->
+
+      <section class="progress-card" *ngIf="!configuracionCompleta">
+
+        <div class="progress-header">
+
+          <div>
+
+            <span class="progress-label">
+              PROGRESO DEL PERFIL
+            </span>
+
+            <strong>
+              Paso {{ pasoActual }} de {{ totalPasos }}
+            </strong>
+
+          </div>
+
+
+          <div class="progress-percent">
+            {{ progreso }}%
+          </div>
+
+        </div>
+
+
+        <!-- BARRA -->
+
+        <div class="progress-track">
+
+          <div
+            class="progress-fill"
+            [style.width.%]="progreso"
+          ></div>
+
+        </div>
+
+
+        <!-- =================================== -->
+        <!-- PASOS -->
+        <!-- =================================== -->
+
+        <div class="steps">
+
+
+          <!-- PASO 1 -->
+
+          <button
+            type="button"
+            class="step"
+            [class.active]="pasoActual === 1"
+            [class.completed]="pasoCompletado(1)"
+            [class.locked]="pasoBloqueado(1)"
+            [disabled]="pasoBloqueado(1)"
+            (click)="irAPaso(1)"
+          >
+
+            <span class="step-number">
+
+              <span *ngIf="!pasoCompletado(1)">
+                1
+              </span>
+
+              <span *ngIf="pasoCompletado(1)">
+                ✓
+              </span>
+
+            </span>
+
+
+            <div>
+
+              <strong>
+                Datos profesionales
+              </strong>
+
+              <span>
+                Información básica
+              </span>
+
+            </div>
+
+          </button>
+
+
+          <!-- PASO 2 -->
+
+          <button
+            type="button"
+            class="step"
+            [class.active]="pasoActual === 2"
+            [class.completed]="pasoCompletado(2)"
+            [class.locked]="pasoBloqueado(2)"
+            [disabled]="pasoBloqueado(2)"
+            (click)="irAPaso(2)"
+          >
+
+            <span class="step-number">
+
+              <span *ngIf="pasoCompletado(2)">
+                ✓
+              </span>
+
+              <span
+                *ngIf="
+                  !pasoCompletado(2) &&
+                  !pasoBloqueado(2)
+                "
+              >
+                2
+              </span>
+
+              <span
+                class="lock-icon"
+                *ngIf="pasoBloqueado(2)"
+              >
+                🔒
+              </span>
+
+            </span>
+
+
+            <div>
+
+              <strong>
+                Especialidades
+              </strong>
+
+              <span>
+                Área profesional
+              </span>
+
+            </div>
+
+          </button>
+
+
+          <!-- PASO 3 -->
+
+          <button
+            type="button"
+            class="step"
+            [class.active]="pasoActual === 3"
+            [class.completed]="pasoCompletado(3)"
+            [class.locked]="pasoBloqueado(3)"
+            [disabled]="pasoBloqueado(3)"
+            (click)="irAPaso(3)"
+          >
+
+            <span class="step-number">
+
+              <span *ngIf="pasoCompletado(3)">
+                ✓
+              </span>
+
+              <span
+                *ngIf="
+                  !pasoCompletado(3) &&
+                  !pasoBloqueado(3)
+                "
+              >
+                3
+              </span>
+
+              <span
+                class="lock-icon"
+                *ngIf="pasoBloqueado(3)"
+              >
+                🔒
+              </span>
+
+            </span>
+
+
+            <div>
+
+              <strong>
+                Lugar de atención
+              </strong>
+
+              <span>
+                Dónde atendés
+              </span>
+
+            </div>
+
+          </button>
+
+
+          <!-- PASO 4 -->
+
+          <button
+            type="button"
+            class="step"
+            [class.active]="pasoActual === 4"
+            [class.completed]="pasoCompletado(4)"
+            [class.locked]="pasoBloqueado(4)"
+            [disabled]="pasoBloqueado(4)"
+            (click)="irAPaso(4)"
+          >
+
+            <span class="step-number">
+
+              <span *ngIf="pasoCompletado(4)">
+                ✓
+              </span>
+
+              <span
+                *ngIf="
+                  !pasoCompletado(4) &&
+                  !pasoBloqueado(4)
+                "
+              >
+                4
+              </span>
+
+              <span
+                class="lock-icon"
+                *ngIf="pasoBloqueado(4)"
+              >
+                🔒
+              </span>
+
+            </span>
+
+
+            <div>
+
+              <strong>
+                Horarios
+              </strong>
+
+              <span>
+                Disponibilidad
+              </span>
+
+            </div>
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================== -->
+      <!-- FORMULARIO -->
+      <!-- ===================================== -->
+
+      <section class="form-card">
+
+
+        <!-- =================================== -->
+        <!-- PASO 1 -->
+        <!-- =================================== -->
+
+     <div
+  *ngIf="
+    pasoActual === 1 &&
+    (
+      !configuracionCompleta ||
+      seccionEditando === 'perfil'
+    )
+  "
+>
+
+          <span class="card-label">
+            {{ configuracionCompleta ? 'EDITAR PERFIL' : 'PASO 1' }}
+          </span>
+
+          <h2>
+            Datos profesionales
+          </h2>
+
+          <p class="section-description">
+            Esta información formará parte de tu perfil
+            profesional y será visible para tus pacientes.
+          </p>
+
+
+          <!-- FOTO -->
+
+         <div class="photo-section">
+
+  <div class="photo-placeholder">
+
+    <img
+      *ngIf="previewFotoProfesional || perfil.fotoUrl"
+      [src]="previewFotoProfesional || perfil.fotoUrl"
+      alt="Foto de perfil"
+      class="profile-image"
+    >
+
+    <i
+      *ngIf="!previewFotoProfesional && !perfil.fotoUrl"
+      class="fas fa-user"
+    ></i>
+
+  </div>
+
+
+  <div class="photo-info">
+
+    <strong>
+      Foto de perfil
+    </strong>
+
+    <p>
+      Usá una foto clara y profesional.
+      Se mostrará en tu perfil público.
+    </p>
+
+
+    <!-- INPUT OCULTO -->
+    <input
+      #fotoProfesionalInput
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      hidden
+      (change)="seleccionarFotoProfesional($event)"
+    >
+
+
+    <!-- SUBIR / CAMBIAR FOTO -->
+    <button
+      type="button"
+      class="secondary-button"
+      [disabled]="subiendoFotoProfesional"
+      (click)="fotoProfesionalInput.click()"
+    >
+
+      <i
+        *ngIf="subiendoFotoProfesional"
+        class="fas fa-spinner fa-spin"
+      ></i>
+
+      <i
+        *ngIf="!subiendoFotoProfesional"
+        class="fas fa-camera"
+      ></i>
+
+      {{
+        subiendoFotoProfesional
+          ? 'Subiendo...'
+          : (previewFotoProfesional || perfil.fotoUrl
+              ? 'Cambiar foto'
+              : 'Subir foto')
+      }}
+
+    </button>
+
+
+    <!-- QUITAR FOTO -->
+    <button
+      *ngIf="previewFotoProfesional || perfil.fotoUrl"
+      type="button"
+      class="secondary-button"
+      [disabled]="subiendoFotoProfesional"
+      (click)="quitarFotoProfesional()"
+    >
+      <i class="fas fa-trash"></i>
+      Quitar foto
+    </button>
+
+  </div>
+
+</div>
+
+
+          <!-- CAMPOS -->
+
+          <div class="form-grid">
+
+
+            <!-- NOMBRE -->
+
+            <div class="form-group">
+
+              <label for="nombrePublico">
+                Nombre profesional
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="nombrePublico"
+                type="text"
+                maxlength="150"
+                [(ngModel)]="perfil.nombrePublico"
+                placeholder="Ej: Dra. María González"
+              >
+
+              <small>
+                Así aparecerá tu nombre para los pacientes.
+              </small>
+
+            </div>
+
+
+            <!-- MATRÍCULA -->
+
+            <div class="form-group">
+
+              <label for="matricula">
+                Matrícula
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="matricula"
+                type="text"
+                maxlength="50"
+                [(ngModel)]="perfil.matricula"
+                placeholder="Ej: MP 12345"
+              >
+
+              <small>
+                Ingresá tu matrícula profesional.
+              </small>
+
+            </div>
+
+
+            <!-- DURACIÓN -->
+
+            <div class="form-group">
+
+              <label for="duracionTurno">
+                Duración predeterminada del turno
+              </label>
+
+              <select
+                id="duracionTurno"
+                [(ngModel)]="perfil.duracionTurnoDefault"
+              >
+
+                <option [ngValue]="15">
+                  15 minutos
+                </option>
+
+                <option [ngValue]="20">
+                  20 minutos
+                </option>
+
+                <option [ngValue]="30">
+                  30 minutos
+                </option>
+
+                <option [ngValue]="45">
+                  45 minutos
+                </option>
+
+                <option [ngValue]="60">
+                  60 minutos
+                </option>
+
+                <option [ngValue]="90">
+                  90 minutos
+                </option>
+
+                <option [ngValue]="120">
+                  120 minutos
+                </option>
+
+              </select>
+
+              <small>
+                Después vas a poder personalizar tus horarios.
+              </small>
+
+            </div>
+
+
+            <!-- DESCRIPCIÓN -->
+
+            <div class="form-group full">
+
+              <div class="label-row">
+
+                <label for="descripcion">
+                  Descripción profesional
+                  <span class="required">*</span>
+                </label>
+
+                <span class="character-counter">
+                  {{ perfil.descripcion?.length || 0 }}/1000
+                </span>
+
+              </div>
+
+              <textarea
+                id="descripcion"
+                maxlength="1000"
+                rows="5"
+                [(ngModel)]="perfil.descripcion"
+                placeholder="Contales a tus pacientes sobre tu experiencia, especialización y forma de trabajo..."
+              ></textarea>
+
+              <small>
+                Escribí una descripción breve y clara.
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+<!-- =================================== -->
+<!-- PASO 2 - ESPECIALIDADES -->
+<!-- =================================== -->
+
+<div
+  *ngIf="
+    pasoActual === 2 &&
+    (
+      !configuracionCompleta ||
+      seccionEditando === 'especialidades'
+    )
+  "
+>
+
+  <span class="card-label">
+    {{ configuracionCompleta ? 'EDITAR ESPECIALIDADES' : 'PASO 2' }}
+  </span>
+
+  <h2>
+    Especialidades
+  </h2>
+
+  <p class="section-description">
+    Seleccioná las especialidades con las que trabajás
+    dentro de esta organización. También podés definir
+    cuánto dura un turno para cada una.
+  </p>
+
+
+  <!-- ================================= -->
+  <!-- CARGANDO -->
+  <!-- ================================= -->
+
+  <div
+    class="specialties-loading"
+    *ngIf="cargandoEspecialidades"
+  >
+
+    <div class="loading-spinner"></div>
+
+    <span>
+      Cargando especialidades...
+    </span>
+
+  </div>
+
+
+  <!-- ================================= -->
+  <!-- SIN ESPECIALIDADES -->
+  <!-- ================================= -->
+
+  <div
+    class="empty-specialties"
+    *ngIf="
+      !cargandoEspecialidades &&
+      listaEspecialidades.length === 0
+    "
+  >
+
+    <div class="empty-specialties-icon">
+      <i class="fas fa-stethoscope"></i>
+    </div>
+
+    <div>
+
+      <strong>
+        No hay especialidades disponibles
+      </strong>
+
+      <p>
+        La organización todavía no configuró
+        especialidades para seleccionar.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================= -->
+  <!-- LISTADO -->
+  <!-- ================================= -->
+
+  <div
+    class="specialties-grid"
+    *ngIf="
+      !cargandoEspecialidades &&
+      listaEspecialidades.length > 0
+    "
+  >
+
+    <div
+      class="specialty-card"
+      *ngFor="let especialidad of listaEspecialidades"
+      [class.selected]="
+        especialidadSeleccionada(especialidad.id)
+      "
+      (click)="toggleEspecialidad(especialidad.id)"
+    >
+
+
+      <!-- ============================= -->
+      <!-- CABECERA -->
+      <!-- ============================= -->
+
+      <div class="specialty-card-header">
+
+
+        <!-- ICONO -->
+
+        <div
+          class="specialty-icon"
+          [style.background]="
+            (especialidad.color || '#17483d') + '15'
+          "
+          [style.color]="
+            especialidad.color || '#17483d'
+          "
+        >
+
+          <i
+            [class]="
+              especialidad.icono ||
+              'fas fa-stethoscope'
+            "
+          ></i>
+
+        </div>
+
+
+        <!-- CHECK -->
+
+        <div
+          class="specialty-check"
+          [class.checked]="
+            especialidadSeleccionada(
+              especialidad.id
+            )
+          "
+        >
+
+          <i
+            class="fas fa-check"
+            *ngIf="
+              especialidadSeleccionada(
+                especialidad.id
+              )
+            "
+          ></i>
+
+        </div>
+
+      </div>
+
+
+      <!-- ============================= -->
+      <!-- INFORMACIÓN -->
+      <!-- ============================= -->
+
+      <div class="specialty-info">
+
+        <strong>
+          {{ especialidad.nombre }}
+        </strong>
+
+        <span>
+          Especialidad profesional
+        </span>
+
+      </div>
+
+
+      <!-- ============================= -->
+      <!-- DURACIÓN -->
+      <!-- ============================= -->
+
+      <div
+  class="specialty-duration"
+  *ngIf="especialidadSeleccionada(especialidad.id)"
+  (click)="$event.stopPropagation()"
+>
+  <label>
+    Duración del turno
+  </label>
+
+  <select
+    [ngModel]="esDuracionPredefinida(especialidad.id)
+      ? duracionPorEspecialidad[especialidad.id]
+      : 'personalizado'"
+    (ngModelChange)="cambiarDuracion(especialidad.id, $event)"
+  >
+    <option [ngValue]="15">15 minutos</option>
+    <option [ngValue]="20">20 minutos</option>
+    <option [ngValue]="30">30 minutos</option>
+    <option [ngValue]="45">45 minutos</option>
+    <option [ngValue]="60">60 minutos</option>
+    <option [ngValue]="90">90 minutos</option>
+    <option [ngValue]="120">120 minutos</option>
+
+    <option value="personalizado">
+      Personalizado...
+    </option>
+  </select>
+
+  <div
+    class="custom-duration"
+    *ngIf="duracionPersonalizada[especialidad.id]"
+  >
+    <input
+      type="number"
+      min="5"
+      max="480"
+      step="5"
+      placeholder="Ej: 50"
+      [(ngModel)]="duracionPorEspecialidad[especialidad.id]"
+    >
+
+    <span>minutos</span>
+  </div>
+</div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================= -->
+  <!-- RESUMEN -->
+  <!-- ================================= -->
+
+  <div
+    class="specialties-summary"
+    *ngIf="
+      especialidadesSeleccionadas.size > 0
+    "
+  >
+
+    <div class="summary-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+
+    <div>
+
+      <strong>
+        {{ especialidadesSeleccionadas.size }}
+        {{
+          especialidadesSeleccionadas.size === 1
+            ? 'especialidad seleccionada'
+            : 'especialidades seleccionadas'
+        }}
+      </strong>
+
+      <span>
+        Podés modificar la duración de cada tipo de turno.
+      </span>
+
+    </div>
+
+  </div>
+
+</div>
+        
+
+      <!-- =================================== -->
+<!-- PASO 3 - SUCURSALES -->
+<!-- =================================== -->
+
+<div
+  *ngIf="
+    pasoActual === 3 &&
+    (
+      !configuracionCompleta ||
+      seccionEditando === 'sucursales'
+    )
+  "
+>
+
+  <span class="card-label">
+    {{ configuracionCompleta ? 'EDITAR LUGARES DE ATENCIÓN' : 'PASO 3' }}
+  </span>
+
+  <h2>
+    Lugar de atención
+  </h2>
+
+  <p class="section-description">
+    Elegí una o más sucursales de esta organización
+    donde vas a atender a tus pacientes.
+  </p>
+
+
+  <!-- CARGANDO -->
+
+  <div
+    class="locations-loading"
+    *ngIf="cargandoSucursales"
+  >
+    <div class="loading-spinner"></div>
+
+    <span>
+      Cargando sucursales...
+    </span>
+  </div>
+
+
+  <!-- SIN SUCURSALES -->
+
+  <div
+    class="empty-locations"
+    *ngIf="
+      !cargandoSucursales &&
+      listaSucursales.length === 0
+    "
+  >
+
+    <div class="empty-locations-icon">
+      <i class="fas fa-building"></i>
+    </div>
+
+    <div>
+      <strong>
+        No hay sucursales disponibles
+      </strong>
+
+      <p>
+        La organización todavía no configuró
+        lugares de atención.
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- LISTADO -->
+
+  <div
+    class="locations-grid"
+    *ngIf="
+      !cargandoSucursales &&
+      listaSucursales.length > 0
+    "
+  >
+
+    <div
+      class="location-card"
+      *ngFor="let sucursal of listaSucursales"
+      [class.selected]="sucursalSeleccionada(sucursal.id)"
+      (click)="toggleSucursal(sucursal.id)"
+    >
+
+      <!-- FOTO -->
+
+      <div class="location-image">
+
+        <img
+          *ngIf="sucursal.fotoUrl"
+          [src]="sucursal.fotoUrl"
+          [alt]="sucursal.nombre"
+        >
+
+        <div
+          class="location-image-empty"
+          *ngIf="!sucursal.fotoUrl"
+        >
+          <i class="fas fa-building"></i>
+        </div>
+
+        <div
+          class="location-check"
+          [class.checked]="sucursalSeleccionada(sucursal.id)"
+        >
+          <i
+            class="fas fa-check"
+            *ngIf="sucursalSeleccionada(sucursal.id)"
+          ></i>
+        </div>
+
+      </div>
+
+
+      <!-- DATOS -->
+
+      <div class="location-content">
+
+        <strong>
+          {{ sucursal.nombre }}
+        </strong>
+
+        <span class="location-address">
+          <i class="fas fa-location-dot"></i>
+
+          {{ sucursal.calle }}
+          {{ sucursal.altura }}
+
+          <ng-container *ngIf="sucursal.pisoDepto">
+            · {{ sucursal.pisoDepto }}
+          </ng-container>
+        </span>
+
+        <span class="location-city">
+          {{ sucursal.ciudad }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- RESUMEN -->
+
+  <div
+    class="locations-summary"
+    *ngIf="sucursalesSeleccionadas.size > 0"
+  >
+
+    <div class="summary-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+
+    <div>
+      <strong>
+        {{ sucursalesSeleccionadas.size }}
+        {{
+          sucursalesSeleccionadas.size === 1
+            ? 'sucursal seleccionada'
+            : 'sucursales seleccionadas'
+        }}
+      </strong>
+
+      <span>
+        Estas serán tus sedes de atención dentro de la organización.
+      </span>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =================================== -->
+<!-- PASO 4 - HORARIOS -->
+<!-- =================================== -->
+
+<div
+  *ngIf="
+    pasoActual === 4 &&
+    (
+      !configuracionCompleta ||
+      seccionEditando === 'horarios'
+    )
+  "
+>
+
+  <span class="card-label">
+    {{ configuracionCompleta ? 'EDITAR HORARIOS' : 'PASO 4' }}
+  </span>
+
+  <h2>
+    Horarios de atención
+  </h2>
+
+  <p class="section-description">
+    Configurá cuándo vas a atender en cada sucursal.
+    Los horarios deben respetar la disponibilidad definida
+    por la organización.
+  </p>
+
+
+  <!-- ================================= -->
+  <!-- CARGANDO -->
+  <!-- ================================= -->
+
+  <div
+    class="schedule-loading"
+    *ngIf="cargandoHorarios"
+  >
+
+    <div class="loading-spinner"></div>
+
+    <span>
+      Cargando configuración...
+    </span>
+
+  </div>
+
+
+  <!-- ================================= -->
+  <!-- CONTENIDO -->
+  <!-- ================================= -->
+
+  <div
+    class="schedule-layout"
+    *ngIf="!cargandoHorarios"
+  >
+
+
+    <!-- ================================================= -->
+    <!-- FORMULARIO -->
+    <!-- ================================================= -->
+
+    <div class="schedule-config-card">
+
+      <div class="schedule-section-header">
+
+        <div class="schedule-header-icon">
+          <i class="far fa-calendar-plus"></i>
+        </div>
+
+        <div>
+
+          <strong>
+            Agregar horario
+          </strong>
+
+          <span>
+            Creá un nuevo bloque de atención.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- ESPECIALIDAD -->
+      <!-- ================================= -->
+
+      <div class="schedule-form-group">
+
+        <label>
+          Especialidad
+        </label>
+
+        <select
+          [(ngModel)]="
+            nuevoHorarioProfesional.profesionalEspecialidadId
+          "
+        >
+
+          <option value="">
+            Seleccioná una especialidad
+          </option>
+
+          <option
+            *ngFor="
+              let especialidad of
+              especialidadesProfesional
+            "
+            [value]="especialidad.id"
+          >
+            {{ especialidad.especialidad }}
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- SUCURSAL -->
+      <!-- ================================= -->
+
+      <div class="schedule-form-group">
+
+        <label>
+          Sucursal
+        </label>
+
+        <select
+          [(ngModel)]="
+            nuevoHorarioProfesional.sucursalId
+          "
+        >
+
+          <option value="">
+            Seleccioná una sucursal
+          </option>
+
+          <option
+            *ngFor="let sucursal of listaSucursales"
+            [value]="sucursal.id"
+          >
+            {{ sucursal.nombre }}
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- HORARIO PERMITIDO -->
+      <!-- ================================= -->
+
+      <div
+        class="opening-info"
+        *ngIf="nuevoHorarioProfesional.sucursalId"
+      >
+
+        <div class="opening-info-header">
+
+          <i class="far fa-clock"></i>
+
+          <strong>
+            Horarios permitidos
+          </strong>
+
+        </div>
+
+
+        <div
+          class="opening-days"
+          *ngIf="
+            horariosAperturaSucursal(
+              nuevoHorarioProfesional.sucursalId
+            ).length > 0
+          "
+        >
+
+          <div
+            class="opening-day-row"
+            *ngFor="
+              let apertura of
+              horariosAperturaSucursal(
+                nuevoHorarioProfesional.sucursalId
+              )
+            "
+          >
+
+            <span>
+              {{ apertura.dia }}
+            </span>
+
+            <strong>
+              {{
+                apertura.horaInicio.substring(0, 5)
+              }}
+              —
+              {{
+                apertura.horaFin.substring(0, 5)
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="opening-empty"
+          *ngIf="
+            horariosAperturaSucursal(
+              nuevoHorarioProfesional.sucursalId
+            ).length === 0
+          "
+        >
+
+          <i class="fas fa-triangle-exclamation"></i>
+
+          <span>
+            Esta sucursal todavía no tiene
+            horarios de apertura configurados.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- DÍAS -->
+      <!-- ================================= -->
+
+      <div class="schedule-form-group">
+
+        <label>
+          Días de atención
+        </label>
+
+        <div class="schedule-days">
+
+          <button
+            type="button"
+            class="schedule-day-button"
+            *ngFor="let dia of diasSemana"
+            [class.selected]="dia.seleccionado"
+            (click)="
+              dia.seleccionado =
+                !dia.seleccionado
+            "
+          >
+
+            <span>
+              {{ dia.corto }}
+            </span>
+
+            <small>
+              {{ dia.nombre }}
+            </small>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- HORAS -->
+      <!-- ================================= -->
+
+      <div class="schedule-time-grid">
+
+        <div class="schedule-form-group">
+
+          <label>
+            Desde
+          </label>
+
+          <input
+            type="time"
+            [(ngModel)]="
+              nuevoHorarioProfesional.horaInicio
+            "
+          >
+
+        </div>
+
+
+        <div class="schedule-form-group">
+
+          <label>
+            Hasta
+          </label>
+
+          <input
+            type="time"
+            [(ngModel)]="
+              nuevoHorarioProfesional.horaFin
+            "
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- AYUDA -->
+      <!-- ================================= -->
+
+      <div class="schedule-help">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>
+          No vas a poder crear horarios fuera
+          del rango de apertura definido por
+          la organización.
+        </p>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- BOTÓN -->
+      <!-- ================================= -->
+
+      <button
+        type="button"
+        class="add-schedule-button"
+        [disabled]="guardandoHorario"
+        (click)="guardarHorarioProfesional()"
+      >
+
+        <ng-container
+          *ngIf="!guardandoHorario"
+        >
+
+          <i class="fas fa-plus"></i>
+
+          Agregar horario
+
+        </ng-container>
+
+
+        <ng-container
+          *ngIf="guardandoHorario"
+        >
+
+          <i class="fas fa-spinner fa-spin"></i>
+
+          Guardando...
+
+        </ng-container>
+
+      </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DISPONIBILIDAD -->
+    <!-- ================================================= -->
+
+    <div class="schedule-list-card">
+
+      <div class="schedule-section-header">
+
+        <div class="schedule-header-icon">
+          <i class="far fa-calendar"></i>
+        </div>
+
+        <div>
+
+          <strong>
+            Tu disponibilidad
+          </strong>
+
+          <span>
+            Organizada por sucursal y especialidad.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- VACÍO -->
+      <!-- ================================= -->
+
+      <div
+        class="schedule-empty-state"
+        *ngIf="
+          listaHorariosProfesional.length === 0
+        "
+      >
+
+        <div class="schedule-empty-icon">
+          <i class="far fa-calendar"></i>
+        </div>
+
+        <strong>
+          Todavía no configuraste horarios
+        </strong>
+
+        <span>
+          Agregá tu primer bloque de atención.
+        </span>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- GRUPOS -->
+      <!-- ================================= -->
+
+      <div
+        class="schedule-groups"
+        *ngIf="
+          listaHorariosProfesional.length > 0
+        "
+      >
+
+        <div
+          class="schedule-group"
+          *ngFor="let grupo of horariosAgrupados"
+        >
+
+          <!-- ============================= -->
+          <!-- CABECERA DEL GRUPO -->
+          <!-- ============================= -->
+
+          <div class="schedule-group-header">
+
+            <div class="schedule-group-icon">
+
+              <i class="fas fa-location-dot"></i>
+
+            </div>
+
+
+            <div class="schedule-group-title">
+
+              <span class="group-label">
+                LUGAR DE ATENCIÓN
+              </span>
+
+              <strong>
+                {{
+                  obtenerNombreSucursal(
+                    grupo.sucursalId
+                  )
+                }}
+              </strong>
+
+              <span class="group-specialty">
+
+                <i class="fas fa-stethoscope"></i>
+
+                {{
+                  obtenerNombreEspecialidadProfesional(
+                    grupo.profesionalEspecialidadId
+                  )
+                }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- ============================= -->
+          <!-- DÍAS DEL GRUPO -->
+          <!-- ============================= -->
+
+          <div class="schedule-group-days">
+
+            <div
+              class="schedule-group-row"
+              *ngFor="let horario of grupo.horarios"
+            >
+
+              <div class="group-day">
+
+                <span class="group-day-circle">
+                  {{
+                    diasSemana[
+                      horario.diaSemana - 1
+                    ]?.corto
+                  }}
+                </span>
+
+
+                <div>
+
+                  <strong>
+                    {{
+                      diasSemana[
+                        horario.diaSemana - 1
+                      ]?.nombre
+                    }}
+                  </strong>
+
+                  <span>
+                    Día de atención
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <div class="group-time">
+
+                <i class="far fa-clock"></i>
+
+                <strong>
+                  {{
+                    horario.horaInicio.substring(
+                      0,
+                      5
+                    )
+                  }}
+                  —
+                  {{
+                    horario.horaFin.substring(
+                      0,
+                      5
+                    )
+                  }}
+                </strong>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="schedule-delete-button"
+                title="Eliminar horario"
+                (click)="
+                  eliminarHorarioProfesional(
+                    horario.id
+                  )
+                "
+              >
+
+                <i class="fas fa-trash"></i>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- COMPLETO -->
+      <!-- ================================= -->
+
+      <div
+        class="schedule-complete"
+        *ngIf="
+          listaHorariosProfesional.length > 0
+        "
+      >
+
+        <div class="schedule-complete-icon">
+
+          <i class="fas fa-check"></i>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Ya tenés disponibilidad configurada
+          </strong>
+
+          <span>
+            Podés agregar otros horarios,
+            sucursales o especialidades.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+     
+
+        <!-- =================================== -->
+        <!-- FOOTER -->
+        <!-- =================================== -->
+
+        <div class="form-footer" *ngIf="!configuracionCompleta">
+
+          <button
+            type="button"
+            class="secondary-button"
+            *ngIf="pasoActual > 1"
+            [disabled]="guardando"
+            (click)="pasoAnterior()"
+          >
+            ← Anterior
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="pasoActual < totalPasos"
+            [disabled]="guardando"
+            (click)="siguientePaso()"
+          >
+            <ng-container *ngIf="!guardando">Guardar y continuar →</ng-container>
+            <ng-container *ngIf="guardando">Guardando...</ng-container>
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="pasoActual === totalPasos"
+            [disabled]="guardando"
+            (click)="finalizarPerfil()"
+          >
+            Finalizar configuración
+          </button>
+
+        </div>
+
+        <div
+          class="form-footer"
+          *ngIf="configuracionCompleta && seccionEditando"
+        >
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="guardando || guardandoHorario"
+            (click)="cancelarEdicion()"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="seccionEditando === 'perfil'"
+            [disabled]="guardando"
+            (click)="guardarPasoPerfil()"
+          >
+            {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="seccionEditando === 'especialidades'"
+            [disabled]="guardando"
+            (click)="guardarPasoEspecialidades()"
+          >
+            {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="seccionEditando === 'sucursales'"
+            [disabled]="guardando"
+            (click)="guardarPasoSucursales()"
+          >
+            {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            *ngIf="seccionEditando === 'horarios'"
+            [disabled]="guardandoHorario"
+            (click)="cancelarEdicion()"
+          >
+            Listo, volver al resumen
+          </button>
+
+        </div>
+
+      </section>
+
+      <!-- CIERRA ONBOARDING / EDICIÓN -->
+      </ng-container>
+
+    <!-- CIERRA PROFESIONAL -->
+    </ng-container>
+
+  <!-- CIERRA CONTENIDO -->
+  </ng-container>
+
+</div>

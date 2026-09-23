@@ -1,0 +1,1901 @@
+<section class="automation-page">
+
+  <!-- =====================================================
+       LISTADO
+  ====================================================== -->
+
+  <ng-container *ngIf="!modoEditor && !modoCatalogo">
+
+    <header class="page-header">
+
+      <div class="page-heading">
+
+        <span class="eyebrow">
+          COMUNICACIÓN
+        </span>
+
+        <h1>
+          Automatizaciones
+        </h1>
+
+        <p>
+          Configurá cómo AmiApp acompaña al paciente
+          antes y después de cada turno.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="button button-primary"
+        (click)="nueva()"
+      >
+        <span class="button-icon">
+          +
+        </span>
+
+        Nueva automatización
+      </button>
+
+    </header>
+
+
+    <!-- =====================================================
+         WHATSAPP - ALCANCE SEGÚN EL USUARIO
+    ====================================================== -->
+
+    <section class="scope-card">
+
+      <div class="scope-main">
+
+        <div class="scope-icon">
+          ◎
+        </div>
+
+        <div class="scope-copy">
+
+          <span class="eyebrow">
+            WHATSAPP
+          </span>
+
+          <strong>
+            WhatsApp que estás configurando
+          </strong>
+
+          <p *ngIf="puedeCambiarAlcanceWhatsApp">
+            Como sos administrador y también profesional,
+            podés administrar el número general de la organización
+            o tu propio número profesional.
+          </p>
+
+          <p *ngIf="!puedeCambiarAlcanceWhatsApp && !esAlcanceProfesional">
+            Administrás el número general que AmiApp usa como respaldo
+            para los profesionales que no tienen un WhatsApp propio.
+          </p>
+
+          <p *ngIf="!puedeCambiarAlcanceWhatsApp && esAlcanceProfesional">
+            Acá administrás solamente tu propio WhatsApp profesional.
+            Los números de otros médicos no se pueden modificar desde tu cuenta.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="scope-select-wrap"
+        *ngIf="puedeCambiarAlcanceWhatsApp"
+      >
+
+        <label for="automatizacion-alcance">
+          Configuración de WhatsApp
+        </label>
+
+        <select
+          id="automatizacion-alcance"
+          class="scope-select"
+          [ngModel]="profesionalSeleccionadoId || ''"
+          (ngModelChange)="cambiarAlcance($event)"
+          [disabled]="
+            cargandoWhatsApp
+            ||
+            guardandoWhatsApp
+            ||
+            desconectandoWhatsApp
+          "
+        >
+          <option value="">
+            Organización general
+          </option>
+
+          <option
+            *ngIf="profesionalIdActual"
+            [value]="profesionalIdActual"
+          >
+            Mi WhatsApp profesional
+          </option>
+        </select>
+
+        <span
+          class="scope-helper"
+          *ngIf="esAlcanceProfesional"
+        >
+          Este número se usa para tus propios pacientes.
+          Si no está conectado, AmiApp puede usar el general como respaldo.
+        </span>
+
+        <span
+          class="scope-helper"
+          *ngIf="!esAlcanceProfesional"
+        >
+          Este es el número general de respaldo de la organización.
+        </span>
+
+      </div>
+
+
+      <div
+        class="scope-select-wrap"
+        *ngIf="!puedeCambiarAlcanceWhatsApp"
+      >
+
+        <label>
+          Configuración de WhatsApp
+        </label>
+
+        <div class="scope-static-value">
+          {{
+            esAlcanceProfesional
+              ? 'Mi WhatsApp profesional'
+              : 'Organización general'
+          }}
+        </div>
+
+        <span
+          class="scope-helper"
+          *ngIf="esAlcanceProfesional"
+        >
+          Solo estás administrando tu número profesional.
+        </span>
+
+        <span
+          class="scope-helper"
+          *ngIf="!esAlcanceProfesional"
+        >
+          Número general de respaldo de la organización.
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WHATSAPP - CONEXIÓN SIMPLE
+    ====================================================== -->
+
+    <section
+      class="channel-card"
+      [class.connected]="whatsAppConectado"
+    >
+
+      <div class="channel-main">
+
+        <div
+          class="channel-icon"
+          [class.connected]="whatsAppConectado"
+        >
+          WA
+        </div>
+
+
+        <div class="channel-copy">
+
+          <div class="channel-title-line">
+
+            <strong>
+              WhatsApp
+            </strong>
+
+            <span
+              class="connection-pill"
+              [class.connected]="whatsAppConectado"
+            >
+              <span class="connection-dot"></span>
+
+              {{
+                cargandoWhatsApp
+                  ? 'Verificando'
+                  : whatsAppConectado
+                    ? 'Conectado'
+                    : esAlcanceProfesional
+                      ? 'Sin número propio'
+                      : 'Sin conectar'
+              }}
+            </span>
+
+          </div>
+
+
+          <p *ngIf="cargandoWhatsApp">
+            Estamos verificando
+            {{
+              esAlcanceProfesional
+                ? 'tu WhatsApp profesional'
+                : 'el WhatsApp general de la organización'
+            }}.
+          </p>
+
+          <p *ngIf="!cargandoWhatsApp && whatsAppConectado">
+            {{
+              whatsAppConfiguracion?.numero
+                || 'Número configurado'
+            }}
+            · listo para enviar automatizaciones.
+          </p>
+
+          <p *ngIf="
+            !cargandoWhatsApp
+            &&
+            !whatsAppConectado
+            &&
+            !esAlcanceProfesional
+          ">
+            Conectá el número general de la organización para enviar
+            confirmaciones, recordatorios y seguimientos.
+          </p>
+
+          <p *ngIf="
+            !cargandoWhatsApp
+            &&
+            !whatsAppConectado
+            &&
+            esAlcanceProfesional
+          ">
+            Todavía no conectaste tu WhatsApp profesional.
+            Mientras tanto, AmiApp puede usar el número general
+            de la organización cuando esté disponible.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="channel-actions">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          *ngIf="whatsAppConectado || esAlcanceProfesional"
+          [disabled]="cargandoWhatsApp"
+          (click)="probar()"
+        >
+          Probar
+        </button>
+
+
+        <button
+          type="button"
+          class="button"
+          [class.button-primary]="!whatsAppConectado"
+          [class.button-secondary]="whatsAppConectado"
+          [disabled]="cargandoWhatsApp"
+          (click)="abrirConfiguracionWhatsApp()"
+        >
+          {{
+            whatsAppConectado
+              ? 'Administrar'
+              : esAlcanceProfesional
+                ? 'Conectar mi WhatsApp'
+                : 'Conectar con Meta'
+          }}
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PANEL DE CONEXIÓN
+         Embedded Signup preparado visualmente.
+         Configuración manual queda como fallback técnico.
+    ====================================================== -->
+
+    <section
+      class="connection-panel"
+      *ngIf="mostrarConfiguracionWhatsApp"
+    >
+
+      <div class="connection-panel-header">
+
+        <div>
+
+          <span class="eyebrow">
+            WHATSAPP
+          </span>
+
+          <h2>
+            {{
+              whatsAppConectado
+                ? 'Administrar conexión'
+                : esAlcanceProfesional
+                  ? 'Conectar mi WhatsApp'
+                  : 'Conectar WhatsApp'
+            }}
+          </h2>
+
+          <p *ngIf="!esAlcanceProfesional">
+            La experiencia final de AmiApp va a conectar la cuenta
+            directamente con Meta, sin pedir identificadores técnicos.
+          </p>
+
+          <p *ngIf="esAlcanceProfesional">
+            Esta conexión corresponde solamente a tu WhatsApp profesional.
+            Si no configurás uno propio, AmiApp puede usar el WhatsApp general
+            de la organización como respaldo.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="panel-close"
+          aria-label="Cerrar"
+          (click)="cancelarConfiguracionWhatsApp()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        class="meta-connect-card"
+        *ngIf="!whatsAppConectado"
+      >
+
+        <div class="meta-connect-icon">
+          M
+        </div>
+
+
+        <div class="meta-connect-copy">
+
+          <strong>
+            Conexión automática con Meta
+          </strong>
+
+          <p>
+            El usuario inicia sesión en Meta, elige su negocio y su número.
+            AmiApp recibe la configuración automáticamente.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          disabled
+        >
+          Conectar con Meta
+          <span class="soon-badge">
+            Próximamente
+          </span>
+        </button>
+
+      </div>
+
+
+      <div
+        class="connected-detail"
+        *ngIf="whatsAppConectado"
+      >
+
+        <div>
+
+          <span class="connected-check">
+            ✓
+          </span>
+
+          <div>
+
+            <strong>
+              WhatsApp conectado
+            </strong>
+
+            <p>
+              {{
+                whatsAppConfiguracion?.numero
+                  || 'Número configurado'
+              }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="text-danger"
+          [disabled]="desconectandoWhatsApp"
+          (click)="desconectarWhatsApp()"
+        >
+          {{
+            desconectandoWhatsApp
+              ? 'Desconectando...'
+              : 'Desconectar'
+          }}
+        </button>
+
+      </div>
+
+
+      <details class="technical-details">
+
+        <summary>
+          Configuración técnica temporal
+        </summary>
+
+        <div class="technical-content">
+
+          <div class="technical-note">
+
+            <span>
+              i
+            </span>
+
+            <p>
+              Este bloque es solo para desarrollo mientras terminamos
+              Embedded Signup. Lo que guardes acá se aplicará a
+              <strong>{{ nombreAlcanceActual }}</strong>.
+            </p>
+
+          </div>
+
+
+          <div class="whatsapp-config-grid">
+
+            <label class="field">
+
+              <span>
+                Número de WhatsApp
+              </span>
+
+              <input
+                type="text"
+                [(ngModel)]="whatsappForm.numero"
+                placeholder="+54 223 ..."
+              >
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Phone Number ID
+              </span>
+
+              <input
+                type="text"
+                [(ngModel)]="whatsappForm.phoneNumberId"
+                placeholder="ID de Meta"
+              >
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                WhatsApp Business Account ID
+              </span>
+
+              <input
+                type="text"
+                [(ngModel)]="whatsappForm.businessAccountId"
+                placeholder="WABA ID"
+              >
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Access Token
+              </span>
+
+              <input
+                type="password"
+                [(ngModel)]="whatsappForm.accessToken"
+                autocomplete="new-password"
+                placeholder="••••••••••••••••"
+              >
+
+            </label>
+
+          </div>
+
+
+          <div class="technical-actions">
+
+            <button
+              type="button"
+              class="button button-secondary"
+              [disabled]="guardandoWhatsApp"
+              (click)="cancelarConfiguracionWhatsApp()"
+            >
+              Cancelar
+            </button>
+
+
+            <button
+              type="button"
+              class="button button-primary"
+              [disabled]="guardandoWhatsApp"
+              (click)="guardarConfiguracionWhatsApp()"
+            >
+              {{
+                guardandoWhatsApp
+                  ? 'Guardando...'
+                  : 'Guardar configuración técnica'
+              }}
+            </button>
+
+          </div>
+
+        </div>
+
+      </details>
+
+    </section>
+
+
+    <!-- =====================================================
+         AUTOMATIZACIONES
+    ====================================================== -->
+
+    <div class="automation-section-heading">
+
+      <div>
+
+        <span class="eyebrow">
+          RECORRIDO DEL PACIENTE
+        </span>
+
+        <h2>
+          Automatizaciones configuradas
+        </h2>
+
+        <p>
+          Acá ves las reglas generales y las específicas
+          de cada profesional.
+        </p>
+
+      </div>
+
+
+      <span
+        class="automation-count"
+        *ngIf="!cargando"
+      >
+        {{ automatizacionesActivas.length }}
+        {{
+          automatizacionesActivas.length === 1
+            ? 'regla activa'
+            : 'reglas activas'
+        }}
+      </span>
+
+    </div>
+
+
+    <div
+      class="state-card"
+      *ngIf="cargando"
+    >
+      Cargando automatizaciones...
+    </div>
+
+
+    <div
+      class="empty-state"
+      *ngIf="
+        !cargando
+        &&
+        automatizacionesActivas.length === 0
+      "
+    >
+
+      <div class="empty-icon">
+        ✦
+      </div>
+
+      <h2>
+        Todavía no configuraste automatizaciones
+      </h2>
+
+      <p>
+        Podés crear una regla general o aplicar la misma
+        automatización a uno o varios profesionales.
+      </p>
+
+      <button
+        type="button"
+        class="button button-primary"
+        (click)="nueva()"
+      >
+        Crear primera automatización
+      </button>
+
+    </div>
+
+
+    <div
+      class="automation-list"
+      *ngIf="
+        !cargando
+        &&
+        automatizacionesActivas.length > 0
+      "
+    >
+
+      <article
+        class="automation-row"
+        *ngFor="
+          let automatizacion of automatizacionesActivas
+        "
+      >
+
+        <div class="automation-main">
+
+          <div class="automation-event-icon">
+            {{ iconoEvento(automatizacion.evento) }}
+          </div>
+
+
+          <div class="automation-copy">
+
+            <div class="automation-title-line">
+
+              <div>
+
+                <span class="automation-category">
+                  {{ categoriaEvento(automatizacion.evento) }}
+                </span>
+
+                <h3>
+                  {{ tituloEvento(automatizacion.evento) }}
+                </h3>
+
+              </div>
+
+
+              <span
+                class="status-pill"
+                [class.active]="automatizacion.activo"
+              >
+                {{
+                  automatizacion.activo
+                    ? 'Activa'
+                    : 'Inactiva'
+                }}
+              </span>
+
+            </div>
+
+
+            <p>
+              {{ descripcionEvento(automatizacion.evento) }}
+            </p>
+
+
+            <div class="automation-meta">
+
+              <span class="meta-chip">
+                WhatsApp
+              </span>
+
+              <span class="meta-chip">
+                {{ nombreAlcanceAutomatizacion(automatizacion) }}
+              </span>
+
+              <span
+                class="meta-chip highlighted"
+                *ngIf="
+                  automatizacion.acciones[0]?.tipo === 'Video'
+                "
+              >
+                Video incluido
+              </span>
+
+              <span
+                class="meta-chip"
+                *ngIf="
+                  automatizacion.acciones[0]?.tipo !== 'Video'
+                "
+              >
+                Solo mensaje
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="automation-actions">
+
+          <button
+            type="button"
+            class="button button-secondary"
+            (click)="editar(automatizacion)"
+          >
+            Configurar
+          </button>
+
+
+          <button
+            type="button"
+            class="button button-soft"
+            *ngIf="
+              automatizacion.evento === 'TurnoCreado'
+              &&
+              automatizacion.activo
+            "
+            (click)="probar(automatizacion.profesionalId)"
+          >
+            Probar
+          </button>
+
+
+          <button
+            type="button"
+            class="text-danger"
+            *ngIf="automatizacion.activo"
+            (click)="desactivar(automatizacion)"
+          >
+            Desactivar
+          </button>
+
+        </div>
+
+      </article>
+
+    </div>
+
+
+    <div class="next-steps-note">
+
+      <span class="next-steps-icon">
+        →
+      </span>
+
+      <div>
+
+        <strong>
+          Administrá tus reglas
+        </strong>
+
+        <p>
+          Una regla general funciona como respaldo. Si un profesional
+          tiene una regla propia para el mismo evento, AmiApp usa esa primero.
+          Podés aplicar una misma configuración a varios profesionales de una vez.
+        </p>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- =====================================================
+       CATÁLOGO DE AUTOMATIZACIONES
+  ====================================================== -->
+
+  <ng-container *ngIf="modoCatalogo">
+
+    <div class="catalog-shell">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="cerrarCatalogo()"
+      >
+        ← Volver a automatizaciones
+      </button>
+
+
+      <header class="catalog-header">
+
+        <div>
+
+          <span class="eyebrow">
+            NUEVA AUTOMATIZACIÓN
+          </span>
+
+          <h1>
+            ¿Qué querés automatizar?
+          </h1>
+
+          <p>
+            Elegí un momento del recorrido del paciente.
+            AmiApp te muestra solamente las opciones compatibles.
+          </p>
+
+        </div>
+
+      </header>
+
+
+      <div class="catalog-grid">
+
+        <button
+          type="button"
+          class="catalog-card"
+          *ngFor="
+            let opcion of catalogoAutomatizaciones
+          "
+          [class.available]="esOpcionDisponible(opcion)"
+          [class.disabled]="!esOpcionDisponible(opcion)"
+          (click)="seleccionarAutomatizacion(opcion)"
+        >
+
+          <span class="catalog-icon">
+            {{ opcion.icono }}
+          </span>
+
+
+          <div class="catalog-copy">
+
+            <span class="catalog-category">
+              {{ opcion.categoria }}
+            </span>
+
+            <strong>
+              {{ opcion.titulo }}
+            </strong>
+
+            <p>
+              {{ opcion.descripcion }}
+            </p>
+
+          </div>
+
+
+          <span
+            class="catalog-state"
+            [class.available]="esOpcionDisponible(opcion)"
+          >
+            {{ estadoOpcion(opcion) }}
+          </span>
+
+
+          <span
+            class="catalog-arrow"
+            *ngIf="esOpcionDisponible(opcion)"
+          >
+            →
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div class="catalog-help">
+
+        <span>
+          i
+        </span>
+
+        <p>
+          <strong>Después elegís el alcance:</strong>
+          toda la organización o uno o varios profesionales.
+          Cumpleaños permanece como una regla general en esta versión.
+        </p>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- =====================================================
+       EDITOR
+  ====================================================== -->
+
+  <ng-container *ngIf="modoEditor">
+
+    <div class="editor-shell">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="volver()"
+      >
+        ← Volver a automatizaciones
+      </button>
+
+
+      <header class="editor-header">
+
+        <div>
+
+          <span class="eyebrow">
+            AUTOMATIZACIÓN
+          </span>
+
+          <h1>
+            {{
+              editandoId
+                ? 'Configurar automatización'
+                : 'Nueva automatización'
+            }}
+          </h1>
+
+          <p *ngIf="formulario.evento === 'TurnoCreado'">
+            Definí cómo se comunica AmiApp
+            cuando un paciente reserva un turno.
+          </p>
+
+          <p *ngIf="formulario.evento === 'RecordatorioTurno'">
+            Configurá cuándo querés recordarle el turno al paciente
+            y qué contenido va a recibir.
+          </p>
+
+        </div>
+
+
+        <div class="editor-status">
+
+          <span
+            class="status-dot"
+            [class.active]="formulario.activo"
+          ></span>
+
+          {{
+            formulario.activo
+              ? 'Activa'
+              : 'Inactiva'
+          }}
+
+        </div>
+
+      </header>
+
+
+      <div class="editor-layout">
+
+        <main class="editor-card">
+
+
+          <!-- 1. INFORMACIÓN -->
+
+          <section class="form-section">
+
+            <div class="section-number">
+              1
+            </div>
+
+            <div class="section-content">
+
+              <div class="section-title-block">
+
+                <h2>
+                  Información general
+                </h2>
+
+                <p>
+                  Un nombre interno para reconocer esta regla.
+                </p>
+
+              </div>
+
+
+              <label class="field">
+
+                <span>
+                  Nombre
+                </span>
+
+                <input
+                  type="text"
+                  [(ngModel)]="formulario.nombre"
+                  maxlength="150"
+                  placeholder="Mensaje al reservar turno"
+                >
+
+              </label>
+
+            </div>
+
+          </section>
+
+
+          <!-- 2. MOMENTO -->
+
+          <section class="form-section">
+
+            <div class="section-number">
+              2
+            </div>
+
+            <div class="section-content">
+
+              <div class="section-title-block">
+
+                <h2>
+                  Cuándo se ejecuta
+                </h2>
+
+                <p *ngIf="formulario.evento === 'TurnoCreado'">
+                  Se envía inmediatamente después de que el paciente reserva.
+                </p>
+
+                <p *ngIf="formulario.evento === 'RecordatorioTurno'">
+                  Elegí con cuánta anticipación querés avisarle al paciente.
+                </p>
+
+              </div>
+
+
+              <div
+                class="selection-card selected"
+                *ngIf="formulario.evento === 'TurnoCreado'"
+              >
+
+                <div class="selection-icon">
+                  ↗
+                </div>
+
+                <div>
+
+                  <strong>
+                    Al reservar un turno
+                  </strong>
+
+                  <span>
+                    Se ejecuta automáticamente.
+                  </span>
+
+                </div>
+
+                <span class="selection-check">
+                  ✓
+                </span>
+
+              </div>
+
+
+              <div
+                class="reminder-config"
+                *ngIf="formulario.evento === 'RecordatorioTurno'"
+              >
+
+                <div class="reminder-current">
+
+                  <span class="reminder-current-icon">
+                    ◷
+                  </span>
+
+                  <div>
+
+                    <strong>
+                      Antes del turno
+                    </strong>
+
+                    <span>
+                      {{
+                        formulario.anticipacionMinutos === 120
+                          ? '2 horas antes'
+                          : formulario.anticipacionMinutos === 360
+                            ? '6 horas antes'
+                            : formulario.anticipacionMinutos === 720
+                              ? '12 horas antes'
+                              : formulario.anticipacionMinutos === 1440
+                                ? '24 horas antes'
+                                : formulario.anticipacionMinutos === 2880
+                                  ? '48 horas antes'
+                                  : formulario.anticipacionMinutos === 4320
+                                    ? '72 horas antes'
+                                    : 'Elegí una opción'
+                      }}
+                    </span>
+
+                  </div>
+
+                  <span class="selection-check">
+                    ✓
+                  </span>
+
+                </div>
+
+
+                <div class="reminder-options">
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(120)"
+                    (click)="seleccionarAnticipacion(120)"
+                  >
+                    <strong>2 h</strong>
+                    <small>antes</small>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(360)"
+                    (click)="seleccionarAnticipacion(360)"
+                  >
+                    <strong>6 h</strong>
+                    <small>antes</small>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(720)"
+                    (click)="seleccionarAnticipacion(720)"
+                  >
+                    <strong>12 h</strong>
+                    <small>antes</small>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(1440)"
+                    (click)="seleccionarAnticipacion(1440)"
+                  >
+                    <strong>24 h</strong>
+                    <small>antes</small>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(2880)"
+                    (click)="seleccionarAnticipacion(2880)"
+                  >
+                    <strong>48 h</strong>
+                    <small>antes</small>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="reminder-option"
+                    [class.selected]="esAnticipacionSeleccionada(4320)"
+                    (click)="seleccionarAnticipacion(4320)"
+                  >
+                    <strong>72 h</strong>
+                    <small>antes</small>
+                  </button>
+
+                </div>
+
+
+                <div class="reminder-help">
+                  AmiApp revisará los turnos automáticamente.
+                  No necesitás dejar esta pantalla abierta.
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- 3. DESTINATARIOS -->
+
+          <section class="form-section">
+
+            <div class="section-number">
+              3
+            </div>
+
+            <div class="section-content">
+
+              <div class="section-title-block">
+
+                <h2>
+                  A quién aplica
+                </h2>
+
+                <p *ngIf="!esEventoCumpleanos(formulario.evento)">
+                  Elegí una regla general o aplicá la misma configuración
+                  a uno o varios profesionales.
+                </p>
+
+                <p *ngIf="esEventoCumpleanos(formulario.evento)">
+                  El saludo de cumpleaños queda como una regla general
+                  de la organización en esta versión.
+                </p>
+
+              </div>
+
+
+              <div
+                class="target-mode-grid"
+                *ngIf="!esEventoCumpleanos(formulario.evento)"
+              >
+
+                <button
+                  type="button"
+                  class="target-mode-card"
+                  [class.selected]="alcanceAutomatizacion === 'organizacion'"
+                  [disabled]="guardando"
+                  (click)="seleccionarAlcanceAutomatizacion('organizacion')"
+                >
+
+                  <span class="target-mode-icon">
+                    ◎
+                  </span>
+
+                  <div>
+                    <strong>
+                      Toda la organización
+                    </strong>
+
+                    <small>
+                      Funciona como respaldo para todos los profesionales.
+                    </small>
+                  </div>
+
+                  <span
+                    class="target-mode-check"
+                    *ngIf="alcanceAutomatizacion === 'organizacion'"
+                  >
+                    ✓
+                  </span>
+
+                </button>
+
+
+                <button
+                  type="button"
+                  class="target-mode-card"
+                  [class.selected]="alcanceAutomatizacion === 'profesionales'"
+                  [disabled]="guardando"
+                  (click)="seleccionarAlcanceAutomatizacion('profesionales')"
+                >
+
+                  <span class="target-mode-icon">
+                    ◉
+                  </span>
+
+                  <div>
+                    <strong>
+                      Profesionales específicos
+                    </strong>
+
+                    <small>
+                      Podés elegir uno, varios o todos.
+                    </small>
+                  </div>
+
+                  <span
+                    class="target-mode-check"
+                    *ngIf="alcanceAutomatizacion === 'profesionales'"
+                  >
+                    ✓
+                  </span>
+
+                </button>
+
+              </div>
+
+
+              <div
+                class="birthday-target-card"
+                *ngIf="esEventoCumpleanos(formulario.evento)"
+              >
+
+                <span class="target-mode-icon">
+                  ◎
+                </span>
+
+                <div>
+                  <strong>
+                    Toda la organización
+                  </strong>
+
+                  <small>
+                    Se enviará una sola vez por paciente,
+                    sin duplicarlo por profesional.
+                  </small>
+                </div>
+
+                <span class="target-mode-check">
+                  ✓
+                </span>
+
+              </div>
+
+
+              <div
+                class="professionals-target-panel"
+                *ngIf="usaProfesionalesEspecificos"
+              >
+
+                <div class="professionals-target-header">
+
+                  <div>
+                    <strong>
+                      Elegí los profesionales
+                    </strong>
+
+                    <span>
+                      {{ cantidadProfesionalesSeleccionados }}
+                      {{
+                        cantidadProfesionalesSeleccionados === 1
+                          ? 'seleccionado'
+                          : 'seleccionados'
+                      }}
+                    </span>
+                  </div>
+
+
+                  <div class="professionals-target-actions">
+
+                    <button
+                      type="button"
+                      [disabled]="guardando || cargandoProfesionales"
+                      (click)="seleccionarTodosProfesionales()"
+                    >
+                      Seleccionar todos
+                    </button>
+
+                    <button
+                      type="button"
+                      [disabled]="guardando"
+                      (click)="limpiarProfesionalesSeleccionados()"
+                    >
+                      Limpiar
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  class="professionals-target-loading"
+                  *ngIf="cargandoProfesionales"
+                >
+                  Cargando profesionales...
+                </div>
+
+
+                <div
+                  class="professionals-target-empty"
+                  *ngIf="
+                    !cargandoProfesionales
+                    &&
+                    profesionales.length === 0
+                  "
+                >
+                  No hay profesionales activos para seleccionar.
+                </div>
+
+
+                <div
+                  class="professionals-target-grid"
+                  *ngIf="
+                    !cargandoProfesionales
+                    &&
+                    profesionales.length > 0
+                  "
+                >
+
+                  <button
+                    type="button"
+                    class="professional-target-card"
+                    *ngFor="let profesional of profesionales"
+                    [class.selected]="estaProfesionalSeleccionado(profesional.profesionalId)"
+                    [disabled]="guardando"
+                    (click)="toggleProfesionalAutomatizacion(profesional.profesionalId)"
+                  >
+
+                    <span class="professional-target-checkbox">
+                      {{
+                        estaProfesionalSeleccionado(profesional.profesionalId)
+                          ? '✓'
+                          : ''
+                      }}
+                    </span>
+
+                    <span class="professional-target-name">
+                      {{ profesional.profesional }}
+                    </span>
+
+                  </button>
+
+                </div>
+
+
+                <div class="professionals-target-summary">
+                  <strong>
+                    Alcance:
+                  </strong>
+
+                  {{ resumenAlcanceFormulario }}
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- 4. CONTENIDO -->
+
+          <section class="form-section">
+
+            <div class="section-number">
+              4
+            </div>
+
+            <div class="section-content">
+
+              <div class="section-title-block">
+
+                <h2>
+                  Qué recibe el paciente
+                </h2>
+
+                <p>
+                  Elegí si el WhatsApp incluye solamente el mensaje
+                  o también un video.
+                </p>
+
+              </div>
+
+
+              <div class="delivery-options">
+
+                <button
+                  type="button"
+                  class="delivery-option"
+                  [class.selected]="!formulario.usarVideo"
+                  [disabled]="subiendoVideo"
+                  (click)="cambiarTipoEnvio(false)"
+                >
+
+                  <span class="delivery-option-icon">
+                    ✉
+                  </span>
+
+                  <div>
+
+                    <strong>
+                      Solo mensaje
+                    </strong>
+
+                    <small>
+                      Confirmación clara con los datos del turno.
+                    </small>
+
+                  </div>
+
+                  <span
+                    class="delivery-check"
+                    *ngIf="!formulario.usarVideo"
+                  >
+                    ✓
+                  </span>
+
+                </button>
+
+
+                <button
+                  type="button"
+                  class="delivery-option"
+                  [class.selected]="formulario.usarVideo"
+                  [disabled]="subiendoVideo"
+                  (click)="cambiarTipoEnvio(true)"
+                >
+
+                  <span class="delivery-option-icon">
+                    ▶
+                  </span>
+
+                  <div>
+
+                    <strong>
+                      Mensaje + video
+                    </strong>
+
+                    <small>
+                      Agrega contenido multimedia antes de la consulta.
+                    </small>
+
+                  </div>
+
+                  <span
+                    class="delivery-check"
+                    *ngIf="formulario.usarVideo"
+                  >
+                    ✓
+                  </span>
+
+                </button>
+
+              </div>
+
+
+              <div
+                class="video-upload-panel"
+                *ngIf="formulario.usarVideo"
+              >
+
+                <input
+                  #videoInput
+                  class="hidden-file-input"
+                  type="file"
+                  accept="video/mp4,.mp4"
+                  (change)="seleccionarVideo($event)"
+                >
+
+
+                <div
+                  class="video-upload-empty"
+                  *ngIf="
+                    !formulario.archivoUrl
+                    &&
+                    !subiendoVideo
+                  "
+                >
+
+                  <span class="video-upload-icon">
+                    ▶
+                  </span>
+
+                  <div>
+
+                    <strong>
+                      Subí el video
+                    </strong>
+
+                    <p>
+                      MP4 · máximo 16 MB.
+                    </p>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    class="button button-secondary"
+                    (click)="videoInput.click()"
+                  >
+                    Seleccionar MP4
+                  </button>
+
+                </div>
+
+
+                <div
+                  class="video-uploading"
+                  *ngIf="subiendoVideo"
+                >
+
+                  <span class="upload-spinner"></span>
+
+                  <div>
+
+                    <strong>
+                      Subiendo video...
+                    </strong>
+
+                    <p>
+                      {{ videoNombreArchivo }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  class="video-ready"
+                  *ngIf="
+                    formulario.archivoUrl
+                    &&
+                    !subiendoVideo
+                  "
+                >
+
+                  <video
+                    class="video-preview"
+                    [src]="formulario.archivoUrl"
+                    controls
+                    preload="metadata"
+                  ></video>
+
+
+                  <div class="video-file-info">
+
+                    <span class="video-ready-pill">
+                      ✓ Video listo
+                    </span>
+
+                    <strong>
+                      {{
+                        videoNombreArchivo
+                        ||
+                        'video.mp4'
+                      }}
+                    </strong>
+
+                    <small>
+                      Guardado de forma segura en R2.
+                    </small>
+
+                  </div>
+
+
+                  <div class="video-file-actions">
+
+                    <button
+                      type="button"
+                      class="button button-secondary"
+                      (click)="videoInput.click()"
+                    >
+                      Reemplazar
+                    </button>
+
+                    <button
+                      type="button"
+                      class="text-danger"
+                      (click)="quitarVideo()"
+                    >
+                      Quitar
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- 5. ESTADO -->
+
+          <section class="form-section last">
+
+            <div class="section-number">
+              5
+            </div>
+
+            <div class="section-content">
+
+              <div class="section-title-block">
+
+                <h2>
+                  Estado
+                </h2>
+
+                <p>
+                  Podés dejar la regla preparada
+                  sin activarla todavía.
+                </p>
+
+              </div>
+
+
+              <label class="toggle-card">
+
+                <div>
+
+                  <strong>
+                    Automatización activa
+                  </strong>
+
+                  <span>
+                    AmiApp la ejecutará cuando ocurra el evento.
+                  </span>
+
+                </div>
+
+
+                <input
+                  type="checkbox"
+                  [(ngModel)]="formulario.activo"
+                >
+
+              </label>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <!-- =================================================
+             RESUMEN
+        ================================================== -->
+
+        <aside class="summary-card">
+
+          <span class="eyebrow">
+            RESUMEN
+          </span>
+
+          <h2>
+            Así va a funcionar
+          </h2>
+
+
+          <div class="summary-block">
+
+            <span class="summary-number">
+              1
+            </span>
+
+            <div>
+
+              <strong>
+                El paciente reserva
+              </strong>
+
+              <small>
+                Desde la página pública de la organización.
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <span class="summary-line"></span>
+
+
+          <div class="summary-block">
+
+            <span class="summary-number">
+              2
+            </span>
+
+            <div>
+
+              <strong *ngIf="formulario.evento === 'TurnoCreado'">
+                AmiApp detecta la reserva
+              </strong>
+
+              <strong *ngIf="formulario.evento === 'RecordatorioTurno'">
+                AmiApp espera el momento indicado
+              </strong>
+
+              <small *ngIf="formulario.evento === 'TurnoCreado'">
+                No requiere ninguna acción manual.
+              </small>
+
+              <small *ngIf="formulario.evento === 'RecordatorioTurno'">
+                {{
+                  formulario.anticipacionMinutos === 120
+                    ? '2 horas antes del turno.'
+                    : formulario.anticipacionMinutos === 360
+                      ? '6 horas antes del turno.'
+                      : formulario.anticipacionMinutos === 720
+                        ? '12 horas antes del turno.'
+                        : formulario.anticipacionMinutos === 1440
+                          ? '24 horas antes del turno.'
+                          : formulario.anticipacionMinutos === 2880
+                            ? '48 horas antes del turno.'
+                            : formulario.anticipacionMinutos === 4320
+                              ? '72 horas antes del turno.'
+                              : 'Según la anticipación configurada.'
+                }}
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <span class="summary-line"></span>
+
+
+          <div class="summary-block">
+
+            <span class="summary-number">
+              3
+            </span>
+
+            <div>
+
+              <strong>
+                Envía WhatsApp
+              </strong>
+
+              <small>
+                {{
+                  formulario.usarVideo
+                    ? 'Mensaje con video incluido.'
+                    : 'Mensaje con los datos del turno.'
+                }}
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-note">
+
+            <strong>
+              Configuración inteligente
+            </strong>
+
+            <p>
+              AmiApp toma automáticamente la organización,
+              el profesional, la especialidad, la fecha,
+              la hora y la sucursal del turno.
+            </p>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <footer class="editor-footer">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          [disabled]="guardando"
+          (click)="volver()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-primary"
+          [disabled]="guardando"
+          (click)="guardar()"
+        >
+          {{
+            guardando
+              ? 'Guardando...'
+              : editandoId
+                ? 'Guardar cambios'
+                : 'Crear automatización'
+          }}
+        </button>
+
+      </footer>
+
+    </div>
+
+  </ng-container>
+
+</section>

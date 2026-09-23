@@ -1,0 +1,1700 @@
+<div class="new-turn-page">
+
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
+
+  <header class="page-header">
+
+    <div>
+
+      <button
+        type="button"
+        class="back-link"
+        (click)="cancelar()"
+      >
+        ← Volver a la agenda
+      </button>
+
+      <h1>
+        Nuevo turno
+      </h1>
+
+      <p>
+        Registrá un turno desde la agenda interna.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- ===================================================== -->
+  <!-- LAYOUT -->
+  <!-- ===================================================== -->
+
+  <div class="booking-layout">
+
+
+    <!-- =================================================== -->
+    <!-- STEPPER -->
+    <!-- =================================================== -->
+
+    <aside class="steps-card">
+
+      <div class="steps-title">
+
+        <span>
+          NUEVO TURNO
+        </span>
+
+        <strong>
+          Datos de la reserva
+        </strong>
+
+      </div>
+
+
+      <!-- PACIENTE -->
+
+      <div
+        class="step-item"
+        [class.active]="
+          pasoActual === 'paciente'
+        "
+        [class.completed]="
+          pasoCompletado('paciente')
+        "
+      >
+
+        <div class="step-number">
+          1
+        </div>
+
+        <div>
+
+          <strong>
+            Paciente
+          </strong>
+
+          <span>
+            Seleccioná quién solicita el turno.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PROFESIONAL -->
+
+      <div
+        class="step-item"
+        *ngIf="
+          !esProfesionalSolo
+        "
+        [class.active]="
+          pasoActual === 'profesional'
+        "
+        [class.completed]="
+          pasoCompletado('profesional')
+        "
+      >
+
+        <div class="step-number">
+          2
+        </div>
+
+        <div>
+
+          <strong>
+            Profesional
+          </strong>
+
+          <span>
+            Elegí la agenda profesional.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ESPECIALIDAD -->
+
+      <div
+        class="step-item"
+        [class.active]="
+          pasoActual === 'especialidad'
+        "
+        [class.completed]="
+          pasoCompletado('especialidad')
+        "
+      >
+
+        <div class="step-number">
+          {{ esProfesionalSolo ? 2 : 3 }}
+        </div>
+
+        <div>
+
+          <strong>
+            Especialidad
+          </strong>
+
+          <span>
+            Tipo de atención.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUCURSAL -->
+
+      <div
+        class="step-item"
+        [class.active]="
+          pasoActual === 'sucursal'
+        "
+        [class.completed]="
+          pasoCompletado('sucursal')
+        "
+      >
+
+        <div class="step-number">
+          {{ esProfesionalSolo ? 3 : 4 }}
+        </div>
+
+        <div>
+
+          <strong>
+            Sucursal
+          </strong>
+
+          <span>
+            Lugar de atención.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- FECHA -->
+
+      <div
+        class="step-item"
+        [class.active]="
+          pasoActual === 'fecha'
+        "
+        [class.completed]="
+          pasoCompletado('fecha')
+        "
+      >
+
+        <div class="step-number">
+          {{ esProfesionalSolo ? 4 : 5 }}
+        </div>
+
+        <div>
+
+          <strong>
+            Fecha y hora
+          </strong>
+
+          <span>
+            Momento de la consulta.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONFIRMAR -->
+
+      <div
+        class="step-item"
+        [class.active]="
+          pasoActual === 'confirmacion'
+        "
+      >
+
+        <div class="step-number">
+          {{ esProfesionalSolo ? 5 : 6 }}
+        </div>
+
+        <div>
+
+          <strong>
+            Confirmación
+          </strong>
+
+          <span>
+            Revisá antes de guardar.
+          </span>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =================================================== -->
+    <!-- CONTENIDO -->
+    <!-- =================================================== -->
+
+    <main class="content-card">
+
+
+      <!-- ================================================= -->
+      <!-- PACIENTE -->
+      <!-- ================================================= -->
+
+   <section
+  *ngIf="
+    pasoActual === 'paciente'
+  "
+>
+
+  <!-- ================================================= -->
+  <!-- MODO BUSCAR PACIENTE -->
+  <!-- ================================================= -->
+
+  <ng-container
+    *ngIf="
+      modoPaciente === 'buscar'
+    "
+  >
+
+    <div class="section-header">
+
+      <span class="eyebrow">
+        PASO 1
+      </span>
+
+      <h2>
+        Seleccionar paciente
+      </h2>
+
+      <p>
+        Buscá por nombre o DNI.
+      </p>
+
+    </div>
+
+
+    <div class="search-box">
+
+      <span>
+        ⌕
+      </span>
+
+      <input
+        type="text"
+        [(ngModel)]="
+          busquedaPaciente
+        "
+        (input)="buscarPaciente()"
+        placeholder="
+          Buscar paciente...
+        "
+      >
+
+    </div>
+
+
+    <!-- CARGANDO -->
+
+    <div
+      class="loading"
+      *ngIf="
+        cargandoPacientes
+      "
+    >
+      Cargando pacientes...
+    </div>
+
+
+    <!-- RESULTADOS -->
+
+    <div
+      class="options-list"
+      *ngIf="
+        !cargandoPacientes
+      "
+    >
+
+      <button
+        type="button"
+        class="patient-option"
+        *ngFor="
+          let paciente
+          of pacientesFiltrados
+        "
+        (click)="
+          seleccionarPaciente(
+            paciente
+          )
+        "
+      >
+
+        <div class="option-avatar">
+
+          {{
+            obtenerInicialesPaciente(
+              paciente
+            )
+          }}
+
+        </div>
+
+
+        <div class="option-main">
+
+          <strong>
+            {{ paciente.nombre }}
+            {{ paciente.apellido }}
+          </strong>
+
+          <span>
+            DNI {{ paciente.dni }}
+          </span>
+
+        </div>
+
+
+        <span class="option-arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <!-- ================================================= -->
+      <!-- SIN RESULTADOS -->
+      <!-- ================================================= -->
+
+      <div
+        class="patient-not-found"
+        *ngIf="
+          pacientesFiltrados.length === 0
+        "
+      >
+
+        <div class="not-found-icon">
+          +
+        </div>
+
+
+        <div class="not-found-content">
+
+          <strong>
+            No encontramos este paciente
+          </strong>
+
+          <p>
+
+            <ng-container
+              *ngIf="
+                busquedaPaciente.trim()
+              "
+            >
+              No existe ningún paciente
+              registrado con
+              <b>
+                {{ busquedaPaciente }}
+              </b>.
+            </ng-container>
+
+
+            <ng-container
+              *ngIf="
+                !busquedaPaciente.trim()
+              "
+            >
+              No hay pacientes disponibles
+              para seleccionar.
+            </ng-container>
+
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="create-patient-button"
+          (click)="
+            abrirCrearPaciente()
+          "
+        >
+          + Crear paciente
+        </button>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- ================================================= -->
+  <!-- MODO CREAR PACIENTE -->
+  <!-- ================================================= -->
+
+  <ng-container
+    *ngIf="
+      modoPaciente === 'crear'
+    "
+  >
+
+    <button
+      type="button"
+      class="inline-back-button"
+      (click)="
+        volverABuscarPaciente()
+      "
+    >
+      ← Volver a buscar paciente
+    </button>
+
+
+    <div class="section-header create-header">
+
+      <span class="eyebrow">
+        NUEVO PACIENTE
+      </span>
+
+      <h2>
+        Registrar paciente
+      </h2>
+
+      <p>
+        Completá los datos básicos.
+        Al guardarlo, continuaremos
+        automáticamente con el turno.
+      </p>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DATOS PRINCIPALES -->
+    <!-- ================================================= -->
+
+    <div class="patient-form-section">
+
+      <span class="form-section-label">
+        DATOS PERSONALES
+      </span>
+
+
+      <div class="patient-form-grid">
+
+        <!-- NOMBRE -->
+
+        <div class="form-group">
+
+          <label>
+            Nombre
+            <span class="required">
+              *
+            </span>
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              nuevoPaciente.nombre
+            "
+            placeholder="Nombre"
+          >
+
+        </div>
+
+
+        <!-- APELLIDO -->
+
+        <div class="form-group">
+
+          <label>
+            Apellido
+            <span class="required">
+              *
+            </span>
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              nuevoPaciente.apellido
+            "
+            placeholder="Apellido"
+          >
+
+        </div>
+
+
+        <!-- DNI -->
+
+        <div class="form-group">
+
+          <label>
+            DNI
+            <span class="required">
+              *
+            </span>
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              nuevoPaciente.dni
+            "
+            placeholder="DNI"
+          >
+
+        </div>
+
+
+        <!-- FECHA NACIMIENTO -->
+
+        <div class="form-group">
+
+          <label>
+            Fecha de nacimiento
+          </label>
+
+          <input
+            type="date"
+            [(ngModel)]="
+              nuevoPaciente.fecha_nacimiento
+            "
+          >
+
+        </div>
+
+
+        <!-- SEXO -->
+
+        <div class="form-group">
+
+          <label>
+            Sexo
+          </label>
+
+          <select
+            [(ngModel)]="
+              nuevoPaciente.sexo
+            "
+          >
+
+            <option value="">
+              Seleccionar
+            </option>
+
+            <option value="Masculino">
+              Masculino
+            </option>
+
+            <option value="Femenino">
+              Femenino
+            </option>
+
+            <option value="Otro">
+              Otro
+            </option>
+
+            <option value="No especifica">
+              Prefiere no indicar
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- TELÉFONO -->
+
+        <div class="form-group">
+
+          <label>
+            Teléfono
+          </label>
+
+          <input
+            type="tel"
+            [(ngModel)]="
+              nuevoPaciente.telefono
+            "
+            placeholder="223..."
+          >
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="form-group">
+
+          <label>
+            Email
+          </label>
+
+          <input
+            type="email"
+            [(ngModel)]="
+              nuevoPaciente.email
+            "
+            placeholder="paciente@email.com"
+          >
+
+        </div>
+
+
+        <!-- DIRECCIÓN -->
+
+        <div class="form-group">
+
+          <label>
+            Dirección
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              nuevoPaciente.direccion
+            "
+            placeholder="Dirección"
+          >
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- COBERTURA -->
+    <!-- ================================================= -->
+<div class="patient-form-section coverage-section">
+
+  <span class="form-section-label">
+    COBERTURA
+  </span>
+
+  <div class="patient-form-grid">
+
+    <!-- OBRA SOCIAL -->
+
+    <div class="form-group">
+
+      <label>
+        Obra social
+      </label>
+
+      <select
+        [(ngModel)]="
+          nuevoPaciente.obra_social_id
+        "
+        [disabled]="
+          cargandoObrasSociales
+        "
+      >
+
+        <option
+          [ngValue]="null"
+        >
+          Particular
+        </option>
+
+        <option
+          *ngFor="
+            let obra
+            of obrasSociales
+          "
+          [ngValue]="obra.id"
+        >
+          {{
+            obra.siglas
+              ? obra.siglas + ' - ' + obra.nombre
+              : obra.nombre
+          }}
+        </option>
+
+      </select>
+
+      <small
+        *ngIf="
+          cargandoObrasSociales
+        "
+      >
+        Cargando obras sociales...
+      </small>
+
+    </div>
+
+
+    <!-- NÚMERO AFILIADO -->
+
+    <div class="form-group">
+
+      <label>
+        Número de afiliado
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="
+          nuevoPaciente.numero_afiliado
+        "
+        [disabled]="
+          !nuevoPaciente.obra_social_id
+        "
+        placeholder="
+          {{
+            nuevoPaciente.obra_social_id
+              ? 'Número de afiliado'
+              : 'Disponible al seleccionar obra social'
+          }}
+        "
+      >
+
+    </div>
+
+  </div>
+
+
+  <div class="coverage-info">
+
+    <span>
+      i
+    </span>
+
+    <p>
+      Si no seleccionás una obra social,
+      el paciente se registrará como particular.
+    </p>
+
+  </div>
+
+</div>
+
+    <!-- ================================================= -->
+    <!-- ACCIONES -->
+    <!-- ================================================= -->
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="secondary-button"
+        [disabled]="
+          guardandoPaciente
+        "
+        (click)="
+          volverABuscarPaciente()
+        "
+      >
+        Cancelar
+      </button>
+
+
+      <button
+        type="button"
+        class="primary-button"
+        [disabled]="
+          guardandoPaciente
+        "
+        (click)="
+          crearPacienteYContinuar()
+        "
+      >
+
+        {{
+          guardandoPaciente
+            ? 'Creando paciente...'
+            : 'Crear y continuar'
+        }}
+
+      </button>
+
+    </div>
+
+  </ng-container>
+
+</section>
+
+
+      <!-- ================================================= -->
+      <!-- PROFESIONAL -->
+      <!-- ================================================= -->
+
+      <section
+        *ngIf="
+          pasoActual ===
+          'profesional'
+        "
+      >
+
+        <div class="section-header">
+
+          <span class="eyebrow">
+            PROFESIONAL
+          </span>
+
+          <h2>
+            ¿Con quién será el turno?
+          </h2>
+
+          <p>
+            Seleccioná el profesional
+            que realizará la atención.
+          </p>
+
+        </div>
+
+
+        <div
+          class="loading"
+          *ngIf="
+            cargandoProfesionales
+          "
+        >
+          Cargando profesionales...
+        </div>
+
+
+        <div class="cards-grid">
+
+          <button
+            type="button"
+            class="selection-card"
+            *ngFor="
+              let profesional
+              of profesionales
+            "
+            (click)="
+              seleccionarProfesional(
+                profesional
+              )
+            "
+          >
+
+            <div class="selection-icon">
+              +
+            </div>
+
+            <div>
+
+              <strong>
+                {{
+                  profesional
+                    .profesional
+                }}
+              </strong>
+
+              <span
+                *ngIf="
+                  profesional
+                    .consultorio
+                "
+              >
+                {{
+                  profesional
+                    .consultorio
+                }}
+              </span>
+
+            </div>
+
+            <span class="card-arrow">
+              →
+            </span>
+
+          </button>
+
+        </div>
+<div class="form-actions">
+
+  <button
+    type="button"
+    class="secondary-button"
+    (click)="volverPaso()"
+  >
+    ← Volver
+  </button>
+
+</div>
+
+      </section>
+
+
+      <!-- ================================================= -->
+      <!-- ESPECIALIDAD -->
+      <!-- ================================================= -->
+
+      <section
+        *ngIf="
+          pasoActual ===
+          'especialidad'
+        "
+      >
+
+        <div class="section-header">
+
+          <span class="eyebrow">
+            ESPECIALIDAD
+          </span>
+
+          <h2>
+            Tipo de consulta
+          </h2>
+
+          <p>
+            Seleccioná la especialidad
+            para este turno.
+          </p>
+
+        </div>
+
+
+        <div
+          class="loading"
+          *ngIf="
+            cargandoEspecialidades
+          "
+        >
+          Cargando especialidades...
+        </div>
+
+
+        <div class="cards-grid">
+
+          <button
+            type="button"
+            class="selection-card"
+            *ngFor="
+              let especialidad
+              of especialidades
+            "
+            (click)="
+              seleccionarEspecialidad(
+                especialidad
+              )
+            "
+          >
+
+            <div class="selection-icon">
+              +
+            </div>
+
+            <div>
+
+              <strong>
+                {{
+                  especialidad
+                    .especialidad
+                }}
+              </strong>
+
+              <span>
+                {{
+                  especialidad
+                    .duracionTurno
+                }}
+                minutos
+              </span>
+
+            </div>
+
+            <span class="card-arrow">
+              →
+            </span>
+
+          </button>
+
+        </div>
+<div class="form-actions">
+
+  <button
+    type="button"
+    class="secondary-button"
+    (click)="volverPaso()"
+  >
+    ← Volver
+  </button>
+
+</div>
+
+      </section>
+
+
+      <!-- ================================================= -->
+      <!-- SUCURSAL -->
+      <!-- ================================================= -->
+
+      <section
+        *ngIf="
+          pasoActual ===
+          'sucursal'
+        "
+      >
+
+        <div class="section-header">
+
+          <span class="eyebrow">
+            SUCURSAL
+          </span>
+
+          <h2>
+            Lugar de atención
+          </h2>
+
+          <p>
+            Elegí dónde se realizará
+            la consulta.
+          </p>
+
+        </div>
+
+
+        <div
+          class="loading"
+          *ngIf="
+            cargandoSucursales
+          "
+        >
+          Cargando sucursales...
+        </div>
+
+
+        <div class="cards-grid">
+
+          <button
+            type="button"
+            class="selection-card"
+            *ngFor="
+              let sucursal
+              of sucursales
+            "
+            (click)="
+              seleccionarSucursal(
+                sucursal
+              )
+            "
+          >
+
+            <div class="selection-icon">
+              ⌂
+            </div>
+
+            <div>
+
+              <strong>
+                {{ sucursal.sucursal }}
+              </strong>
+
+              <span>
+                Sucursal de atención
+              </span>
+
+            </div>
+
+            <span class="card-arrow">
+              →
+            </span>
+
+          </button>
+
+        </div>
+<div class="form-actions">
+
+  <button
+    type="button"
+    class="secondary-button"
+    (click)="volverPaso()"
+  >
+    ← Volver
+  </button>
+
+</div>
+
+      </section>
+
+
+      <!-- ================================================= -->
+      <!-- FECHA Y HORA -->
+      <!-- ================================================= -->
+
+ <section *ngIf="pasoActual === 'fecha'">
+
+  <!-- CABECERA -->
+
+  <div class="section-header">
+    <span class="eyebrow">PASO 4</span>
+
+    <h2>Fecha y hora</h2>
+
+    <p>
+      Seleccioná uno de los días y horarios
+      disponibles del profesional.
+    </p>
+  </div>
+
+
+  <!-- CARGANDO -->
+
+  <div
+    class="schedule-loading"
+    *ngIf="cargandoHorarios"
+  >
+    <div class="schedule-loading-icon">
+      ◷
+    </div>
+
+    <strong>
+      Cargando agenda...
+    </strong>
+
+    <span>
+      Estamos consultando los horarios
+      configurados.
+    </span>
+  </div>
+
+
+  <!-- SIN HORARIOS -->
+
+  <div
+    class="schedule-empty"
+    *ngIf="
+      !cargandoHorarios &&
+      horariosFiltrados.length === 0
+    "
+  >
+    <div class="schedule-empty-icon">
+      ◷
+    </div>
+
+    <strong>
+      No hay horarios configurados
+    </strong>
+
+    <p>
+      Este profesional no tiene horarios
+      disponibles para la especialidad y
+      sucursal seleccionadas.
+    </p>
+
+    <button
+      type="button"
+      class="secondary-button"
+      (click)="volverPaso()"
+    >
+      ← Volver
+    </button>
+  </div>
+
+
+  <!-- AGENDA -->
+
+  <div
+    class="appointment-schedule"
+    *ngIf="
+      !cargandoHorarios &&
+      horariosFiltrados.length > 0
+    "
+  >
+
+    <!-- ============================= -->
+    <!-- CALENDARIO -->
+    <!-- ============================= -->
+
+    <div class="calendar-panel">
+
+      <div class="calendar-top">
+
+        <div>
+          <span class="calendar-label">
+            FECHA DEL TURNO
+          </span>
+
+          <h3>
+            {{ tituloMes() }}
+          </h3>
+        </div>
+
+
+        <div class="calendar-navigation">
+
+          <button
+            type="button"
+            (click)="mesAnterior()"
+            aria-label="Mes anterior"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            (click)="mesSiguiente()"
+            aria-label="Mes siguiente"
+          >
+            ›
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- DÍAS DE SEMANA -->
+
+      <div class="calendar-weekdays">
+        <span>LUN</span>
+        <span>MAR</span>
+        <span>MIÉ</span>
+        <span>JUE</span>
+        <span>VIE</span>
+        <span>SÁB</span>
+        <span>DOM</span>
+      </div>
+
+
+      <!-- DÍAS -->
+
+      <div class="calendar-days">
+
+        <button
+          type="button"
+          class="calendar-day"
+          *ngFor="let dia of diasCalendario"
+
+          [class.other-month]="
+            !dia.esMesActual
+          "
+
+          [class.today]="
+            dia.esHoy
+          "
+
+          [class.available]="
+            dia.disponible
+          "
+
+          [class.unavailable]="
+            !dia.disponible
+          "
+
+          [class.selected]="
+            fechaSeleccionada === dia.fecha
+          "
+
+          [disabled]="
+            !dia.disponible
+          "
+
+          (click)="
+            seleccionarFechaCalendario(dia)
+          "
+        >
+
+          <span class="day-number">
+            {{ dia.numero }}
+          </span>
+
+          <span
+            class="availability-dot"
+            *ngIf="dia.disponible"
+          ></span>
+
+        </button>
+
+      </div>
+
+
+      <!-- REFERENCIAS -->
+
+      <div class="calendar-legend">
+
+        <div>
+          <span class="legend-dot available-dot"></span>
+          Disponible
+        </div>
+
+        <div>
+          <span class="legend-dot unavailable-dot"></span>
+          Sin atención
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- HORARIOS -->
+    <!-- ============================= -->
+
+    <div class="time-panel">
+
+      <!-- SIN FECHA -->
+
+      <div
+        class="time-placeholder"
+        *ngIf="!fechaSeleccionada"
+      >
+
+        <div class="time-placeholder-icon">
+          ◷
+        </div>
+
+        <strong>
+          Elegí una fecha
+        </strong>
+
+        <p>
+          Los horarios disponibles aparecerán
+          acá una vez que selecciones un día
+          habilitado.
+        </p>
+
+      </div>
+
+
+      <!-- FECHA SELECCIONADA -->
+
+      <ng-container
+        *ngIf="fechaSeleccionada"
+      >
+
+        <div class="time-header">
+
+          <span class="calendar-label">
+            HORARIOS DISPONIBLES
+          </span>
+
+          <h3>
+            {{
+              parseFechaLocalPublica(
+                fechaSeleccionada
+              )
+                | date:'EEEE d \'de\' MMMM':'':'es-AR'
+            }}
+          </h3>
+
+          <p>
+            Seleccioná el horario del turno.
+          </p>
+
+        </div>
+
+
+        <!-- HORARIOS -->
+
+        <div
+          class="time-grid"
+          *ngIf="
+            horasDisponibles.length > 0
+          "
+        >
+
+          <button
+            type="button"
+            class="time-slot"
+            *ngFor="
+              let hora
+              of horasDisponibles
+            "
+
+            [class.selected]="
+              horaSeleccionada === hora
+            "
+
+            (click)="
+              horaSeleccionada = hora
+            "
+          >
+            {{ hora }}
+          </button>
+
+        </div>
+
+
+        <!-- SIN HORAS -->
+
+        <div
+          class="no-time-slots"
+          *ngIf="
+            horasDisponibles.length === 0
+          "
+        >
+          <span>◷</span>
+
+          <strong>
+            No hay horarios para este día
+          </strong>
+
+          <p>
+            Seleccioná otra fecha disponible.
+          </p>
+        </div>
+
+      </ng-container>
+
+    </div>
+
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- SELECCIÓN ACTUAL -->
+  <!-- ============================= -->
+
+  <div
+    class="selected-appointment"
+    *ngIf="
+      fechaSeleccionada &&
+      horaSeleccionada
+    "
+  >
+
+    <div class="selected-appointment-icon">
+      ✓
+    </div>
+
+    <div>
+      <span>TURNO SELECCIONADO</span>
+
+      <strong>
+        {{
+          parseFechaLocalPublica(
+            fechaSeleccionada
+          )
+            | date:'dd/MM/yyyy'
+        }}
+        ·
+        {{ horaSeleccionada }} hs
+      </strong>
+    </div>
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div
+    class="form-actions"
+    *ngIf="
+      !cargandoHorarios &&
+      horariosFiltrados.length > 0
+    "
+  >
+
+    <button
+      type="button"
+      class="secondary-button"
+      (click)="volverPaso()"
+    >
+      Volver
+    </button>
+
+
+    <button
+      type="button"
+      class="primary-button"
+      [disabled]="
+        !fechaSeleccionada ||
+        !horaSeleccionada
+      "
+      (click)="continuarDesdeFecha()"
+    >
+      Continuar
+      <span>→</span>
+    </button>
+
+  </div>
+
+</section>
+
+      <!-- ================================================= -->
+      <!-- CONFIRMACIÓN -->
+      <!-- ================================================= -->
+
+      <section
+        *ngIf="
+          pasoActual ===
+          'confirmacion'
+        "
+      >
+
+        <div class="section-header">
+
+          <span class="eyebrow">
+            CONFIRMACIÓN
+          </span>
+
+          <h2>
+            Revisar turno
+          </h2>
+
+          <p>
+            Confirmá que los datos
+            sean correctos.
+          </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-row">
+
+            <span>
+              Paciente
+            </span>
+
+            <strong>
+              {{
+                obtenerNombrePaciente()
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="summary-row">
+
+            <span>
+              Profesional
+            </span>
+
+            <strong>
+              {{
+                obtenerNombreProfesional()
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="summary-row">
+
+            <span>
+              Especialidad
+            </span>
+
+            <strong>
+              {{
+                especialidadSeleccionada
+                  ?.especialidad
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="summary-row">
+
+            <span>
+              Sucursal
+            </span>
+
+            <strong>
+              {{
+                sucursalSeleccionada
+                  ?.sucursal
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="summary-row">
+
+            <span>
+              Fecha
+            </span>
+
+            <strong>
+              {{ fechaSeleccionada }}
+            </strong>
+
+          </div>
+
+
+          <div class="summary-row">
+
+            <span>
+              Hora
+            </span>
+
+            <strong>
+              {{ horaSeleccionada }}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="summary-row"
+            *ngIf="
+              motivoConsulta
+            "
+          >
+
+            <span>
+              Motivo
+            </span>
+
+            <strong>
+              {{ motivoConsulta }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="guardando"
+            (click)="volverPaso()"
+          >
+            Volver
+          </button>
+
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="guardando"
+            (click)="confirmarTurno()"
+          >
+
+            {{
+              guardando
+                ? 'Guardando...'
+                : 'Crear turno'
+            }}
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</div>

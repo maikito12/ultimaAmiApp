@@ -1,0 +1,2661 @@
+<div class="patient-page">
+
+  <!-- ===================================================== -->
+  <!-- LOADING -->
+  <!-- ===================================================== -->
+
+  <div
+    class="loading-container"
+    *ngIf="cargando"
+  >
+
+    <div class="loading-spinner"></div>
+
+    <span>
+      Cargando ficha del paciente...
+    </span>
+
+  </div>
+
+
+  <!-- ===================================================== -->
+  <!-- CONTENIDO -->
+  <!-- ===================================================== -->
+
+  <ng-container
+    *ngIf="
+      !cargando &&
+      paciente
+    "
+  >
+
+    <!-- =================================================== -->
+    <!-- VOLVER -->
+    <!-- =================================================== -->
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="volver()"
+    >
+
+      <span>←</span>
+
+      Volver a pacientes
+
+    </button>
+
+
+    <!-- =================================================== -->
+    <!-- HEADER DEL PACIENTE -->
+    <!-- =================================================== -->
+
+    <section class="patient-header-card">
+
+      <div class="patient-identity">
+
+        <div class="patient-avatar">
+
+          {{ obtenerIniciales() }}
+
+        </div>
+
+
+        <div class="patient-title">
+
+          <span class="eyebrow">
+            PACIENTE
+          </span>
+
+          <h1>
+            {{ obtenerNombreCompleto() }}
+          </h1>
+
+          <div class="patient-meta">
+
+            <span>
+              DNI {{ paciente.dni }}
+            </span>
+
+            <span class="meta-dot"></span>
+
+            <span
+              *ngIf="
+                obtenerEdad() !== null
+              "
+            >
+              {{ obtenerEdad() }} años
+            </span>
+
+            <span
+              class="patient-status"
+              *ngIf="paciente.activo"
+            >
+              Activo
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="header-actions">
+
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="guardandoPaciente"
+          (click)="editarPaciente()"
+        >
+          {{
+            editandoPaciente
+              ? 'Editando paciente'
+              : 'Editar paciente'
+          }}
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- NAVEGACIÓN -->
+    <!-- =================================================== -->
+
+    <nav class="patient-tabs">
+
+      <button
+        type="button"
+        [class.active]="
+          seccionActiva === 'resumen'
+        "
+        (click)="
+          cambiarSeccion('resumen')
+        "
+      >
+        Resumen
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="
+          seccionActiva === 'datos'
+        "
+        (click)="
+          cambiarSeccion('datos')
+        "
+      >
+        Datos personales
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="
+          seccionActiva === 'historia'
+        "
+        (click)="
+          cambiarSeccion('historia')
+        "
+      >
+        Historia clínica
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="
+          seccionActiva === 'consultas'
+        "
+        (click)="
+          cambiarSeccion('consultas')
+        "
+      >
+        Consultas
+      </button>
+
+
+      <button
+        type="button"
+        [class.active]="
+          seccionActiva === 'archivos'
+        "
+        (click)="
+          cambiarSeccion('archivos')
+        "
+      >
+        Estudios y archivos
+      </button>
+
+    </nav>
+
+
+    <!-- =================================================== -->
+    <!-- RESUMEN -->
+    <!-- =================================================== -->
+
+    <section
+      class="patient-content"
+      *ngIf="
+        seccionActiva === 'resumen'
+      "
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            RESUMEN
+          </span>
+
+          <h2>
+            Información del paciente
+          </h2>
+
+          <p>
+            Datos principales para una consulta rápida.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- DATOS RÁPIDOS -->
+
+      <div class="summary-grid">
+
+        <article class="summary-card">
+
+          <div class="summary-icon">
+            ☎
+          </div>
+
+          <div>
+
+            <span>
+              Teléfono
+            </span>
+
+            <strong>
+              {{
+                paciente.telefono ||
+                'Sin teléfono'
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="summary-card">
+
+          <div class="summary-icon">
+            &#64;
+          </div>
+
+          <div>
+
+            <span>
+              Email
+            </span>
+
+            <strong>
+              {{
+                paciente.email ||
+                'Sin email'
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="summary-card">
+
+          <div class="summary-icon">
+            +
+          </div>
+
+          <div>
+
+            <span>
+              Cobertura
+            </span>
+
+            <strong>
+              {{
+                paciente.obra_social ||
+                'Particular'
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="summary-card">
+
+          <div class="summary-icon">
+            ◷
+          </div>
+
+          <div>
+
+            <span>
+              Fecha de nacimiento
+            </span>
+
+            <strong>
+              {{
+                formatearFecha(
+                  paciente.fecha_nacimiento
+                )
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- BLOQUES -->
+
+      <div class="dashboard-grid">
+
+        <article class="dashboard-card">
+
+          <div class="dashboard-card-header">
+
+            <div>
+
+              <span class="card-label">
+                CONTACTO
+              </span>
+
+              <h3>
+                Información personal
+              </h3>
+
+            </div>
+
+            <button
+              type="button"
+              class="link-button"
+              (click)="
+                cambiarSeccion('datos')
+              "
+            >
+              Ver datos →
+            </button>
+
+          </div>
+
+
+          <div class="quick-data-list">
+
+            <div class="quick-data-row">
+
+              <span>
+                Nombre completo
+              </span>
+
+              <strong>
+                {{ obtenerNombreCompleto() }}
+              </strong>
+
+            </div>
+
+
+            <div class="quick-data-row">
+
+              <span>
+                DNI
+              </span>
+
+              <strong>
+                {{ paciente.dni }}
+              </strong>
+
+            </div>
+
+
+            <div class="quick-data-row">
+
+              <span>
+                Sexo
+              </span>
+
+              <strong>
+                {{
+                  paciente.sexo ||
+                  '-'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="quick-data-row">
+
+              <span>
+                Dirección
+              </span>
+
+              <strong>
+                {{
+                  paciente.direccion ||
+                  '-'
+                }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="dashboard-card">
+
+          <div class="dashboard-card-header">
+
+            <div>
+
+              <span class="card-label">
+                ACTIVIDAD
+              </span>
+
+              <h3>
+                Historia del paciente
+              </h3>
+
+            </div>
+
+            <button
+              type="button"
+              class="link-button"
+              (click)="cambiarSeccion('historia')"
+            >
+              Ver historia →
+            </button>
+
+          </div>
+
+
+          <div
+            class="history-summary-loading"
+            *ngIf="cargandoHistoria"
+          >
+            <span class="mini-spinner"></span>
+            Cargando historia clínica...
+          </div>
+
+
+          <ng-container
+            *ngIf="
+              !cargandoHistoria &&
+              obtenerUltimaConsulta() as ultima
+            "
+          >
+
+            <div class="history-summary">
+
+              <div class="history-summary-top">
+
+                <span class="history-summary-date">
+                  {{ formatearFechaHora(ultima.fecha) }}
+                </span>
+
+                <span class="history-summary-count">
+                  {{ consultas.length }}
+                  {{
+                    consultas.length === 1
+                      ? 'consulta'
+                      : 'consultas'
+                  }}
+                </span>
+
+              </div>
+
+              <strong>
+                {{
+                  ultima.motivoConsulta ||
+                  'Última consulta registrada'
+                }}
+              </strong>
+
+              <p>
+                {{ ultima.profesionalNombre }}
+
+                <ng-container
+                  *ngIf="ultima.especialidadNombre"
+                >
+                  · {{ ultima.especialidadNombre }}
+                </ng-container>
+              </p>
+
+              <div class="history-summary-footer">
+
+                <span>
+                  {{ totalArchivos() }}
+                  {{
+                    totalArchivos() === 1
+                      ? 'archivo'
+                      : 'archivos'
+                  }}
+                </span>
+
+                <button
+                  type="button"
+                  class="mini-action"
+                  (click)="cambiarSeccion('historia')"
+                >
+                  Abrir historia
+                </button>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+
+          <div
+            class="empty-mini"
+            *ngIf="
+              !cargandoHistoria &&
+              !errorHistoria &&
+              consultas.length === 0
+            "
+          >
+
+            <div class="empty-mini-icon">
+              +
+            </div>
+
+            <strong>
+              Sin consultas registradas
+            </strong>
+
+            <p>
+              Cuando se registre una consulta desde un turno
+              en atención, aparecerá acá automáticamente.
+            </p>
+
+          </div>
+
+
+          <div
+            class="empty-mini compact-error"
+            *ngIf="
+              !cargandoHistoria &&
+              errorHistoria
+            "
+          >
+
+            <strong>
+              No pudimos cargar la historia
+            </strong>
+
+            <button
+              type="button"
+              class="mini-action"
+              (click)="reintentarHistoria()"
+            >
+              Reintentar
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- DATOS PERSONALES -->
+    <!-- =================================================== -->
+
+    <section
+      class="patient-content"
+      *ngIf="
+        seccionActiva === 'datos'
+      "
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            INFORMACIÓN
+          </span>
+
+          <h2>
+            Datos personales
+          </h2>
+
+          <p>
+            Información administrativa y de contacto.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="secondary-button"
+          *ngIf="!editandoPaciente"
+          (click)="editarPaciente()"
+        >
+          Editar
+        </button>
+
+      </div>
+
+
+      <!-- =============================================== -->
+      <!-- VISTA -->
+      <!-- =============================================== -->
+
+      <div
+        class="data-card"
+        *ngIf="!editandoPaciente"
+      >
+
+        <div class="data-grid">
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Nombre
+            </span>
+
+            <strong>
+              {{ paciente.nombre }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Apellido
+            </span>
+
+            <strong>
+              {{ paciente.apellido }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              DNI
+            </span>
+
+            <strong>
+              {{ paciente.dni }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Sexo
+            </span>
+
+            <strong>
+              {{
+                paciente.sexo ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Fecha de nacimiento
+            </span>
+
+            <strong>
+              {{
+                formatearFecha(
+                  paciente.fecha_nacimiento
+                )
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Edad
+            </span>
+
+            <strong>
+
+              <ng-container
+                *ngIf="
+                  obtenerEdad() !== null
+                "
+              >
+                {{ obtenerEdad() }} años
+              </ng-container>
+
+              <ng-container
+                *ngIf="
+                  obtenerEdad() === null
+                "
+              >
+                -
+              </ng-container>
+
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Teléfono
+            </span>
+
+            <strong>
+              {{
+                paciente.telefono ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Email
+            </span>
+
+            <strong>
+              {{
+                paciente.email ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Dirección
+            </span>
+
+            <strong>
+              {{
+                paciente.direccion ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Obra social
+            </span>
+
+            <strong>
+              {{
+                paciente.obra_social ||
+                'Particular'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="data-field">
+
+            <span class="data-label">
+              Número de afiliado
+            </span>
+
+            <strong>
+              {{
+                paciente.numero_afiliado ||
+                '-'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================================== -->
+      <!-- EDICIÓN INLINE -->
+      <!-- =============================================== -->
+
+      <form
+        id="formulario-edicion-paciente"
+        class="patient-edit-card"
+        *ngIf="editandoPaciente"
+        (ngSubmit)="guardarPaciente()"
+      >
+
+        <div class="patient-edit-header">
+
+          <div>
+
+            <span class="section-label">
+              EDITANDO PACIENTE
+            </span>
+
+            <h3>
+              Información personal
+            </h3>
+
+            <p>
+              Actualizá los datos administrativos del paciente.
+            </p>
+
+          </div>
+
+
+          <span class="required-note">
+            * Datos obligatorios
+          </span>
+
+        </div>
+
+
+        <div class="patient-edit-grid">
+
+          <label class="patient-edit-field">
+
+            <span>
+              Nombre *
+            </span>
+
+            <input
+              type="text"
+              name="pacienteNombre"
+              [(ngModel)]="
+                formularioPaciente.nombre
+              "
+              maxlength="120"
+              autocomplete="off"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Apellido *
+            </span>
+
+            <input
+              type="text"
+              name="pacienteApellido"
+              [(ngModel)]="
+                formularioPaciente.apellido
+              "
+              maxlength="120"
+              autocomplete="off"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              DNI *
+            </span>
+
+            <input
+              type="text"
+              name="pacienteDni"
+              [(ngModel)]="
+                formularioPaciente.dni
+              "
+              maxlength="30"
+              autocomplete="off"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Sexo
+            </span>
+
+            <input
+              type="text"
+              name="pacienteSexo"
+              [(ngModel)]="
+                formularioPaciente.sexo
+              "
+              placeholder="Ej: Femenino"
+              maxlength="50"
+              autocomplete="off"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Fecha de nacimiento
+            </span>
+
+            <input
+              type="date"
+              name="pacienteFechaNacimiento"
+              [(ngModel)]="
+                formularioPaciente.fecha_nacimiento
+              "
+            >
+
+          </label>
+
+
+          <div class="patient-edit-field read-only-field">
+
+            <span>
+              Edad
+            </span>
+
+            <div class="read-only-value">
+              {{
+                obtenerEdad() !== null
+                  ? obtenerEdad() + ' años'
+                  : '-'
+              }}
+            </div>
+
+          </div>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Teléfono
+            </span>
+
+            <input
+              type="tel"
+              name="pacienteTelefono"
+              [(ngModel)]="
+                formularioPaciente.telefono
+              "
+              maxlength="50"
+              autocomplete="tel"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Email
+            </span>
+
+            <input
+              type="email"
+              name="pacienteEmail"
+              [(ngModel)]="
+                formularioPaciente.email
+              "
+              maxlength="180"
+              autocomplete="email"
+            >
+
+          </label>
+
+
+          <label class="patient-edit-field full">
+
+            <span>
+              Dirección
+            </span>
+
+            <input
+              type="text"
+              name="pacienteDireccion"
+              [(ngModel)]="
+                formularioPaciente.direccion
+              "
+              maxlength="250"
+              autocomplete="street-address"
+            >
+
+          </label>
+
+
+          <div class="patient-edit-field read-only-field">
+
+            <span>
+              Obra social
+            </span>
+
+            <div class="read-only-value">
+              {{
+                paciente.obra_social ||
+                'Particular'
+              }}
+            </div>
+
+            <small>
+              La cobertura actual se conserva.
+            </small>
+
+          </div>
+
+
+          <label class="patient-edit-field">
+
+            <span>
+              Número de afiliado
+            </span>
+
+            <input
+              type="text"
+              name="pacienteNumeroAfiliado"
+              [(ngModel)]="
+                formularioPaciente.numero_afiliado
+              "
+              maxlength="100"
+              autocomplete="off"
+            >
+
+          </label>
+
+        </div>
+
+
+        <footer class="patient-edit-footer">
+
+          <span>
+            Los cambios se aplican a la ficha completa del paciente.
+          </span>
+
+
+          <div>
+
+            <button
+              type="button"
+              class="secondary-button"
+              [disabled]="guardandoPaciente"
+              (click)="cancelarEdicionPaciente()"
+            >
+              Cancelar
+            </button>
+
+
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="guardandoPaciente"
+            >
+              {{
+                guardandoPaciente
+                  ? 'Guardando...'
+                  : 'Guardar cambios'
+              }}
+            </button>
+
+          </div>
+
+        </footer>
+
+      </form>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- HISTORIA CLÍNICA -->
+    <!-- =================================================== -->
+
+    <section
+      class="patient-content"
+      *ngIf="
+        seccionActiva === 'historia'
+      "
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            HISTORIA CLÍNICA
+          </span>
+
+          <h2>
+            Evolución médica
+          </h2>
+
+          <p>
+            Seguimiento clínico cronológico del paciente.
+          </p>
+
+        </div>
+
+
+        <div class="section-actions">
+
+          <span
+            class="clinical-counter"
+            *ngIf="!cargandoHistoria"
+          >
+            {{ consultas.length }}
+            {{
+              consultas.length === 1
+                ? 'consulta'
+                : 'consultas'
+            }}
+          </span>
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="cargandoContextoManual"
+            (click)="abrirNuevaEvolucion()"
+          >
+            {{
+              cargandoContextoManual
+                ? 'Cargando...'
+                : '+ Nueva evolución'
+            }}
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="clinical-note">
+        <span class="clinical-note-icon">i</span>
+
+        <p>
+          Podés registrar una evolución
+          <strong>directamente desde esta ficha</strong>
+          o desde un turno en atención. También podés editarla
+          y adjuntar estudios cuando lo necesites.
+        </p>
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- FORMULARIO INLINE: NUEVA / EDITAR EVOLUCIÓN -->
+      <!-- ================================================= -->
+
+      <section
+        id="formulario-clinico-inline"
+        class="clinical-inline-form"
+        *ngIf="mostrarFormularioConsulta"
+      >
+
+        <header class="clinical-inline-header">
+
+          <div>
+
+            <span class="section-label">
+              {{
+                modoFormularioConsulta === 'crear'
+                  ? 'NUEVO REGISTRO'
+                  : 'EDITANDO REGISTRO'
+              }}
+            </span>
+
+            <h3>
+              {{
+                modoFormularioConsulta === 'crear'
+                  ? 'Nueva evolución'
+                  : 'Editar evolución'
+              }}
+            </h3>
+
+            <p
+              *ngIf="
+                modoFormularioConsulta === 'crear' &&
+                contextoManual
+              "
+            >
+              {{ obtenerNombreCompleto() }}
+              ·
+              {{ contextoManual.profesionalNombre }}
+            </p>
+
+            <p
+              *ngIf="
+                modoFormularioConsulta === 'editar' &&
+                consultaEditando
+              "
+            >
+              {{ formatearFechaHora(consultaEditando.fecha) }}
+              ·
+              {{ consultaEditando.profesionalNombre }}
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="guardandoConsulta"
+            (click)="cerrarFormularioConsulta()"
+          >
+            Cancelar
+          </button>
+
+        </header>
+
+
+        <form
+          class="clinical-inline-body"
+          (ngSubmit)="guardarConsulta()"
+        >
+
+          <div
+            class="manual-context-card"
+            *ngIf="
+              modoFormularioConsulta === 'crear' &&
+              contextoManual
+            "
+          >
+
+            <div class="manual-professional">
+
+              <span>
+                PROFESIONAL
+              </span>
+
+              <strong>
+                {{ contextoManual.profesionalNombre }}
+              </strong>
+
+            </div>
+
+
+            <label class="clinical-form-field">
+
+              <span>
+                Especialidad
+              </span>
+
+              <select
+                name="especialidadManualId"
+                [(ngModel)]="especialidadManualId"
+                [disabled]="guardandoConsulta"
+              >
+
+                <option
+                  *ngFor="
+                    let especialidad of contextoManual.especialidades
+                  "
+                  [value]="
+                    especialidad.profesionalEspecialidadId
+                  "
+                >
+                  {{ especialidad.nombre }}
+                </option>
+
+              </select>
+
+            </label>
+
+          </div>
+
+
+          <div class="clinical-form-main-grid">
+
+            <label class="clinical-form-field full">
+
+              <span>
+                Motivo de consulta
+              </span>
+
+              <textarea
+                rows="2"
+                name="motivoConsulta"
+                [(ngModel)]="
+                  formularioConsulta.motivoConsulta
+                "
+                placeholder="Ej: control, dolor, seguimiento..."
+              ></textarea>
+
+            </label>
+
+
+            <label class="clinical-form-field">
+
+              <span>
+                Diagnóstico / evolución
+              </span>
+
+              <textarea
+                rows="6"
+                name="diagnostico"
+                [(ngModel)]="
+                  formularioConsulta.diagnostico
+                "
+                placeholder="Evolución, hallazgos o diagnóstico"
+              ></textarea>
+
+            </label>
+
+
+            <label class="clinical-form-field">
+
+              <span>
+                Tratamiento
+              </span>
+
+              <textarea
+                rows="6"
+                name="tratamiento"
+                [(ngModel)]="
+                  formularioConsulta.tratamiento
+                "
+                placeholder="Tratamiento indicado"
+              ></textarea>
+
+            </label>
+
+
+            <label class="clinical-form-field">
+
+              <span>
+                Indicaciones
+              </span>
+
+              <textarea
+                rows="5"
+                name="indicaciones"
+                [(ngModel)]="
+                  formularioConsulta.indicaciones
+                "
+                placeholder="Indicaciones para el paciente"
+              ></textarea>
+
+            </label>
+
+
+            <label class="clinical-form-field">
+
+              <span>
+                Próximo control
+              </span>
+
+              <input
+                type="date"
+                name="proximoControl"
+                [(ngModel)]="
+                  formularioConsulta.proximoControl
+                "
+              >
+
+            </label>
+
+          </div>
+
+
+          <!-- =============================================== -->
+          <!-- DATOS CLÍNICOS OBJETO / VALOR -->
+          <!-- =============================================== -->
+
+          <section class="dynamic-clinical-section">
+
+            <div class="dynamic-clinical-header">
+
+              <div>
+
+                <span class="section-label">
+                  DATOS CLÍNICOS PERSONALIZADOS
+                </span>
+
+                <h4>
+                  Objeto y valor
+                </h4>
+
+                <p>
+                  Para alergias, peso, presión, medicación,
+                  antecedentes o cualquier dato propio de la especialidad.
+                </p>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="secondary-button"
+                [disabled]="guardandoConsulta"
+                (click)="agregarDatoClinico()"
+              >
+                + Agregar dato
+              </button>
+
+            </div>
+
+
+            <div class="dynamic-clinical-list">
+
+              <div
+                class="dynamic-clinical-row"
+                *ngFor="
+                  let dato of datosClinicosFormulario;
+                  let i = index
+                "
+              >
+
+                <label class="clinical-form-field">
+
+                  <span>
+                    Objeto
+                  </span>
+
+                  <input
+                    type="text"
+                    [name]="'datoClave' + i"
+                    [(ngModel)]="dato.clave"
+                    placeholder="Ej: Alergias"
+                  >
+
+                </label>
+
+
+                <label class="clinical-form-field">
+
+                  <span>
+                    Valor
+                  </span>
+
+                  <input
+                    type="text"
+                    [name]="'datoValor' + i"
+                    [(ngModel)]="dato.valor"
+                    placeholder="Ej: Penicilina"
+                  >
+
+                </label>
+
+
+                <button
+                  type="button"
+                  class="dynamic-remove-button"
+                  aria-label="Eliminar dato"
+                  [disabled]="guardandoConsulta"
+                  (click)="eliminarDatoClinico(i)"
+                >
+                  ×
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- =============================================== -->
+          <!-- ARCHIVOS AL CREAR EVOLUCIÓN -->
+          <!-- =============================================== -->
+
+          <section
+            class="new-evolution-files"
+            *ngIf="
+              modoFormularioConsulta === 'crear'
+            "
+          >
+
+            <div class="new-evolution-files-header">
+
+              <div>
+
+                <span>
+                  ESTUDIOS Y ARCHIVOS
+                </span>
+
+                <strong>
+                  Podés adjuntarlos ahora
+                </strong>
+
+              </div>
+
+
+              <input
+                #nuevosArchivosInput
+                type="file"
+                hidden
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                (change)="
+                  seleccionarArchivosNuevaEvolucion($event)
+                "
+              >
+
+
+              <button
+                type="button"
+                class="file-upload-button"
+                [disabled]="guardandoConsulta"
+                (click)="nuevosArchivosInput.click()"
+              >
+                + Agregar archivos
+              </button>
+
+            </div>
+
+
+            <div
+              class="pending-file-list"
+              *ngIf="
+                archivosPendientes.length > 0
+              "
+            >
+
+              <div
+                class="pending-file"
+                *ngFor="
+                  let archivo of archivosPendientes;
+                  let i = index
+                "
+              >
+
+                <div>
+
+                  <strong>
+                    {{ archivo.name }}
+                  </strong>
+
+                  <span>
+                    {{ formatearPesoArchivo(archivo.size) }}
+                  </span>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  [disabled]="guardandoConsulta"
+                  (click)="quitarArchivoPendiente(i)"
+                >
+                  Quitar
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <p
+              class="pending-files-hint"
+              *ngIf="
+                archivosPendientes.length === 0
+              "
+            >
+              PDF, JPG, PNG o WEBP · máximo 15 MB por archivo.
+            </p>
+
+          </section>
+
+
+          <footer class="clinical-inline-footer">
+
+            <span>
+              Los cambios se guardan en la historia clínica del paciente.
+            </span>
+
+
+            <div>
+
+              <button
+                type="button"
+                class="secondary-button"
+                [disabled]="guardandoConsulta"
+                (click)="cerrarFormularioConsulta()"
+              >
+                Cancelar
+              </button>
+
+
+              <button
+                type="submit"
+                class="primary-button"
+                [disabled]="guardandoConsulta"
+              >
+                {{
+                  guardandoConsulta
+                    ? 'Guardando...'
+                    : (
+                        modoFormularioConsulta === 'crear'
+                          ? 'Guardar evolución'
+                          : 'Guardar cambios'
+                      )
+                }}
+              </button>
+
+            </div>
+
+          </footer>
+
+        </form>
+
+      </section>
+
+
+      <div
+        class="clinical-loading"
+        *ngIf="cargandoHistoria"
+      >
+
+        <span class="mini-spinner"></span>
+
+        <span>
+          Cargando historia clínica...
+        </span>
+
+      </div>
+
+
+      <div
+        class="clinical-empty"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria &&
+          !mostrarFormularioConsulta &&
+          consultas.length === 0
+        "
+      >
+
+        <div class="clinical-empty-icon">
+          +
+        </div>
+
+        <h3>
+          Todavía no hay historia clínica
+        </h3>
+
+        <p>
+          Registrá la primera evolución directamente
+          desde esta ficha del paciente.
+        </p>
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="cargandoContextoManual"
+          (click)="abrirNuevaEvolucion()"
+        >
+          + Nueva evolución
+        </button>
+
+      </div>
+
+
+      <div
+        class="clinical-empty"
+        *ngIf="
+          !cargandoHistoria &&
+          errorHistoria
+        "
+      >
+
+        <div class="clinical-empty-icon">
+          !
+        </div>
+
+        <h3>
+          No pudimos cargar la historia clínica
+        </h3>
+
+        <p>
+          Reintentá la consulta para volver a cargar
+          las evoluciones del paciente.
+        </p>
+
+        <button
+          type="button"
+          class="primary-button"
+          (click)="reintentarHistoria()"
+        >
+          Reintentar
+        </button>
+
+      </div>
+
+
+      <div
+        class="clinical-timeline"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria &&
+          consultas.length > 0
+        "
+      >
+
+        <article
+          class="clinical-entry"
+          *ngFor="
+            let consulta of consultas;
+            trackBy: trackByConsulta
+          "
+        >
+
+          <div class="timeline-rail">
+
+            <span class="timeline-dot"></span>
+
+            <span class="timeline-line"></span>
+
+          </div>
+
+
+          <div class="clinical-card">
+
+            <header class="clinical-card-header">
+
+              <div>
+
+                <span class="clinical-date">
+                  {{ formatearFechaHora(consulta.fecha) }}
+                </span>
+
+                <h3>
+                  {{
+                    consulta.motivoConsulta ||
+                    'Consulta médica'
+                  }}
+                </h3>
+
+                <p class="clinical-professional">
+                  {{ consulta.profesionalNombre }}
+
+                  <ng-container
+                    *ngIf="consulta.especialidadNombre"
+                  >
+                    · {{ consulta.especialidadNombre }}
+                  </ng-container>
+                </p>
+
+              </div>
+
+
+              <div class="clinical-actions">
+
+                <button
+                  type="button"
+                  class="clinical-action-button"
+                  *ngIf="consulta.turnoId"
+                  (click)="abrirTurno(consulta.turnoId)"
+                >
+                  Ver turno
+                </button>
+
+                <button
+                  type="button"
+                  class="clinical-action-button"
+                  (click)="editarConsulta(consulta)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  class="clinical-action-button danger"
+                  (click)="eliminarConsulta(consulta)"
+                >
+                  Eliminar
+                </button>
+
+              </div>
+
+            </header>
+
+
+            <div
+              class="clinical-fields"
+              *ngIf="tieneContenidoClinico(consulta)"
+            >
+
+              <div
+                class="clinical-field full"
+                *ngIf="consulta.motivoConsulta"
+              >
+                <span>
+                  Motivo de consulta
+                </span>
+
+                <p>
+                  {{ consulta.motivoConsulta }}
+                </p>
+              </div>
+
+
+              <div
+                class="clinical-field"
+                *ngIf="consulta.diagnostico"
+              >
+                <span>
+                  Diagnóstico / evolución
+                </span>
+
+                <p>
+                  {{ consulta.diagnostico }}
+                </p>
+              </div>
+
+
+              <div
+                class="clinical-field"
+                *ngIf="consulta.tratamiento"
+              >
+                <span>
+                  Tratamiento
+                </span>
+
+                <p>
+                  {{ consulta.tratamiento }}
+                </p>
+              </div>
+
+
+              <div
+                class="clinical-field"
+                *ngIf="consulta.indicaciones"
+              >
+                <span>
+                  Indicaciones
+                </span>
+
+                <p>
+                  {{ consulta.indicaciones }}
+                </p>
+              </div>
+
+
+              <div
+                class="clinical-field"
+                *ngIf="consulta.proximoControl"
+              >
+                <span>
+                  Próximo control
+                </span>
+
+                <p>
+                  {{ formatearFecha(consulta.proximoControl) }}
+                </p>
+              </div>
+
+            </div>
+
+
+            <div
+              class="clinical-custom-data"
+              *ngIf="
+                obtenerDatosClinicos(consulta).length > 0
+              "
+            >
+
+              <div class="clinical-custom-data-title">
+                Datos clínicos personalizados
+              </div>
+
+
+              <div class="clinical-custom-data-grid">
+
+                <div
+                  class="clinical-custom-data-item"
+                  *ngFor="
+                    let dato of obtenerDatosClinicos(consulta)
+                  "
+                >
+
+                  <span>
+                    {{ dato.clave }}
+                  </span>
+
+                  <strong>
+                    {{ dato.valor || '-' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="clinical-no-notes"
+              *ngIf="!tieneContenidoClinico(consulta)"
+            >
+              Esta consulta no tiene notas clínicas cargadas.
+            </div>
+
+
+            <div class="consultation-files">
+
+              <div class="consultation-files-header">
+
+                <div>
+
+                  <span>
+                    ESTUDIOS Y ARCHIVOS
+                  </span>
+
+                  <strong>
+                    {{
+                      consulta.archivos?.length || 0
+                    }}
+                    {{
+                      (consulta.archivos?.length || 0) === 1
+                        ? 'archivo'
+                        : 'archivos'
+                    }}
+                  </strong>
+
+                </div>
+
+
+                <input
+                  #archivoInput
+                  type="file"
+                  hidden
+                  accept=".pdf,.jpg,.jpeg,.png,.webp"
+                  (change)="subirArchivo($event, consulta)"
+                >
+
+
+                <button
+                  type="button"
+                  class="file-upload-button"
+                  [disabled]="
+                    subiendoArchivoConsultaId === consulta.id
+                  "
+                  (click)="archivoInput.click()"
+                >
+                  {{
+                    subiendoArchivoConsultaId === consulta.id
+                      ? 'Subiendo...'
+                      : '+ Adjuntar archivo'
+                  }}
+                </button>
+
+              </div>
+
+
+              <div
+                class="consultation-file-list"
+                *ngIf="
+                  consulta.archivos &&
+                  consulta.archivos.length > 0
+                "
+              >
+
+                <div
+                  class="consultation-file-row"
+                  *ngFor="
+                    let archivo of consulta.archivos;
+                    trackBy: trackByArchivo
+                  "
+                >
+
+                  <button
+                    type="button"
+                    class="file-open-button"
+                    (click)="abrirArchivo(archivo)"
+                  >
+
+                    <span class="file-type">
+                      {{ iconoArchivo(archivo) }}
+                    </span>
+
+                    <span class="file-copy">
+
+                      <strong>
+                        {{ archivo.nombreArchivo }}
+                      </strong>
+
+                      <small>
+                        {{ formatearFechaHora(archivo.createdAt) }}
+                      </small>
+
+                    </span>
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    class="file-delete-button"
+                    [disabled]="
+                      eliminandoArchivoId === archivo.id
+                    "
+                    aria-label="Eliminar archivo"
+                    (click)="
+                      eliminarArchivo(
+                        consulta,
+                        archivo
+                      )
+                    "
+                  >
+                    {{
+                      eliminandoArchivoId === archivo.id
+                        ? '...'
+                        : '×'
+                    }}
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <p
+                class="no-files"
+                *ngIf="
+                  !consulta.archivos ||
+                  consulta.archivos.length === 0
+                "
+              >
+                No hay documentación adjunta a esta consulta.
+              </p>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- CONSULTAS -->
+    <!-- =================================================== -->
+
+    <section
+      class="patient-content"
+      *ngIf="
+        seccionActiva === 'consultas'
+      "
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            CONSULTAS
+          </span>
+
+          <h2>
+            Historial de consultas
+          </h2>
+
+          <p>
+            Registro rápido de atenciones realizadas.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="clinical-loading"
+        *ngIf="cargandoHistoria"
+      >
+        <span class="mini-spinner"></span>
+        Cargando consultas...
+      </div>
+
+
+      <div
+        class="clinical-empty"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria &&
+          consultas.length === 0
+        "
+      >
+
+        <div class="clinical-empty-icon">
+          ◷
+        </div>
+
+        <h3>
+          Todavía no hay consultas cargadas
+        </h3>
+
+        <p>
+          Las atenciones registradas aparecerán
+          automáticamente en esta sección.
+        </p>
+
+      </div>
+
+
+      <div
+        class="consultation-list"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria &&
+          consultas.length > 0
+        "
+      >
+
+        <article
+          class="consultation-list-item"
+          *ngFor="
+            let consulta of consultas;
+            trackBy: trackByConsulta
+          "
+        >
+
+          <div class="consultation-list-date">
+
+            <strong>
+              {{
+                obtenerDiaConsulta(
+                  consulta.fecha
+                )
+              }}
+            </strong>
+
+            <span>
+              {{
+                obtenerMesConsulta(
+                  consulta.fecha
+                )
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="consultation-list-main">
+
+            <span class="consultation-list-time">
+              {{ formatearFechaHora(consulta.fecha) }}
+            </span>
+
+            <h3>
+              {{
+                consulta.motivoConsulta ||
+                'Consulta médica'
+              }}
+            </h3>
+
+            <p>
+              {{ consulta.profesionalNombre }}
+
+              <ng-container
+                *ngIf="consulta.especialidadNombre"
+              >
+                · {{ consulta.especialidadNombre }}
+              </ng-container>
+            </p>
+
+          </div>
+
+
+          <div class="consultation-list-meta">
+
+            <span>
+              {{ consulta.archivos.length }}
+              {{
+  consulta.archivos.length === 1
+    ? 'archivo'
+    : 'archivos'
+}}
+            </span>
+
+            <button
+              type="button"
+              class="mini-action"
+              (click)="
+                cambiarSeccion('historia')
+              "
+            >
+              Ver detalle
+            </button>
+
+            <button
+              type="button"
+              class="mini-action"
+              *ngIf="consulta.turnoId"
+              (click)="abrirTurno(consulta.turnoId)"
+            >
+              Abrir turno
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- ARCHIVOS -->
+    <!-- =================================================== -->
+
+    <section
+      class="patient-content"
+      *ngIf="
+        seccionActiva === 'archivos'
+      "
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-label">
+            DOCUMENTACIÓN
+          </span>
+
+          <h2>
+            Estudios y archivos
+          </h2>
+
+          <p>
+            Subí, abrí, renombrá o eliminá la documentación
+            clínica del paciente desde un solo lugar.
+          </p>
+
+        </div>
+
+
+        <span
+          class="clinical-counter"
+          *ngIf="!cargandoHistoria"
+        >
+          {{ totalArchivos() }}
+          {{
+            totalArchivos() === 1
+              ? 'archivo'
+              : 'archivos'
+          }}
+        </span>
+
+      </div>
+
+
+      <div
+        class="files-direct-toolbar"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria
+        "
+      >
+
+        <div>
+
+          <span class="section-label">
+            CARGA DIRECTA
+          </span>
+
+          <strong>
+            Agregar documentación al paciente
+          </strong>
+
+          <p>
+            Ideal para análisis, estudios, recetas o imágenes
+            que no necesitan estar ligados a una consulta existente.
+          </p>
+
+        </div>
+
+        <input
+          #archivoDirectoInput
+          type="file"
+          hidden
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          (change)="subirArchivoDirecto($event)"
+        >
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="subiendoArchivoDirecto"
+          (click)="archivoDirectoInput.click()"
+        >
+          {{
+            subiendoArchivoDirecto
+              ? 'Subiendo...'
+              : '+ Subir archivo'
+          }}
+        </button>
+
+      </div>
+
+
+      <div
+        class="files-toolbar"
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria &&
+          consultas.length > 0
+        "
+      >
+
+        <label class="files-association">
+
+          <span>
+            Asociar a consulta
+          </span>
+
+          <select
+            [(ngModel)]="consultaArchivoSeleccionadaId"
+            [disabled]="subiendoArchivosPestana"
+          >
+
+            <option
+              *ngFor="let consulta of consultas"
+              [value]="consulta.id"
+            >
+              {{
+                formatearFechaHora(consulta.fecha)
+              }}
+              ·
+              {{
+                consulta.motivoConsulta ||
+                consulta.especialidadNombre ||
+                'Consulta médica'
+              }}
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <input
+          #archivosPestanaInput
+          type="file"
+          hidden
+          multiple
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          (change)="
+            seleccionarArchivosDesdePestana($event)
+          "
+        >
+
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="
+            subiendoArchivosPestana ||
+            !consultaArchivoSeleccionadaId
+          "
+          (click)="archivosPestanaInput.click()"
+        >
+          {{
+            subiendoArchivosPestana
+              ? 'Subiendo...'
+              : '+ Subir archivos'
+          }}
+        </button>
+
+      </div>
+
+
+      <div
+        class="clinical-loading"
+        *ngIf="cargandoHistoria"
+      >
+        <span class="mini-spinner"></span>
+        Cargando archivos...
+      </div>
+
+
+      <ng-container
+        *ngIf="
+          !cargandoHistoria &&
+          !errorHistoria
+        "
+      >
+
+        <div
+          class="clinical-empty direct-upload-empty"
+          *ngIf="
+            consultas.length === 0
+          "
+        >
+
+          <div class="clinical-empty-icon">
+            □
+          </div>
+
+          <h3>
+            Subí documentación directamente
+          </h3>
+
+          <p>
+            Podés cargar un PDF o imagen sin crear primero una evolución.
+            AmiApp lo guarda como documentación clínica del paciente.
+          </p>
+
+          <input
+            #archivoDirectoInputVacio
+            type="file"
+            hidden
+            accept=".pdf,.jpg,.jpeg,.png,.webp"
+            (change)="subirArchivoDirecto($event)"
+          >
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="subiendoArchivoDirecto"
+            (click)="archivoDirectoInputVacio.click()"
+          >
+            {{
+              subiendoArchivoDirecto
+                ? 'Subiendo...'
+                : '+ Subir archivo'
+            }}
+          </button>
+
+        </div>
+
+
+        <div
+          class="clinical-empty compact-files-empty"
+          *ngIf="
+            consultas.length > 0 &&
+            obtenerTodosLosArchivos().length === 0
+          "
+        >
+
+          <div class="clinical-empty-icon">
+            □
+          </div>
+
+          <h3>
+            Sin archivos todavía
+          </h3>
+
+          <p>
+            Elegí arriba la consulta correspondiente
+            y subí PDF, JPG, PNG o WEBP.
+          </p>
+
+        </div>
+
+
+        <div
+          class="patient-files-grid"
+          *ngIf="
+            obtenerTodosLosArchivos().length > 0
+          "
+        >
+
+          <article
+            class="patient-file-card"
+            *ngFor="
+              let item of obtenerTodosLosArchivos()
+            "
+          >
+
+            <div class="patient-file-row">
+
+              <button
+                type="button"
+                class="patient-file-main"
+                (click)="abrirArchivo(item.archivo)"
+              >
+
+                <span class="patient-file-type">
+                  {{ iconoArchivo(item.archivo) }}
+                </span>
+
+
+                <span class="patient-file-copy">
+
+                  <strong>
+                    {{ item.archivo.nombreArchivo }}
+                  </strong>
+
+                  <small>
+                    {{
+                      item.consulta.motivoConsulta ||
+                      'Consulta médica'
+                    }}
+                  </small>
+
+                  <span>
+                    {{ formatearFechaHora(item.consulta.fecha) }}
+                    ·
+                    {{ item.consulta.profesionalNombre }}
+                  </span>
+
+                </span>
+
+              </button>
+
+
+              <div class="patient-file-actions">
+
+                <button
+                  type="button"
+                  class="file-action-button"
+                  (click)="
+                    iniciarEdicionNombreArchivo(
+                      item.archivo
+                    )
+                  "
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  class="file-action-button danger"
+                  [disabled]="
+                    eliminandoArchivoId ===
+                    item.archivo.id
+                  "
+                  (click)="
+                    eliminarArchivo(
+                      item.consulta,
+                      item.archivo
+                    )
+                  "
+                >
+                  {{
+                    eliminandoArchivoId ===
+                    item.archivo.id
+                      ? 'Eliminando...'
+                      : 'Eliminar'
+                  }}
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="file-rename-row"
+              *ngIf="
+                archivoEditandoNombreId ===
+                item.archivo.id
+              "
+            >
+
+              <label class="clinical-form-field">
+
+                <span>
+                  Nombre del archivo
+                </span>
+
+                <input
+                  type="text"
+                  [(ngModel)]="nombreArchivoEditado"
+                  maxlength="255"
+                  placeholder="Nombre del archivo"
+                >
+
+              </label>
+
+
+              <div>
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  [disabled]="
+                    guardandoNombreArchivoId ===
+                    item.archivo.id
+                  "
+                  (click)="cancelarEdicionNombreArchivo()"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  class="primary-button"
+                  [disabled]="
+                    guardandoNombreArchivoId ===
+                    item.archivo.id
+                  "
+                  (click)="
+                    guardarNombreArchivo(
+                      item.archivo
+                    )
+                  "
+                >
+                  {{
+                    guardandoNombreArchivoId ===
+                    item.archivo.id
+                      ? 'Guardando...'
+                      : 'Guardar nombre'
+                  }}
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </ng-container>
+
+    </section>
+
+  </ng-container>
+
+</div>

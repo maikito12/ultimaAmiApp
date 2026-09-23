@@ -1,37 +1,145 @@
-<div class="login-container">
-  <form class="login-card" (submit)="login($event)">
+<div class="login-page">
 
-    <h2>Iniciar sesión</h2>
-    <p class="subtitle">Acceso para profesionales</p>
+  <div class="login-card">
 
-    <!-- NOMBRE -->
-    <div class="input-group">
-      <input 
-        type="text" 
-        placeholder="Correo Electronico"
-        [(ngModel)]="email"
-        name="nombre"
-        required
-      >
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <span>AmiApp</span>
     </div>
 
-    <!-- PASSWORD -->
-    <div class="input-group password-container">
-      <input 
-        [type]="mostrarPassword ? 'text' : 'password'"
-        placeholder="Contraseña"
-        [(ngModel)]="password"
-        name="password"
-        required
-      >
- <span class="eye-icon" (click)="togglePassword()">
-  <i class="fa" [ngClass]="mostrarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-</span>
+    <div class="login-header">
+      <h1>Bienvenido</h1>
+      <p>Ingresá a tu cuenta para continuar</p>
     </div>
-    <!-- BOTÓN -->
-    <button type="submit" class="btn-login">
-      Ingresar
-    </button>
 
-  </form>
+    <form (submit)="login($event)">
+
+      <div class="input-group">
+        <label for="email">
+          Correo electrónico
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="tu@email.com"
+          [(ngModel)]="email"
+          name="email"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="input-group">
+
+        <div class="label-row">
+          <label for="password">
+            Contraseña
+          </label>
+
+          <button
+            type="button"
+            class="forgot-password"
+            (click)="recuperarPassword()"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+
+        <div class="password-wrapper">
+
+          <input
+            id="password"
+            [type]="mostrarPassword ? 'text' : 'password'"
+            placeholder="Ingresá tu contraseña"
+            [(ngModel)]="password"
+            name="password"
+            autocomplete="current-password"
+            required
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePassword()"
+            [attr.aria-label]="
+              mostrarPassword
+                ? 'Ocultar contraseña'
+                : 'Mostrar contraseña'
+            "
+          >
+            <i
+              class="fa"
+              [ngClass]="
+                mostrarPassword
+                  ? 'fa-eye-slash'
+                  : 'fa-eye'
+              "
+            ></i>
+          </button>
+
+        </div>
+
+      </div>
+
+      <button
+        type="submit"
+        class="btn-login"
+        [disabled]="cargando"
+      >
+        <span
+          *ngIf="cargando"
+          class="spinner"
+        ></span>
+
+        <span>
+          {{
+            cargando
+              ? 'Iniciando sesión...'
+              : 'Iniciar sesión'
+          }}
+        </span>
+      </button>
+
+    </form>
+
+    <div class="invitation-section">
+      <span class="section-divider">
+        <span></span>
+        <small>O</small>
+        <span></span>
+      </span>
+
+      <button
+        type="button"
+        class="btn-invitation"
+        (click)="irAInvitacion()"
+      >
+        <span class="invitation-icon">
+          <i class="fas fa-ticket-alt"></i>
+        </span>
+
+        <span class="invitation-copy">
+          <strong>Tengo un código de invitación</strong>
+          <small>Unite a una organización de AmiApp</small>
+        </span>
+
+        <i class="fas fa-chevron-right invitation-arrow"></i>
+      </button>
+    </div>
+
+    <div class="register-section">
+      <span>¿Todavía no tenés una cuenta?</span>
+
+      <button
+        type="button"
+        class="register-link"
+        (click)="irARegistro()"
+      >
+        Crear cuenta
+      </button>
+    </div>
+
+  </div>
+
 </div>

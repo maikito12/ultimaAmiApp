@@ -1,0 +1,678 @@
+<div class="reserva-page">
+
+  <div class="page-header">
+
+    <div>
+      <span class="eyebrow">
+        RESERVA ONLINE
+      </span>
+
+      <h1>
+        Configurá tus reservas
+      </h1>
+
+      <p>
+        Definí cómo pueden reservar turnos
+        tus pacientes desde AmiApp.
+      </p>
+    </div>
+
+    <button
+      class="btn-guardar"
+      type="button"
+      [disabled]="guardando || cargando"
+      (click)="guardar()"
+    >
+      {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+    </button>
+
+  </div>
+
+
+  <div
+    *ngIf="cargando"
+    class="loading"
+  >
+    Cargando configuración...
+  </div>
+
+
+  <div
+    *ngIf="!cargando"
+    class="contenido"
+  >
+<!-- ========================================= -->
+<!-- LINK PÚBLICO -->
+<!-- ========================================= -->
+
+<section class="public-link-card">
+
+  <div class="public-link-left">
+
+    <div class="public-link-icon">
+      ↗
+    </div>
+
+    <div class="public-link-copy">
+
+      <span class="mini-label">
+        PÁGINA PÚBLICA
+      </span>
+
+      <h2>
+        Tu enlace de reservas
+      </h2>
+
+      <p>
+        Compartí este enlace para que tus pacientes
+        puedan reservar un turno.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="public-link-actions">
+
+    <div class="public-url">
+
+      <span>
+        {{ urlReservaPublica || 'Cargando enlace...' }}
+      </span>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn-secondary"
+      [disabled]="!urlReservaPublica"
+      (click)="copiarLink()"
+    >
+      Copiar enlace
+    </button>
+
+
+    <button
+      type="button"
+      class="btn-primary-small"
+      [disabled]="!urlReservaPublica"
+      (click)="abrirReservaPublica()"
+    >
+      Abrir página
+    </button>
+
+  </div>
+
+</section>
+    <!-- ESTADO -->
+
+    <section class="card principal">
+
+      <div class="card-info">
+
+        <div class="icon-box">
+          ↗
+        </div>
+
+        <div>
+          <h2>
+            Reserva online
+          </h2>
+
+          <p>
+            Permití que tus pacientes
+            reserven turnos desde tu página pública.
+          </p>
+        </div>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="
+            configuracion.permitirReservaOnline
+          "
+        />
+
+        <span class="slider"></span>
+
+      </label>
+
+    </section>
+
+
+    <div class="grid">
+
+      <!-- PRESENTACIÓN -->
+
+      <section class="card">
+
+        <div class="section-header">
+
+          <div>
+            <h2>
+              Página de reserva
+            </h2>
+
+            <p>
+              Personalizá el mensaje que
+              verá el paciente.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Título
+          </label>
+
+          <input
+            type="text"
+            maxlength="150"
+            [(ngModel)]="
+              configuracion.tituloReserva
+            "
+            placeholder="Reservá tu turno"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Descripción
+          </label>
+
+          <textarea
+            rows="4"
+            maxlength="500"
+            [(ngModel)]="
+              configuracion.descripcionReserva
+            "
+            placeholder="Escribí una breve descripción"
+          ></textarea>
+
+        </div>
+
+      </section>
+
+
+      <!-- CAMPOS -->
+
+      <section class="card">
+
+        <div class="section-header">
+
+          <div>
+            <h2>
+              Datos del paciente
+            </h2>
+
+            <p>
+              Elegí qué información solicitar.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>DNI</strong>
+            <span>
+              Solicitar documento.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarDni
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>Email</strong>
+            <span>
+              Solicitar correo electrónico.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarEmail
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>Teléfono</strong>
+            <span>
+              Solicitar número de contacto.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarTelefono
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Fecha de nacimiento
+            </strong>
+
+            <span>
+              Solicitar fecha de nacimiento.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarFechaNacimiento
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Obra social
+            </strong>
+
+            <span>
+              Mostrar selección de obra social.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarObraSocial
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Motivo de consulta
+            </strong>
+
+            <span>
+              Permitir que indique el motivo.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarMotivoConsulta
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Observaciones
+            </strong>
+
+            <span>
+              Mostrar un campo adicional.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.solicitarObservaciones
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- DISPONIBILIDAD -->
+
+      <section class="card">
+
+        <div class="section-header">
+
+          <div>
+            <h2>
+              Disponibilidad
+            </h2>
+
+            <p>
+              Configurá las reglas generales
+              de reserva.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Máximo de turnos activos por paciente
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="
+              configuracion.maxTurnosActivos
+            "
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Días máximos de anticipación
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            [(ngModel)]="
+              configuracion.diasMaximosAnticipacion
+            "
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Horas mínimas para cancelar
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="
+              configuracion.horasMinimasCancelacion
+            "
+          />
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Tiempo de gracia
+          </label>
+
+          <div class="input-suffix">
+
+            <input
+              type="number"
+              min="0"
+              [(ngModel)]="
+                configuracion.tiempoGraciaMinutos
+              "
+            />
+
+            <span>
+              minutos
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- REGLAS -->
+
+      <section class="card">
+
+        <div class="section-header">
+
+          <div>
+            <h2>
+              Reglas de reserva
+            </h2>
+
+            <p>
+              Definí cómo funciona el proceso.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Elegir profesional
+            </strong>
+
+            <span>
+              El paciente puede elegir quién lo atiende.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.permitirElegirProfesional
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Elegir sucursal
+            </strong>
+
+            <span>
+              El paciente puede elegir dónde atenderse.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.permitirElegirSucursal
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Requiere confirmación
+            </strong>
+
+            <span>
+              El turno queda pendiente hasta confirmarlo.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.requiereConfirmacion
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Más de un turno por día
+            </strong>
+
+            <span>
+              Permitir múltiples reservas
+              del mismo paciente.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.permitirMultiplesTurnosMismoDia
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="option-row">
+
+          <div>
+            <strong>
+              Sobreturnos
+            </strong>
+
+            <span>
+              Permitir reservas fuera
+              de la capacidad habitual.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="
+                configuracion.permitirSobreturnos
+              "
+            />
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</div>

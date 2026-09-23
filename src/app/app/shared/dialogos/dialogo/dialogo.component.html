@@ -1,0 +1,108 @@
+<ng-container *ngIf="dialogo$ | async as dialogo">
+
+  <div
+    class="dialogo-overlay"
+    (click)="backdrop($event)"
+    (keydown)="tecla($event, dialogo)"
+  >
+
+    <section
+      class="dialogo-card"
+      [class.danger]="dialogo.variante === 'danger'"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="dialogo.titulo"
+      (mouseenter)="preparar(dialogo)"
+    >
+
+      <header class="dialogo-header">
+
+        <div class="dialogo-heading">
+
+          <span class="dialogo-eyebrow">
+            AMIAPP
+          </span>
+
+          <h2>
+            {{ dialogo.titulo }}
+          </h2>
+
+          <p *ngIf="dialogo.mensaje">
+            {{ dialogo.mensaje }}
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="dialogo-close"
+          aria-label="Cerrar"
+          (click)="cancelar()"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="dialogo-body"
+        *ngIf="dialogo.tipo === 'entrada'"
+      >
+
+        <label class="dialogo-field">
+
+          <span *ngIf="dialogo.label">
+            {{ dialogo.label }}
+          </span>
+
+          <input
+            type="text"
+            [(ngModel)]="valorEntrada"
+            [placeholder]="dialogo.placeholder ?? ''"
+            [attr.inputmode]="dialogo.inputMode"
+            autocomplete="off"
+            autofocus
+            (input)="onInput(dialogo)"
+          >
+
+          <small
+            class="dialogo-error"
+            *ngIf="errorEntrada"
+          >
+            {{ errorEntrada }}
+          </small>
+
+        </label>
+
+      </div>
+
+
+      <footer class="dialogo-footer">
+
+        <button
+          type="button"
+          class="dialogo-button dialogo-button-secondary"
+          (click)="cancelar()"
+        >
+          {{ dialogo.textoCancelar }}
+        </button>
+
+
+        <button
+          type="button"
+          class="dialogo-button dialogo-button-primary"
+          [class.danger]="dialogo.variante === 'danger'"
+          (click)="confirmar(dialogo)"
+        >
+          {{ dialogo.textoConfirmar }}
+        </button>
+
+      </footer>
+
+    </section>
+
+  </div>
+
+</ng-container>

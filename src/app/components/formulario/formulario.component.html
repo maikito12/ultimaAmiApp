@@ -1,151 +1,2169 @@
-<div class="container" *ngIf="profesional">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  
-  <form #f="ngForm" (submit)="f.valid ? reservar($event) : mostrarError()">
-    <h2>Reservar tu turno</h2>
+<div
+  class="booking-page"
+  [style.--brand-primary]="colorPrincipal"
+  [style.--brand-secondary]="colorSecundario"
+>
 
-    <div class="field-group">
-      <label class="label-mini">Nombre Completo</label>
-      <input type="text" name="nombre" [(ngModel)]="datosForm.nombre" #nom="ngModel" placeholder="Tu nombre" required>
-      <small class="error-msg" *ngIf="nom.invalid && (nom.touched || f.submitted)">* El nombre es obligatorio</small>
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
+  <header class="booking-header">
+
+    <div class="booking-header-inner">
+
+      <div class="organization-brand">
+
+        <div class="organization-logo">
+
+          <img
+            *ngIf="logoUrl"
+            [src]="logoUrl"
+            [alt]="nombreOrganizacion"
+          >
+
+          <span *ngIf="!logoUrl">
+            {{ nombreOrganizacion.charAt(0) }}
+          </span>
+
+        </div>
+
+        <div class="organization-brand-text">
+
+          <strong>
+            {{ nombreOrganizacion }}
+          </strong>
+
+          <span>
+            Reserva de turnos
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="powered-by">
+        <span>Gestionado con</span>
+        <strong>AmiApp</strong>
+      </div>
+
     </div>
 
-    <div class="field-group">
-      <label class="label-mini">DNI</label>
-      <input type="text" name="dni" [(ngModel)]="datosForm.dni" #dni="ngModel" placeholder="Sin puntos ni espacios" required>
-      <small class="error-msg" *ngIf="dni.invalid && (dni.touched || f.submitted)">* El DNI es obligatorio</small>
-    </div>
+  </header>
 
-    <div class="field-group">
-      <label class="label-mini">Email</label>
-      <input type="email" name="email" [(ngModel)]="datosForm.email" #mail="ngModel" placeholder="ejemplo@correo.com" required email>
-      <small class="error-msg" *ngIf="mail.invalid && (mail.touched || f.submitted)">
-        <span *ngIf="mail.errors?.['required']">* El email es obligatorio</span>
-        <span *ngIf="mail.errors?.['email']">* Formato de email no válido</span>
-      </small>
-    </div>
 
-    <div class="field-group">
-      <label class="label-mini">Teléfono</label>
-      <input type="text" name="telefono" [(ngModel)]="datosForm.telefono" #tel="ngModel" placeholder="549..." required>
-      <small class="error-msg" *ngIf="tel.invalid && (tel.touched || f.submitted)">* El teléfono es obligatorio</small>
-    </div>
+  <!-- ========================================= -->
+  <!-- CARGANDO -->
+  <!-- ========================================= -->
 
-  <div class="field-group">
-  <label class="label-mini">Obra Social</label>
-  <select name="obraSocial" [(ngModel)]="datosExtras['OBRA SOCIAL']" #os="ngModel" required>
-    <option value="">Seleccionar...</option>
-    <option value="OSDE">OSDE</option>
-    <option value="SWISS MEDICAL">Swiss Medical</option>
-    <option value="IOMA">IOMA</option>
-    <option value="PARTICULAR">Particular</option>
-  </select>
-  <small class="error-msg" *ngIf="os.invalid && (os.touched || f.submitted)">* Seleccioná una opción</small>
-</div>
+  <main
+    class="booking-main"
+    *ngIf="cargandoReservaPublica"
+  >
 
-<div class="field-group" *ngIf="datosExtras['OBRA SOCIAL'] && datosExtras['OBRA SOCIAL'] !== 'PARTICULAR'">
-  <label class="label-mini">Nro. de Afiliado(opcional)</label>
-  <input type="text" name="nroAfiliado" [(ngModel)]="datosExtras['NRO AFILIADO']" placeholder="Escriba el número de afiliado">
-</div>
+    <section class="booking-card">
 
-<div class="field-group">
-  <label class="label-mini">¿Cómo nos conociste?</label>
-  <select name="comoNosConocio" [(ngModel)]="datosExtras['COMO NOS CONOCIO']" required>
-    <option value="">Seleccionar...</option>
-    <option value="REDES">Redes Sociales (Instagram/Facebook)</option>
-    <option value="GOOGLE">Google</option>
-    <option value="RECOMENDACION">Recomendación de un conocido</option>
-    <option value="CARTEL">Vi un cartel / publicidad en la calle</option>
-    <option value="OTRO">Otro</option>
-  </select>
-</div>
+      <div class="future-step-placeholder">
 
-    <div *ngFor="let campo of configuracionCampos; let i = index">
-      <div class="field-group" *ngIf="campo.id !== 'email' && campo.id !== 'telefono'">
-        <label class="label-mini">{{ campo.label }}</label>
-        
-        <ng-container *ngIf="campo.tipo === 'select'">
-          <select [name]="campo.id" [(ngModel)]="datosExtras[campo.id]" #refSel="ngModel" required>
-            <option value="">Seleccionar...</option>
-            <option *ngFor="let opt of campo.opciones" [value]="opt">{{ opt }}</option>
-          </select>
-          <small class="error-msg" *ngIf="refSel.invalid && (refSel.touched || f.submitted)">
-            * {{ campo.label }} es obligatorio
-          </small>
+        <div class="future-step-icon">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+
+        <strong>
+          Cargando reserva
+        </strong>
+
+        <p>
+          Estamos preparando la información
+          del centro.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================================= -->
+  <!-- RESERVA DESHABILITADA -->
+  <!-- ========================================= -->
+
+  <main
+    class="booking-main"
+    *ngIf="
+      !cargandoReservaPublica &&
+      !configuracionPublica.permitirReservaOnline
+    "
+  >
+
+    <section class="booking-unavailable">
+
+      <div class="booking-unavailable-icon">
+        <i class="far fa-calendar-xmark"></i>
+      </div>
+
+      <span class="booking-unavailable-eyebrow">
+        RESERVAS ONLINE
+      </span>
+
+      <h1>
+        Por el momento no se aceptan reservas online
+      </h1>
+
+      <p>
+        En este momento
+        <strong>{{ nombreOrganizacion }}</strong>
+        no está recibiendo nuevas reservas
+        a través de la página web.
+      </p>
+
+      <div class="booking-unavailable-note">
+
+        <i class="fas fa-circle-info"></i>
+
+        <div>
+          <strong>
+            ¿Necesitás solicitar un turno?
+          </strong>
+
+          <span>
+            Podés comunicarte directamente con el centro
+            para consultar disponibilidad.
+          </span>
+        </div>
+
+      </div>
+
+      <div class="booking-unavailable-brand">
+
+        <div class="booking-unavailable-logo">
+
+          <img
+            *ngIf="logoUrl"
+            [src]="logoUrl"
+            [alt]="nombreOrganizacion"
+          >
+
+          <span *ngIf="!logoUrl">
+            {{ nombreOrganizacion.charAt(0) }}
+          </span>
+
+        </div>
+
+        <div>
+          <strong>
+            {{ nombreOrganizacion }}
+          </strong>
+
+          <span>
+            Reserva de turnos
+          </span>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================================= -->
+  <!-- RESERVA -->
+  <!-- ========================================= -->
+
+  <main
+    class="booking-main"
+    *ngIf="
+      !cargandoReservaPublica &&
+      configuracionPublica.permitirReservaOnline
+    "
+  >
+
+    <!-- ======================================= -->
+    <!-- PROGRESO MOBILE -->
+    <!-- ======================================= -->
+
+    <section class="mobile-progress"
+     *ngIf="!reservaFinalizada">
+
+      <div class="mobile-progress-heading">
+
+        <span>
+          Paso {{ pasoActual }} de {{ pasos.length }}
+        </span>
+
+        <strong>
+          {{ tituloPasoActual }}
+        </strong>
+
+      </div>
+
+      <div class="mobile-progress-bar">
+
+        <div
+          class="mobile-progress-fill"
+          [style.width.%]="porcentajeProgreso"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================= -->
+    <!-- STEPPER DESKTOP -->
+    <!-- ======================================= -->
+
+  <section
+  class="booking-stepper"
+  *ngIf="!reservaFinalizada"
+>
+
+      <ng-container
+        *ngFor="
+          let paso of pasos;
+          let ultimo = last
+        "
+      >
+
+        <button
+          type="button"
+          class="step-item"
+          [class.active]="paso.numero === pasoActual"
+          [class.completed]="paso.numero < pasoActual"
+          (click)="irAPaso(paso.numero)"
+        >
+
+          <span class="step-circle">
+
+            <i
+              class="fas fa-check"
+              *ngIf="paso.numero < pasoActual"
+            ></i>
+
+            <ng-container
+              *ngIf="paso.numero >= pasoActual"
+            >
+              {{ paso.numero }}
+            </ng-container>
+
+          </span>
+
+          <span class="step-copy">
+            <small>Paso {{ paso.numero }}</small>
+            <strong>{{ paso.corto }}</strong>
+          </span>
+
+        </button>
+
+        <div
+          class="step-line"
+          [class.completed]="paso.numero < pasoActual"
+          *ngIf="!ultimo"
+        ></div>
+
+      </ng-container>
+
+    </section>
+
+
+    <!-- ======================================= -->
+    <!-- CARD -->
+    <!-- ======================================= -->
+
+    <section
+  class="booking-card"
+  *ngIf="!reservaFinalizada"
+>
+
+      <!-- ===================================== -->
+      <!-- PASO 1 - DATOS -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 1">
+
+        <div class="step-header">
+
+          <span class="step-eyebrow">
+            EMPECEMOS
+          </span>
+
+          <h1>
+            {{
+              configuracionPublica.tituloReserva ||
+              'Datos del paciente'
+            }}
+          </h1>
+
+          <p>
+            {{
+              configuracionPublica.descripcionReserva ||
+              'Completá tus datos para continuar con la reserva del turno.'
+            }}
+          </p>
+
+        </div>
+
+
+        <div class="booking-form">
+
+          <!-- NOMBRE -->
+
+          <div class="field-group">
+
+            <label>
+              Nombre
+              <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="paciente.nombre"
+              placeholder="Ej: Marina"
+              autocomplete="given-name"
+            >
+
+          </div>
+
+
+          <!-- APELLIDO -->
+
+          <div class="field-group">
+
+            <label>
+              Apellido
+              <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="paciente.apellido"
+              placeholder="Ej: Burgos"
+              autocomplete="family-name"
+            >
+
+          </div>
+
+
+          <!-- DNI -->
+
+          <div
+            class="field-group full"
+            *ngIf="configuracionPublica.solicitarDni"
+          >
+
+            <label>
+              DNI
+              <span>*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="paciente.dni"
+              (input)="formatearDni()"
+              placeholder="34.567.890"
+              inputmode="numeric"
+            >
+
+          </div>
+
+
+          <!-- NACIMIENTO -->
+
+          <div
+            class="field-group full"
+            *ngIf="
+              configuracionPublica.solicitarFechaNacimiento
+            "
+          >
+
+            <label>
+              Fecha de nacimiento
+            </label>
+
+            <input
+              type="date"
+              [(ngModel)]="paciente.fechaNacimiento"
+            >
+
+          </div>
+
+
+          <!-- TELÉFONO -->
+
+          <div
+            class="field-group full"
+            *ngIf="configuracionPublica.solicitarTelefono"
+          >
+
+            <label>
+              Teléfono
+              <span>*</span>
+            </label>
+
+            <div class="patient-phone">
+
+              <div class="patient-phone-prefix">
+                <span>🇦🇷</span>
+                <strong>+54 9</strong>
+              </div>
+
+              <input
+                type="tel"
+                [(ngModel)]="paciente.telefono"
+                placeholder="223 5551234"
+                inputmode="tel"
+                autocomplete="tel"
+              >
+
+            </div>
+
+            <small class="field-hint">
+              Ingresá código de área y número,
+              sin 0 ni 15.
+            </small>
+
+          </div>
+
+
+          <!-- EMAIL -->
+
+          <div
+            class="field-group full"
+            *ngIf="configuracionPublica.solicitarEmail"
+          >
+
+            <label>
+              Correo electrónico
+            </label>
+
+            <input
+              type="email"
+              [(ngModel)]="paciente.email"
+              placeholder="ejemplo@email.com"
+              autocomplete="email"
+            >
+
+          </div>
+
+
+          <!-- OBRA SOCIAL -->
+
+          <div
+            class="field-group full"
+            *ngIf="configuracionPublica.solicitarObraSocial"
+          >
+
+            <label>
+              Cobertura médica
+            </label>
+
+            <select
+              [(ngModel)]="paciente.obraSocial"
+            >
+
+              <option value="">
+                Seleccioná una opción
+              </option>
+
+              <option
+                *ngFor="let obra of obrasSociales"
+                [value]="obra"
+              >
+                {{ obra }}
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- MOTIVO -->
+
+          <div
+            class="field-group full"
+            *ngIf="
+              configuracionPublica.solicitarMotivoConsulta
+            "
+          >
+
+            <label>
+              Motivo de consulta
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="paciente.motivoConsulta"
+              placeholder="Contanos brevemente el motivo de la consulta"
+            >
+
+          </div>
+
+
+          <!-- OBSERVACIONES -->
+
+          <div
+            class="field-group full"
+            *ngIf="
+              configuracionPublica.solicitarObservaciones
+            "
+          >
+
+            <label>
+              Observaciones
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="paciente.observaciones"
+              placeholder="Información adicional para el profesional"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="privacy-note">
+
+          <div class="privacy-icon">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+
+          <div>
+            <strong>Tus datos están protegidos</strong>
+            <p>
+              Solo utilizaremos esta información
+              para gestionar tu reserva y comunicarnos
+              con vos sobre el turno.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="booking-actions first-step">
+
+          <button
+            type="button"
+            class="continue-button"
+            (click)="continuar()"
+          >
+            Continuar
+            <i class="fas fa-arrow-right"></i>
+          </button>
+
+        </div>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- PASO 2 - ESPECIALIDAD -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 2">
+
+        <div class="step-header">
+
+          <span class="step-eyebrow">
+            ESPECIALIDAD
+          </span>
+
+          <h1>
+            ¿Qué especialidad necesitás?
+          </h1>
+
+          <p>
+            Buscá o seleccioná la especialidad
+            con la que querés atenderte.
+          </p>
+
+        </div>
+
+
+        <div class="specialty-search">
+
+          <i class="fas fa-magnifying-glass"></i>
+
+          <input
+            type="text"
+            [(ngModel)]="busquedaEspecialidad"
+            placeholder="Buscar especialidad..."
+          >
+
+        </div>
+
+
+        <div class="specialty-list">
+
+          <button
+            type="button"
+            class="specialty-option"
+            *ngFor="
+              let especialidad of
+              especialidadesFiltradas
+            "
+            [class.selected]="
+              especialidadSeleccionada?.id ===
+              especialidad.id
+            "
+            (click)="seleccionarEspecialidad(especialidad)"
+          >
+
+            <span class="specialty-option-icon">
+              <i
+                class="fas"
+                [ngClass]="especialidad.icono"
+              ></i>
+            </span>
+
+            <strong>
+              {{ especialidad.nombre }}
+            </strong>
+
+            <i
+              class="fas fa-chevron-right specialty-arrow"
+            ></i>
+
+          </button>
+
+        </div>
+
+
+        <div class="booking-actions">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volver()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver
+          </button>
+
+          <button
+            type="button"
+            class="continue-button"
+            (click)="continuar()"
+          >
+            Continuar
+            <i class="fas fa-arrow-right"></i>
+          </button>
+
+        </div>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- PASO 3 - CÓMO BUSCAR -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 3">
+
+        <div class="step-header">
+
+          <span class="step-eyebrow">
+            {{ especialidadSeleccionada?.nombre }}
+          </span>
+
+          <h1>
+            ¿Cómo querés buscar tu turno?
+          </h1>
+
+          <p>
+            Elegí la forma que te resulte más cómoda.
+          </p>
+
+        </div>
+
+
+        <div class="search-mode-list">
+
+          <!-- RÁPIDO -->
+
+          <button
+            type="button"
+            class="search-mode-card quick"
+            (click)="seleccionarModoBusqueda('rapido')"
+          >
+
+            <span class="search-mode-icon">
+              <i class="fas fa-bolt"></i>
+            </span>
+
+            <span class="search-mode-copy">
+              <strong>
+                Primer turno disponible
+              </strong>
+              <small>
+                Buscamos la opción más próxima entre
+                los profesionales y sedes disponibles.
+              </small>
+            </span>
+
+            <i class="fas fa-chevron-right"></i>
+
+          </button>
+
+
+          <!-- PROFESIONAL -->
+
+          <button
+            *ngIf="
+              configuracionPublica.permitirElegirProfesional
+            "
+            type="button"
+            class="search-mode-card"
+            (click)="seleccionarModoBusqueda('profesional')"
+          >
+
+            <span class="search-mode-icon">
+              <i class="fas fa-user-doctor"></i>
+            </span>
+
+            <span class="search-mode-copy">
+              <strong>
+                Buscar por profesional
+              </strong>
+              <small>
+                Elegí con quién querés atenderte y después
+                una de las sucursales donde trabaja.
+              </small>
+            </span>
+
+            <i class="fas fa-chevron-right"></i>
+
+          </button>
+
+
+          <!-- SUCURSAL -->
+
+          <button
+            *ngIf="
+              configuracionPublica.permitirElegirSucursal
+            "
+            type="button"
+            class="search-mode-card"
+            (click)="seleccionarModoBusqueda('sucursal')"
+          >
+
+            <span class="search-mode-icon">
+              <i class="fas fa-building"></i>
+            </span>
+
+            <span class="search-mode-copy">
+              <strong>
+                Buscar por sucursal
+              </strong>
+              <small>
+                Elegí dónde querés atenderte y te mostramos
+                los profesionales disponibles en esa sede.
+              </small>
+            </span>
+
+            <i class="fas fa-chevron-right"></i>
+
+          </button>
+
+        </div>
+
+
+        <div class="booking-actions">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volver()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver
+          </button>
+
+        </div>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- PASO 4 - SELECCIÓN -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 4">
+
+        <!-- CARGANDO -->
+
+        <div
+          class="future-step-placeholder"
+          *ngIf="cargandoProfesionales"
+        >
+
+          <div class="future-step-icon">
+            <i class="fas fa-spinner fa-spin"></i>
+          </div>
+
+          <strong>
+            Cargando profesionales
+          </strong>
+
+          <p>
+            Estamos buscando profesionales y sucursales
+            para {{ especialidadSeleccionada?.nombre }}.
+          </p>
+
+        </div>
+
+
+        <!-- SIN RESULTADOS -->
+
+        <div
+          class="future-step-placeholder"
+          *ngIf="
+            !cargandoProfesionales &&
+            profesionalesFiltrados.length === 0
+          "
+        >
+
+          <div class="future-step-icon">
+            <i class="fas fa-user-doctor"></i>
+          </div>
+
+          <strong>
+            No hay profesionales disponibles
+          </strong>
+
+          <p>
+            Por el momento no encontramos profesionales
+            habilitados para reserva online en esta especialidad.
+          </p>
+
+        </div>
+
+
+        <ng-container
+          *ngIf="
+            !cargandoProfesionales &&
+            profesionalesFiltrados.length > 0
+          "
+        >
+
+          <!-- =================================== -->
+          <!-- PRIMER TURNO DISPONIBLE -->
+          <!-- =================================== -->
+
+          <ng-container
+            *ngIf="modoBusqueda === 'rapido'"
+          >
+
+            <div class="step-header">
+
+              <span class="step-eyebrow">
+                PRIMER TURNO DISPONIBLE
+              </span>
+
+              <h1>
+                Elegí una opción
+              </h1>
+
+              <p>
+                Estas opciones ya utilizan profesionales y
+                sucursales reales. La fecha más próxima se
+                calculará cuando conectemos disponibilidad.
+              </p>
+
+            </div>
+
+
+            <div class="quick-turn-list">
+
+              <button
+                type="button"
+                class="quick-turn-card"
+                *ngFor="let turno of turnosRapidos"
+                [class.selected]="
+                  turnoRapidoSeleccionado === turno.id
+                "
+                (click)="seleccionarTurnoRapido(turno)"
+              >
+
+                <div class="quick-turn-time">
+                  <i class="fas fa-bolt"></i>
+                  <strong>
+                    {{ turno.proximoTurno }}
+                  </strong>
+                </div>
+
+                <div class="quick-turn-main">
+
+                  <strong>
+                    {{ turno.profesional.nombre }}
+                  </strong>
+
+                  <span>
+                    {{ turno.profesional.especialidad }}
+                  </span>
+
+                  <small>
+                    <i class="fas fa-location-dot"></i>
+                    {{ turno.sucursal.nombre }} ·
+                    {{ turno.sucursal.direccion }}
+                  </small>
+
+                </div>
+
+                <span class="selection-radio">
+                  <i
+                    class="fas fa-check"
+                    *ngIf="
+                      turnoRapidoSeleccionado ===
+                      turno.id
+                    "
+                  ></i>
+                </span>
+
+              </button>
+
+            </div>
+
+          </ng-container>
+
+
+          <!-- =================================== -->
+          <!-- POR PROFESIONAL -->
+          <!-- =================================== -->
+
+          <ng-container
+            *ngIf="modoBusqueda === 'profesional'"
+          >
+
+            <div class="step-header">
+
+              <span class="step-eyebrow">
+                PROFESIONALES
+              </span>
+
+              <h1>
+                Elegí un profesional
+              </h1>
+
+              <p>
+                Todos atienden la especialidad
+                {{ especialidadSeleccionada?.nombre }}.
+              </p>
+
+            </div>
+
+
+            <div class="professional-list">
+
+              <button
+                type="button"
+                class="professional-card"
+                *ngFor="
+                  let profesional of
+                  profesionalesFiltrados
+                "
+                [class.selected]="
+                  profesionalSeleccionado?.id ===
+                  profesional.id
+                "
+                (click)="seleccionarProfesional(profesional)"
+              >
+
+                <span class="professional-avatar">
+
+                  <img
+                    *ngIf="profesional.fotoUrl"
+                    [src]="profesional.fotoUrl"
+                    [alt]="profesional.nombre"
+                  >
+
+                  <span *ngIf="!profesional.fotoUrl">
+                    {{
+                      profesional.nombre
+                        .replace('Dr. ', '')
+                        .replace('Dra. ', '')
+                        .charAt(0)
+                    }}
+                  </span>
+
+                </span>
+
+
+                <span class="professional-info">
+
+                  <strong>
+                    {{ profesional.nombre }}
+                  </strong>
+
+                  <span>
+                    {{ profesional.especialidad }}
+                  </span>
+
+                  <small *ngIf="profesional.matricula">
+                    {{ profesional.matricula }}
+                  </small>
+
+                  <div
+                    class="professional-coverages"
+                    *ngIf="
+                      configuracionPublica.solicitarObraSocial
+                    "
+                  >
+
+                    <span class="coverage-label">
+                      Coberturas:
+                    </span>
+
+                    <div class="coverage-chips">
+
+                      <span
+                        class="coverage-chip"
+                        *ngFor="
+                          let obra of
+                          profesional.obrasSociales
+                        "
+                        [class.patient-coverage]="
+                          paciente.obraSocial === obra
+                        "
+                      >
+
+                        <i
+                          class="fas fa-check"
+                          *ngIf="
+                            paciente.obraSocial === obra
+                          "
+                        ></i>
+
+                        {{ obra }}
+
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    class="coverage-match accepted"
+                    *ngIf="
+                      tieneCoberturaPaciente &&
+                      profesionalAceptaCobertura(profesional)
+                    "
+                  >
+                    <i class="fas fa-circle-check"></i>
+                    Acepta {{ paciente.obraSocial }}
+                  </div>
+
+
+                  <div
+                    class="coverage-match rejected"
+                    *ngIf="
+                      tieneCoberturaPaciente &&
+                      !profesionalAceptaCobertura(profesional)
+                    "
+                  >
+                    <i class="fas fa-circle-exclamation"></i>
+                    No atiende {{ paciente.obraSocial }}
+                  </div>
+
+
+                  <span class="professional-branches">
+                    <i class="fas fa-location-dot"></i>
+                    Atiende en:
+                    {{ nombresSucursalesProfesional(profesional) }}
+                  </span>
+
+                  <span class="next-slot">
+                    <i class="far fa-calendar-check"></i>
+                    {{ profesional.proximoTurno }}
+                  </span>
+
+                </span>
+
+                <i class="fas fa-chevron-right"></i>
+
+              </button>
+
+            </div>
+
+
+            <!-- SUCURSAL DEL PROFESIONAL -->
+
+            <div
+              class="inline-selection"
+              *ngIf="
+                profesionalSeleccionado &&
+                sucursalesProfesionalSeleccionado.length > 1
+              "
+            >
+
+              <div class="inline-selection-header">
+                <strong>
+                  ¿Dónde querés atenderte?
+                </strong>
+                <span>
+                  {{ profesionalSeleccionado.nombre }}
+                  atiende en varias sedes.
+                </span>
+              </div>
+
+
+              <div class="branch-list compact">
+
+                <button
+                  type="button"
+                  class="branch-card"
+                  *ngFor="
+                    let sucursal of
+                    sucursalesProfesionalSeleccionado
+                  "
+                  [class.selected]="
+                    sucursalSeleccionada?.id ===
+                    sucursal.id
+                  "
+                  (click)="
+                    seleccionarSucursalProfesional(sucursal)
+                  "
+                >
+
+                  <span class="branch-icon">
+
+                    <img
+                      *ngIf="sucursal.fotoUrl"
+                      [src]="sucursal.fotoUrl"
+                      [alt]="sucursal.nombre"
+                    >
+
+                    <i
+                      *ngIf="!sucursal.fotoUrl"
+                      class="fas fa-building"
+                    ></i>
+
+                  </span>
+
+                  <span class="branch-info">
+                    <strong>{{ sucursal.nombre }}</strong>
+                    <span>{{ sucursal.direccion }}</span>
+                    <small>{{ sucursal.ciudad }}</small>
+                  </span>
+
+                  <span class="selection-radio">
+                    <i
+                      class="fas fa-check"
+                      *ngIf="
+                        sucursalSeleccionada?.id ===
+                        sucursal.id
+                      "
+                    ></i>
+                  </span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+
+          <!-- =================================== -->
+          <!-- POR SUCURSAL -->
+          <!-- =================================== -->
+
+          <ng-container
+            *ngIf="modoBusqueda === 'sucursal'"
+          >
+
+            <div class="step-header">
+
+              <span class="step-eyebrow">
+                SUCURSAL
+              </span>
+
+              <h1>
+                ¿Dónde querés atenderte?
+              </h1>
+
+              <p>
+                Elegí una sede y después te mostramos
+                los profesionales de
+                {{ especialidadSeleccionada?.nombre }}
+                que trabajan ahí.
+              </p>
+
+            </div>
+
+
+            <div class="branch-list">
+
+              <button
+                type="button"
+                class="branch-card"
+                *ngFor="let sucursal of sucursalesFiltradas"
+                [class.selected]="
+                  sucursalSeleccionada?.id === sucursal.id
+                "
+                (click)="seleccionarSucursal(sucursal)"
+              >
+
+                <span class="branch-icon">
+
+                  <img
+                    *ngIf="sucursal.fotoUrl"
+                    [src]="sucursal.fotoUrl"
+                    [alt]="sucursal.nombre"
+                  >
+
+                  <i
+                    *ngIf="!sucursal.fotoUrl"
+                    class="fas fa-building"
+                  ></i>
+
+                </span>
+
+                <span class="branch-info">
+                  <strong>{{ sucursal.nombre }}</strong>
+                  <span>{{ sucursal.direccion }}</span>
+                  <small>{{ sucursal.ciudad }}</small>
+                </span>
+
+                <span class="selection-radio">
+                  <i
+                    class="fas fa-check"
+                    *ngIf="
+                      sucursalSeleccionada?.id ===
+                      sucursal.id
+                    "
+                  ></i>
+                </span>
+
+              </button>
+
+            </div>
+
+
+            <!-- PROFESIONALES DE LA SUCURSAL -->
+
+            <div
+              class="inline-selection"
+              *ngIf="sucursalSeleccionada"
+            >
+
+              <div class="inline-selection-header">
+                <strong>
+                  Profesionales en
+                  {{ sucursalSeleccionada.nombre }}
+                </strong>
+                <span>
+                  Elegí con quién querés atenderte.
+                </span>
+              </div>
+
+
+              <div class="professional-list">
+
+                <button
+                  type="button"
+                  class="professional-card"
+                  *ngFor="
+                    let profesional of
+                    profesionalesSucursalSeleccionada
+                  "
+                  [class.selected]="
+                    profesionalSeleccionado?.id ===
+                    profesional.id
+                  "
+                  (click)="
+                    seleccionarProfesionalSucursal(profesional)
+                  "
+                >
+
+                  <span class="professional-avatar">
+
+                    <img
+                      *ngIf="profesional.fotoUrl"
+                      [src]="profesional.fotoUrl"
+                      [alt]="profesional.nombre"
+                    >
+
+                    <span *ngIf="!profesional.fotoUrl">
+                      {{
+                        profesional.nombre
+                          .replace('Dr. ', '')
+                          .replace('Dra. ', '')
+                          .charAt(0)
+                      }}
+                    </span>
+
+                  </span>
+
+                  <span class="professional-info">
+
+                    <strong>
+                      {{ profesional.nombre }}
+                    </strong>
+
+                    <span>
+                      {{ profesional.especialidad }}
+                    </span>
+
+                    <small *ngIf="profesional.matricula">
+                      {{ profesional.matricula }}
+                    </small>
+
+                    <div
+                      class="professional-coverages"
+                      *ngIf="
+                        configuracionPublica.solicitarObraSocial
+                      "
+                    >
+
+                      <span class="coverage-label">
+                        Coberturas:
+                      </span>
+
+                      <div class="coverage-chips">
+
+                        <span
+                          class="coverage-chip"
+                          *ngFor="
+                            let obra of
+                            profesional.obrasSociales
+                          "
+                          [class.patient-coverage]="
+                            paciente.obraSocial === obra
+                          "
+                        >
+                          {{ obra }}
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                    <div
+                      class="coverage-match accepted"
+                      *ngIf="
+                        tieneCoberturaPaciente &&
+                        profesionalAceptaCobertura(profesional)
+                      "
+                    >
+                      <i class="fas fa-circle-check"></i>
+                      Acepta {{ paciente.obraSocial }}
+                    </div>
+
+                    <div
+                      class="coverage-match rejected"
+                      *ngIf="
+                        tieneCoberturaPaciente &&
+                        !profesionalAceptaCobertura(profesional)
+                      "
+                    >
+                      <i class="fas fa-circle-exclamation"></i>
+                      No atiende {{ paciente.obraSocial }}
+                    </div>
+
+                  </span>
+
+                  <span class="selection-radio">
+                    <i
+                      class="fas fa-check"
+                      *ngIf="
+                        profesionalSeleccionado?.id ===
+                        profesional.id
+                      "
+                    ></i>
+                  </span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+
+          <!-- COBERTURA NO COMPATIBLE -->
+
+          <div
+            class="coverage-warning"
+            *ngIf="
+              profesionalSeleccionado &&
+              tieneCoberturaPaciente &&
+              !profesionalAceptaCobertura(
+                profesionalSeleccionado
+              ) &&
+              !continuarComoParticular
+            "
+          >
+
+            <div class="coverage-warning-icon">
+              <i class="fas fa-triangle-exclamation"></i>
+            </div>
+
+            <div class="coverage-warning-content">
+
+              <strong>
+                Tu cobertura no está disponible
+              </strong>
+
+              <p>
+                {{ profesionalSeleccionado.nombre }}
+                no atiende actualmente con
+                <b>{{ paciente.obraSocial }}</b>.
+                Podés elegir otro profesional
+                o continuar como paciente particular.
+              </p>
+
+              <div class="coverage-warning-actions">
+
+                <button
+                  type="button"
+                  class="coverage-change-button"
+                  (click)="elegirOtroProfesional()"
+                >
+                  Elegir otro profesional
+                </button>
+
+                <button
+                  type="button"
+                  class="coverage-private-button"
+                  (click)="aceptarAtencionParticular()"
+                >
+                  Continuar como particular
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="coverage-particular-confirmed"
+            *ngIf="
+              profesionalSeleccionado &&
+              continuarComoParticular
+            "
+          >
+
+            <i class="fas fa-circle-check"></i>
+
+            <div>
+              <strong>Atención particular</strong>
+              <span>
+                Vas a continuar sin utilizar
+                {{ paciente.obraSocial }}.
+              </span>
+            </div>
+
+          </div>
+
         </ng-container>
 
-        <ng-container *ngIf="campo.tipo === 'textarea'">
-          <div class="textarea-wrapper">
-            <textarea 
-              [name]="campo.id" 
-              [(ngModel)]="datosExtras[campo.id]" 
-              #refText="ngModel" 
-              [placeholder]="campo.placeholder || 'Escribí aquí...'" 
-              maxlength="250"
-              rows="3"
-              class="custom-textarea"
-              required>
-            </textarea>
-            <div class="char-counter">
-              {{ datosExtras[campo.id]?.length || 0 }} / 250
+
+        <div class="booking-actions">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volver()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver
+          </button>
+
+          <button
+            type="button"
+            class="continue-button"
+            [disabled]="!puedeContinuarPaso4"
+            (click)="continuar()"
+          >
+            Continuar
+            <i class="fas fa-arrow-right"></i>
+          </button>
+
+        </div>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- PASO 5 - FECHA Y HORA -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 5">
+
+        <div class="step-header">
+
+          <span class="step-eyebrow">
+            FECHA Y HORA
+          </span>
+
+          <h1>
+            Elegí cuándo querés atenderte
+          </h1>
+
+          <p>
+            Seleccioná uno de los días y horarios
+            disponibles del profesional.
+          </p>
+
+        </div>
+
+
+        <div class="appointment-summary-mini">
+
+          <span class="professional-avatar">
+
+            <img
+              *ngIf="profesionalSeleccionado?.fotoUrl"
+              [src]="profesionalSeleccionado?.fotoUrl"
+              [alt]="profesionalSeleccionado?.nombre || ''"
+            >
+
+            <span
+              *ngIf="!profesionalSeleccionado?.fotoUrl"
+            >
+              {{
+                profesionalSeleccionado?.nombre
+                  ?.replace('Dr. ', '')
+                  ?.replace('Dra. ', '')
+                  ?.charAt(0)
+              }}
+            </span>
+
+          </span>
+
+          <div>
+            <strong>
+              {{ profesionalSeleccionado?.nombre }}
+            </strong>
+            <span>
+              {{ especialidadSeleccionada?.nombre }}
+            </span>
+            <small>
+              <i class="fas fa-location-dot"></i>
+              {{ sucursalSeleccionada?.nombre }}
+            </small>
+          </div>
+
+        </div>
+
+<div
+  class="calendar-loading"
+  *ngIf="cargandoDisponibilidad"
+>
+
+  <i class="fas fa-spinner fa-spin"></i>
+
+  <div>
+
+    <strong>
+      Buscando horarios disponibles
+    </strong>
+
+    <span>
+      Estamos consultando la agenda del profesional.
+    </span>
+
+  </div>
+
+</div>
+        <div class="calendar-layout"
+        *ngIf="!cargandoDisponibilidad">
+
+          <!-- CALENDARIO -->
+
+          <div class="calendar-panel">
+
+            <div class="calendar-panel-header">
+
+              <div>
+                <span class="calendar-label">
+                  FECHA DEL TURNO
+                </span>
+                <h3>{{ nombreMesActual }}</h3>
+              </div>
+
+              <div class="calendar-nav">
+
+                <button
+                  type="button"
+                  class="calendar-nav-button"
+                  (click)="cambiarMes(-1)"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="calendar-nav-button"
+                  (click)="cambiarMes(1)"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="calendar-weekdays">
+              <span *ngFor="let dia of diasSemana">
+                {{ dia }}
+              </span>
+            </div>
+
+
+            <div class="calendar-grid">
+
+              <button
+                type="button"
+                class="calendar-day"
+                *ngFor="let dia of diasCalendario"
+                [class.outside]="!dia.perteneceMesActual"
+                [class.selected]="esDiaSeleccionado(dia)"
+                [class.state-off]="dia.estado === 'sin-atencion'"
+                [disabled]="
+                  !dia.perteneceMesActual ||
+                  !dia.disponible
+                "
+                (click)="seleccionarDiaCalendario(dia)"
+              >
+
+                <span class="calendar-day-number">
+                  {{ dia.diaNumero }}
+                </span>
+
+                <span
+                  class="availability-dot"
+                  *ngIf="
+                    dia.perteneceMesActual &&
+                    dia.estado !== 'sin-atencion'
+                  "
+                  [class.many]="dia.estado === 'muchos'"
+                  [class.few]="dia.estado === 'pocos'"
+                  [class.full]="dia.estado === 'sin-turnos'"
+                ></span>
+
+              </button>
+
+            </div>
+
+
+            <div class="calendar-legend">
+
+              <span class="legend-item">
+                <i class="legend-dot many"></i>
+                Disponible
+              </span>
+
+              <span class="legend-item">
+                <i class="legend-dot few"></i>
+                Pocos turnos
+              </span>
+
+              <span class="legend-item">
+                <i class="legend-dot full"></i>
+                Sin turnos
+              </span>
+
+              <span class="legend-item">
+                <i class="legend-dot off"></i>
+                Sin atención
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- HORARIOS -->
+
+          <div class="schedule-panel">
+
+            <ng-container *ngIf="!fechaSeleccionada">
+
+              <div class="schedule-empty">
+
+                <div class="schedule-empty-icon">
+                  <i class="far fa-clock"></i>
+                </div>
+
+                <strong>
+                  Elegí una fecha
+                </strong>
+
+                <p>
+                  Los horarios disponibles aparecerán acá
+                  una vez que selecciones un día habilitado.
+                </p>
+
+              </div>
+
+            </ng-container>
+
+
+            <ng-container *ngIf="fechaSeleccionada">
+
+              <div class="schedule-header">
+                <small>HORARIOS DISPONIBLES</small>
+                <h3>
+                  {{ obtenerTextoFechaSeleccionada() }}
+                </h3>
+              </div>
+
+              <div
+                class="schedule-times"
+                *ngIf="
+                  horariosDisponiblesFechaSeleccionada.length > 0
+                "
+              >
+
+                <button
+                  type="button"
+                  class="time-option"
+                  *ngFor="
+                    let hora of
+                    horariosDisponiblesFechaSeleccionada
+                  "
+                  [class.selected]="
+                    horaSeleccionada === hora
+                  "
+                  (click)="horaSeleccionada = hora"
+                >
+                  {{ hora }}
+                </button>
+
+              </div>
+
+              <div
+                class="schedule-empty"
+                *ngIf="
+                  horariosDisponiblesFechaSeleccionada.length === 0
+                "
+              >
+
+                <div class="schedule-empty-icon">
+                  <i class="far fa-calendar-xmark"></i>
+                </div>
+
+                <strong>
+                  No hay horarios disponibles
+                </strong>
+
+                <p>
+                  Probá con otro día del calendario.
+                </p>
+
+              </div>
+
+            </ng-container>
+
+          </div>
+
+        </div>
+
+
+        <div class="booking-actions">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volver()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver
+          </button>
+
+          <button
+            type="button"
+            class="continue-button"
+            (click)="continuar()"
+          >
+            Revisar turno
+            <i class="fas fa-arrow-right"></i>
+          </button>
+
+        </div>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- PASO 6 - CONFIRMACIÓN -->
+      <!-- ===================================== -->
+
+      <ng-container *ngIf="pasoActual === 6">
+
+        <div class="confirmation-heading">
+
+          <div class="confirmation-icon">
+            <i class="far fa-calendar-check"></i>
+          </div>
+
+          <h1>
+            Revisá y confirmá tu turno
+          </h1>
+
+          <p>
+            Verificá que todos los datos
+            sean correctos.
+          </p>
+
+        </div>
+
+
+        <div class="confirmation-card">
+
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="far fa-user"></i>
+            </span>
+            <div>
+              <small>Paciente</small>
+              <strong>
+                {{ paciente.nombre }}
+                {{ paciente.apellido }}
+              </strong>
+              <span *ngIf="configuracionPublica.solicitarDni">
+                DNI {{ paciente.dni }}
+              </span>
             </div>
           </div>
-          <small class="error-msg" *ngIf="refText.invalid && (refText.touched || f.submitted)">
-            * {{ campo.label }} es obligatorio
-          </small>
-        </ng-container>
 
-        <ng-container *ngIf="campo.tipo !== 'select' && campo.tipo !== 'textarea'">
-          <input 
-            [type]="campo.tipo" 
-            [name]="campo.id" 
-            [(ngModel)]="datosExtras[campo.id]" 
-            #refInp="ngModel" 
-            [placeholder]="campo.label" 
-            required>
-          <small class="error-msg" *ngIf="refInp.invalid && (refInp.touched || f.submitted)">
-            * {{ campo.label }} es obligatorio
-          </small>
-        </ng-container>
-      </div>
-    </div>
 
-    <div class="field-group">
-      <label class="label-mini">Sucursal</label>
-      <select name="sucursal" [(ngModel)]="datosForm.sucursal" #suc="ngModel" (change)="cargarTurnos()" required>
-        <option value="">Seleccionar sucursal (o buscar en todas)</option>
-        <option *ngFor="let s of sucursales" [value]="s.id || s.sucursal_id">{{ s.nombre }}</option>
-      </select>
-      <small class="error-msg" *ngIf="suc.invalid && (suc.touched || f.submitted)">* Seleccioná una sucursal</small>
-    </div>
-<div class="field-group">
-  <label class="label-mini">Fecha del Turno</label>
-  <div class="fecha-container">
-    <input type="text" id="fechaPicker" class="flatpickr-input" name="fecha" [(ngModel)]="datosForm.fecha" #fec="ngModel" readonly placeholder="Seleccioná una fecha" required>
-    <span class="calendar-icon">📅</span>
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="fas fa-stethoscope"></i>
+            </span>
+            <div>
+              <small>Especialidad</small>
+              <strong>
+                {{ especialidadSeleccionada?.nombre }}
+              </strong>
+            </div>
+          </div>
+
+
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="fas fa-user-doctor"></i>
+            </span>
+            <div>
+              <small>Profesional</small>
+              <strong>
+                {{ profesionalSeleccionado?.nombre }}
+              </strong>
+              <span *ngIf="profesionalSeleccionado?.matricula">
+                {{ profesionalSeleccionado?.matricula }}
+              </span>
+            </div>
+          </div>
+
+
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="fas fa-location-dot"></i>
+            </span>
+            <div>
+              <small>Sucursal</small>
+              <strong>
+                {{ sucursalSeleccionada?.nombre }}
+              </strong>
+              <span>
+                {{ sucursalSeleccionada?.direccion }}
+              </span>
+            </div>
+          </div>
+
+
+          <div
+            class="confirmation-row"
+            *ngIf="configuracionPublica.solicitarObraSocial"
+          >
+            <span class="confirmation-row-icon">
+              <i class="fas fa-shield-heart"></i>
+            </span>
+            <div>
+              <small>Modalidad</small>
+              <strong *ngIf="!continuarComoParticular">
+                {{ paciente.obraSocial || 'Particular' }}
+              </strong>
+              <strong *ngIf="continuarComoParticular">
+                Particular
+              </strong>
+              <span
+                *ngIf="
+                  continuarComoParticular &&
+                  paciente.obraSocial
+                "
+              >
+                La cobertura {{ paciente.obraSocial }}
+                no será utilizada.
+              </span>
+            </div>
+          </div>
+
+
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="far fa-calendar"></i>
+            </span>
+            <div>
+              <small>Fecha</small>
+              <strong>
+                {{ obtenerTextoFechaSeleccionada() }}
+              </strong>
+            </div>
+          </div>
+
+
+          <div class="confirmation-row">
+            <span class="confirmation-row-icon">
+              <i class="far fa-clock"></i>
+            </span>
+            <div>
+              <small>Horario</small>
+              <strong>
+                {{ horaSeleccionada }} hs
+              </strong>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="reminder-note">
+          <i class="far fa-bell"></i>
+          <span *ngIf="configuracionPublica.requiereConfirmacion">
+            El turno quedará pendiente de confirmación.
+          </span>
+          <span *ngIf="!configuracionPublica.requiereConfirmacion">
+            Tu turno quedará confirmado al finalizar la reserva.
+          </span>
+        </div>
+
+
+        <div class="booking-actions confirmation-actions">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volver()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver
+          </button>
+
+         <button
+  type="button"
+  class="continue-button confirm-button"
+  [disabled]="confirmandoTurno"
+  (click)="confirmarTurno()"
+>
+
+  <i
+    class="fas fa-spinner fa-spin"
+    *ngIf="confirmandoTurno"
+  ></i>
+
+  <i
+    class="far fa-calendar-check"
+    *ngIf="!confirmandoTurno"
+  ></i>
+
+  {{
+    confirmandoTurno
+      ? 'Reservando...'
+      : 'Confirmar turno'
+  }}
+
+</button>
+        </div>
+
+      </ng-container>
+
+    </section>
+
+<!-- ======================================= -->
+<!-- RESERVA FINALIZADA -->
+<!-- ======================================= -->
+
+<section
+  class="booking-success"
+  *ngIf="reservaFinalizada"
+>
+
+  <div class="booking-success-icon">
+    <i class="fas fa-check"></i>
   </div>
-  <small class="error-msg" *ngIf="fec.invalid && (fec.touched || f.submitted)">* La fecha es obligatoria</small>
-</div>
 
-    <div id="turnos-container" *ngIf="horariosDisponibles.length > 0">
-      <p class="label-mini">Horarios Disponibles:</p>
-      <div id="turnos">
-        <button *ngFor="let h of horariosDisponibles" 
-                type="button" 
-                (click)="turnoSeleccionado = h" 
-                [class.turno-seleccionado]="turnoSeleccionado === h">
-          {{ h.hora }}
-        </button>
+
+  <span class="booking-success-eyebrow">
+    RESERVA COMPLETADA
+  </span>
+
+
+  <h1>
+    ¡Turno reservado correctamente!
+  </h1>
+
+
+  <p class="booking-success-description">
+    Tu turno ya quedó agendado.
+    Más adelante te enviaremos un mensaje
+    para confirmar tu asistencia.
+  </p>
+
+
+  <div class="booking-success-card">
+
+    <!-- PROFESIONAL -->
+
+    <div class="booking-success-row">
+
+      <span class="booking-success-row-icon">
+        <i class="fas fa-user-doctor"></i>
+      </span>
+
+      <div>
+        <small>
+          Profesional
+        </small>
+
+        <strong>
+          {{ profesionalSeleccionado?.nombre }}
+        </strong>
+
+        <span>
+          {{ especialidadSeleccionada?.nombre }}
+        </span>
       </div>
+
     </div>
 
-    <div *ngIf="datosForm.fecha && horariosDisponibles.length === 0" class="no-turnos">
-      <p>No hay turnos disponibles para esta fecha/sucursal.</p>
+
+    <!-- FECHA -->
+
+    <div class="booking-success-row">
+
+      <span class="booking-success-row-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+
+      <div>
+        <small>
+          Fecha
+        </small>
+
+        <strong>
+          {{ obtenerTextoFechaSeleccionada() }}
+        </strong>
+      </div>
+
     </div>
 
-    <button type="submit" class="btn-confirmar">Reservar Turno</button>
-    
-  </form>
+
+    <!-- HORARIO -->
+
+    <div class="booking-success-row">
+
+      <span class="booking-success-row-icon">
+        <i class="far fa-clock"></i>
+      </span>
+
+      <div>
+        <small>
+          Horario
+        </small>
+
+        <strong>
+          {{ horaSeleccionada }} hs
+        </strong>
+      </div>
+
+    </div>
+
+
+    <!-- SUCURSAL -->
+
+    <div class="booking-success-row">
+
+      <span class="booking-success-row-icon">
+        <i class="fas fa-location-dot"></i>
+      </span>
+
+      <div>
+        <small>
+          Lugar de atención
+        </small>
+
+        <strong>
+          {{ sucursalSeleccionada?.nombre }}
+        </strong>
+
+        <span>
+          {{ sucursalSeleccionada?.direccion }}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="booking-success-notice">
+
+    <i class="far fa-bell"></i>
+
+    <div>
+
+      <strong>
+        Te avisaremos antes de tu turno
+      </strong>
+
+      <span>
+        Recibirás la confirmación y los recordatorios
+        a través de los medios de contacto que ingresaste.
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="booking-success-code"
+    *ngIf="reservaCreada?.turnoId"
+  >
+    Código de reserva
+
+    <strong>
+      {{
+        reservaCreada?.turnoId
+          | slice:0:8
+          | uppercase
+      }}
+    </strong>
+  </div>
+
+</section>
+   <footer
+  class="public-booking-footer"
+  *ngIf="!reservaFinalizada"
+>
+      <i class="fas fa-shield-halved"></i>
+      <span>Reserva segura gestionada con</span>
+      <strong>AmiApp</strong>
+    </footer>
+
+  </main>
+
 </div>
-
-<app-footer></app-footer>

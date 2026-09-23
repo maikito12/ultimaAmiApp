@@ -1,0 +1,2180 @@
+<div class="super-admin-layout">
+
+
+  <!-- ================================================= -->
+  <!-- SIDEBAR -->
+  <!-- ================================================= -->
+
+  <aside class="sidebar">
+
+
+    <div class="brand">
+
+      <div class="brand-mark">
+        A
+      </div>
+
+      <div>
+
+        <strong>
+          AmiApp
+        </strong>
+
+        <span>
+          Super Admin
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+
+      <div class="nav-group">
+
+        <span class="nav-label">
+          GENERAL
+        </span>
+
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="
+            seccionActiva === 'inicio'
+          "
+          (click)="
+            cambiarSeccion('inicio')
+          "
+        >
+
+          <i class="fa-solid fa-chart-pie"></i>
+
+          <span>
+            Inicio
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div class="nav-group">
+
+        <span class="nav-label">
+          NEGOCIO
+        </span>
+
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="
+            seccionActiva ===
+            'organizaciones'
+          "
+          (click)="
+            cambiarSeccion(
+              'organizaciones'
+            )
+          "
+        >
+
+          <i class="fa-regular fa-building"></i>
+
+          <span>
+            Organizaciones
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="
+            seccionActiva ===
+            'planes'
+          "
+          (click)="
+            cambiarSeccion(
+              'planes'
+            )
+          "
+        >
+
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+          <span>
+            Planes personalizados
+          </span>
+
+
+          <span
+            class="nav-badge"
+            *ngIf="
+              solicitudesPendientes.length > 0
+            "
+          >
+
+            {{
+              solicitudesPendientes.length
+            }}
+
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="
+            seccionActiva ===
+            'suscripciones'
+          "
+          (click)="
+            cambiarSeccion(
+              'suscripciones'
+            )
+          "
+        >
+
+          <i class="fa-regular fa-credit-card"></i>
+
+          <span>
+            Suscripciones
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div class="nav-group">
+
+        <span class="nav-label">
+          SISTEMA
+        </span>
+
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="
+            seccionActiva ===
+            'plataforma'
+          "
+          (click)="
+            cambiarSeccion(
+              'plataforma'
+            )
+          "
+        >
+
+          <i class="fa-solid fa-server"></i>
+
+          <span>
+            Plataforma
+          </span>
+
+        </button>
+
+      </div>
+
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+      <div class="admin-profile">
+
+        <div class="admin-avatar">
+          SA
+        </div>
+
+        <div>
+
+          <strong>
+            Super Admin
+          </strong>
+
+          <span>
+            AmiApp
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="logout-button"
+        (click)="cerrarSesion()"
+        aria-label="Cerrar sesión"
+      >
+
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+      </button>
+
+    </div>
+
+
+  </aside>
+
+
+  <!-- ================================================= -->
+  <!-- CONTENIDO -->
+  <!-- ================================================= -->
+
+  <main class="main-content">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <header class="topbar">
+
+      <div>
+
+        <span class="page-eyebrow">
+          PANEL DE PLATAFORMA
+        </span>
+
+        <h1>
+
+          <ng-container
+            [ngSwitch]="seccionActiva"
+          >
+
+            <span *ngSwitchCase="'inicio'">
+              Inicio
+            </span>
+
+            <span *ngSwitchCase="'organizaciones'">
+              Organizaciones
+            </span>
+
+            <span *ngSwitchCase="'planes'">
+              Planes personalizados
+            </span>
+
+            <span *ngSwitchCase="'suscripciones'">
+              Suscripciones
+            </span>
+
+            <span *ngSwitchCase="'plataforma'">
+              Plataforma
+            </span>
+
+          </ng-container>
+
+        </h1>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="refresh-button"
+        [disabled]="cargando"
+        (click)="recargar()"
+      >
+
+        <i
+          class="fa-solid fa-rotate-right"
+          [class.fa-spin]="cargando"
+        ></i>
+
+        Actualizar
+
+      </button>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- LOADING -->
+    <!-- ================================================= -->
+
+    <div
+      class="loading-state"
+      *ngIf="cargando"
+    >
+
+      <div class="spinner"></div>
+
+      <span>
+        Cargando plataforma...
+      </span>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ERROR -->
+    <!-- ================================================= -->
+
+    <div
+      class="error-state"
+      *ngIf="
+        !cargando &&
+        errorCarga
+      "
+    >
+
+      <div class="error-icon">
+        !
+      </div>
+
+      <div>
+
+        <strong>
+          No pudimos cargar todos los datos
+        </strong>
+
+        <p>
+          Revisá que el backend esté ejecutándose
+          y que los endpoints de Super Admin estén disponibles.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        (click)="recargar()"
+      >
+        Reintentar
+      </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- INICIO -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngIf="
+        !cargando &&
+        seccionActiva === 'inicio'
+      "
+    >
+
+
+      <section class="hero">
+
+        <div>
+
+          <span class="hero-label">
+            RESUMEN GLOBAL
+          </span>
+
+          <h2>
+            Estado general de AmiApp
+          </h2>
+
+          <p>
+            Métricas comerciales y operativas
+            de toda la plataforma.
+          </p>
+
+        </div>
+
+
+        <div class="hero-status">
+
+          <span class="status-dot"></span>
+
+          Plataforma activa
+
+        </div>
+
+      </section>
+
+
+      <!-- KPI PRINCIPALES -->
+
+      <section class="metrics-grid">
+
+
+        <article class="metric-card">
+
+          <div class="metric-icon">
+
+            <i class="fa-regular fa-building"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Organizaciones
+            </span>
+
+            <strong>
+              {{ totalOrganizaciones }}
+            </strong>
+
+            <small>
+              Organizaciones activas
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article class="metric-card">
+
+          <div class="metric-icon">
+
+            <i class="fa-solid fa-user-doctor"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Profesionales
+            </span>
+
+            <strong>
+              {{ totalProfesionales }}
+            </strong>
+
+            <small>
+              Profesionales activos
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article class="metric-card">
+
+          <div class="metric-icon">
+
+            <i class="fa-regular fa-user"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Usuarios
+            </span>
+
+            <strong>
+              {{ totalUsuarios }}
+            </strong>
+
+            <small>
+              Registrados en AmiApp
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article class="metric-card highlight">
+
+          <div class="metric-icon">
+
+            <i class="fa-solid fa-dollar-sign"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              MRR estimado
+            </span>
+
+            <strong class="money">
+              {{ formatearDinero(mrr) }}
+            </strong>
+
+            <small>
+              Ingreso mensual recurrente
+            </small>
+
+          </div>
+
+        </article>
+
+
+      </section>
+
+
+      <!-- SEGUNDA FILA -->
+
+      <section class="business-grid">
+
+
+        <!-- SUSCRIPCIONES -->
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                SUSCRIPCIONES
+              </span>
+
+              <h3>
+                Estado comercial
+              </h3>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="link-button"
+              (click)="
+                cambiarSeccion(
+                  'suscripciones'
+                )
+              "
+            >
+              Ver detalle →
+            </button>
+
+          </div>
+
+
+          <div class="subscription-summary">
+
+
+            <div class="summary-item">
+
+              <span class="summary-dot green"></span>
+
+              <div>
+                <strong>
+                  {{
+                    negocio?.suscripciones?.activas
+                    ?? 0
+                  }}
+                </strong>
+
+                <span>
+                  Activas
+                </span>
+              </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+              <span class="summary-dot blue"></span>
+
+              <div>
+                <strong>
+                  {{
+                    negocio?.suscripciones?.enPrueba
+                    ?? 0
+                  }}
+                </strong>
+
+                <span>
+                  En prueba
+                </span>
+              </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+              <span class="summary-dot yellow"></span>
+
+              <div>
+                <strong>
+                  {{
+                    negocio?.suscripciones?.pendientes
+                    ?? 0
+                  }}
+                </strong>
+
+                <span>
+                  Pendientes
+                </span>
+              </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+              <span class="summary-dot red"></span>
+
+              <div>
+                <strong>
+                  {{
+                    negocio?.suscripciones?.vencidas
+                    ?? 0
+                  }}
+                </strong>
+
+                <span>
+                  Vencidas
+                </span>
+              </div>
+
+            </div>
+
+
+          </div>
+
+
+          <div class="financial-row">
+
+            <div>
+
+              <span>
+                ARR estimado
+              </span>
+
+              <strong>
+                {{
+                  formatearDinero(
+                    arr
+                  )
+                }}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Ticket promedio
+              </span>
+
+              <strong>
+                {{
+                  formatearDinero(
+                    negocio
+                      ?.ingresos
+                      ?.ticketPromedioMensual
+                  )
+                }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <!-- PLANES PERSONALIZADOS -->
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <span class="panel-eyebrow">
+                COMERCIAL
+              </span>
+
+              <h3>
+                Planes personalizados
+              </h3>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="link-button"
+              (click)="
+                cambiarSeccion(
+                  'planes'
+                )
+              "
+            >
+              Ver todos →
+            </button>
+
+          </div>
+
+
+          <div class="custom-plan-number">
+
+            <strong>
+              {{
+                solicitudesPendientes.length
+              }}
+            </strong>
+
+            <span>
+              solicitudes pendientes
+            </span>
+
+          </div>
+
+
+          <div
+            class="mini-request"
+            *ngFor="
+              let solicitud
+              of solicitudesPendientes
+                | slice:0:3
+            "
+          >
+
+            <div class="mini-request-avatar">
+
+              {{
+                solicitud
+                  .organizacion
+                  .nombre
+                  .charAt(0)
+                  .toUpperCase()
+              }}
+
+            </div>
+
+
+            <div class="mini-request-main">
+
+              <strong>
+                {{
+                  solicitud
+                    .organizacion
+                    .nombre
+                }}
+              </strong>
+
+              <span>
+                {{
+                  solicitud
+                    .cantidadProfesionales
+                  ?? '-'
+                }}
+                profesionales
+              </span>
+
+            </div>
+
+
+            <span class="estado estado-amarillo">
+              Pendiente
+            </span>
+
+          </div>
+
+
+          <div
+            class="empty-mini"
+            *ngIf="
+              solicitudesPendientes.length === 0
+            "
+          >
+            No hay solicitudes pendientes.
+          </div>
+
+        </article>
+
+
+      </section>
+
+
+      <!-- ÚLTIMAS ORGANIZACIONES -->
+
+      <section class="panel organizations-panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <span class="panel-eyebrow">
+              ORGANIZACIONES
+            </span>
+
+            <h3>
+              Últimas incorporaciones
+            </h3>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="link-button"
+            (click)="
+              cambiarSeccion(
+                'organizaciones'
+              )
+            "
+          >
+            Ver todas →
+          </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Organización
+                </th>
+
+                <th>
+                  Ciudad
+                </th>
+
+                <th>
+                  Profesionales
+                </th>
+
+                <th>
+                  Usuarios
+                </th>
+
+                <th>
+                  Turnos del mes
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Alta
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let organizacion
+                  of ultimasOrganizaciones
+                "
+              >
+
+                <td>
+
+                  <div class="organization-cell">
+
+                    <div class="organization-avatar">
+
+                      {{
+                        organizacion
+                          .nombre
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+
+                    </div>
+
+
+                    <div>
+
+                      <strong>
+                        {{
+                          organizacion.nombre
+                        }}
+                      </strong>
+
+                      <span>
+                        /{{ organizacion.slug }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion.ciudad
+                    || '-'
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .profesionales
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .usuarios
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .turnosEsteMes
+                  }}
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="estado"
+                    [class.estado-verde]="
+                      organizacion.activo
+                    "
+                    [class.estado-rojo]="
+                      !organizacion.activo
+                    "
+                  >
+
+                    {{
+                      organizacion.activo
+                        ? 'Activa'
+                        : 'Inactiva'
+                    }}
+
+                  </span>
+
+                </td>
+
+
+                <td>
+                  {{
+                    formatearFecha(
+                      organizacion.fechaAlta
+                    )
+                  }}
+                </td>
+
+              </tr>
+
+
+              <tr
+                *ngIf="
+                  ultimasOrganizaciones.length === 0
+                "
+              >
+
+                <td
+                  colspan="7"
+                  class="empty-table"
+                >
+                  Todavía no hay organizaciones para mostrar.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+    </ng-container>
+
+
+    <!-- ================================================= -->
+    <!-- ORGANIZACIONES -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngIf="
+        !cargando &&
+        seccionActiva ===
+        'organizaciones'
+      "
+    >
+
+      <section class="section-heading">
+
+        <div>
+
+          <span class="page-eyebrow">
+            CLIENTES
+          </span>
+
+          <h2>
+            Todas las organizaciones
+          </h2>
+
+          <p>
+            Vista operativa de las organizaciones registradas
+            en AmiApp. La gestión comercial está centralizada
+            en Suscripciones.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <section class="panel">
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Organización
+                </th>
+
+                <th>
+                  Ciudad
+                </th>
+
+                <th>
+                  Profesionales
+                </th>
+
+                <th>
+                  Usuarios
+                </th>
+
+                <th>
+                  Sucursales
+                </th>
+
+                <th>
+                  Turnos del mes
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Alta
+                </th>
+
+                <th class="actions-header">
+                  Gestión
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let organizacion
+                  of organizaciones
+                "
+              >
+
+                <td>
+
+                  <div class="organization-cell">
+
+                    <div class="organization-avatar">
+
+                      {{
+                        organizacion
+                          .nombre
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+
+                    </div>
+
+
+                    <div>
+
+                      <strong>
+                        {{
+                          organizacion.nombre
+                        }}
+                      </strong>
+
+                      <span>
+                        /{{ organizacion.slug }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion.ciudad
+                    || '-'
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .profesionales
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .usuarios
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .sucursales
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    organizacion
+                      .turnosEsteMes
+                  }}
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="estado"
+                    [class.estado-verde]="
+                      organizacion.activo
+                    "
+                    [class.estado-rojo]="
+                      !organizacion.activo
+                    "
+                  >
+
+                    {{
+                      organizacion.activo
+                        ? 'Activa'
+                        : 'Inactiva'
+                    }}
+
+                  </span>
+
+                </td>
+
+
+                <td>
+                  {{
+                    formatearFecha(
+                      organizacion.fechaAlta
+                    )
+                  }}
+                </td>
+
+
+                <td class="actions-cell">
+
+                  <button
+                    type="button"
+                    class="payment-action-button"
+                    (click)="
+                      gestionarSuscripcion(
+                        organizacion
+                      )
+                    "
+                  >
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Gestionar
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </ng-container>
+
+
+    <!-- ================================================= -->
+    <!-- PLANES PERSONALIZADOS -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngIf="
+        !cargando &&
+        seccionActiva === 'planes'
+      "
+    >
+
+      <section class="section-heading">
+
+        <div>
+
+          <span class="page-eyebrow">
+            VENTAS
+          </span>
+
+          <h2>
+            Solicitudes personalizadas
+          </h2>
+
+          <p>
+            Seguimiento comercial de organizaciones
+            que necesitan una propuesta especial.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <section class="request-grid">
+
+
+        <article
+          class="request-card"
+          *ngFor="
+            let solicitud
+            of solicitudes
+          "
+        >
+
+          <div class="request-card-header">
+
+            <div class="request-org">
+
+              <div class="organization-avatar large">
+
+                {{
+                  solicitud
+                    .organizacion
+                    .nombre
+                    .charAt(0)
+                    .toUpperCase()
+                }}
+
+              </div>
+
+
+              <div>
+
+                <strong>
+                  {{
+                    solicitud
+                      .organizacion
+                      .nombre
+                  }}
+                </strong>
+
+                <span>
+                  {{
+                    solicitud
+                      .organizacion
+                      .ciudad
+                    || 'Sin ciudad'
+                  }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <span
+              class="estado"
+              [ngClass]="
+                claseEstado(
+                  solicitud.estado
+                )
+              "
+            >
+              {{ solicitud.estado }}
+            </span>
+
+          </div>
+
+
+          <div class="request-data">
+
+            <div>
+
+              <span>
+                Profesionales
+              </span>
+
+              <strong>
+                {{
+                  solicitud
+                    .cantidadProfesionales
+                  ?? '-'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Fecha
+              </span>
+
+              <strong>
+                {{
+                  formatearFecha(
+                    solicitud
+                      .fechaSolicitud
+                  )
+                }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="request-message"
+            *ngIf="
+              solicitud.mensaje
+            "
+          >
+
+            {{
+              solicitud.mensaje
+            }}
+
+          </div>
+
+
+          <div class="request-contact">
+
+            <span>
+              Solicitado por
+            </span>
+
+            <strong>
+              {{
+                solicitud
+                  .solicitadoPor
+                  .nombre
+              }}
+              {{
+                solicitud
+                  .solicitadoPor
+                  .apellido
+              }}
+            </strong>
+
+            <small>
+              {{
+                solicitud
+                  .solicitadoPor
+                  .email
+              }}
+            </small>
+
+          </div>
+
+
+          <div
+            class="request-phone"
+            *ngIf="
+              solicitud.telefonoContacto
+            "
+          >
+
+            <i class="fa-solid fa-phone"></i>
+
+            {{
+              solicitud
+                .telefonoContacto
+            }}
+
+          </div>
+
+        </article>
+
+
+        <div
+          class="empty-section"
+          *ngIf="
+            solicitudes.length === 0
+          "
+        >
+
+          <i class="fa-regular fa-folder-open"></i>
+
+          <strong>
+            No hay solicitudes
+          </strong>
+
+          <span>
+            Las solicitudes de planes personalizados
+            aparecerán acá.
+          </span>
+
+        </div>
+
+      </section>
+
+    </ng-container>
+
+
+    <!-- ================================================= -->
+    <!-- SUSCRIPCIONES -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngIf="
+        !cargando &&
+        seccionActiva ===
+        'suscripciones'
+      "
+    >
+
+      <section class="section-heading">
+
+        <div>
+
+          <span class="page-eyebrow">
+            INGRESOS
+          </span>
+
+          <h2>
+            Suscripciones
+          </h2>
+
+          <p>
+            Resumen global de las suscripciones
+            de AmiApp.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <section class="subscription-cards">
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot green"></span>
+
+          <div>
+
+            <span>
+              Activas
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.activas
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot blue"></span>
+
+          <div>
+
+            <span>
+              En prueba
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.enPrueba
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot yellow"></span>
+
+          <div>
+
+            <span>
+              Pendientes
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.pendientes
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot gray"></span>
+
+          <div>
+
+            <span>
+              Pausadas
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.pausadas
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot red"></span>
+
+          <div>
+
+            <span>
+              Vencidas
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.vencidas
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="subscription-stat">
+
+          <span class="summary-dot dark"></span>
+
+          <div>
+
+            <span>
+              Canceladas
+            </span>
+
+            <strong>
+              {{
+                negocio
+                  ?.suscripciones
+                  ?.canceladas
+                ?? 0
+              }}
+            </strong>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <section class="finance-cards">
+
+
+        <article class="finance-card">
+
+          <span>
+            MRR estimado
+          </span>
+
+          <strong>
+            {{
+              formatearDinero(
+                mrr
+              )
+            }}
+          </strong>
+
+          <small>
+            Ingreso recurrente mensual
+          </small>
+
+        </article>
+
+
+        <article class="finance-card">
+
+          <span>
+            ARR estimado
+          </span>
+
+          <strong>
+            {{
+              formatearDinero(
+                arr
+              )
+            }}
+          </strong>
+
+          <small>
+            Proyección anual
+          </small>
+
+        </article>
+
+
+        <article class="finance-card">
+
+          <span>
+            Ticket mensual
+          </span>
+
+          <strong>
+            {{
+              formatearDinero(
+                negocio
+                  ?.ingresos
+                  ?.ticketPromedioMensual
+              )
+            }}
+          </strong>
+
+          <small>
+            Promedio por suscripción activa
+          </small>
+
+        </article>
+
+      </section>
+
+
+      <!-- ================================================= -->
+      <!-- CARTERA DE SUSCRIPCIONES -->
+      <!-- ================================================= -->
+
+      <section class="panel subscriptions-table-panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <span class="panel-eyebrow">
+              CARTERA
+            </span>
+
+            <h3>
+              Control de suscripciones
+            </h3>
+
+          </div>
+
+          <span class="table-helper">
+            Precio, vencimiento y último pago
+          </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Organización
+                </th>
+
+                <th>
+                  Plan
+                </th>
+
+                <th>
+                  Profesionales
+                </th>
+
+                <th>
+                  Precio habitual
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Vencimiento
+                </th>
+
+                <th>
+                  Último pago
+                </th>
+
+                <th class="actions-header">
+                  Acción
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let organizacion
+                  of organizaciones
+                "
+              >
+
+                <td>
+
+                  <div class="organization-cell">
+
+                    <div class="organization-avatar">
+
+                      {{
+                        organizacion
+                          .nombre
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+
+                    </div>
+
+                    <div>
+
+                      <strong>
+                        {{ organizacion.nombre }}
+                      </strong>
+
+                      <span>
+                        /{{ organizacion.slug }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+
+                  <strong class="subscription-main-value">
+                    {{
+                      organizacion.planNombre
+                      || 'Sin plan'
+                    }}
+                  </strong>
+
+                  <span class="subscription-subvalue">
+                    {{
+                      organizacion.modalidad
+                      || '-'
+                    }}
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <strong class="subscription-main-value">
+                    {{
+                      organizacion
+                        .cantidadProfesionalesContratados
+                      ??
+                      organizacion.profesionales
+                    }}
+                  </strong>
+
+                  <span class="subscription-subvalue">
+                    contratados
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <strong class="subscription-main-value money-value">
+                    {{
+                      organizacion.importeTotal !== null
+                        ? formatearDinero(
+                            organizacion.importeTotal
+                          )
+                        : '-'
+                    }}
+                  </strong>
+
+                  <span
+                    class="subscription-subvalue"
+                    *ngIf="
+                      organizacion
+                        .precioPorProfesional !== null
+                    "
+                  >
+                    {{
+                      formatearDinero(
+                        organizacion
+                          .precioPorProfesional
+                      )
+                    }}
+                    por profesional
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="estado"
+                    [ngClass]="
+                      claseEstado(
+                        organizacion
+                          .suscripcionEstado
+                      )
+                    "
+                  >
+                    {{
+                      organizacion
+                        .suscripcionEstado
+                      || 'Sin suscripción'
+                    }}
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="expiry-pill"
+                    [ngClass]="
+                      claseVencimiento(
+                        organizacion
+                      )
+                    "
+                  >
+                    {{
+                      textoVencimiento(
+                        organizacion
+                      )
+                    }}
+                  </span>
+
+                  <span class="subscription-subvalue">
+                    {{
+                      formatearFecha(
+                        organizacion.fechaFin
+                      )
+                    }}
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <ng-container
+                    *ngIf="
+                      organizacion
+                        .ultimoPagoFecha;
+                      else sinPago
+                    "
+                  >
+
+                    <strong class="subscription-main-value">
+                      {{
+                        formatearDinero(
+                          organizacion
+                            .ultimoPagoImporte
+                        )
+                      }}
+                    </strong>
+
+                    <span class="subscription-subvalue">
+                      {{
+                        formatearFecha(
+                          organizacion
+                            .ultimoPagoFecha
+                        )
+                      }}
+                      ·
+                      {{
+                        organizacion
+                          .ultimoPagoMetodo
+                        || '-'
+                      }}
+                    </span>
+
+                  </ng-container>
+
+                  <ng-template #sinPago>
+                    <span class="subscription-subvalue">
+                      Sin pagos registrados
+                    </span>
+                  </ng-template>
+
+                </td>
+
+
+                <td class="actions-cell">
+
+                  <button
+                    type="button"
+                    class="payment-action-button"
+                    (click)="
+                      gestionarSuscripcion(
+                        organizacion
+                      )
+                    "
+                  >
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Gestionar
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+
+              <tr
+                *ngIf="
+                  organizaciones.length === 0
+                "
+              >
+
+                <td
+                  colspan="8"
+                  class="empty-table"
+                >
+                  Todavía no hay organizaciones para mostrar.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+
+
+    </ng-container>
+
+
+    <!-- ================================================= -->
+    <!-- PLATAFORMA -->
+    <!-- ================================================= -->
+
+    <ng-container
+      *ngIf="
+        !cargando &&
+        seccionActiva ===
+        'plataforma'
+      "
+    >
+
+      <section class="section-heading">
+
+        <div>
+
+          <span class="page-eyebrow">
+            SISTEMA
+          </span>
+
+          <h2>
+            Plataforma
+          </h2>
+
+          <p>
+            Estado técnico e infraestructura de AmiApp.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <section class="platform-grid">
+
+
+        <article class="platform-card">
+
+          <div class="platform-icon">
+
+            <i class="fa-solid fa-database"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Base de datos
+            </span>
+
+            <strong>
+              Supabase
+            </strong>
+
+            <small>
+              Métricas técnicas próximamente.
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article class="platform-card">
+
+          <div class="platform-icon">
+
+            <i class="fa-solid fa-server"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              Backend
+            </span>
+
+            <strong>
+              ASP.NET Core
+            </strong>
+
+            <small>
+              Estado y logs próximamente.
+            </small>
+
+          </div>
+
+        </article>
+
+
+        <article class="platform-card">
+
+          <div class="platform-icon">
+
+            <i class="fa-brands fa-whatsapp"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              WhatsApp
+            </span>
+
+            <strong>
+              Meta Cloud API
+            </strong>
+
+            <small>
+              Consumo y entregas próximamente.
+            </small>
+
+          </div>
+
+        </article>
+
+
+      </section>
+
+    </ng-container>
+
+
+  </main>
+
+
+
+</div>

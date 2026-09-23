@@ -1,13 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { FormularioComponent } from "./components/formulario/formulario.component";
+import { AlertaComponent } from './app/shared/alertas/alerta/alerta.component';
+import { DialogoComponent } from './app/shared/dialogos/dialogo/dialogo.component';
+
+
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    AlertaComponent,
+    DialogoComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+
   title = 'amiapp';
 }
