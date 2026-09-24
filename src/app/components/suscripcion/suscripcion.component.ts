@@ -268,7 +268,9 @@ export class SuscripcionComponent implements OnInit {
   get esPendiente(): boolean {
     return this.suscripcion?.estado === 'Pendiente';
   }
-
+get esCancelada(): boolean {
+  return this.suscripcion?.estado === 'Cancelada';
+}
   get esActiva(): boolean {
     return this.suscripcion?.estado === 'Activa';
   }
@@ -598,7 +600,75 @@ disminuirProfesionales(): void {
 
       });
   }
+// ==========================================
+// VOLVER A SUSCRIBIRSE
+// ==========================================
 
+async reactivarSuscripcion():
+  Promise<void> {
+
+  if (!this.suscripcion) {
+    return;
+  }
+
+
+  const confirmado =
+    await this.dialogoService
+      .confirmar({
+
+        titulo:
+          'Volver a suscribirme',
+
+        mensaje:
+          'Vas a volver a contratar el mismo plan. El cobro comenzará ahora y no incluye un nuevo período de prueba.',
+
+        textoConfirmar:
+          'Continuar',
+
+        textoCancelar:
+          'Cancelar'
+
+      });
+
+
+  if (!confirmado) {
+    return;
+  }
+
+
+  this.suscripcionService
+    .reactivar()
+    .subscribe({
+
+      next: (respuesta) => {
+
+        if (respuesta.initPoint) {
+
+          window.location.href =
+            respuesta.initPoint;
+
+          return;
+        }
+
+
+        this.alertaService.error(
+          'No se pudo iniciar el pago',
+          'Mercado Pago no devolvió el enlace de pago.'
+        );
+      },
+
+      error: (err) => {
+
+        this.alertaService.error(
+          'No se pudo reactivar la suscripción',
+          err?.error?.message
+          ||
+          'Intentá nuevamente.'
+        );
+      }
+
+    });
+}
 
   // ==========================================
   // WHATSAPP - CARGA GENERAL
@@ -798,20 +868,23 @@ disminuirProfesionales(): void {
       )
       .subscribe({
 
-        next: (respuesta) => {
+       next: (respuesta) => {
 
-          this.paqueteComprandoId =
-            null;
+  this.paqueteComprandoId = null;
 
+  if (respuesta.compra.initPoint) {
 
-          this.alertaService.success(
-            'Compra creada',
-            `La compra de ${this.formatearNumero(respuesta.compra.cantidadMensajes)} mensajes quedó pendiente de pago.`
-          );
+    window.location.href =
+      respuesta.compra.initPoint;
 
+    return;
+  }
 
-          this.cargarComprasWhatsApp();
-        },
+  this.alertaService.error(
+    'No se pudo iniciar el pago',
+    'Mercado Pago no devolvió el enlace de pago.'
+  );
+},
 
         error: (err) => {
 

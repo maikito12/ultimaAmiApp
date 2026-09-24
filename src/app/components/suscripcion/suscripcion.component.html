@@ -680,7 +680,14 @@
           >
             Cancelar suscripción
           </button>
-
+<button
+  type="button"
+  class="btn-secondary"
+  *ngIf="esCancelada"
+  (click)="reactivarSuscripcion()"
+>
+  Volver a suscribirme
+</button>
         </div>
 
       </section>

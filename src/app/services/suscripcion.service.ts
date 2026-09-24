@@ -291,5 +291,17 @@ export class SuscripcionService {
     );
 
   }
+// ==========================================
+// REACTIVAR / VOLVER A SUSCRIBIRSE
+// ==========================================
 
+reactivar():
+  Observable<Suscripcion> {
+
+  return this.http.post<Suscripcion>(
+    `${this.apiUrl}/reactivar`,
+    {}
+  );
+
+}
 }
