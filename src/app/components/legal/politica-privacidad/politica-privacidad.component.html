@@ -1,0 +1,1447 @@
+<div class="legal-page">
+
+  <!-- ==========================================
+       HEADER
+       ========================================== -->
+
+  <header class="legal-header">
+
+    <div class="legal-header-content">
+
+      <a
+        routerLink="/login"
+        class="brand"
+        aria-label="Ir al inicio de NexaSalud"
+      >
+        <span class="brand-mark">
+          N
+        </span>
+
+        <span class="brand-name">
+          NexaSalud
+        </span>
+      </a>
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="volver()"
+      >
+        <span aria-hidden="true">←</span>
+        Volver
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==========================================
+       CONTENIDO
+       ========================================== -->
+
+  <main class="legal-main">
+
+    <!-- ========================================
+         HERO
+         ======================================== -->
+
+    <section class="legal-hero">
+
+      <span class="legal-badge">
+        Privacidad y protección de datos
+      </span>
+
+      <h1>
+        Política de Privacidad
+      </h1>
+
+      <p class="legal-subtitle">
+        Información sobre el tratamiento de datos
+        personales realizado a través de NexaSalud.
+      </p>
+
+      <p class="legal-update">
+        Última actualización:
+        <strong>
+          {{ ultimaActualizacion }}
+        </strong>
+      </p>
+
+    </section>
+
+
+    <!-- ========================================
+         AVISO DE VERSIÓN
+         ======================================== -->
+
+    <section class="draft-notice">
+
+      <div class="draft-notice-icon">
+        i
+      </div>
+
+      <div>
+
+        <strong>
+          Versión de trabajo
+        </strong>
+
+        <p>
+          Esta Política se encuentra en preparación
+          para la primera versión productiva de
+          NexaSalud.
+        </p>
+
+        <p>
+          Antes de su publicación definitiva deberán
+          completarse determinadas definiciones
+          jurídicas y técnicas indicadas en esta
+          versión.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================
+         LAYOUT
+         ======================================== -->
+
+    <div class="legal-layout">
+
+
+      <!-- ======================================
+           ÍNDICE
+           ====================================== -->
+
+      <aside class="legal-index">
+
+        <div class="index-card">
+
+          <span class="index-title">
+            Contenido
+          </span>
+
+       <nav (click)="irASeccion($event)">aria-label="Índice de privacidad">
+
+            <a href="#alcance">
+              1. Alcance
+            </a>
+
+            <a href="#nexasalud">
+              2. NexaSalud
+            </a>
+
+            <a href="#roles">
+              3. Roles en el tratamiento
+            </a>
+
+            <a href="#datos">
+              4. Datos tratados
+            </a>
+
+            <a href="#salud">
+              5. Datos de salud
+            </a>
+
+            <a href="#finalidades">
+              6. Finalidades
+            </a>
+
+            <a href="#reserva">
+              7. Reserva pública
+            </a>
+
+            <a href="#historia-clinica">
+              8. Historia clínica
+            </a>
+
+            <a href="#comunicaciones">
+              9. Comunicaciones
+            </a>
+
+            <a href="#marketing">
+              10. Marketing y perfiles
+            </a>
+
+            <a href="#menores">
+              11. Menores y adolescentes
+            </a>
+
+            <a href="#proveedores">
+              12. Proveedores tecnológicos
+            </a>
+
+            <a href="#transferencias">
+              13. Transferencias
+            </a>
+
+            <a href="#seguridad">
+              14. Seguridad
+            </a>
+
+            <a href="#conservacion">
+              15. Conservación
+            </a>
+
+            <a href="#derechos">
+              16. Derechos
+            </a>
+
+            <a href="#cambios">
+              17. Cambios
+            </a>
+
+            <a href="#documentos">
+              18. Documentos relacionados
+            </a>
+
+          </nav>
+
+        </div>
+
+      </aside>
+
+
+      <!-- ======================================
+           DOCUMENTO
+           ====================================== -->
+
+      <article class="legal-document">
+
+
+        <!-- ====================================
+             1
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="alcance"
+        >
+
+          <span class="section-number">
+            01
+          </span>
+
+          <h2>
+            Alcance de esta Política
+          </h2>
+
+          <p>
+            Esta Política describe los criterios
+            aplicables al tratamiento de datos
+            personales realizado a través de
+            <strong>NexaSalud</strong>, tanto en la
+            relación con profesionales y
+            organizaciones como en las funcionalidades
+            que involucran información de pacientes.
+          </p>
+
+          <p>
+            NexaSalud se encuentra destinado
+            inicialmente a profesionales y
+            organizaciones de salud de la República
+            Argentina.
+          </p>
+
+          <p>
+            El tratamiento de datos personales deberá
+            realizarse conforme la Ley 25.326, su
+            reglamentación y demás normativa
+            aplicable.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             2
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="nexasalud"
+        >
+
+          <span class="section-number">
+            02
+          </span>
+
+          <h2>
+            Qué es NexaSalud
+          </h2>
+
+          <p>
+            NexaSalud es una plataforma tecnológica
+            de software como servicio (SaaS) que
+            proporciona infraestructura para
+            profesionales y organizaciones de salud.
+          </p>
+
+          <p>
+            La plataforma permite gestionar, según
+            las funcionalidades habilitadas,
+            organizaciones, profesionales,
+            secretarias, sucursales, agendas,
+            horarios, reservas, pacientes,
+            comunicaciones operativas e historia
+            clínica.
+          </p>
+
+          <div class="legal-highlight">
+
+            <strong>
+              NexaSalud no presta servicios médicos.
+            </strong>
+
+            <p>
+              No diagnostica, no prescribe, no decide
+              tratamientos y no reemplaza la relación
+              asistencial entre el paciente y el
+              profesional u organización de salud.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             3
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="roles"
+        >
+
+          <span class="section-number">
+            03
+          </span>
+
+          <h2>
+            Roles en el tratamiento de datos
+          </h2>
+
+          <p>
+            El rol de NexaSalud puede variar según el
+            tipo de información y la operación
+            realizada.
+          </p>
+
+          <h3>
+            Datos propios de la relación SaaS
+          </h3>
+
+          <p>
+            NexaSalud puede actuar como responsable
+            respecto de determinados datos necesarios
+            para administrar su propia relación con
+            profesionales y organizaciones.
+          </p>
+
+          <p>
+            Esto puede comprender datos relacionados
+            con alta, administración, seguridad,
+            facturación y suscripción del servicio.
+          </p>
+
+          <h3>
+            Datos de pacientes e información clínica
+          </h3>
+
+          <p>
+            Respecto de información de pacientes y
+            documentación clínica, NexaSalud puede
+            actuar como prestador tecnológico que
+            procesa información por cuenta del
+            profesional u organización, según la
+            operación concreta.
+          </p>
+
+          <p>
+            El profesional u organización deberá
+            contar con una base jurídica adecuada
+            para las instrucciones de tratamiento que
+            imparta y cumplir sus propias obligaciones
+            de información frente a pacientes y
+            usuarios.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             4
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="datos"
+        >
+
+          <span class="section-number">
+            04
+          </span>
+
+          <h2>
+            Categorías de datos tratados
+          </h2>
+
+          <p>
+            Las categorías de información dependen de
+            la funcionalidad utilizada y de la
+            configuración realizada por el profesional
+            u organización.
+          </p>
+
+          <div class="data-grid">
+
+            <div class="data-card">
+
+              <span class="data-card-label">
+                Reserva pública
+              </span>
+
+              <h3>
+                Datos del paciente
+              </h3>
+
+              <p>
+                Pueden incluir nombre y apellido,
+                datos de contacto, fecha de
+                nacimiento, DNI y otros datos
+                pertinentes según el tipo de atención
+                y configuración.
+              </p>
+
+            </div>
+
+
+            <div class="data-card">
+
+              <span class="data-card-label">
+                Plataforma
+              </span>
+
+              <h3>
+                Datos de usuarios autorizados
+              </h3>
+
+              <p>
+                Datos necesarios para el alta,
+                administración y utilización de
+                NexaSalud por organizaciones,
+                profesionales y demás usuarios
+                autorizados.
+              </p>
+
+            </div>
+
+
+            <div class="data-card">
+
+              <span class="data-card-label">
+                Atención
+              </span>
+
+              <h3>
+                Información clínica
+              </h3>
+
+              <p>
+                Cuando corresponda, la plataforma
+                puede alojar documentación clínica
+                generada por profesionales u
+                organizaciones, incluyendo consultas,
+                adendas, estudios y archivos.
+              </p>
+
+            </div>
+
+
+            <div class="data-card">
+
+              <span class="data-card-label">
+                Servicio SaaS
+              </span>
+
+              <h3>
+                Datos administrativos
+              </h3>
+
+              <p>
+                Información necesaria para
+                administración, seguridad,
+                facturación y suscripción de
+                profesionales u organizaciones.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="legal-note">
+
+            NexaSalud y las organizaciones deberán
+            aplicar criterios de minimización y evitar
+            solicitar datos sensibles que no sean
+            necesarios para la finalidad informada.
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             5
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="salud"
+        >
+
+          <span class="section-number">
+            05
+          </span>
+
+          <h2>
+            Datos de salud y datos sensibles
+          </h2>
+
+          <div class="sensitive-data-card">
+
+            <div class="sensitive-icon">
+              +
+            </div>
+
+            <div>
+
+              <strong>
+                Los datos de salud son datos sensibles.
+              </strong>
+
+              <p>
+                Su tratamiento requiere medidas
+                reforzadas de confidencialidad,
+                seguridad y limitación de finalidad.
+              </p>
+
+            </div>
+
+          </div>
+
+          <p>
+            El hecho de que NexaSalud proporcione la
+            infraestructura tecnológica utilizada
+            para gestionar información clínica no lo
+            convierte en prestador médico.
+          </p>
+
+          <p>
+            Los profesionales y organizaciones deberán
+            utilizar la información clínica únicamente
+            dentro de los alcances legítimos de la
+            atención y de la normativa aplicable.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             6
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="finalidades"
+        >
+
+          <span class="section-number">
+            06
+          </span>
+
+          <h2>
+            Para qué se utilizan los datos
+          </h2>
+
+          <p>
+            Según la funcionalidad utilizada, la
+            información puede ser tratada para:
+          </p>
+
+          <ul>
+
+            <li>
+              Gestionar el alta y funcionamiento de
+              organizaciones y profesionales.
+            </li>
+
+            <li>
+              Administrar usuarios y accesos.
+            </li>
+
+            <li>
+              Configurar sucursales, agendas,
+              horarios y disponibilidad.
+            </li>
+
+            <li>
+              Gestionar solicitudes y reservas de
+              turnos.
+            </li>
+
+            <li>
+              Confirmar, modificar o cancelar turnos.
+            </li>
+
+            <li>
+              Realizar comunicaciones operativas
+              relacionadas con el turno o la atención.
+            </li>
+
+            <li>
+              Permitir a profesionales y
+              organizaciones gestionar pacientes.
+            </li>
+
+            <li>
+              Proporcionar infraestructura para la
+              documentación clínica.
+            </li>
+
+            <li>
+              Administrar la seguridad y el
+              funcionamiento de la plataforma.
+            </li>
+
+            <li>
+              Gestionar la relación de suscripción
+              SaaS con profesionales y
+              organizaciones.
+            </li>
+
+          </ul>
+
+        </section>
+
+
+        <!-- ====================================
+             7
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="reserva"
+        >
+
+          <span class="section-number">
+            07
+          </span>
+
+          <h2>
+            Datos utilizados en la reserva pública
+          </h2>
+
+          <p>
+            Para solicitar un turno, la persona
+            accede a la página pública de la
+            organización y selecciona, según
+            disponibilidad, profesional, sucursal,
+            fecha y horario.
+          </p>
+
+          <p>
+            Luego proporciona los datos necesarios
+            para identificar al paciente, gestionar
+            la reserva y realizar las comunicaciones
+            asociadas.
+          </p>
+
+          <div class="legal-highlight">
+
+            <strong>
+              El paciente no crea una cuenta.
+            </strong>
+
+            <p>
+              Utilizar la reserva pública no genera
+              una cuenta, contraseña ni panel de
+              paciente dentro de NexaSalud.
+            </p>
+
+          </div>
+
+          <p>
+            Cuando una persona realiza una reserva
+            para un tercero, deberá proporcionar los
+            datos legítimamente y evitar suministrar
+            información innecesaria.
+          </p>
+
+          <a
+            routerLink="/condiciones-reserva"
+            class="inline-link"
+          >
+            Ver Condiciones de la Reserva Pública →
+          </a>
+
+        </section>
+
+
+        <!-- ====================================
+             8
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="historia-clinica"
+        >
+
+          <span class="section-number">
+            08
+          </span>
+
+          <h2>
+            Historia clínica y documentación clínica
+          </h2>
+
+          <p>
+            NexaSalud puede proporcionar la
+            infraestructura tecnológica utilizada por
+            profesionales u organizaciones para
+            documentar consultas, adendas, estudios y
+            archivos clínicos.
+          </p>
+
+          <p>
+            La historia clínica es gestionada por el
+            profesional y/o la organización conforme
+            la normativa aplicable.
+          </p>
+
+          <p>
+            El paciente conserva los derechos que la
+            legislación argentina le reconoce
+            respecto de su historia clínica y sus
+            datos personales.
+          </p>
+
+          <div class="legal-note">
+
+            La reserva pública no permite al paciente
+            administrar ni acceder a su historia
+            clínica mediante una cuenta de NexaSalud.
+
+          </div>
+
+          <p>
+            El acceso a información clínica deberá
+            respetar las reglas de confidencialidad,
+            autorización, rol y relación asistencial
+            que correspondan.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             9
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="comunicaciones"
+        >
+
+          <span class="section-number">
+            09
+          </span>
+
+          <h2>
+            Comunicaciones por WhatsApp y correo electrónico
+          </h2>
+
+          <p>
+            NexaSalud permite generar comunicaciones
+            operativas relacionadas con la gestión del
+            turno o la atención.
+          </p>
+
+          <p>
+            Estas comunicaciones pueden incluir:
+          </p>
+
+          <ul>
+
+            <li>
+              Recepción de una reserva.
+            </li>
+
+            <li>
+              Confirmación de turno.
+            </li>
+
+            <li>
+              Recordatorios.
+            </li>
+
+            <li>
+              Modificaciones.
+            </li>
+
+            <li>
+              Cancelaciones.
+            </li>
+
+            <li>
+              Comunicaciones postconsulta
+              legítimamente vinculadas con la
+              atención.
+            </li>
+
+          </ul>
+
+          <p>
+            Para ello podrán utilizarse los datos de
+            contacto proporcionados legítimamente,
+            como teléfono o correo electrónico.
+          </p>
+
+          <div class="legal-highlight">
+
+            <strong>
+              Comunicación operativa no significa
+              consentimiento para marketing.
+            </strong>
+
+            <p>
+              La recepción de mensajes necesarios para
+              gestionar un turno o atención no implica
+              por sí misma autorización para recibir
+              publicidad.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             10
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="marketing"
+        >
+
+          <span class="section-number">
+            10
+          </span>
+
+          <h2>
+            Marketing, publicidad e investigación
+          </h2>
+
+          <div class="privacy-promise">
+
+            <span class="privacy-promise-label">
+              V1 de NexaSalud
+            </span>
+
+            <strong>
+              La información clínica no se utilizará
+              para marketing.
+            </strong>
+
+            <p>
+              NexaSalud no utilizará en su V1 la
+              información clínica de pacientes para
+              marketing, promociones, investigación
+              secundaria propia ni elaboración de
+              perfiles comerciales.
+            </p>
+
+          </div>
+
+          <p>
+            Tampoco se considera que las
+            comunicaciones operativas relacionadas con
+            turnos otorguen consentimiento para
+            acciones promocionales.
+          </p>
+
+          <p>
+            Cualquier futura funcionalidad de
+            marketing deberá contar con un diseño
+            jurídico y técnico independiente antes de
+            su implementación.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             11
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="menores"
+        >
+
+          <span class="section-number">
+            11
+          </span>
+
+          <h2>
+            Datos de menores y adolescentes
+          </h2>
+
+          <p>
+            NexaSalud contempla reservas vinculadas a
+            personas menores de edad y aplica reglas
+            diferenciadas según la edad.
+          </p>
+
+
+          <div class="age-list">
+
+            <div class="age-item">
+
+              <span class="age-badge">
+                Menores de 13
+              </span>
+
+              <p>
+                La reserva deberá ser realizada o
+                asistida por una persona adulta
+                responsable o referente.
+              </p>
+
+              <p>
+                Podrán solicitarse datos mínimos de
+                esa persona, como nombre y apellido,
+                vínculo o carácter en que interviene
+                y un medio de contacto.
+              </p>
+
+            </div>
+
+
+            <div class="age-item">
+
+              <span class="age-badge">
+                13 a 15 años
+              </span>
+
+              <p>
+                El adolescente podrá solicitar un
+                turno por sí mismo. La ausencia de
+                datos de padre, madre o representante
+                no deberá bloquear automáticamente la
+                solicitud.
+              </p>
+
+            </div>
+
+
+            <div class="age-item">
+
+              <span class="age-badge">
+                16 y 17 años
+              </span>
+
+              <p>
+                Podrán solicitar directamente sus
+                turnos, sin perjuicio de las reglas
+                aplicables a la atención y al
+                consentimiento informado.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="legal-highlight">
+
+            <strong>
+              Una reserva realizada por un tercero no
+              otorga acceso automático a información
+              clínica.
+            </strong>
+
+            <p>
+              Que un padre, madre, representante,
+              cuidador u otra persona haya realizado o
+              asistido en la reserva no le otorga
+              automáticamente acceso a la historia
+              clínica, diagnósticos, estudios,
+              consultas ni demás información sanitaria
+              del adolescente.
+            </p>
+
+          </div>
+
+          <a
+            routerLink="/condiciones-reserva"
+            class="inline-link"
+          >
+            Consultar las reglas completas para
+            menores y adolescentes →
+          </a>
+
+        </section>
+
+
+        <!-- ====================================
+             12
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="proveedores"
+        >
+
+          <span class="section-number">
+            12
+          </span>
+
+          <h2>
+            Proveedores tecnológicos
+          </h2>
+
+          <p>
+            NexaSalud puede utilizar proveedores
+            tecnológicos para alojamiento, base de
+            datos, infraestructura, almacenamiento,
+            comunicaciones y pagos.
+          </p>
+
+          <p>
+            Entre los proveedores actualmente
+            previstos se encuentran:
+          </p>
+
+          <div class="provider-list">
+
+            <span>Supabase</span>
+            <span>Railway</span>
+            <span>Cloudflare R2</span>
+            <span>Netlify</span>
+            <span>Meta / WhatsApp</span>
+            <span>Brevo</span>
+            <span>Mercado Pago</span>
+
+          </div>
+
+          <p>
+            Esta lista se encuentra sujeta a la
+            configuración productiva definitiva de
+            NexaSalud.
+          </p>
+
+          <p>
+            NexaSalud procurará seleccionar
+            proveedores adecuados al tipo de servicio
+            y establecer las salvaguardas
+            contractuales y técnicas que resulten
+            exigibles.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             13
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="transferencias"
+        >
+
+          <span class="section-number">
+            13
+          </span>
+
+          <h2>
+            Transferencias internacionales
+          </h2>
+
+          <p>
+            La utilización de determinados proveedores
+            tecnológicos puede involucrar operaciones
+            de tratamiento de datos en diferentes
+            jurisdicciones.
+          </p>
+
+          <p>
+            Cuando exista una transferencia
+            internacional de datos, se aplicarán los
+            mecanismos previstos por la normativa
+            argentina.
+          </p>
+
+          <div class="pending-card">
+
+            <span class="pending-label">
+              A completar antes de producción
+            </span>
+
+            <p>
+              El inventario definitivo de
+              subencargados, países o regiones de
+              tratamiento y los mecanismos concretos
+              aplicables a transferencias
+              internacionales deberán cerrarse antes
+              de publicar la versión definitiva de
+              esta Política.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             14
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="seguridad"
+        >
+
+          <span class="section-number">
+            14
+          </span>
+
+          <h2>
+            Seguridad de la información
+          </h2>
+
+          <p>
+            NexaSalud aplicará medidas técnicas y
+            organizativas razonables y proporcionales
+            al riesgo, considerando especialmente la
+            naturaleza sensible de la información
+            sanitaria.
+          </p>
+
+          <p>
+            Según la implementación productiva, los
+            controles pueden incluir:
+          </p>
+
+          <ul>
+
+            <li>
+              Autenticación.
+            </li>
+
+            <li>
+              Autorización desde el backend.
+            </li>
+
+            <li>
+              Aislamiento de información por
+              organización.
+            </li>
+
+            <li>
+              Restricciones de acceso clínico.
+            </li>
+
+            <li>
+              Registros de auditoría.
+            </li>
+
+            <li>
+              Protección de secretos de
+              infraestructura.
+            </li>
+
+          </ul>
+
+          <p>
+            Los profesionales y organizaciones
+            deberán adoptar también medidas adecuadas
+            respecto de sus dispositivos,
+            credenciales, personal y procesos
+            internos.
+          </p>
+
+          <div class="legal-note">
+
+            Ningún sistema es absolutamente
+            invulnerable. La existencia de medidas de
+            seguridad no constituye una garantía de
+            riesgo cero.
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             15
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="conservacion"
+        >
+
+          <span class="section-number">
+            15
+          </span>
+
+          <h2>
+            Conservación de la información
+          </h2>
+
+          <p>
+            La conservación de información deberá
+            considerar la finalidad del tratamiento,
+            la relación contractual y las
+            obligaciones legales aplicables,
+            especialmente cuando exista documentación
+            clínica.
+          </p>
+
+          <p>
+            La terminación del servicio no debe
+            implicar la destrucción automática de
+            información clínica cuya conservación
+            resulte legalmente exigible.
+          </p>
+
+          <div class="pending-card">
+
+            <span class="pending-label">
+              A completar antes de producción
+            </span>
+
+            <p>
+              Los plazos y criterios definitivos de
+              conservación, la política productiva de
+              backups, la recuperación de información
+              y el procedimiento de exportación
+              deberán quedar definidos antes de la
+              versión definitiva.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             16
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="derechos"
+        >
+
+          <span class="section-number">
+            16
+          </span>
+
+          <h2>
+            Derechos sobre los datos personales
+          </h2>
+
+          <p>
+            Las personas conservan los derechos que
+            les reconoce la legislación argentina
+            respecto de sus datos personales y, cuando
+            corresponda, de su historia clínica.
+          </p>
+
+          <p>
+            Cuando una solicitud se relacione
+            directamente con la atención sanitaria,
+            documentación clínica o información
+            gestionada por un profesional u
+            organización, deberá considerarse el rol
+            que corresponde a ese prestador.
+          </p>
+
+          <p>
+            El hecho de que el paciente no tenga una
+            cuenta o panel dentro de NexaSalud no
+            elimina los derechos que le correspondan
+            respecto de su información.
+          </p>
+
+          <div class="pending-card">
+
+            <span class="pending-label">
+              A completar antes de producción
+            </span>
+
+            <p>
+              La versión definitiva deberá informar el
+              canal de contacto y procedimiento
+              concreto para ejercer los derechos que
+              correspondan.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ====================================
+             17
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="cambios"
+        >
+
+          <span class="section-number">
+            17
+          </span>
+
+          <h2>
+            Actualizaciones de esta Política
+          </h2>
+
+          <p>
+            Esta Política podrá actualizarse para
+            reflejar cambios legales, regulatorios,
+            técnicos o funcionales de NexaSalud.
+          </p>
+
+          <p>
+            La versión aplicable deberá identificarse
+            mediante su fecha o versión
+            correspondiente.
+          </p>
+
+        </section>
+
+
+        <!-- ====================================
+             18
+             ==================================== -->
+
+        <section
+          class="legal-section"
+          id="documentos"
+        >
+
+          <span class="section-number">
+            18
+          </span>
+
+          <h2>
+            Documentos relacionados
+          </h2>
+
+          <p>
+            Esta Política debe interpretarse junto
+            con los demás documentos legales
+            aplicables al uso de NexaSalud.
+          </p>
+
+          <div class="related-documents">
+
+            <a
+              routerLink="/terminos"
+              class="document-link"
+            >
+
+              <div>
+                <span>
+                  Organizaciones y profesionales
+                </span>
+
+                <strong>
+                  Términos y Condiciones
+                </strong>
+              </div>
+
+              <span class="document-arrow">
+                →
+              </span>
+
+            </a>
+
+
+            <a
+              routerLink="/condiciones-reserva"
+              class="document-link"
+            >
+
+              <div>
+                <span>
+                  Pacientes
+                </span>
+
+                <strong>
+                  Condiciones de Reserva Pública
+                </strong>
+              </div>
+
+              <span class="document-arrow">
+                →
+              </span>
+
+            </a>
+
+          </div>
+
+        </section>
+
+
+        <!-- ======================================
+             CIERRE
+             ====================================== -->
+
+        <section class="legal-footer-card">
+
+          <div>
+
+            <strong>
+              NexaSalud
+            </strong>
+
+            <p>
+              Plataforma tecnológica para
+              profesionales y organizaciones de salud.
+            </p>
+
+          </div>
+
+          <div class="legal-footer-links">
+
+            <a routerLink="/terminos">
+              Términos y Condiciones
+            </a>
+
+            <a routerLink="/condiciones-reserva">
+              Condiciones de Reserva
+            </a>
+
+          </div>
+
+        </section>
+
+      </article>
+
+    </div>
+
+  </main>
+
+</div>

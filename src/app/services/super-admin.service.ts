@@ -5,8 +5,80 @@ import { Observable } from 'rxjs';
 import {
   environment
 } from '../../environments/environment';
+// =====================================================
+// CREAR SUSCRIPCIÓN PERSONALIZADA
+// =====================================================
+export interface CrearSuscripcionPersonalizadaRequest {
+  planId: string;
+  cantidadProfesionales: number;
+  cantidadSecretarias: number;
+  modalidad: 'Mensual' | 'Anual';
+  precioPorProfesional: number;
+  importeTotal: number;
+}
+
+export interface CrearSuscripcionPersonalizadaResponse {
+
+  ok: boolean;
+
+  suscripcionId: string;
+
+  organizacionId: string;
+
+  plan: {
+
+    id: string;
+
+    nombre: string;
+
+  };
+
+  cantidadProfesionales: number;
+
+  modalidad: string;
+
+  precioPorProfesional: number;
+
+  importeTotal: number;
+
+  estado: string;
+
+  message: string;
+
+}
 
 
+// =====================================================
+// CHECKOUT PERSONALIZADO
+// =====================================================
+
+export interface GenerarCheckoutPersonalizadoResponse {
+
+  ok: boolean;
+
+  requierePagoManual: boolean;
+
+  suscripcionId: string;
+
+  organizacionId?: string;
+
+  plan?: string;
+
+  cantidadProfesionales?: number;
+
+  cantidadSecretarias?: number;
+
+  modalidad?: string;
+
+  importeTotal?: number;
+
+  initPoint: string | null;
+
+  mercadoPagoPlanId: string | null;
+
+  message: string;
+
+}
 // =====================================================
 // RESUMEN GLOBAL
 // =====================================================
@@ -518,5 +590,41 @@ export class SuperAdminService {
       );
 
   }
+
+  // ===================================================
+// CREAR SUSCRIPCIÓN PERSONALIZADA
+// ===================================================
+
+crearSuscripcionPersonalizada(
+  solicitudId: string,
+  request: CrearSuscripcionPersonalizadaRequest
+):
+  Observable<CrearSuscripcionPersonalizadaResponse> {
+
+  return this.http
+    .post<CrearSuscripcionPersonalizadaResponse>(
+      `${this.apiUrl}/solicitudes-plan-personalizado/${solicitudId}/crear-suscripcion`,
+      request
+    );
+
+}
+
+
+// ===================================================
+// GENERAR CHECKOUT PERSONALIZADO
+// ===================================================
+
+generarCheckoutPersonalizado(
+  suscripcionId: string
+):
+  Observable<GenerarCheckoutPersonalizadoResponse> {
+
+  return this.http
+    .post<GenerarCheckoutPersonalizadoResponse>(
+      `${this.apiUrl}/suscripciones/${suscripcionId}/generar-checkout`,
+      {}
+    );
+
+}
 
 }

@@ -184,8 +184,9 @@ export class RegistroComponent implements OnInit {
         this.nombreOrganizacion.trim(),
       nombre: this.nombre.trim(),
       apellido: this.apellido.trim(),
-      email: this.email.trim(),
-      password: this.password
+    email: this.email.trim(),
+password: this.password,
+aceptaTerminosYPrivacidad: this.aceptaTerminos
     }).subscribe({
 
       next: () => {
@@ -206,68 +207,69 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  private registrarUsuario(): void {
+private registrarUsuario(): void {
 
-    this.cargando = true;
+  this.cargando = true;
 
-    this.auth.registerUsuario({
-      nombre: this.nombre.trim(),
-      apellido: this.apellido.trim(),
-      email: this.email.trim(),
-      password: this.password
-    }).subscribe({
+  this.auth.registerUsuario({
+    nombre: this.nombre.trim(),
+    apellido: this.apellido.trim(),
+    email: this.email.trim(),
+    password: this.password,
+    aceptaTerminosYPrivacidad: this.aceptaTerminos
+  }).subscribe({
 
-      next: () => {
-        this.cargando = false;
+    next: () => {
+      this.cargando = false;
 
-        this.alertaService.success(
-          'Cuenta creada',
-          'Ya podés iniciar sesión. Después vas a poder unirte a una organización con un código.'
-        );
+      this.alertaService.success(
+        'Cuenta creada',
+        'Ya podés iniciar sesión. Después vas a poder unirte a una organización con un código.'
+      );
 
-        this.router.navigate(['/login']);
-      },
+      this.router.navigate(['/login']);
+    },
 
-      error: (error) => {
-        this.cargando = false;
-        this.mostrarErrorRegistro(error);
-      }
-    });
-  }
+    error: (error) => {
+      this.cargando = false;
+      this.mostrarErrorRegistro(error);
+    }
+  });
+}
+private registrarConInvitacion(): void {
 
-  private registrarConInvitacion(): void {
+  this.cargando = true;
 
-    this.cargando = true;
+  this.auth.registerConInvitacion({
+    codigo:
+      this.codigoInvitacion
+        .replace(/\s+/g, '')
+        .toUpperCase(),
 
-    this.auth.registerConInvitacion({
-      codigo:
-        this.codigoInvitacion
-          .replace(/\s+/g, '')
-          .toUpperCase(),
-      nombre: this.nombre.trim(),
-      apellido: this.apellido.trim(),
-      email: this.email.trim(),
-      password: this.password
-    }).subscribe({
+    nombre: this.nombre.trim(),
+    apellido: this.apellido.trim(),
+    email: this.email.trim(),
+    password: this.password,
+    aceptaTerminosYPrivacidad: this.aceptaTerminos
+  }).subscribe({
 
-      next: () => {
-        this.cargando = false;
+    next: () => {
+      this.cargando = false;
 
-        this.alertaService.success(
-          'Te uniste correctamente',
-          'Tu cuenta ya forma parte de la organización.'
-        );
+      this.alertaService.success(
+        'Te uniste correctamente',
+        'Tu cuenta ya forma parte de la organización.'
+      );
 
-        this.router.navigate(['/dashboard']);
-      },
+      this.router.navigate(['/dashboard']);
+    },
 
-      error: (error) => {
-        this.cargando = false;
-        this.mostrarErrorRegistro(error);
-      }
-    });
-  }
-
+    error: (error) => {
+      this.cargando = false;
+      this.mostrarErrorRegistro(error);
+    }
+  });
+}
   private mostrarErrorRegistro(
     error: any
   ): void {

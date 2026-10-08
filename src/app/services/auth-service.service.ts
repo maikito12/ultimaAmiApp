@@ -43,58 +43,60 @@ export class AuthService {
       );
   }
 
-  register(data: {
-    nombreOrganizacion: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    password: string;
-  }): Observable<LoginResponse> {
+ register(data: {
+  nombreOrganizacion: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+  aceptaTerminosYPrivacidad: boolean;
+}): Observable<LoginResponse> {
 
-    return this.http
-      .post<LoginResponse>(
-        `${this.apiUrl}/register`,
-        data
-      )
-      .pipe(
-        tap((respuesta) => {
-          this.guardarSesion(respuesta);
-        })
-      );
-  }
-
-  registerUsuario(data: {
-    nombre: string;
-    apellido: string;
-    email: string;
-    password: string;
-  }): Observable<any> {
-
-    return this.http.post<any>(
-      `${this.apiUrl}/register-user`,
+  return this.http
+    .post<LoginResponse>(
+      `${this.apiUrl}/register`,
       data
+    )
+    .pipe(
+      tap((respuesta) => {
+        this.guardarSesion(respuesta);
+      })
     );
-  }
+}
 
-  registerConInvitacion(data: {
-    codigo: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    password: string;
-  }): Observable<LoginResponse> {
+ registerUsuario(data: {
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+  aceptaTerminosYPrivacidad: boolean;
+}): Observable<any> {
 
-    return this.http
-      .post<LoginResponse>(
-        `${this.invitacionesUrl}/registrarse`,
-        data
-      )
-      .pipe(
-        tap((respuesta) => {
-          this.guardarSesion(respuesta);
-        })
-      );
-  }
+  return this.http.post<any>(
+    `${this.apiUrl}/register-user`,
+    data
+  );
+}
+ registerConInvitacion(data: {
+  codigo: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+  aceptaTerminosYPrivacidad: boolean;
+}): Observable<LoginResponse> {
+
+  return this.http
+    .post<LoginResponse>(
+      `${this.invitacionesUrl}/registrarse`,
+      data
+    )
+    .pipe(
+      tap((respuesta) => {
+        this.guardarSesion(respuesta);
+      })
+    );
+}
 
   unirseConInvitacion(
     codigo: string
@@ -157,25 +159,79 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  logout(): void {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('token');
-  }
+logout(): void {
 
-  private guardarSesion(
-    respuesta: LoginResponse
-  ): void {
+  localStorage.removeItem(
+    'usuario'
+  );
 
-    localStorage.setItem(
-      'usuario',
-      JSON.stringify(respuesta)
-    );
+  localStorage.removeItem(
+    'token'
+  );
 
-    localStorage.setItem(
-      'token',
-      respuesta.token
-    );
-  }
+  localStorage.removeItem(
+    'organizacionId'
+  );
+
+  localStorage.removeItem(
+    'organizacionNombre'
+  );
+
+  localStorage.removeItem(
+    'rolOrganizacion'
+  );
+
+  localStorage.removeItem(
+    'esProfesional'
+  );
+
+  localStorage.removeItem(
+    'profesionalOrganizacionId'
+  );
+}
+private guardarSesion(
+  respuesta: LoginResponse
+): void {
+
+  // =========================================
+  // LIMPIAR CONTEXTO DE UNA SESIÓN ANTERIOR
+  // =========================================
+
+  localStorage.removeItem(
+    'organizacionId'
+  );
+
+  localStorage.removeItem(
+    'organizacionNombre'
+  );
+
+  localStorage.removeItem(
+    'rolOrganizacion'
+  );
+
+  localStorage.removeItem(
+    'esProfesional'
+  );
+
+  localStorage.removeItem(
+    'profesionalOrganizacionId'
+  );
+
+
+  // =========================================
+  // GUARDAR NUEVA SESIÓN
+  // =========================================
+
+  localStorage.setItem(
+    'usuario',
+    JSON.stringify(respuesta)
+  );
+
+  localStorage.setItem(
+    'token',
+    respuesta.token
+  );
+}
 
   // =====================================================
 // SUPER ADMIN
@@ -221,6 +277,68 @@ esSuperAdmin(): boolean {
     return (
       String(
         payload?.['es_super_admin']
+      )
+        .toLowerCase()
+      ===
+      'true'
+    );
+
+  }
+  catch (error) {
+
+    console.error(
+      'No se pudo leer el JWT:',
+      error
+    );
+
+    return false;
+  }
+}
+
+// =====================================================
+// PERFIL PROFESIONAL
+// =====================================================
+
+esProfesional(): boolean {
+
+  const token =
+    this.getToken();
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+
+    const partes =
+      token.split('.');
+
+    if (partes.length !== 3) {
+      return false;
+    }
+
+    let payloadBase64 =
+      partes[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+
+    while (
+      payloadBase64.length % 4
+    ) {
+      payloadBase64 += '=';
+    }
+
+
+    const payload =
+      JSON.parse(
+        atob(payloadBase64)
+      );
+
+
+    return (
+      String(
+        payload?.['es_profesional']
       )
         .toLowerCase()
       ===

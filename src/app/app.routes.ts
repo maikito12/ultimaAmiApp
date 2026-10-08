@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 
 import { FormularioComponent } from './components/formulario/formulario.component';
@@ -9,7 +10,6 @@ import { PacientesListaComponent } from './components/clientes-tabla/clientes-ta
 import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
 import { InactividadComponent } from './inactividad/inactividad.component';
 import { GestionEquipoComponent } from './components/gestion-equipo/gestion-equipo.component';
-import { PrivacidadComponent } from './components/privacidad/privacidad.component';
 
 import { authGuard } from './guards/auth.guard';
 import { superAdminGuard } from './guards/super-admin.guard';
@@ -24,30 +24,59 @@ import { BloqueosAgendaComponent } from './components/bloqueos-agenda/bloqueos-a
 import { AutomatizacionesComponent } from './components/automatizaciones/automatizaciones.component';
 import { SuperAdminComponent } from './components/super-admin/super-admin.component';
 
+// ==========================================
+// DOCUMENTOS LEGALES
+// ==========================================
+
+import { TerminosCondicionesComponent } from './components/legal/terminos-condiciones/terminos-condiciones.component';
+import { CondicionesReservaComponent } from './components/legal/condiciones-reserva/condiciones-reserva.component';
+import { PoliticaPrivacidadComponent } from './components/legal/politica-privacidad/politica-privacidad.component';
+
+// ==========================================
+// LANDING PÚBLICA
+// ==========================================
+
+import { LandingComponent } from './components/landing/landing.component';
 
 export const routes: Routes = [
 
-
   // ==========================================
-  // PÚBLICO
+  // LANDING PÚBLICA
   // ==========================================
 
   {
     path: '',
-    redirectTo: 'login',
+    component: LandingComponent,
     pathMatch: 'full'
   },
+
+  // ==========================================
+  // LOGIN
+  // ==========================================
 
   {
     path: 'login',
     component: LoginComponent
   },
 
+  // ==========================================
+  // DOCUMENTOS LEGALES
+  // ==========================================
+
   {
-    path: 'privacidad',
-    component: PrivacidadComponent
+    path: 'terminos',
+    component: TerminosCondicionesComponent
   },
 
+  {
+    path: 'condiciones-reserva',
+    component: CondicionesReservaComponent
+  },
+
+  {
+    path: 'privacidad',
+    component: PoliticaPrivacidadComponent
+  },
 
   // ==========================================
   // PANEL ADMINISTRATIVO
@@ -56,9 +85,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard],
 
     children: [
 
@@ -90,15 +117,12 @@ export const routes: Routes = [
 
       {
         path: 'turnos/:id',
-
         loadComponent: () =>
           import(
             './components/turno-detalle/turno-detalle.component'
+          ).then(
+            m => m.TurnoDetalleComponent
           )
-            .then(
-              m =>
-                m.TurnoDetalleComponent
-            )
       },
 
       {
@@ -149,7 +173,6 @@ export const routes: Routes = [
     ]
   },
 
-
   // ==========================================
   // REGISTRO
   // ==========================================
@@ -159,10 +182,8 @@ export const routes: Routes = [
     component: RegistroComponent
   },
 
-
   // ==========================================
-  // SUPER ADMIN
-  // DETALLE / GESTIÓN DE ORGANIZACIÓN
+  // SUPER ADMIN - DETALLE ORGANIZACIÓN
   // ==========================================
 
   {
@@ -171,34 +192,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import(
         './components/super-admin-suscripcion-detalle/super-admin-suscripcion-detalle.component'
-      )
-        .then(
-          m =>
-            m.SuperAdminSuscripcionDetalleComponent
-        ),
+      ).then(
+        m => m.SuperAdminSuscripcionDetalleComponent
+      ),
 
-    canActivate: [
-      superAdminGuard
-    ]
+    canActivate: [superAdminGuard]
   },
 
-
   // ==========================================
-  // SUPER ADMIN
-  // PANEL PRINCIPAL
+  // SUPER ADMIN - PANEL PRINCIPAL
   // ==========================================
 
   {
     path: 'super-admin',
-
-    component:
-      SuperAdminComponent,
-
-    canActivate: [
-      superAdminGuard
-    ]
+    component: SuperAdminComponent,
+    canActivate: [superAdminGuard]
   },
-
 
   // ==========================================
   // RESERVA PÚBLICA POR ORGANIZACIÓN
@@ -209,14 +218,13 @@ export const routes: Routes = [
     component: FormularioComponent
   },
 
-
   // ==========================================
-  // CUALQUIER RUTA DESCONOCIDA
+  // RUTAS DESCONOCIDAS
   // ==========================================
 
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: ''
   }
 
 ];

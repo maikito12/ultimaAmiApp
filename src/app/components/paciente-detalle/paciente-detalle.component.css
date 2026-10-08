@@ -2134,7 +2134,7 @@
 
 
 /* =========================================================
-   TIPOGRAFÍA AMIAPP
+   TIPOGRAFÍA NexaSalud
    Referencia: pantalla Inicio
    ========================================================= */
 
@@ -3368,3 +3368,62 @@
 
 }
 
+/* =========================================================
+   ESTADO DE CONSULTA
+   ========================================================= */
+
+.clinical-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 34px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  background: #fff7df;
+
+  border: 1px solid #ead9a1;
+
+  color: #775d0b;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+
+.clinical-status.closed {
+  background: #edf7f3;
+
+  border-color: #c6ddd5;
+
+  color: #17483d;
+}
+
+
+/* =========================================================
+   FINALIZAR CONSULTA
+   ========================================================= */
+
+.clinical-action-button.finish {
+  background: #17483d;
+
+  border-color: #17483d;
+
+  color: #ffffff;
+}
+
+
+.clinical-action-button.finish:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+
+.clinical-action-button.finish:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}

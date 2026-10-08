@@ -11,18 +11,18 @@ import {
   FormsModule
 } from '@angular/forms';
 
-import Swal from 'sweetalert2';
-
-
 import {
   ConfiguracionReservas,
   ConfiguracionReservasService
 } from '../../services/configuracion-reservas.service';
 
-
 import {
   ConfiguracionOrganizacionService
 } from '../../services/configuracion-organizacion.service';
+
+import {
+  AlertaService
+} from '../../services/alerta.service';
 
 
 @Component({
@@ -60,6 +60,9 @@ export class ReservaOnlineComponent
 
   cargandoEnlace =
     true;
+
+  hayCambiosSinGuardar =
+    false;
 
 
   // ==========================================
@@ -162,7 +165,10 @@ export class ReservaOnlineComponent
       ConfiguracionReservasService,
 
     private organizacionService:
-      ConfiguracionOrganizacionService
+      ConfiguracionOrganizacionService,
+
+    private alertaService:
+      AlertaService
 
   ) {}
 
@@ -198,13 +204,13 @@ export class ReservaOnlineComponent
         next:
           organizacion => {
 
-            this.urlReservaPublica =
-              organizacion.slug
+           const origen =
+  window.location.origin;
 
-                ? `https://amiapp.com/reservar/${organizacion.slug}`
-
-                : '';
-
+this.urlReservaPublica =
+  organizacion.slug
+    ? `${origen}/reservar/${organizacion.slug}`
+    : '';
 
             this.cargandoEnlace =
               false;
@@ -257,24 +263,11 @@ export class ReservaOnlineComponent
       )
       .then(() => {
 
-        Swal.fire({
-
-          icon:
-            'success',
-
-          title:
-            'Enlace copiado',
-
-          text:
-            'El enlace de reservas se copió al portapapeles.',
-
-          timer:
-            1600,
-
-          showConfirmButton:
-            false
-
-        });
+        this.alertaService.success(
+          'Enlace copiado',
+          'El enlace de reservas se copió al portapapeles.',
+          1600
+        );
 
       })
       .catch(
@@ -286,18 +279,10 @@ export class ReservaOnlineComponent
           );
 
 
-          Swal.fire({
-
-            icon:
-              'error',
-
-            title:
-              'No se pudo copiar',
-
-            text:
-              'No pudimos copiar el enlace.'
-
-          });
+          this.alertaService.error(
+            'No se pudo copiar',
+            'No pudimos copiar el enlace.'
+          );
 
         }
       );
@@ -352,6 +337,10 @@ export class ReservaOnlineComponent
               respuesta;
 
 
+            this.hayCambiosSinGuardar =
+              false;
+
+
             this.cargando =
               false;
 
@@ -371,22 +360,38 @@ export class ReservaOnlineComponent
               false;
 
 
-            Swal.fire({
-
-              icon:
-                'error',
-
-              title:
-                'No se pudo cargar',
-
-              text:
-                'No pudimos obtener la configuración de reserva online.'
-
-            });
+            this.alertaService.error(
+              'No se pudo cargar',
+              'No pudimos obtener la configuración de reserva online.'
+            );
 
           }
 
       });
+
+  }
+
+
+  // ==========================================
+  // CAMBIOS SIN GUARDAR
+  // ==========================================
+
+  marcarCambios():
+    void {
+
+    if (
+      this.cargando
+      ||
+      this.guardando
+    ) {
+
+      return;
+
+    }
+
+
+    this.hayCambiosSinGuardar =
+      true;
 
   }
 
@@ -400,6 +405,8 @@ export class ReservaOnlineComponent
 
     if (
       this.guardando
+      ||
+      !this.hayCambiosSinGuardar
     ) {
 
       return;
@@ -424,24 +431,15 @@ export class ReservaOnlineComponent
               false;
 
 
-            Swal.fire({
+            this.hayCambiosSinGuardar =
+              false;
 
-              icon:
-                'success',
 
-              title:
-                'Configuración guardada',
-
-              text:
-                'Los cambios se guardaron correctamente.',
-
-              timer:
-                1800,
-
-              showConfirmButton:
-                false
-
-            });
+            this.alertaService.success(
+              'Configuración guardada',
+              'Los cambios se guardaron correctamente.',
+              1800
+            );
 
           },
 
@@ -459,20 +457,12 @@ export class ReservaOnlineComponent
               false;
 
 
-            Swal.fire({
-
-              icon:
-                'error',
-
-              title:
-                'No se pudo guardar',
-
-              text:
-                error?.error?.message
-                ??
-                'Ocurrió un error al guardar la configuración.'
-
-            });
+            this.alertaService.error(
+              'No se pudo guardar',
+              error?.error?.message
+              ??
+              'Ocurrió un error al guardar la configuración.'
+            );
 
           }
 

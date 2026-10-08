@@ -1,7 +1,9 @@
 <div class="organization-page">
 
   <!-- ========================================= -->
+
   <!-- HEADER -->
+
   <!-- ========================================= -->
 
   <header class="page-header">
@@ -9,115 +11,143 @@
     <div>
 
       <span class="eyebrow">
+
         ORGANIZACIÓN
+
       </span>
 
       <h1>
+
         Información general
+
       </h1>
 
       <p>
+
         Configurá las sedes, horarios de apertura,
+
         especialidades y reglas generales de tu organización.
+
       </p>
 
     </div>
 
   </header>
 
-
   <!-- ========================================= -->
+
   <!-- RESUMEN -->
+
   <!-- ========================================= -->
 
   <section class="summary-grid">
-
 
     <!-- SUCURSALES -->
 
     <article class="summary-card">
 
       <div class="summary-icon">
+
         <i class="fas fa-building"></i>
+
       </div>
 
       <div class="summary-content">
 
         <span>
+
           Sucursales
+
         </span>
 
         <strong>
+
           {{ cantidadSucursales }}
+
         </strong>
 
       </div>
 
     </article>
-
 
     <!-- HORARIOS -->
 
     <article class="summary-card">
 
       <div class="summary-icon">
+
         <i class="far fa-clock"></i>
+
       </div>
 
       <div class="summary-content">
 
         <span>
+
           Horarios
+
         </span>
 
         <strong>
+
           {{ cantidadHorarios }}
+
         </strong>
 
       </div>
 
     </article>
-
 
     <!-- ESPECIALIDADES -->
 
     <article class="summary-card">
 
       <div class="summary-icon">
+
         <i class="fas fa-stethoscope"></i>
+
       </div>
 
       <div class="summary-content">
 
         <span>
+
           Especialidades
+
         </span>
 
         <strong>
+
           {{ cantidadEspecialidades }}
+
         </strong>
 
       </div>
 
     </article>
 
-
     <!-- OBRAS SOCIALES -->
 
     <article class="summary-card">
 
       <div class="summary-icon">
+
         <i class="fas fa-file-medical"></i>
+
       </div>
 
       <div class="summary-content">
 
         <span>
+
           Obras sociales
+
         </span>
 
         <strong>
+
           {{ listaObrasSociales.length }}
+
         </strong>
 
       </div>
@@ -126,9 +156,10 @@
 
   </section>
 
-
   <!-- ========================================= -->
+
   <!-- TABS -->
+
   <!-- ========================================= -->
 
   <nav class="settings-tabs">
@@ -136,96 +167,131 @@
 <!-- GENERAL -->
 
 <button
+
   type="button"
+
   [class.active]="tabActiva === 'general'"
+
   (click)="cambiarTab('general')"
+
 >
+
   <i class="fas fa-sliders"></i>
 
   <span>
+
     General
+
   </span>
+
 </button>
+
     <!-- SUCURSALES -->
 
     <button
+
       type="button"
+
       [class.active]="tabActiva === 'sucursales'"
+
       (click)="cambiarTab('sucursales')"
+
     >
 
       <i class="fas fa-building"></i>
 
       <span>
+
         Sucursales
+
       </span>
 
     </button>
 
-
     <!-- HORARIOS -->
 
     <button
+
       type="button"
+
       [class.active]="tabActiva === 'horarios'"
+
       (click)="cambiarTab('horarios')"
+
     >
 
       <i class="far fa-clock"></i>
 
       <span>
+
         Horarios de apertura
+
       </span>
 
     </button>
 
-
     <!-- ESPECIALIDADES -->
 
     <button
+
       type="button"
+
       [class.active]="tabActiva === 'especialidades'"
+
       (click)="cambiarTab('especialidades')"
+
     >
 
       <i class="fas fa-stethoscope"></i>
 
       <span>
+
         Especialidades
+
       </span>
 
     </button>
 
-
     <!-- OBRAS -->
 
     <button
+
       type="button"
+
       [class.active]="tabActiva === 'obras'"
+
       (click)="cambiarTab('obras')"
+
     >
 
       <i class="fas fa-file-medical"></i>
 
       <span>
+
         Obras sociales
+
       </span>
 
     </button>
 
-
     <!-- BLOQUEOS -->
 
     <button
+
       type="button"
+
       [class.active]="tabActiva === 'bloqueos'"
+
       (click)="cambiarTab('bloqueos')"
+
     >
 
       <i class="fas fa-ban"></i>
 
       <span>
+
         Bloqueos
+
       </span>
 
     </button>
@@ -233,20 +299,27 @@
   </nav>
 
 <!-- ======================================================= -->
+
 <!-- INFORMACIÓN GENERAL DE LA ORGANIZACIÓN -->
+
 <!-- ======================================================= -->
 
 <section
-  class="tab-content"
-  *ngIf="tabActiva === 'general'"
->
 
+  class="tab-content"
+
+  *ngIf="tabActiva === 'general'"
+
+>
 
   <!-- CARGANDO -->
 
   <div
+
     class="loading-state"
+
     *ngIf="cargandoOrganizacion"
+
   >
 
     <div class="mini-spinner"></div>
@@ -255,16 +328,20 @@
 
   </div>
 
-
   <div
+
     class="content-grid"
+
     *ngIf="!cargandoOrganizacion"
+
   >
 
+    <!-- ===================================== -->
+
+    <!-- DATOS DE LA ORGANIZACIÓN -->
 
     <!-- ===================================== -->
-    <!-- DATOS DE LA ORGANIZACIÓN -->
-    <!-- ===================================== -->
+
 <article class="settings-card">
 
   <div class="card-header">
@@ -272,205 +349,267 @@
     <div>
 
       <span class="card-label">
+
         ORGANIZACIÓN
+
       </span>
 
       <h2>
+
         Datos de la organización
+
       </h2>
 
       <p>
+
         Información principal de tu organización
-        dentro de AmiApp.
+
+        dentro de NexaSalud.
+
       </p>
 
     </div>
 
   </div>
 
-
   <div class="form-grid">
-
 
     <!-- NOMBRE -->
 
     <div class="form-group full">
 
       <label>
+
         Nombre de la organización
+
       </label>
 
       <input
+
         type="text"
+
         [(ngModel)]="organizacionGeneral.nombre"
+
         placeholder="Ej: Clínica Santa Lucía"
+
       >
 
     </div>
-
 
     <!-- SLUG -->
 
     <div class="form-group full">
 
       <label>
+
         Identificador del enlace
+
       </label>
 
       <input
+
         type="text"
+
         [(ngModel)]="organizacionGeneral.slug"
+
         (input)="normalizarSlugOrganizacion()"
+
         placeholder="clinica-santa-lucia"
+
       >
 
       <span class="field-help">
+
         Tu página:
-        amiapp.com/reservar/{{ organizacionGeneral.slug }}
+
+        NexaSalud.com/reservar/{{ organizacionGeneral.slug }}
+
       </span>
 
     </div>
-
 
     <!-- TIPO TELÉFONO -->
 
     <div class="form-group">
 
       <label>
+
         Tipo de teléfono
+
       </label>
 
       <select
+
         [(ngModel)]="tipoTelefonoOrganizacion"
+
       >
 
         <option value="celular">
+
           Celular / WhatsApp
+
         </option>
 
         <option value="fijo">
+
           Teléfono fijo
+
         </option>
 
       </select>
 
     </div>
 
-
     <!-- TELÉFONO -->
 
     <div class="form-group">
 
       <label>
+
         Teléfono
+
       </label>
 
       <div class="phone-control">
 
         <span class="phone-prefix">
+
           🇦🇷 +54
+
           <ng-container
+
             *ngIf="
+
               tipoTelefonoOrganizacion ===
+
               'celular'
+
             "
+
           >
+
             9
+
           </ng-container>
+
         </span>
 
         <input
+
           type="tel"
+
           [(ngModel)]="telefonoOrganizacionInput"
+
           placeholder="223 5551234"
+
         >
 
       </div>
 
       <span class="field-help">
+
         Código de área + número, sin 0 ni 15.
+
       </span>
 
     </div>
-
 
     <!-- EMAIL -->
 
     <div class="form-group full">
 
       <label>
+
         Email
+
       </label>
 
       <input
+
         type="email"
+
         [(ngModel)]="organizacionGeneral.email"
+
         placeholder="contacto@organizacion.com"
+
       >
 
     </div>
-
 
     <!-- DIRECCIÓN -->
 
     <div class="form-group full">
 
       <label>
+
         Dirección
+
       </label>
 
       <input
+
         type="text"
+
         [(ngModel)]="organizacionGeneral.direccion"
+
         placeholder="Ej: Av. Colón 2450"
+
       >
 
     </div>
-
 
     <!-- CIUDAD -->
 
     <div class="form-group">
 
       <label>
+
         Ciudad
+
       </label>
 
       <input
+
         type="text"
+
         [(ngModel)]="organizacionGeneral.ciudad"
+
         placeholder="Ej: Mar del Plata"
+
       >
 
     </div>
-
 
     <!-- PAÍS -->
 
     <div class="form-group">
 
       <label>
+
         País
+
       </label>
 
       <input
+
         type="text"
+
         [(ngModel)]="organizacionGeneral.pais"
+
         placeholder="Argentina"
+
       >
 
     </div>
 
   </div>
 
-
- 
-
 </article>
 
-
     <!-- ===================================== -->
+
     <!-- IDENTIDAD VISUAL -->
+
     <!-- ===================================== -->
 
     <article class="settings-card">
@@ -480,42 +619,55 @@
         <div>
 
           <span class="card-label">
+
             IDENTIDAD VISUAL
+
           </span>
 
           <h2>
+
             Marca de la organización
+
           </h2>
 
           <p>
-            Identidad que utilizará AmiApp
+
+            Identidad que utilizará NexaSalud
+
             en la página pública de tu organización.
+
           </p>
 
         </div>
 
       </div>
 
-
  <!-- ===================================== -->
+
 <!-- LOGO -->
+
 <!-- ===================================== -->
 
 <div class="organization-logo-section">
 
-
   <div class="organization-logo-preview">
 
     <img
+
       *ngIf="organizacionGeneral.logoUrl"
+
       [src]="organizacionGeneral.logoUrl"
+
       alt="Logo de la organización"
+
     >
 
-
     <div
+
       class="organization-logo-empty"
+
       *ngIf="!organizacionGeneral.logoUrl"
+
     >
 
       <i class="far fa-image"></i>
@@ -524,55 +676,75 @@
 
   </div>
 
-
   <div class="organization-logo-content">
 
     <span class="organization-media-label">
+
       LOGO
+
     </span>
 
     <strong>
+
       Logo de la organización
+
     </strong>
 
     <p>
+
       Se mostrará en la página pública
-      y en distintos espacios de AmiApp.
+
+      y en distintos espacios de NexaSalud.
+
     </p>
 
-
     <input
+
       type="file"
+
       accept="image/jpeg,image/png,image/webp"
+
       hidden
+
       #logoOrganizacionInput
+
       (change)="seleccionarLogoOrganizacion($event)"
+
     >
 
-
     <button
+
       type="button"
+
       class="secondary-button"
+
       [disabled]="subiendoLogoOrganizacion"
+
       (click)="logoOrganizacionInput.click()"
+
     >
 
       <i
-        class="fas fa-cloud-arrow-up"
-        *ngIf="!subiendoLogoOrganizacion"
-      ></i>
 
+        class="fas fa-cloud-arrow-up"
+
+        *ngIf="!subiendoLogoOrganizacion"
+
+      ></i>
 
       <span *ngIf="!subiendoLogoOrganizacion">
 
         {{
+
           organizacionGeneral.logoUrl
+
             ? 'Cambiar logo'
+
             : 'Subir logo'
+
         }}
 
       </span>
-
 
       <span *ngIf="subiendoLogoOrganizacion">
 
@@ -588,105 +760,10 @@
 
 </div>
 
-      <!-- BANNER -->
-
-     <!-- ===================================== -->
-<!-- BANNER -->
 <!-- ===================================== -->
 
-<div class="organization-banner-section">
-
-  <div class="organization-banner-preview">
-
-    <img
-      *ngIf="organizacionGeneral.bannerUrl"
-      [src]="organizacionGeneral.bannerUrl"
-      alt="Banner de la organización"
-    >
-
-    <div
-      class="organization-banner-empty"
-      *ngIf="!organizacionGeneral.bannerUrl"
-    >
-
-      <i class="far fa-image"></i>
-
-      <span>
-        Sin banner
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <div class="organization-banner-info">
-
-    <div>
-
-      <span class="organization-media-label">
-        BANNER
-      </span>
-
-      <strong>
-        Imagen de portada
-      </strong>
-
-      <p>
-        Se mostrará como portada en la página pública
-        de reservas.
-      </p>
-
-    </div>
-
-
-    <input
-      type="file"
-      accept="image/jpeg,image/png,image/webp"
-      hidden
-      #bannerOrganizacionInput
-      (change)="seleccionarBannerOrganizacion($event)"
-    >
-
-
-    <button
-      type="button"
-      class="secondary-button"
-      [disabled]="subiendoBannerOrganizacion"
-      (click)="bannerOrganizacionInput.click()"
-    >
-
-      <i
-        class="fas fa-cloud-arrow-up"
-        *ngIf="!subiendoBannerOrganizacion"
-      ></i>
-
-      <span *ngIf="!subiendoBannerOrganizacion">
-
-        {{
-          organizacionGeneral.bannerUrl
-            ? 'Cambiar banner'
-            : 'Subir banner'
-        }}
-
-      </span>
-
-      <span *ngIf="subiendoBannerOrganizacion">
-
-        <i class="fas fa-spinner fa-spin"></i>
-
-        Subiendo...
-
-      </span>
-
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ===================================== -->
 <!-- COLORES DE MARCA -->
+
 <!-- ===================================== -->
 
 <div class="brand-colors-section">
@@ -694,93 +771,125 @@
   <div class="brand-colors-header">
 
     <span class="organization-media-label">
+
       COLORES
+
     </span>
 
     <strong>
+
       Colores de la organización
+
     </strong>
 
     <p>
+
       Se utilizarán para personalizar la página
+
       pública de reservas.
+
     </p>
 
   </div>
 
-
   <div class="brand-colors-grid">
-
 
     <!-- COLOR PRINCIPAL -->
 
     <div class="brand-color-card">
 
       <div
-        class="brand-color-preview"
-        [style.background]="
-          organizacionGeneral.colorPrincipal
-        "
-      ></div>
 
+        class="brand-color-preview"
+
+        [style.background]="
+
+          organizacionGeneral.colorPrincipal
+
+        "
+
+      ></div>
 
       <div class="brand-color-info">
 
         <span>
+
           Principal
+
         </span>
 
         <strong>
+
           {{ organizacionGeneral.colorPrincipal }}
+
         </strong>
 
       </div>
 
-
       <input
+
         type="color"
+
         class="brand-color-picker"
+
         [(ngModel)]="
+
           organizacionGeneral.colorPrincipal
+
         "
+
         title="Elegir color principal"
+
       >
 
     </div>
-
 
     <!-- COLOR SECUNDARIO -->
 
     <div class="brand-color-card">
 
       <div
-        class="brand-color-preview"
-        [style.background]="
-          organizacionGeneral.colorSecundario
-        "
-      ></div>
 
+        class="brand-color-preview"
+
+        [style.background]="
+
+          organizacionGeneral.colorSecundario
+
+        "
+
+      ></div>
 
       <div class="brand-color-info">
 
         <span>
+
           Secundario
+
         </span>
 
         <strong>
+
           {{ organizacionGeneral.colorSecundario }}
+
         </strong>
 
       </div>
 
-
       <input
+
         type="color"
+
         class="brand-color-picker"
+
         [(ngModel)]="
+
           organizacionGeneral.colorSecundario
+
         "
+
         title="Elegir color secundario"
+
       >
 
     </div>
@@ -800,13 +909,19 @@
   <div>
 
     <strong>
+
       Identidad de marca
+
     </strong>
 
     <p>
+
       El color principal se utilizará en botones y elementos
+
       destacados. El secundario servirá como complemento
+
       visual en la página pública.
+
     </p>
 
   </div>
@@ -815,26 +930,38 @@
 
     </article>
 
-
   </div>
+
  <!-- ===================================== -->
+
   <!-- GUARDAR INFORMACIÓN GENERAL -->
+
   <!-- ===================================== -->
 
   <div
+
     class="general-save-footer"
+
     *ngIf="!cargandoOrganizacion"
+
   >
 
     <button
+
       type="button"
+
       class="primary-button"
+
       [disabled]="guardandoOrganizacion"
+
       (click)="guardarOrganizacion()"
+
     >
 
       <ng-container
+
         *ngIf="!guardandoOrganizacion"
+
       >
 
         <i class="fas fa-floppy-disk"></i>
@@ -843,9 +970,10 @@
 
       </ng-container>
 
-
       <ng-container
+
         *ngIf="guardandoOrganizacion"
+
       >
 
         <i class="fas fa-spinner fa-spin"></i>
@@ -860,21 +988,26 @@
 
 </section>
 
-
   <!-- ======================================================= -->
+
   <!-- SUCURSALES -->
+
   <!-- ======================================================= -->
 
   <section
+
     class="tab-content"
+
     *ngIf="tabActiva === 'sucursales'"
+
   >
 
     <div class="content-grid">
 
-
       <!-- ===================================== -->
+
       <!-- CREAR SUCURSAL -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -884,152 +1017,203 @@
           <div>
 
           <span class="card-label">
+
   {{ modoEdicionSucursal ? 'EDITANDO SEDE' : 'NUEVA SEDE' }}
+
 </span>
 
 <h2>
+
   {{
+
     modoEdicionSucursal
+
       ? 'Editar sucursal'
+
       : 'Agregar sucursal'
+
   }}
+
 </h2>
 
 <p>
+
   {{
+
     modoEdicionSucursal
+
       ? 'Modificá los datos de esta sede y guardá los cambios.'
+
       : 'Creá una nueva sede para tu organización.'
+
   }}
+
 </p>
 
             <p>
+
               Creá los lugares físicos donde
+
               funciona tu organización.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div class="form-grid">
-
 
           <!-- NOMBRE -->
 
           <div class="form-group full">
 
             <label>
+
               Nombre de la sede
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.nombre"
+
               placeholder="Ej: Clínica del Niño"
+
             >
 
           </div>
-
 
           <!-- CALLE -->
 
           <div class="form-group">
 
             <label>
+
               Calle
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.calle"
+
               placeholder="Ej: Av. Colón"
+
             >
 
           </div>
-
 
           <!-- ALTURA -->
 
           <div class="form-group">
 
             <label>
+
               Número
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.altura"
+
               placeholder="Ej: 2450"
+
             >
 
           </div>
-
 
           <!-- PISO -->
 
           <div class="form-group">
 
             <label>
+
               Piso / consultorio
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.pisoDepto"
+
               placeholder="Opcional"
+
             >
 
           </div>
-
 
           <!-- CIUDAD -->
 
           <div class="form-group">
 
             <label>
+
               Ciudad
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.ciudad"
+
               placeholder="Ej: Mar del Plata"
+
             >
 
           </div>
-
 
           <!-- TELÉFONO -->
 
           <div class="form-group">
 
             <label>
+
               Teléfono
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaSucursal.telefono"
+
               placeholder="Opcional"
+
             >
 
           </div>
-
 
           <!-- EMAIL -->
 
           <div class="form-group">
 
             <label>
+
               Email
+
             </label>
 
             <input
+
               type="email"
+
               [(ngModel)]="nuevaSucursal.email"
+
               placeholder="Opcional"
+
             >
 
           </div>
@@ -1043,14 +1227,21 @@
   <div class="branch-photo-preview">
 
     <img
+
       *ngIf="previewFotoSucursal"
+
       [src]="previewFotoSucursal"
+
       alt="Foto de la sucursal"
+
     >
 
     <div
+
       class="branch-photo-empty"
+
       *ngIf="!previewFotoSucursal"
+
     >
 
       <i class="fas fa-image"></i>
@@ -1059,67 +1250,98 @@
 
   </div>
 
-
   <div class="branch-photo-content">
 
     <span class="branch-photo-label">
+
       FOTO DE LA SUCURSAL
+
     </span>
 
     <strong>
+
       Imagen principal
+
     </strong>
 
     <p>
+
       Esta imagen se mostrará a los pacientes
+
       cuando elijan dónde reservar.
+
     </p>
 
-
     <input
-      type="file"
-      accept="image/jpeg,image/png,image/webp"
-      hidden
-      #fotoSucursalInput
-      (change)="seleccionarFotoSucursal($event)"
-    >
 
+      type="file"
+
+      accept="image/jpeg,image/png,image/webp"
+
+      hidden
+
+      #fotoSucursalInput
+
+      (change)="seleccionarFotoSucursal($event)"
+
+    >
 
     <div class="branch-photo-actions">
 
       <button
+
         type="button"
+
         class="secondary-button"
+
         [disabled]="subiendoFotoSucursal"
+
         (click)="fotoSucursalInput.click()"
+
       >
 
         <i
+
           class="fas fa-cloud-arrow-up"
+
           *ngIf="!subiendoFotoSucursal"
+
         ></i>
 
         <span *ngIf="!subiendoFotoSucursal">
+
           {{
+
             previewFotoSucursal
+
               ? 'Cambiar foto'
+
               : 'Subir foto'
+
           }}
+
         </span>
 
         <span *ngIf="subiendoFotoSucursal">
+
           Subiendo...
+
         </span>
 
       </button>
 
-
       <button
+
         type="button"
+
         class="remove-photo-button"
+
         *ngIf="previewFotoSucursal"
+
         [disabled]="subiendoFotoSucursal"
+
         (click)="quitarFotoSucursal()"
+
       >
 
         Quitar
@@ -1131,57 +1353,87 @@
   </div>
 
 </div>
+
      <div class="card-footer">
 
   <!-- CANCELAR EDICIÓN -->
+
   <button
+
     type="button"
+
     class="secondary-button"
+
     *ngIf="modoEdicionSucursal"
+
     [disabled]="guardando || subiendoFotoSucursal"
+
     (click)="cancelarEdicionSucursal()"
+
   >
+
     <i class="fas fa-xmark"></i>
+
     Cancelar
+
   </button>
 
-
   <!-- CREAR / GUARDAR CAMBIOS -->
+
   <button
+
     type="button"
+
     class="primary-button"
+
     [disabled]="guardando || subiendoFotoSucursal"
+
     (click)="guardarSucursal()"
+
   >
 
     <ng-container *ngIf="!guardando">
 
       <i
+
         class="fas"
+
         [ngClass]="
+
           modoEdicionSucursal
+
             ? 'fa-floppy-disk'
+
             : 'fa-plus'
+
         "
+
       ></i>
 
       {{
+
         modoEdicionSucursal
+
           ? 'Guardar cambios'
+
           : 'Crear sucursal'
+
       }}
 
     </ng-container>
-
 
     <ng-container *ngIf="guardando">
 
       <i class="fas fa-spinner fa-spin"></i>
 
       {{
+
         modoEdicionSucursal
+
           ? 'Guardando...'
+
           : 'Creando...'
+
       }}
 
     </ng-container>
@@ -1192,9 +1444,10 @@
 
       </article>
 
-
       <!-- ===================================== -->
+
       <!-- LISTADO SUCURSALES -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -1204,28 +1457,37 @@
           <div>
 
             <span class="card-label">
+
               SEDES
+
             </span>
 
             <h2>
+
               Sucursales habilitadas
+
             </h2>
 
             <p>
+
               Los profesionales podrán seleccionar
+
               estas sedes al configurar su perfil.
+
             </p>
 
           </div>
 
         </div>
 
-
         <!-- CARGANDO -->
 
         <div
+
           class="loading-state"
+
           *ngIf="cargandoSucursales"
+
         >
 
           <div class="mini-spinner"></div>
@@ -1234,39 +1496,52 @@
 
         </div>
 
-
         <!-- VACÍO -->
 
         <div
+
           class="empty-state"
+
           *ngIf="
+
             !cargandoSucursales &&
+
             listaSucursales.length === 0
+
           "
+
         >
 
           <div class="empty-icon">
+
             <i class="fas fa-building"></i>
+
           </div>
 
           <strong>
+
             Todavía no hay sucursales
+
           </strong>
 
           <span>
+
             Creá la primera sede de tu organización.
+
           </span>
 
         </div>
-
 
         <!-- LISTADO -->
 
         <div class="item-list">
 
           <div
+
             class="organization-item"
+
             *ngFor="let sucursal of listaSucursales"
+
           >
 
             <div class="item-icon">
@@ -1275,50 +1550,68 @@
 
             </div>
 
-
             <div class="item-main">
 
               <strong>
+
                 {{ sucursal.nombre }}
+
               </strong>
 
               <span>
 
                 {{ sucursal.calle }}
+
                 {{ sucursal.altura }}
 
                 <ng-container *ngIf="sucursal.pisoDepto">
+
                   · {{ sucursal.pisoDepto }}
+
                 </ng-container>
 
               </span>
 
               <span>
+
                 {{ sucursal.ciudad }}
+
               </span>
 
             </div>
 
-
          <div class="item-actions">
 
   <button
+
     type="button"
+
     class="icon-button"
+
     title="Editar sucursal"
+
     (click)="editarSucursal(sucursal)"
+
   >
+
     <i class="fas fa-pen"></i>
+
   </button>
 
-
   <button
+
     type="button"
+
     class="icon-button danger"
+
     title="Eliminar sucursal"
+
     (click)="eliminarSucursal(sucursal.id)"
+
   >
+
     <i class="fas fa-trash"></i>
+
   </button>
 
 </div>
@@ -1333,21 +1626,26 @@
 
   </section>
 
-
   <!-- ======================================================= -->
+
   <!-- HORARIOS DE APERTURA -->
+
   <!-- ======================================================= -->
 
   <section
+
     class="tab-content"
+
     *ngIf="tabActiva === 'horarios'"
+
   >
 
     <div class="content-grid">
 
-
       <!-- ===================================== -->
+
       <!-- CREAR HORARIO -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -1357,67 +1655,91 @@
           <div>
 
             <span class="card-label">
+
               DISPONIBILIDAD
+
             </span>
 
             <h2>
+
               Horario de apertura
+
             </h2>
 
             <p>
+
               Definí cuándo está disponible cada
+
               sede de la organización.
+
             </p>
 
           </div>
 
         </div>
 
-
         <!-- SUCURSAL -->
 
         <div class="form-group">
 
           <label>
+
             Sucursal
+
           </label>
 
           <select
+
             [(ngModel)]="nuevoHorario.sucursalId"
+
           >
 
             <option value="">
+
               Seleccioná una sucursal
+
             </option>
 
             <option
+
               *ngFor="let sucursal of listaSucursales"
+
               [value]="sucursal.id"
+
             >
+
               {{ sucursal.nombre }}
+
             </option>
 
           </select>
 
         </div>
 
-
         <!-- DÍAS -->
 
         <div class="form-group">
 
           <label>
+
             Días de apertura
+
           </label>
 
           <div class="days-selector">
 
             <button
+
               type="button"
+
               class="day-button"
+
               *ngFor="let dia of diasSemana"
+
               [class.selected]="dia.seleccionado"
+
               (click)="dia.seleccionado = !dia.seleccionado"
+
             >
 
               {{ dia.corto }}
@@ -1428,7 +1750,6 @@
 
         </div>
 
-
         <!-- HORAS -->
 
         <div class="form-grid">
@@ -1436,32 +1757,40 @@
           <div class="form-group">
 
             <label>
+
               Hora de apertura
+
             </label>
 
             <input
+
               type="time"
+
               [(ngModel)]="nuevoHorario.horaInicio"
+
             >
 
           </div>
 
-
           <div class="form-group">
 
             <label>
+
               Hora de cierre
+
             </label>
 
             <input
+
               type="time"
+
               [(ngModel)]="nuevoHorario.horaFin"
+
             >
 
           </div>
 
         </div>
-
 
         <!-- INFO -->
 
@@ -1476,26 +1805,35 @@
           <div>
 
             <strong>
+
               Rango permitido
+
             </strong>
 
             <p>
+
               Los profesionales solo podrán configurar
+
               su agenda dentro de este horario.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div class="card-footer">
 
           <button
+
             type="button"
+
             class="primary-button"
+
             [disabled]="guardando"
+
             (click)="guardarHorario()"
+
           >
 
             Guardar horario
@@ -1506,9 +1844,10 @@
 
       </article>
 
-
       <!-- ===================================== -->
+
       <!-- HORARIOS CONFIGURADOS -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -1518,28 +1857,37 @@
           <div>
 
             <span class="card-label">
+
               HORARIOS
+
             </span>
 
             <h2>
+
               Apertura por sucursal
+
             </h2>
 
             <p>
+
               Rangos disponibles para la atención
+
               profesional.
+
             </p>
 
           </div>
 
         </div>
 
-
         <!-- CARGANDO -->
 
         <div
+
           class="loading-state"
+
           *ngIf="cargandoHorarios"
+
         >
 
           <div class="mini-spinner"></div>
@@ -1548,15 +1896,20 @@
 
         </div>
 
-
         <!-- VACÍO -->
 
         <div
+
           class="empty-state"
+
           *ngIf="
+
             !cargandoHorarios &&
+
             listaHorarios.length === 0
+
           "
+
         >
 
           <div class="empty-icon">
@@ -1566,27 +1919,37 @@
           </div>
 
           <strong>
+
             No hay horarios configurados
+
           </strong>
 
           <span>
+
             Definí cuándo abre cada sede.
+
           </span>
 
         </div>
 
-
         <!-- POR SUCURSAL -->
 
         <ng-container
+
           *ngFor="let sucursal of listaSucursales"
+
         >
 
           <div
+
             class="branch-schedule"
+
             *ngIf="
+
               horariosPorSucursal(sucursal.id).length > 0
+
             "
+
           >
 
             <div class="branch-header">
@@ -1596,35 +1959,46 @@
                 <i class="fas fa-building"></i>
 
                 <strong>
+
                   {{ sucursal.nombre }}
+
                 </strong>
 
               </div>
 
               <span>
+
                 {{ horariosPorSucursal(sucursal.id).length }}
+
                 días configurados
+
               </span>
 
             </div>
 
-
             <div
+
               class="schedule-row"
+
               *ngFor="
+
                 let horario of
+
                 horariosPorSucursal(sucursal.id)
+
               "
+
             >
 
               <div class="schedule-day">
 
                 <strong>
+
                   {{ horario.dia }}
+
                 </strong>
 
               </div>
-
 
               <div class="schedule-time">
 
@@ -1633,19 +2007,25 @@
                 {{ horario.horaInicio.substring(0, 5) }}
 
                 <span>
+
                   —
+
                 </span>
 
                 {{ horario.horaFin.substring(0, 5) }}
 
               </div>
 
-
               <button
+
                 type="button"
+
                 class="icon-button danger"
+
                 title="Eliminar horario"
+
                 (click)="eliminarHorario(horario.id)"
+
               >
 
                 <i class="fas fa-trash"></i>
@@ -1664,21 +2044,26 @@
 
   </section>
 
-
   <!-- ======================================================= -->
+
   <!-- ESPECIALIDADES -->
+
   <!-- ======================================================= -->
 
   <section
+
     class="tab-content"
+
     *ngIf="tabActiva === 'especialidades'"
+
   >
 
     <div class="content-grid">
 
-
       <!-- ===================================== -->
+
       <!-- CREAR ESPECIALIDAD -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -1688,114 +2073,159 @@
           <div>
 
             <span class="card-label">
+
               NUEVA ESPECIALIDAD
+
             </span>
 
             <h2>
+
               Agregar especialidad
+
             </h2>
 
             <p>
+
               Estas especialidades estarán disponibles
+
               para los profesionales de la organización.
+
             </p>
 
           </div>
 
         </div>
 
-
         <!-- NOMBRE -->
 
         <div class="form-group">
 
           <label>
+
             Nombre
+
           </label>
 
           <input
+
             type="text"
+
             [(ngModel)]="nuevaEspecialidad.nombre"
+
             placeholder="Ej: Nutrición"
+
           >
 
         </div>
-
 
         <!-- ICONO -->
 
         <div class="form-group">
 
           <label>
+
             Icono
+
           </label>
 
-
           <button
+
             type="button"
+
             class="icon-selector-button"
+
             (click)="abrirSelectorIconos()"
+
           >
 
             <span
+
               class="icon-preview"
+
               [style.background]="
+
                 nuevaEspecialidad.color + '14'
+
               "
+
               [style.color]="
+
                 nuevaEspecialidad.color
+
               "
+
             >
 
               <i
+
                 class="fas"
+
                 [ngClass]="nuevaEspecialidad.icono"
+
               ></i>
 
             </span>
 
-
             <span class="icon-selector-text">
 
               <strong>
+
                 Seleccionar icono
+
               </strong>
 
               <small>
+
                 Elegí el que mejor represente
+
                 la especialidad
+
               </small>
 
             </span>
 
-
             <i
+
               class="fas fa-chevron-down selector-arrow"
+
             ></i>
 
           </button>
 
-
           <!-- SELECTOR -->
 
           <div
+
             class="icon-picker"
+
             *ngIf="mostrarSelectorIconos"
+
           >
 
             <button
+
               type="button"
+
               class="icon-option"
+
               *ngFor="let icono of iconosDisponibles"
+
               [class.selected]="
+
                 nuevaEspecialidad.icono === icono
+
               "
+
               (click)="seleccionarIcono(icono)"
+
             >
 
               <i
+
                 class="fas"
+
                 [ngClass]="icono"
+
               ></i>
 
             </button>
@@ -1803,34 +2233,49 @@
           </div>
 
         </div>
-
 
         <!-- COLOR -->
 
         <div class="form-group">
 
           <label>
+
             Color identificador
+
           </label>
 
           <div class="color-selector">
 
             <button
+
               type="button"
+
               class="color-option"
+
               *ngFor="let color of coloresDisponibles"
+
               [style.background]="color"
+
               [class.selected]="
+
                 nuevaEspecialidad.color === color
+
               "
+
               (click)="seleccionarColor(color)"
+
             >
 
               <i
+
                 class="fas fa-check"
+
                 *ngIf="
+
                   nuevaEspecialidad.color === color
+
                 "
+
               ></i>
 
             </button>
@@ -1839,41 +2284,54 @@
 
         </div>
 
-
         <!-- PREVIEW -->
 
         <div class="specialty-preview">
 
           <span class="preview-label">
-            VISTA PREVIA
-          </span>
 
+            VISTA PREVIA
+
+          </span>
 
           <div class="specialty-preview-card">
 
             <span
+
               class="specialty-icon"
+
               [style.background]="
+
                 nuevaEspecialidad.color + '14'
+
               "
+
               [style.color]="
+
                 nuevaEspecialidad.color
+
               "
+
             >
 
               <i
+
                 class="fas"
+
                 [ngClass]="nuevaEspecialidad.icono"
+
               ></i>
 
             </span>
 
-
             <strong>
 
               {{
+
                 nuevaEspecialidad.nombre ||
+
                 'Nombre de especialidad'
+
               }}
 
             </strong>
@@ -1882,14 +2340,18 @@
 
         </div>
 
-
         <div class="card-footer">
 
           <button
+
             type="button"
+
             class="primary-button"
+
             [disabled]="guardando"
+
             (click)="guardarEspecialidad()"
+
           >
 
             <i class="fas fa-plus"></i>
@@ -1902,9 +2364,10 @@
 
       </article>
 
-
       <!-- ===================================== -->
+
       <!-- LISTADO -->
+
       <!-- ===================================== -->
 
       <article class="settings-card">
@@ -1914,28 +2377,37 @@
           <div>
 
             <span class="card-label">
+
               ESPECIALIDADES
+
             </span>
 
             <h2>
+
               Disponibles
+
             </h2>
 
             <p>
+
               Los profesionales podrán elegir
+
               una o varias de esta lista.
+
             </p>
 
           </div>
 
         </div>
 
-
         <!-- CARGANDO -->
 
         <div
+
           class="loading-state"
+
           *ngIf="cargandoEspecialidades"
+
         >
 
           <div class="mini-spinner"></div>
@@ -1944,15 +2416,20 @@
 
         </div>
 
-
         <!-- VACÍO -->
 
         <div
+
           class="empty-state"
+
           *ngIf="
+
             !cargandoEspecialidades &&
+
             listaEspecialidades.length === 0
+
           "
+
         >
 
           <div class="empty-icon">
@@ -1962,69 +2439,101 @@
           </div>
 
           <strong>
+
             No hay especialidades
+
           </strong>
 
           <span>
+
             Creá la primera especialidad
+
             de la organización.
+
           </span>
 
         </div>
-
 
         <!-- GRID -->
 
         <div class="specialties-list">
 
           <div
+
             class="specialty-item"
+
             *ngFor="let especialidad of listaEspecialidades"
+
           >
 
             <span
+
               class="specialty-icon"
+
               [style.background]="
+
                 (especialidad.color || '#17483d') + '14'
+
               "
+
               [style.color]="
+
                 especialidad.color || '#17483d'
+
               "
+
             >
 
               <i
+
                 class="fas"
+
                 [ngClass]="
+
                   especialidad.icono ||
+
                   'fa-stethoscope'
+
                 "
+
               ></i>
 
             </span>
 
-
             <div class="specialty-main">
 
               <strong>
+
                 {{ especialidad.nombre }}
+
               </strong>
 
               <span>
+
                 Disponible para profesionales
+
               </span>
 
             </div>
 
-
             <button
+
               type="button"
+
               class="icon-button danger"
+
               title="Eliminar especialidad"
+
               (click)="
+
                 eliminarEspecialidad(
+
                   especialidad.id
+
                 )
+
               "
+
             >
 
               <i class="fas fa-trash"></i>
@@ -2041,18 +2550,21 @@
 
   </section>
 
-
   <!-- ======================================================= -->
+
   <!-- OBRAS SOCIALES -->
+
   <!-- ======================================================= -->
 
   <section
+
     class="tab-content"
+
     *ngIf="tabActiva === 'obras'"
+
   >
 
     <div class="content-grid">
-
 
       <article class="settings-card">
 
@@ -2061,78 +2573,103 @@
           <div>
 
             <span class="card-label">
+
               NUEVO CONVENIO
+
             </span>
 
             <h2>
+
               Agregar obra social
+
             </h2>
 
             <p>
+
               Definí las coberturas disponibles
+
               en la organización.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div class="form-group">
 
           <label>
+
             Nombre
+
           </label>
 
           <input
+
             type="text"
+
             [(ngModel)]="nuevaObraSocial.nombre"
+
             placeholder="Ej: OSDE"
+
           >
 
         </div>
-
 
         <div class="form-grid">
 
           <div class="form-group">
 
             <label>
+
               Siglas
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaObraSocial.siglas"
+
               placeholder="Ej: OSDE"
+
             >
 
           </div>
 
-
           <div class="form-group">
 
             <label>
+
               Código de prestador
+
             </label>
 
             <input
+
               type="text"
+
               [(ngModel)]="nuevaObraSocial.codigoPrestador"
+
               placeholder="Opcional"
+
             >
 
           </div>
 
         </div>
 
-
         <div class="card-footer">
 
           <button
+
             type="button"
+
             class="primary-button"
+
             (click)="guardarObraSocial()"
+
           >
 
             Crear convenio
@@ -2143,7 +2680,6 @@
 
       </article>
 
-
       <article class="settings-card">
 
         <div class="card-header">
@@ -2151,47 +2687,63 @@
           <div>
 
             <span class="card-label">
+
               CONVENIOS
+
             </span>
 
             <h2>
+
               Obras sociales
+
             </h2>
 
             <p>
+
               Coberturas habilitadas actualmente.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div
+
           class="empty-state"
+
           *ngIf="listaObrasSociales.length === 0"
+
         >
 
           <div class="empty-icon">
+
             <i class="fas fa-file-medical"></i>
+
           </div>
 
           <strong>
+
             No hay obras sociales
+
           </strong>
 
           <span>
+
             Agregá el primer convenio.
+
           </span>
 
         </div>
 
-
         <div class="item-list">
 
           <div
+
             class="organization-item"
+
             *ngFor="let obra of listaObrasSociales"
+
           >
 
             <div class="item-icon">
@@ -2200,26 +2752,34 @@
 
             </div>
 
-
             <div class="item-main">
 
               <strong>
+
                 {{ obra.nombre }}
+
               </strong>
 
               <span>
+
                 {{ obra.siglas || 'Sin siglas' }}
+
               </span>
 
             </div>
 
-
             <button
+
               type="button"
+
               class="icon-button danger"
+
               (click)="
+
                 eliminarObraSocial(obra.id)
+
               "
+
             >
 
               <i class="fas fa-trash"></i>
@@ -2236,18 +2796,21 @@
 
   </section>
 
-
   <!-- ======================================================= -->
+
   <!-- BLOQUEOS -->
+
   <!-- ======================================================= -->
 
   <section
+
     class="tab-content"
+
     *ngIf="tabActiva === 'bloqueos'"
+
   >
 
     <div class="content-grid">
-
 
       <article class="settings-card">
 
@@ -2256,68 +2819,86 @@
           <div>
 
             <span class="card-label">
+
               NUEVO BLOQUEO
+
             </span>
 
             <h2>
+
               Bloquear organización
+
             </h2>
 
             <p>
+
               Usalo para feriados, cierres
+
               generales o mantenimiento.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div class="form-grid">
 
           <div class="form-group">
 
             <label>
+
               Desde
+
             </label>
 
             <input
+
               type="datetime-local"
+
               [(ngModel)]="nuevoBloqueo.inicio"
+
             >
 
           </div>
-
 
           <div class="form-group">
 
             <label>
+
               Hasta
+
             </label>
 
             <input
+
               type="datetime-local"
+
               [(ngModel)]="nuevoBloqueo.fin"
+
             >
 
           </div>
 
         </div>
 
-
         <div class="form-group">
 
           <label>
+
             Motivo
+
           </label>
 
           <textarea
+
             [(ngModel)]="nuevoBloqueo.motivo"
+
             placeholder="Ej: Feriado nacional"
+
           ></textarea>
 
         </div>
-
 
         <div class="warning-box">
 
@@ -2326,25 +2907,33 @@
           <div>
 
             <strong>
+
               Bloqueo general
+
             </strong>
 
             <p>
+
               Este tipo de bloqueo afectará
+
               a toda la organización.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div class="card-footer">
 
           <button
+
             type="button"
+
             class="danger-button"
+
             (click)="guardarBloqueo()"
+
           >
 
             Crear bloqueo
@@ -2355,7 +2944,6 @@
 
       </article>
 
-
       <article class="settings-card">
 
         <div class="card-header">
@@ -2363,26 +2951,35 @@
           <div>
 
             <span class="card-label">
+
               BLOQUEOS
+
             </span>
 
             <h2>
+
               Cierres programados
+
             </h2>
 
             <p>
+
               Períodos donde la organización
+
               no estará disponible.
+
             </p>
 
           </div>
 
         </div>
 
-
         <div
+
           class="empty-state"
+
           *ngIf="listaBloqueos.length === 0"
+
         >
 
           <div class="empty-icon">
@@ -2392,21 +2989,27 @@
           </div>
 
           <strong>
+
             No hay bloqueos activos
+
           </strong>
 
           <span>
+
             La organización está disponible normalmente.
+
           </span>
 
         </div>
 
-
         <div class="item-list">
 
           <div
+
             class="organization-item"
+
             *ngFor="let bloqueo of listaBloqueos"
+
           >
 
             <div class="item-icon danger-soft">
@@ -2415,28 +3018,38 @@
 
             </div>
 
-
             <div class="item-main">
 
               <strong>
+
                 {{ bloqueo.motivo || 'Bloqueo general' }}
+
               </strong>
 
               <span>
+
                 {{ bloqueo.inicio | date:'dd/MM/yyyy HH:mm' }}
+
                 →
+
                 {{ bloqueo.fin | date:'dd/MM/yyyy HH:mm' }}
+
               </span>
 
             </div>
 
-
             <button
+
               type="button"
+
               class="icon-button danger"
+
               (click)="
+
                 eliminarBloqueo(bloqueo.id)
+
               "
+
             >
 
               <i class="fas fa-trash"></i>

@@ -153,43 +153,46 @@
       </button>
 
 
-      <button
-        type="button"
-        [class.active]="
-          seccionActiva === 'historia'
-        "
-        (click)="
-          cambiarSeccion('historia')
-        "
-      >
-        Historia clínica
-      </button>
+     <button
+  *ngIf="puedeAccederClinica"
+  type="button"
+  [class.active]="
+    seccionActiva === 'historia'
+  "
+  (click)="
+    cambiarSeccion('historia')
+  "
+>
+  Historia clínica
+</button>
 
 
-      <button
-        type="button"
-        [class.active]="
-          seccionActiva === 'consultas'
-        "
-        (click)="
-          cambiarSeccion('consultas')
-        "
-      >
-        Consultas
-      </button>
+<button
+  *ngIf="puedeAccederClinica"
+  type="button"
+  [class.active]="
+    seccionActiva === 'consultas'
+  "
+  (click)="
+    cambiarSeccion('consultas')
+  "
+>
+  Consultas
+</button>
 
 
-      <button
-        type="button"
-        [class.active]="
-          seccionActiva === 'archivos'
-        "
-        (click)="
-          cambiarSeccion('archivos')
-        "
-      >
-        Estudios y archivos
-      </button>
+<button
+  *ngIf="puedeAccederClinica"
+  type="button"
+  [class.active]="
+    seccionActiva === 'archivos'
+  "
+  (click)="
+    cambiarSeccion('archivos')
+  "
+>
+  Estudios y archivos
+</button>
 
     </nav>
 
@@ -426,7 +429,10 @@
         </article>
 
 
-        <article class="dashboard-card">
+       <article
+  class="dashboard-card"
+  *ngIf="puedeAccederClinica"
+>
 
           <div class="dashboard-card-header">
 
@@ -1114,13 +1120,13 @@
     <!-- =================================================== -->
     <!-- HISTORIA CLÍNICA -->
     <!-- =================================================== -->
-
-    <section
-      class="patient-content"
-      *ngIf="
-        seccionActiva === 'historia'
-      "
-    >
+<section
+  class="patient-content"
+  *ngIf="
+    puedeAccederClinica &&
+    seccionActiva === 'historia'
+  "
+>
 
       <div class="section-heading">
 
@@ -1782,34 +1788,61 @@
               </div>
 
 
-              <div class="clinical-actions">
+           <div class="clinical-actions">
 
-                <button
-                  type="button"
-                  class="clinical-action-button"
-                  *ngIf="consulta.turnoId"
-                  (click)="abrirTurno(consulta.turnoId)"
-                >
-                  Ver turno
-                </button>
+  <span
+    class="clinical-status"
+    [class.closed]="consulta.estado === 2"
+  >
+    {{ consulta.estado === 2 ? 'Finalizada' : 'Borrador' }}
+  </span>
 
-                <button
-                  type="button"
-                  class="clinical-action-button"
-                  (click)="editarConsulta(consulta)"
-                >
-                  Editar
-                </button>
 
-                <button
-                  type="button"
-                  class="clinical-action-button danger"
-                  (click)="eliminarConsulta(consulta)"
-                >
-                  Eliminar
-                </button>
+  <button
+    type="button"
+    class="clinical-action-button"
+    *ngIf="consulta.turnoId"
+    (click)="abrirTurno(consulta.turnoId)"
+  >
+    Ver turno
+  </button>
 
-              </div>
+
+  <button
+    type="button"
+    class="clinical-action-button"
+    *ngIf="consulta.estado !== 2"
+    (click)="editarConsulta(consulta)"
+  >
+    Editar
+  </button>
+
+
+  <button
+    type="button"
+    class="clinical-action-button finish"
+    *ngIf="consulta.estado !== 2"
+    [disabled]="finalizandoConsultaId === consulta.id"
+    (click)="finalizarConsulta(consulta)"
+  >
+    {{
+      finalizandoConsultaId === consulta.id
+        ? 'Finalizando...'
+        : 'Finalizar'
+    }}
+  </button>
+
+
+  <button
+    type="button"
+    class="clinical-action-button danger"
+    *ngIf="consulta.estado !== 2"
+    (click)="eliminarConsulta(consulta)"
+  >
+    Eliminar
+  </button>
+
+</div>
 
             </header>
 
@@ -2078,12 +2111,13 @@
     <!-- CONSULTAS -->
     <!-- =================================================== -->
 
-    <section
-      class="patient-content"
-      *ngIf="
-        seccionActiva === 'consultas'
-      "
-    >
+<section
+  class="patient-content"
+  *ngIf="
+    puedeAccederClinica &&
+    seccionActiva === 'consultas'
+  "
+>
 
       <div class="section-heading">
 
@@ -2248,11 +2282,12 @@
     <!-- =================================================== -->
 
     <section
-      class="patient-content"
-      *ngIf="
-        seccionActiva === 'archivos'
-      "
-    >
+  class="patient-content"
+  *ngIf="
+    puedeAccederClinica &&
+    seccionActiva === 'archivos'
+  "
+>
 
       <div class="section-heading">
 
@@ -2442,7 +2477,7 @@
 
           <p>
             Podés cargar un PDF o imagen sin crear primero una evolución.
-            AmiApp lo guarda como documentación clínica del paciente.
+            NexaSalud lo guarda como documentación clínica del paciente.
           </p>
 
           <input

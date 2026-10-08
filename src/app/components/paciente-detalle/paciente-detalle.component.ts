@@ -41,6 +41,7 @@ import {
 import {
   DialogoService
 } from '../../services/dialogo.service';
+import { AuthService } from '../../services/auth-service.service';
 
 
 type SeccionPaciente =
@@ -121,8 +122,10 @@ export class PacienteDetalleComponent
   seccionActiva:
     SeccionPaciente =
       'resumen';
-
-
+turnoOrigenId =
+  '';
+puedeAccederClinica =
+  false;
   // =========================================================
   // EDICIÓN DEL PACIENTE
   // =========================================================
@@ -134,7 +137,7 @@ export class PacienteDetalleComponent
   guardandoPaciente =
     false;
 
-
+finalizandoConsultaId: string | null = null;
   formularioPaciente:
     FormularioPaciente =
       this.crearFormularioPacienteVacio();
@@ -273,7 +276,9 @@ export class PacienteDetalleComponent
       AlertaService,
 
     private readonly dialogoService:
-      DialogoService
+      DialogoService,
+      private readonly authService:
+  AuthService
   ) {}
 
 
@@ -282,6 +287,48 @@ export class PacienteDetalleComponent
   // =========================================================
 
   ngOnInit(): void {
+
+this.puedeAccederClinica =
+  this.authService
+    .esProfesional();
+
+
+    const seccionSolicitada =
+  this.route
+    .snapshot
+    .queryParamMap
+    .get(
+      'seccion'
+    );
+this.turnoOrigenId =
+  this.route
+    .snapshot
+    .queryParamMap
+    .get(
+      'turnoId'
+    )
+  ?? '';
+
+if (
+  seccionSolicitada === 'resumen'
+  ||
+  seccionSolicitada === 'datos'
+  ||
+  (
+    this.puedeAccederClinica
+    &&
+    (
+      seccionSolicitada === 'historia'
+      ||
+      seccionSolicitada === 'consultas'
+      ||
+      seccionSolicitada === 'archivos'
+    )
+  )
+) {
+  this.seccionActiva =
+    seccionSolicitada;
+}
 
     const id =
       this.route
@@ -331,15 +378,29 @@ export class PacienteDetalleComponent
         ) => {
 
           this.paciente =
-            paciente;
+  paciente;
 
-          this.cargando =
-            false;
+this.cargando =
+  false;
 
 
-          this.cargarHistoria(
-            paciente.id
-          );
+if (
+  this.puedeAccederClinica
+) {
+  this.cargarHistoria(
+    paciente.id
+  );
+}
+else {
+  this.consultas =
+    [];
+
+  this.cargandoHistoria =
+    false;
+
+  this.errorHistoria =
+    false;
+}
         },
 
 
@@ -503,13 +564,25 @@ export class PacienteDetalleComponent
   }
 
 
-  volver(): void {
+volver(): void {
+
+  if (
+    this.turnoOrigenId
+  ) {
 
     this.router.navigate([
-      '/dashboard/clientes'
+      '/dashboard/turnos',
+      this.turnoOrigenId
     ]);
+
+    return;
   }
 
+
+  this.router.navigate([
+    '/dashboard/clientes'
+  ]);
+}
 
   irATurnos(): void {
 
@@ -1542,86 +1615,270 @@ export class PacienteDetalleComponent
   }
 
 
-  // =========================================================
-  // EDITAR CONSULTA
-  // =========================================================
+// =========================================================
+// EDITAR CONSULTA
+// =========================================================
 
-  editarConsulta(
-    consulta:
-      ConsultaMedica
-  ): void {
+editarConsulta(
+  consulta: ConsultaMedica
+): void {
 
-    this.modoFormularioConsulta =
-      'editar';
+  if (consulta.estado === 2) {
 
+    this.alertaService.info(
+      'Consulta finalizada',
+      'Esta consulta ya fue finalizada y su contenido original no puede modificarse. Si necesitás realizar una corrección, agregá una adenda.'
+    );
 
-    this.contextoManual =
-      null;
-
-
-    this.especialidadManualId =
-      consulta.profesionalEspecialidadId;
-
-
-    this.archivosPendientes =
-      [];
-
-
-    this.consultaEditando =
-      consulta;
-
-
-    this.formularioConsulta = {
-
-      motivoConsulta:
-        consulta
-          .motivoConsulta
-        ??
-        '',
-
-      diagnostico:
-        consulta
-          .diagnostico
-        ??
-        '',
-
-      tratamiento:
-        consulta
-          .tratamiento
-        ??
-        '',
-
-      indicaciones:
-        consulta
-          .indicaciones
-        ??
-        '',
-
-      proximoControl:
-        consulta
-          .proximoControl
-        ??
-        ''
-    };
-
-
-    this.datosClinicosFormulario =
-      this.convertirDatosConsultaAFilas(
-        consulta.datosConsulta
-      );
-
-
-    this.mostrarFormularioConsulta =
-      true;
-
-
-    this.seccionActiva =
-      'historia';
-
-
-    this.irAlFormularioClinico();
+    return;
   }
 
+  this.modoFormularioConsulta =
+    'editar';
+
+  this.contextoManual =
+    null;
+
+  this.especialidadManualId =
+    consulta.profesionalEspecialidadId;
+
+  this.archivosPendientes =
+    [];
+
+  this.consultaEditando =
+    consulta;
+
+  this.formularioConsulta = {
+
+    motivoConsulta:
+      consulta.motivoConsulta
+      ?? '',
+
+    diagnostico:
+      consulta.diagnostico
+      ?? '',
+
+    tratamiento:
+      consulta.tratamiento
+      ?? '',
+
+    indicaciones:
+      consulta.indicaciones
+      ?? '',
+
+    proximoControl:
+      consulta.proximoControl
+      ?? ''
+  };
+
+  this.datosClinicosFormulario =
+    this.convertirDatosConsultaAFilas(
+      consulta.datosConsulta
+    );
+
+  this.mostrarFormularioConsulta =
+    true;
+
+  this.seccionActiva =
+    'historia';
+
+  this.irAlFormularioClinico();
+}
+
+
+// =========================================================
+// FINALIZAR CONSULTA
+// =========================================================
+
+async finalizarConsulta(
+  consulta: ConsultaMedica
+): Promise<void> {
+
+  if (
+    consulta.estado === 2 ||
+    this.finalizandoConsultaId !== null
+  ) {
+    return;
+  }
+
+  const confirmar =
+    await this.dialogoService.confirmar({
+
+      titulo:
+        'Finalizar consulta',
+
+      mensaje:
+        'Una vez finalizada, la consulta quedará cerrada y su contenido original ya no podrá modificarse ni eliminarse. Cualquier corrección posterior deberá registrarse mediante una adenda.',
+
+      textoConfirmar:
+        'Finalizar consulta',
+
+      textoCancelar:
+        'Cancelar'
+    });
+
+  if (!confirmar) {
+    return;
+  }
+
+  this.finalizandoConsultaId =
+    consulta.id;
+
+  this.consultasMedicasService
+    .cerrar(
+      consulta.id
+    )
+    .subscribe({
+
+      next: (
+        actualizada
+      ) => {
+
+        this.finalizandoConsultaId =
+          null;
+
+        this.consultas =
+          this.consultas
+            .map(
+              item =>
+                item.id === actualizada.id
+                  ? actualizada
+                  : item
+            )
+            .sort(
+              (
+                a,
+                b
+              ) =>
+                new Date(
+                  b.fecha
+                ).getTime()
+                -
+                new Date(
+                  a.fecha
+                ).getTime()
+            );
+
+        if (
+          this.consultaEditando?.id ===
+          actualizada.id
+        ) {
+          this.cerrarFormularioConsulta();
+        }
+
+        this.alertaService.success(
+          'Consulta finalizada',
+          'La consulta quedó cerrada correctamente.'
+        );
+      },
+
+      error: (
+        error: any
+      ) => {
+
+        console.error(
+          'Error finalizando consulta:',
+          error
+        );
+
+        this.finalizandoConsultaId =
+          null;
+
+        this.alertaService.error(
+          'No se pudo finalizar la consulta',
+          this.obtenerMensajeError(
+            error,
+            'Intentá nuevamente.'
+          )
+        );
+      }
+    });
+}
+
+
+// =========================================================
+// ELIMINAR CONSULTA
+// =========================================================
+
+async eliminarConsulta(
+  consulta: ConsultaMedica
+): Promise<void> {
+
+  if (consulta.estado === 2) {
+
+    this.alertaService.info(
+      'Consulta finalizada',
+      'Una consulta médica finalizada no puede eliminarse.'
+    );
+
+    return;
+  }
+
+  const confirmar =
+    await this.dialogoService
+      .confirmar({
+
+        titulo:
+          'Eliminar consulta',
+
+        mensaje:
+          'La consulta dejará de mostrarse en la historia clínica. Esta acción realiza una baja lógica.',
+
+        textoConfirmar:
+          'Eliminar',
+
+        textoCancelar:
+          'Cancelar',
+
+        variante:
+          'danger'
+      });
+
+  if (!confirmar) {
+    return;
+  }
+
+  this.consultasMedicasService
+    .eliminar(
+      consulta.id
+    )
+    .subscribe({
+
+      next: () => {
+
+        this.consultas =
+          this.consultas
+            .filter(
+              item =>
+                item.id !==
+                consulta.id
+            );
+
+        this.alertaService.success(
+          'Consulta eliminada',
+          'La consulta fue dada de baja de la historia clínica.'
+        );
+      },
+
+      error: (
+        error: any
+      ) => {
+
+        console.error(
+          'Error eliminando consulta:',
+          error
+        );
+
+        this.alertaService.error(
+          'No se pudo eliminar la consulta',
+          this.obtenerMensajeError(
+            error,
+            'Intentá nuevamente.'
+          )
+        );
+      }
+    });
+}
 
   cerrarFormularioConsulta(): void {
 
@@ -1824,85 +2081,6 @@ export class PacienteDetalleComponent
       });
   }
 
-
-  // =========================================================
-  // ELIMINAR CONSULTA
-  // =========================================================
-
-  async eliminarConsulta(
-    consulta:
-      ConsultaMedica
-  ): Promise<void> {
-
-    const confirmar =
-      await this.dialogoService
-        .confirmar({
-          titulo:
-            'Eliminar consulta',
-
-          mensaje:
-            'La consulta dejará de mostrarse en la historia clínica. Esta acción realiza una baja lógica.',
-
-          textoConfirmar:
-            'Eliminar',
-
-          textoCancelar:
-            'Cancelar',
-
-          variante:
-            'danger'
-        });
-
-
-    if (!confirmar) {
-      return;
-    }
-
-
-    this.consultasMedicasService
-      .eliminar(
-        consulta.id
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.consultas =
-            this.consultas
-              .filter(
-                item =>
-                  item.id !==
-                  consulta.id
-              );
-
-
-          this.alertaService.success(
-            'Consulta eliminada',
-            'La consulta fue dada de baja de la historia clínica.'
-          );
-        },
-
-
-        error: (
-          error: any
-        ) => {
-
-          console.error(
-            'Error eliminando consulta:',
-            error
-          );
-
-
-          this.alertaService.error(
-            'No se pudo eliminar la consulta',
-            this.obtenerMensajeError(
-              error,
-              'Intentá nuevamente.'
-            )
-          );
-        }
-      });
-  }
 
 
   // =========================================================

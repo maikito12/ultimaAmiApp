@@ -14,7 +14,13 @@ export interface ConsultaMedicaArchivo {
   createdAt: string;
 }
 
-
+export interface ConsultaMedicaAdenda {
+  id: string;
+  contenido: string;
+  createdAt: string;
+  profesionalOrganizacionId: string;
+  profesionalNombre: string;
+}
 export interface ConsultaMedica {
   id: string;
 
@@ -27,7 +33,11 @@ export interface ConsultaMedica {
   profesionalEspecialidadId: string;
 
   fecha: string;
+estado: number;
 
+cerradaAt?: string | null;
+
+adendas: ConsultaMedicaAdenda[];
   profesionalNombre: string;
 
   especialidadNombre: string;
@@ -205,7 +215,42 @@ export class ConsultasMedicasService {
     );
   }
 
+// ==========================================
+// FINALIZAR / CERRAR CONSULTA
+// ==========================================
 
+cerrar(
+  consultaId: string
+): Observable<ConsultaMedica> {
+
+  return this.http.post<ConsultaMedica>(
+    `${this.URL_BASE}/${consultaId}/cerrar`,
+    {}
+  );
+}
+
+// ==========================================
+// ADENDAS
+// ==========================================
+
+crearAdenda(
+  consultaId: string,
+  contenido: string
+): Observable<{
+  success: boolean;
+  message: string;
+}> {
+
+  return this.http.post<{
+    success: boolean;
+    message: string;
+  }>(
+    `${this.URL_BASE}/${consultaId}/adendas`,
+    {
+      contenido
+    }
+  );
+}
   // ==========================================
   // ELIMINAR / BAJA LÓGICA
   // ==========================================

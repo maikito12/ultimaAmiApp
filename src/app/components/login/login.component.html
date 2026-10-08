@@ -1,145 +1,329 @@
 <div class="login-page">
 
-  <div class="login-card">
+  <section class="login-shell">
 
-    <div class="brand">
-      <div class="brand-mark">A</div>
-      <span>AmiApp</span>
-    </div>
+    <!-- ===================================================== -->
+    <!-- BRAND / PRESENTACIÓN -->
+    <!-- ===================================================== -->
 
-    <div class="login-header">
-      <h1>Bienvenido</h1>
-      <p>Ingresá a tu cuenta para continuar</p>
-    </div>
+    <aside class="login-hero">
 
-    <form (submit)="login($event)">
-
-      <div class="input-group">
-        <label for="email">
-          Correo electrónico
-        </label>
-
-        <input
-          id="email"
-          type="email"
-          placeholder="tu@email.com"
-          [(ngModel)]="email"
-          name="email"
-          autocomplete="email"
-          required
-        />
-      </div>
-
-      <div class="input-group">
-
-        <div class="label-row">
-          <label for="password">
-            Contraseña
-          </label>
-
-          <button
-            type="button"
-            class="forgot-password"
-            (click)="recuperarPassword()"
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
+      <div class="hero-brand">
+        <div class="brand-mark">
+          A
         </div>
-
-        <div class="password-wrapper">
-
-          <input
-            id="password"
-            [type]="mostrarPassword ? 'text' : 'password'"
-            placeholder="Ingresá tu contraseña"
-            [(ngModel)]="password"
-            name="password"
-            autocomplete="current-password"
-            required
-          />
-
-          <button
-            type="button"
-            class="password-toggle"
-            (click)="togglePassword()"
-            [attr.aria-label]="
-              mostrarPassword
-                ? 'Ocultar contraseña'
-                : 'Mostrar contraseña'
-            "
-          >
-            <i
-              class="fa"
-              [ngClass]="
-                mostrarPassword
-                  ? 'fa-eye-slash'
-                  : 'fa-eye'
-              "
-            ></i>
-          </button>
-
-        </div>
-
-      </div>
-
-      <button
-        type="submit"
-        class="btn-login"
-        [disabled]="cargando"
-      >
-        <span
-          *ngIf="cargando"
-          class="spinner"
-        ></span>
 
         <span>
-          {{
-            cargando
-              ? 'Iniciando sesión...'
-              : 'Iniciar sesión'
-          }}
+          NexaSalud
         </span>
-      </button>
+      </div>
 
-    </form>
 
-    <div class="invitation-section">
-      <span class="section-divider">
-        <span></span>
-        <small>O</small>
-        <span></span>
-      </span>
+      <div class="hero-copy">
 
-      <button
-        type="button"
-        class="btn-invitation"
-        (click)="irAInvitacion()"
-      >
-        <span class="invitation-icon">
-          <i class="fas fa-ticket-alt"></i>
+        <span class="hero-eyebrow">
+          GESTIÓN PARA PROFESIONALES DE SALUD
         </span>
 
-        <span class="invitation-copy">
-          <strong>Tengo un código de invitación</strong>
-          <small>Unite a una organización de AmiApp</small>
+        <h1>
+          Tu consultorio,
+          <span>más organizado.</span>
+        </h1>
+
+        <p>
+          Gestioná turnos, pacientes, automatizaciones y el día a día
+          de tu organización desde un solo lugar.
+        </p>
+
+      </div>
+
+
+      <div class="hero-features">
+
+        <div class="hero-feature">
+          <span class="feature-icon">
+            <i class="far fa-calendar-check"></i>
+          </span>
+
+          <div>
+            <strong>
+              Agenda inteligente
+            </strong>
+
+            <small>
+              Organizá tus turnos y disponibilidad.
+            </small>
+          </div>
+        </div>
+
+
+        <div class="hero-feature">
+          <span class="feature-icon">
+            <i class="far fa-user"></i>
+          </span>
+
+          <div>
+            <strong>
+              Pacientes en un solo lugar
+            </strong>
+
+            <small>
+              Accedé rápidamente a su información.
+            </small>
+          </div>
+        </div>
+
+
+        <div class="hero-feature">
+          <span class="feature-icon">
+            <i class="fas fa-bolt"></i>
+          </span>
+
+          <div>
+            <strong>
+              Automatizaciones
+            </strong>
+
+            <small>
+              Reducí tareas repetitivas y ausencias.
+            </small>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="hero-footer">
+        <span>
+          NexaSalud
         </span>
 
-        <i class="fas fa-chevron-right invitation-arrow"></i>
-      </button>
-    </div>
+        <small>
+          Gestión simple para equipos de salud.
+        </small>
+      </div>
 
-    <div class="register-section">
-      <span>¿Todavía no tenés una cuenta?</span>
+    </aside>
 
-      <button
-        type="button"
-        class="register-link"
-        (click)="irARegistro()"
-      >
-        Crear cuenta
-      </button>
-    </div>
 
-  </div>
+    <!-- ===================================================== -->
+    <!-- LOGIN -->
+    <!-- ===================================================== -->
+
+    <main class="login-panel">
+
+      <div class="mobile-brand">
+        <div class="brand-mark">
+          A
+        </div>
+
+        <span>
+          NexaSalud
+        </span>
+      </div>
+
+
+      <div class="login-card">
+
+        <div class="login-header">
+
+          <span class="login-eyebrow">
+            BIENVENIDO
+          </span>
+
+          <h2>
+            Iniciá sesión
+          </h2>
+
+          <p>
+            Ingresá a tu cuenta para continuar en NexaSalud.
+          </p>
+
+        </div>
+
+
+        <form
+          (submit)="login($event)"
+          class="login-form"
+        >
+
+          <!-- EMAIL -->
+
+          <div class="input-group">
+
+            <label for="email">
+              Correo electrónico
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon">
+                <i class="far fa-envelope"></i>
+              </span>
+
+              <input
+                id="email"
+                type="email"
+                placeholder="tu@email.com"
+                [(ngModel)]="email"
+                name="email"
+                autocomplete="email"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- CONTRASEÑA -->
+
+          <div class="input-group">
+
+            <div class="label-row">
+
+              <label for="password">
+                Contraseña
+              </label>
+
+              <button
+                type="button"
+                class="forgot-password"
+                (click)="recuperarPassword()"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+
+            </div>
+
+
+            <div class="input-wrapper password-wrapper">
+
+              <span class="input-icon">
+                <i class="fas fa-lock"></i>
+              </span>
+
+              <input
+                id="password"
+                [type]="mostrarPassword ? 'text' : 'password'"
+                placeholder="Ingresá tu contraseña"
+                [(ngModel)]="password"
+                name="password"
+                autocomplete="current-password"
+                required
+              >
+
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePassword()"
+                [attr.aria-label]="
+                  mostrarPassword
+                    ? 'Ocultar contraseña'
+                    : 'Mostrar contraseña'
+                "
+              >
+                <i
+                  class="fa"
+                  [ngClass]="
+                    mostrarPassword
+                      ? 'fa-eye-slash'
+                      : 'fa-eye'
+                  "
+                ></i>
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- LOGIN -->
+
+          <button
+            type="submit"
+            class="btn-login"
+            [disabled]="cargando"
+          >
+
+            <span
+              *ngIf="cargando"
+              class="spinner"
+            ></span>
+
+            <span>
+              {{
+                cargando
+                  ? 'Iniciando sesión...'
+                  : 'Iniciar sesión'
+              }}
+            </span>
+
+          </button>
+
+        </form>
+
+
+        <!-- INVITACIÓN -->
+
+        <div class="invitation-section">
+
+          <div class="section-divider">
+            <span></span>
+            <small>O TAMBIÉN</small>
+            <span></span>
+          </div>
+
+
+          <button
+            type="button"
+            class="btn-invitation"
+            (click)="irAInvitacion()"
+          >
+
+            <span class="invitation-icon">
+              <i class="fas fa-ticket-alt"></i>
+            </span>
+
+            <span class="invitation-copy">
+              <strong>
+                Tengo un código de invitación
+              </strong>
+
+              <small>
+                Sumate a una organización existente.
+              </small>
+            </span>
+
+            <i class="fas fa-chevron-right invitation-arrow"></i>
+
+          </button>
+
+        </div>
+
+
+        <!-- REGISTRO -->
+
+        <div class="register-section">
+
+          <span>
+            ¿Todavía no tenés una cuenta?
+          </span>
+
+          <button
+            type="button"
+            class="register-link"
+            (click)="irARegistro()"
+          >
+            Crear cuenta
+          </button>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </section>
 
 </div>

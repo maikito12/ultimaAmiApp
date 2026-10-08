@@ -1,9 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
 
-import { TurnosService } from '../../services/turno-service.service';
+import {
+  AuthService
+} from '../../services/auth-service.service';
+
+import {
+  TurnosService
+} from '../../services/turno-service.service';
+
+import {
+  AlertaService
+} from '../../services/alerta.service';
+
+import {
+  DialogoService
+} from '../../services/dialogo.service';
+
 
 type TabTurno =
   | 'resumen'
@@ -11,6 +25,7 @@ type TabTurno =
   | 'historia'
   | 'consultas'
   | 'archivos';
+
 
 @Component({
   selector: 'app-turno-detalle',
@@ -22,7 +37,8 @@ type TabTurno =
   templateUrl: './turno-detalle.component.html',
   styleUrl: './turno-detalle.component.css'
 })
-export class TurnoDetalleComponent implements OnInit {
+export class TurnoDetalleComponent
+  implements OnInit {
 
   // =======================================================
   // DATOS
@@ -35,6 +51,9 @@ export class TurnoDetalleComponent implements OnInit {
   fechaOrigen = '';
 
   cargando = true;
+
+  puedeAccederClinica =
+    false;
 
 
   // =======================================================
@@ -50,9 +69,23 @@ export class TurnoDetalleComponent implements OnInit {
   // =======================================================
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private turnosService: TurnosService
+    private readonly route:
+      ActivatedRoute,
+
+    private readonly router:
+      Router,
+
+    private readonly turnosService:
+      TurnosService,
+
+    private readonly authService:
+      AuthService,
+
+    private readonly alertaService:
+      AlertaService,
+
+    private readonly dialogoService:
+      DialogoService
   ) {}
 
 
@@ -62,11 +95,18 @@ export class TurnoDetalleComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.puedeAccederClinica =
+      this.authService
+        .esProfesional();
+
+
     this.turnoId =
       this.route
         .snapshot
         .paramMap
-        .get('id')
+        .get(
+          'id'
+        )
       ?? '';
 
 
@@ -74,7 +114,9 @@ export class TurnoDetalleComponent implements OnInit {
       this.route
         .snapshot
         .queryParamMap
-        .get('fecha')
+        .get(
+          'fecha'
+        )
       ?? '';
 
 
@@ -96,7 +138,8 @@ export class TurnoDetalleComponent implements OnInit {
 
   cargarTurno(): void {
 
-    this.cargando = true;
+    this.cargando =
+      true;
 
 
     this.turnosService
@@ -105,24 +148,21 @@ export class TurnoDetalleComponent implements OnInit {
       )
       .subscribe({
 
-        next: (response: any) => {
-
-          console.log(
-            'DETALLE TURNO:',
-            response
-          );
-
+        next: (
+          response: any
+        ) => {
 
           this.turno =
             response;
-
 
           this.cargando =
             false;
         },
 
 
-        error: (error) => {
+        error: (
+          error: any
+        ) => {
 
           console.error(
             'Error cargando turno:',
@@ -134,21 +174,11 @@ export class TurnoDetalleComponent implements OnInit {
             false;
 
 
-          Swal.fire({
-            icon:
-              'error',
-
-            title:
-              'No se pudo cargar el turno',
-
-            text:
-              error?.error?.message ??
-              error?.error?.mensaje ??
-              'Ocurrió un error al obtener la información del turno.',
-
-            confirmButtonColor:
-              '#17483d'
-          });
+          this.mostrarError(
+            error,
+            'Ocurrió un error al obtener la información del turno.',
+            'No se pudo cargar el turno'
+          );
         }
       });
   }
@@ -161,6 +191,57 @@ export class TurnoDetalleComponent implements OnInit {
   cambiarTab(
     tab: TabTurno
   ): void {
+
+    if (
+      tab === 'historia'
+      ||
+      tab === 'consultas'
+      ||
+      tab === 'archivos'
+    ) {
+
+      if (
+        !this.puedeAccederClinicaTurno()
+      ) {
+        return;
+      }
+
+
+      const pacienteId =
+        this.obtenerPacienteId();
+
+
+      if (!pacienteId) {
+
+        this.alertaService.info(
+          'Ficha del paciente',
+          'No pudimos identificar al paciente asociado a este turno.'
+        );
+
+        return;
+      }
+
+
+      this.router.navigate(
+        [
+          '/dashboard/clientes',
+          pacienteId
+        ],
+        {
+          queryParams: {
+            seccion:
+              tab,
+
+            turnoId:
+              this.turnoId
+          }
+        }
+      );
+
+
+      return;
+    }
+
 
     this.tabActual =
       tab;
@@ -202,20 +283,10 @@ export class TurnoDetalleComponent implements OnInit {
 
     if (!pacienteId) {
 
-      Swal.fire({
-        icon:
-          'info',
-
-        title:
-          'Ficha del paciente',
-
-        text:
-          'Todavía necesitamos que el detalle del turno devuelva el pacienteId para abrir su ficha.',
-
-        confirmButtonColor:
-          '#17483d'
-      });
-
+      this.alertaService.info(
+        'Ficha del paciente',
+        'No pudimos identificar al paciente asociado a este turno.'
+      );
 
       return;
     }
@@ -229,51 +300,57 @@ export class TurnoDetalleComponent implements OnInit {
     );
   }
 
-// =======================================================
-// CONFIRMAR TURNO
-// =======================================================
 
-confirmarTurno(): void {
+  // =======================================================
+  // CONFIRMAR TURNO
+  // =======================================================
 
-  if (!this.turnoId) {
-    return;
-  }
+  async confirmarTurno():
+    Promise<void> {
 
-  Swal.fire({
-    title: '¿Confirmar turno?',
-    text: `Se confirmará el turno de ${this.obtenerPaciente()}.`,
-    icon: 'question',
-
-    showCancelButton: true,
-
-    confirmButtonText: 'Confirmar turno',
-    cancelButtonText: 'Volver',
-
-    confirmButtonColor: '#17483d'
-  })
-  .then(result => {
-
-    if (!result.isConfirmed) {
+    if (!this.turnoId) {
       return;
     }
 
+
+    const confirmado =
+      await this.dialogoService
+        .confirmar({
+          titulo:
+            '¿Confirmar turno?',
+
+          mensaje:
+            `Se confirmará el turno de ${this.obtenerPaciente()}.`,
+
+          textoConfirmar:
+            'Confirmar turno',
+
+          textoCancelar:
+            'Volver'
+        });
+
+
+    if (!confirmado) {
+      return;
+    }
+
+
     this.turnosService
-      .confirmarTurno(this.turnoId)
+      .confirmarTurno(
+        this.turnoId
+      )
       .subscribe({
 
         next: () => {
 
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: 'Turno confirmado',
-            showConfirmButton: false,
-            timer: 2200
-          });
+          this.alertaService.success(
+            'Turno confirmado'
+          );
+
 
           this.cargarTurno();
         },
+
 
         error: error => {
 
@@ -283,8 +360,9 @@ confirmarTurno(): void {
           );
         }
       });
-  });
-}
+  }
+
+
   // =======================================================
   // CHECK-IN
   // =======================================================
@@ -304,25 +382,9 @@ confirmarTurno(): void {
 
         next: () => {
 
-          Swal.fire({
-            toast:
-              true,
-
-            position:
-              'top-end',
-
-            icon:
-              'success',
-
-            title:
-              'Paciente ingresado a sala',
-
-            showConfirmButton:
-              false,
-
-            timer:
-              2200
-          });
+          this.alertaService.success(
+            'Paciente ingresado a sala'
+          );
 
 
           this.cargarTurno();
@@ -359,25 +421,9 @@ confirmarTurno(): void {
 
         next: () => {
 
-          Swal.fire({
-            toast:
-              true,
-
-            position:
-              'top-end',
-
-            icon:
-              'success',
-
-            title:
-              'Atención iniciada',
-
-            showConfirmButton:
-              false,
-
-            timer:
-              2200
-          });
+          this.alertaService.success(
+            'Atención iniciada'
+          );
 
 
           this.cargarTurno();
@@ -399,83 +445,60 @@ confirmarTurno(): void {
   // FINALIZAR ATENCIÓN
   // =======================================================
 
-  finalizarAtencion(): void {
+  async finalizarAtencion():
+    Promise<void> {
 
     if (!this.turnoId) {
       return;
     }
 
 
-    Swal.fire({
-      title:
-        '¿Finalizar atención?',
+    const confirmado =
+      await this.dialogoService
+        .confirmar({
+          titulo:
+            '¿Finalizar atención?',
 
-      text:
-        `Se marcará como atendido a ${this.obtenerPaciente()}.`,
+          mensaje:
+            `Se marcará como atendido a ${this.obtenerPaciente()}.`,
 
-      icon:
-        'question',
+          textoConfirmar:
+            'Finalizar',
 
-      showCancelButton:
-        true,
+          textoCancelar:
+            'Volver'
+        });
 
-      confirmButtonText:
-        'Finalizar',
 
-      cancelButtonText:
-        'Volver',
+    if (!confirmado) {
+      return;
+    }
 
-      confirmButtonColor:
-        '#17483d'
-    })
-      .then(result => {
 
-        if (!result.isConfirmed) {
-          return;
+    this.turnosService
+      .finalizarAtencion(
+        this.turnoId
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.alertaService.success(
+            'Consulta finalizada'
+          );
+
+
+          this.cargarTurno();
+        },
+
+
+        error: error => {
+
+          this.mostrarError(
+            error,
+            'No se pudo finalizar la atención.'
+          );
         }
-
-
-        this.turnosService
-          .finalizarAtencion(
-            this.turnoId
-          )
-          .subscribe({
-
-            next: () => {
-
-              Swal.fire({
-                toast:
-                  true,
-
-                position:
-                  'top-end',
-
-                icon:
-                  'success',
-
-                title:
-                  'Consulta finalizada',
-
-                showConfirmButton:
-                  false,
-
-                timer:
-                  2200
-              });
-
-
-              this.cargarTurno();
-            },
-
-
-            error: error => {
-
-              this.mostrarError(
-                error,
-                'No se pudo finalizar la atención.'
-              );
-            }
-          });
       });
   }
 
@@ -484,83 +507,60 @@ confirmarTurno(): void {
   // NO ASISTIÓ
   // =======================================================
 
-  registrarNoAsistio(): void {
+  async registrarNoAsistio():
+    Promise<void> {
 
     if (!this.turnoId) {
       return;
     }
 
 
-    Swal.fire({
-      title:
-        '¿El paciente no asistió?',
+    const confirmado =
+      await this.dialogoService
+        .confirmar({
+          titulo:
+            '¿El paciente no asistió?',
 
-      text:
-        this.obtenerPaciente(),
+          mensaje:
+            this.obtenerPaciente(),
 
-      icon:
-        'warning',
+          textoConfirmar:
+            'Marcar no asistió',
 
-      showCancelButton:
-        true,
+          textoCancelar:
+            'Volver'
+        });
 
-      confirmButtonText:
-        'Marcar no asistió',
 
-      cancelButtonText:
-        'Volver',
+    if (!confirmado) {
+      return;
+    }
 
-      confirmButtonColor:
-        '#64748b'
-    })
-      .then(result => {
 
-        if (!result.isConfirmed) {
-          return;
+    this.turnosService
+      .registrarNoAsistio(
+        this.turnoId
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.alertaService.success(
+            'Marcado como no asistió'
+          );
+
+
+          this.cargarTurno();
+        },
+
+
+        error: error => {
+
+          this.mostrarError(
+            error,
+            'No se pudo actualizar el turno.'
+          );
         }
-
-
-        this.turnosService
-          .registrarNoAsistio(
-            this.turnoId
-          )
-          .subscribe({
-
-            next: () => {
-
-              Swal.fire({
-                toast:
-                  true,
-
-                position:
-                  'top-end',
-
-                icon:
-                  'success',
-
-                title:
-                  'Marcado como no asistió',
-
-                showConfirmButton:
-                  false,
-
-                timer:
-                  2200
-              });
-
-
-              this.cargarTurno();
-            },
-
-
-            error: error => {
-
-              this.mostrarError(
-                error,
-                'No se pudo actualizar el turno.'
-              );
-            }
-          });
       });
   }
 
@@ -569,92 +569,76 @@ confirmarTurno(): void {
   // CANCELAR TURNO
   // =======================================================
 
-  cancelarTurno(): void {
+  async cancelarTurno():
+    Promise<void> {
 
     if (!this.turnoId) {
       return;
     }
 
 
-    Swal.fire({
-      title:
-        'Cancelar turno',
+    const motivo =
+      await this.dialogoService
+        .entrada({
+          titulo:
+            'Cancelar turno',
 
-      text:
-        `¿Querés cancelar el turno de ${this.obtenerPaciente()}?`,
+          mensaje:
+            `¿Querés cancelar el turno de ${this.obtenerPaciente()}?`,
 
-      input:
-        'textarea',
+          label:
+            'Motivo de cancelación',
 
-      inputLabel:
-        'Motivo de cancelación',
+          placeholder:
+            'Escribí el motivo...',
 
-      inputPlaceholder:
-        'Escribí el motivo...',
+          textoConfirmar:
+            'Cancelar turno',
 
-      showCancelButton:
-        true,
+          textoCancelar:
+            'Volver',
 
-      confirmButtonText:
-        'Cancelar turno',
+          requerido:
+            true,
 
-      cancelButtonText:
-        'Volver',
+          minLength:
+            3,
 
-      confirmButtonColor:
-        '#b42318',
+          variante:
+            'danger'
+        });
 
-      inputValidator: value => {
 
-        if (!value?.trim()) {
+    if (motivo === null) {
+      return;
+    }
 
-          return 'Ingresá un motivo de cancelación.';
+
+    this.turnosService
+      .cancelarTurno(
+        this.turnoId,
+        motivo
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.alertaService.success(
+            'Turno cancelado'
+          );
+
+
+          this.cargarTurno();
+        },
+
+
+        error: error => {
+
+          this.mostrarError(
+            error,
+            'No se pudo cancelar el turno.'
+          );
         }
-
-
-        return null;
-      }
-    })
-      .then(result => {
-
-        if (!result.isConfirmed) {
-          return;
-        }
-
-
-        this.turnosService
-          .cancelarTurno(
-            this.turnoId,
-            result.value
-          )
-          .subscribe({
-
-            next: () => {
-
-              Swal.fire({
-                icon:
-                  'success',
-
-                title:
-                  'Turno cancelado',
-
-                confirmButtonColor:
-                  '#17483d'
-              });
-
-
-              this.cargarTurno();
-            },
-
-
-            error: error => {
-
-              this.mostrarError(
-                error,
-                'No se pudo cancelar el turno.'
-              );
-            }
-          });
       });
   }
 
@@ -662,14 +646,18 @@ confirmarTurno(): void {
   // =======================================================
   // ESTADOS
   // =======================================================
-puedeConfirmar(): boolean {
 
-  return (
-    this.normalizarEstado(
-      this.turno?.estado
-    ) === 'pendiente'
-  );
-}
+  puedeConfirmar(): boolean {
+
+    return (
+      this.normalizarEstado(
+        this.turno?.estado
+      ) ===
+      'pendiente'
+    );
+  }
+
+
   puedeCheckIn(): boolean {
 
     return (
@@ -690,7 +678,8 @@ puedeConfirmar(): boolean {
 
 
     return (
-      estado === 'ensala' ||
+      estado === 'ensala'
+      ||
       estado === 'espera'
     );
   }
@@ -707,36 +696,63 @@ puedeConfirmar(): boolean {
   }
 
 
-puedeNoAsistio(): boolean {
+  puedeNoAsistio(): boolean {
 
-  const estado =
-    this.normalizarEstado(
-      this.turno?.estado
+    const estado =
+      this.normalizarEstado(
+        this.turno?.estado
+      );
+
+
+    return [
+      'confirmado',
+      'ensala'
+    ].includes(
+      estado
     );
+  }
 
-  return [
-    'confirmado',
-    'ensala'
-  ].includes(
-    estado
-  );
-}
 
-puedeCancelar(): boolean {
+  puedeCancelar(): boolean {
 
-  const estado =
-    this.normalizarEstado(
-      this.turno?.estado
+    const estado =
+      this.normalizarEstado(
+        this.turno?.estado
+      );
+
+
+    return [
+      'pendiente',
+      'confirmado'
+    ].includes(
+      estado
     );
+  }
 
-  return [
-    'pendiente',
-    'confirmado'
-  ].includes(
-    estado
-  );
-}
 
+  puedeAccederClinicaTurno():
+    boolean {
+
+    if (
+      !this.puedeAccederClinica
+    ) {
+      return false;
+    }
+
+
+    const estado =
+      this.normalizarEstado(
+        this.turno?.estado
+      );
+
+
+    return [
+      'enatencion',
+      'atendido'
+    ].includes(
+      estado
+    );
+  }
 
 
   // =======================================================
@@ -768,8 +784,12 @@ puedeCancelar(): boolean {
     const partes =
       this.obtenerPaciente()
         .trim()
-        .split(/\s+/)
-        .filter(Boolean);
+        .split(
+          /\s+/
+        )
+        .filter(
+          Boolean
+        );
 
 
     if (!partes.length) {
@@ -778,14 +798,21 @@ puedeCancelar(): boolean {
 
 
     return partes
-      .slice(0, 2)
+      .slice(
+        0,
+        2
+      )
       .map(
         parte =>
           parte
-            .charAt(0)
+            .charAt(
+              0
+            )
             .toUpperCase()
       )
-      .join('');
+      .join(
+        ''
+      );
   }
 
 
@@ -909,8 +936,12 @@ puedeCancelar(): boolean {
       day
     ] =
       fecha
-        .split('-')
-        .map(Number);
+        .split(
+          '-'
+        )
+        .map(
+          Number
+        );
 
 
     return new Date(
@@ -938,33 +969,31 @@ puedeCancelar(): boolean {
   // ORIGEN
   // =======================================================
 
-obtenerOrigen(): string {
+  obtenerOrigen(): string {
 
-  const origen =
-    Number(
-      this.turno?.origen
-    );
+    const origen =
+      Number(
+        this.turno?.origen
+      );
 
 
-  switch (origen) {
+    switch (origen) {
 
-    // Compatibilidad con turnos viejos
-    case 0:
-      return 'Recepción';
+      case 0:
+      case 1:
+        return 'Recepción';
 
-    case 1:
-      return 'Recepción';
+      case 2:
+        return 'Reserva online';
 
-    case 2:
-      return 'Reserva online';
+      case 3:
+        return 'WhatsApp';
 
-    case 3:
-      return 'WhatsApp';
-
-    default:
-      return '-';
+      default:
+        return '-';
+    }
   }
-}
+
 
   // =======================================================
   // ESTADO
@@ -975,101 +1004,117 @@ obtenerOrigen(): string {
   ): string {
 
     if (
-      estado === null ||
+      estado === null
+      ||
       estado === undefined
     ) {
       return '';
     }
 
 
-   if (
-  typeof estado ===
-  'number'
-) {
+    if (
+      typeof estado ===
+      'number'
+    ) {
 
-  const mapa: {
-    [key: number]: string;
-  } = {
+      const mapa: {
+        [key: number]:
+          string;
+      } = {
 
-    1:
-      'pendiente',
+        1:
+          'pendiente',
 
-    2:
-      'confirmado',
+        2:
+          'confirmado',
 
-    3:
-      'ensala',
+        3:
+          'ensala',
 
-    4:
-      'enatencion',
+        4:
+          'enatencion',
 
-    5:
-      'atendido',
+        5:
+          'atendido',
 
-    6:
-      'cancelado',
+        6:
+          'cancelado',
 
-    7:
-      'ausente',
-
-    8:
-      'noasistio'
-  };
+        7:
+          'noasistio'
+      };
 
 
-  return (
-    mapa[estado] ??
-    ''
-  );
-}
+      return (
+        mapa[estado] ??
+        ''
+      );
+    }
+
 
     return estado
       .toString()
       .trim()
       .toLowerCase()
-      .replace(/\s/g, '')
-      .replace(/-/g, '')
-      .replace(/_/g, '');
+      .replace(
+        /\s/g,
+        ''
+      )
+      .replace(
+        /-/g,
+        ''
+      )
+      .replace(
+        /_/g,
+        ''
+      );
   }
 
 
- obtenerTextoEstado(): string {
+  obtenerTextoEstado(): string {
 
-  const estado =
-    this.normalizarEstado(
-      this.turno?.estado
+    const estado =
+      this.normalizarEstado(
+        this.turno?.estado
+      );
+
+
+    const mapa: {
+      [key: string]:
+        string;
+    } = {
+
+      pendiente:
+        'Pendiente',
+
+      confirmado:
+        'Confirmado',
+
+      ensala:
+        'En sala',
+
+      espera:
+        'En sala',
+
+      enatencion:
+        'En atención',
+
+      atendido:
+        'Atendido',
+
+      cancelado:
+        'Cancelado',
+
+      noasistio:
+        'No asistió'
+    };
+
+
+    return (
+      mapa[estado] ??
+      'Sin estado'
     );
-
-
-  const mapa: {
-    [key: string]: string;
-  } = {
-
-    pendiente: 'Pendiente',
-
-    confirmado: 'Confirmado',
-
-    ensala: 'En sala',
-
-    espera: 'En sala',
-
-    enatencion: 'En atención',
-
-    atendido: 'Atendido',
-
-    cancelado: 'Cancelado',
-
-    ausente: 'Ausente',
-
-    noasistio: 'No asistió'
-  };
-
-
-  return (
-    mapa[estado] ??
-    'Sin estado'
-  );
-}
+  }
 
 
   obtenerClaseEstado(): string {
@@ -1091,7 +1136,10 @@ obtenerOrigen(): string {
   // =======================================================
 
   private formatearHora(
-    hora: string | null | undefined
+    hora:
+      string
+      | null
+      | undefined
   ): string {
 
     if (!hora) {
@@ -1114,31 +1162,31 @@ obtenerOrigen(): string {
 
   private mostrarError(
     error: any,
-    mensajeDefault: string
+    mensajeDefault: string,
+    titulo = 'Ocurrió un problema'
   ): void {
 
     const mensaje =
-      error?.error?.message ??
-      error?.error?.mensaje ??
-      error?.error ??
+      error
+        ?.error
+        ?.message
+      ??
+      error
+        ?.error
+        ?.mensaje
+      ??
+      error
+        ?.error
+      ??
       mensajeDefault;
 
 
-    Swal.fire({
-      icon:
-        'error',
-
-      title:
-        'Ocurrió un problema',
-
-      text:
-        typeof mensaje ===
-          'string'
-          ? mensaje
-          : mensajeDefault,
-
-      confirmButtonColor:
-        '#17483d'
-    });
+    this.alertaService.error(
+      titulo,
+      typeof mensaje ===
+        'string'
+        ? mensaje
+        : mensajeDefault
+    );
   }
 }

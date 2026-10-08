@@ -1,0 +1,1798 @@
+:host {
+  display: block;
+
+  --legal-primary: #17483d;
+  --legal-primary-dark: #10372f;
+  --legal-primary-soft: #edf5f2;
+  --legal-secondary: #82a89f;
+
+  --legal-text: #263a34;
+  --legal-text-soft: #63766f;
+  --legal-muted: #8a9a95;
+
+  --legal-border: #dfe8e5;
+  --legal-border-soft: #edf2f0;
+
+  --legal-background: #f7faf9;
+  --legal-card: #ffffff;
+
+  --pending-background: #fffaf0;
+  --pending-border: #eadfca;
+  --pending-text: #7a6848;
+
+  min-height: 100vh;
+}
+
+
+/* ==========================================
+   PÁGINA
+   ========================================== */
+
+.legal-page {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f5faf8 0,
+      #ffffff 360px
+    );
+
+  color: var(--legal-text);
+
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+.legal-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  border-bottom:
+    1px solid var(--legal-border-soft);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+
+.legal-header-content {
+  width: min(1180px, calc(100% - 40px));
+
+  min-height: 70px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+
+/* ==========================================
+   MARCA
+   ========================================== */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 10px;
+
+  text-decoration: none;
+}
+
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: var(--legal-primary);
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+
+.brand-name {
+  color: var(--legal-primary);
+
+  font-size: 19px;
+  font-weight: 800;
+
+  letter-spacing: -0.4px;
+}
+
+
+/* ==========================================
+   BOTÓN VOLVER
+   ========================================== */
+
+.back-button {
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 8px 13px;
+
+  border:
+    1px solid var(--legal-border);
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #526861;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.back-button:hover {
+  color: var(--legal-primary);
+
+  border-color:
+    rgba(23, 72, 61, 0.3);
+
+  background: #f8fbfa;
+}
+
+
+.back-button span {
+  font-size: 16px;
+
+  line-height: 1;
+}
+
+
+/* ==========================================
+   MAIN
+   ========================================== */
+
+.legal-main {
+  width: min(1180px, calc(100% - 40px));
+
+  margin: 0 auto;
+
+  padding:
+    66px
+    0
+    80px;
+}
+
+
+/* ==========================================
+   HERO
+   ========================================== */
+
+.legal-hero {
+  max-width: 820px;
+
+  margin-bottom: 34px;
+}
+
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 28px;
+
+  margin-bottom: 17px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: var(--legal-primary-soft);
+
+  color: var(--legal-primary);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.7px;
+
+  text-transform: uppercase;
+}
+
+
+.legal-hero h1 {
+  margin: 0;
+
+  color: #173c33;
+
+  font-size:
+    clamp(34px, 4vw, 50px);
+
+  font-weight: 800;
+
+  line-height: 1.08;
+
+  letter-spacing: -1.7px;
+}
+
+
+.legal-subtitle {
+  max-width: 680px;
+
+  margin:
+    18px
+    0
+    0;
+
+  color: var(--legal-text-soft);
+
+  font-size: 16px;
+
+  line-height: 1.7;
+}
+
+
+.legal-update {
+  margin:
+    18px
+    0
+    0;
+
+  color: var(--legal-muted);
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+.legal-update strong {
+  color: #647871;
+
+  font-weight: 650;
+}
+
+
+/* ==========================================
+   AVISO VERSIÓN DE TRABAJO
+   ========================================== */
+
+.draft-notice {
+  max-width: 820px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 15px;
+
+  margin:
+    0
+    0
+    52px;
+
+  padding:
+    18px
+    20px;
+
+  border:
+    1px solid var(--pending-border);
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffaf0,
+      #fffdf8
+    );
+}
+
+
+.draft-notice-icon {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 32px;
+
+  border-radius: 50%;
+
+  background: #8a754c;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.draft-notice > div:last-child {
+  min-width: 0;
+}
+
+
+.draft-notice strong {
+  display: block;
+
+  margin:
+    1px
+    0
+    5px;
+
+  color: #715f3e;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+
+.draft-notice p {
+  margin:
+    0
+    0
+    5px;
+
+  color: #7c705b;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+.draft-notice p:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ==========================================
+   LAYOUT
+   ========================================== */
+
+.legal-layout {
+  display: grid;
+
+  grid-template-columns:
+    245px
+    minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 52px;
+}
+
+
+/* ==========================================
+   ÍNDICE
+   ========================================== */
+
+.legal-index {
+  position: sticky;
+
+  top: 96px;
+
+  max-height:
+    calc(100vh - 120px);
+}
+
+
+.index-card {
+  max-height:
+    calc(100vh - 120px);
+
+  padding-right: 15px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #d4dfdb
+    transparent;
+}
+
+
+.index-card::-webkit-scrollbar {
+  width: 4px;
+}
+
+
+.index-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.index-card::-webkit-scrollbar-thumb {
+  background: #d4dfdb;
+
+  border-radius: 999px;
+}
+
+
+.index-title {
+  display: block;
+
+  margin-bottom: 13px;
+
+  color: #85958f;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.8px;
+
+  text-transform: uppercase;
+}
+
+
+.index-card nav {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1px;
+}
+
+
+.index-card nav a {
+  display: block;
+
+  padding:
+    7px
+    10px;
+
+  border-radius: 7px;
+
+  color: #6b7e77;
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  line-height: 1.35;
+
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+
+.index-card nav a:hover {
+  background: var(--legal-primary-soft);
+
+  color: var(--legal-primary);
+}
+
+
+/* ==========================================
+   DOCUMENTO
+   ========================================== */
+
+.legal-document {
+  min-width: 0;
+
+  padding-bottom: 20px;
+}
+
+
+/* ==========================================
+   SECCIONES
+   ========================================== */
+
+.legal-section {
+  position: relative;
+
+  scroll-margin-top: 105px;
+
+  padding:
+    0
+    0
+    38px;
+
+  margin-bottom: 38px;
+
+  border-bottom:
+    1px solid var(--legal-border-soft);
+}
+
+
+.legal-section:last-of-type {
+  border-bottom: 0;
+}
+
+
+.section-number {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--legal-secondary);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+.legal-section h2 {
+  margin:
+    0
+    0
+    20px;
+
+  color: #24473e;
+
+  font-size: 23px;
+  font-weight: 780;
+
+  line-height: 1.25;
+
+  letter-spacing: -0.45px;
+}
+
+
+.legal-section h3 {
+  margin:
+    25px
+    0
+    9px;
+
+  color: #34584e;
+
+  font-size: 14px;
+  font-weight: 750;
+
+  line-height: 1.4;
+}
+
+
+.legal-section p {
+  margin:
+    0
+    0
+    14px;
+
+  color: var(--legal-text-soft);
+
+  font-size: 13px;
+
+  line-height: 1.75;
+}
+
+
+.legal-section p:last-child {
+  margin-bottom: 0;
+}
+
+
+.legal-section strong {
+  color: #36594f;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================
+   DESTACADOS
+   ========================================== */
+
+.legal-highlight {
+  position: relative;
+
+  margin:
+    21px
+    0;
+
+  padding:
+    17px
+    18px
+    17px
+    20px;
+
+  overflow: hidden;
+
+  border:
+    1px solid #dceae5;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f1f8f5,
+      #f8fbfa
+    );
+}
+
+
+.legal-highlight::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 3px;
+  height: 100%;
+
+  background: var(--legal-primary);
+}
+
+
+.legal-highlight > strong {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--legal-primary);
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
+
+.legal-highlight p {
+  margin: 0;
+
+  color: #587069;
+
+  font-size: 12px;
+
+  line-height: 1.65;
+}
+
+
+/* ==========================================
+   NOTAS
+   ========================================== */
+
+.legal-note {
+  margin:
+    19px
+    0;
+
+  padding:
+    13px
+    15px;
+
+  border-left:
+    3px solid var(--legal-secondary);
+
+  border-radius:
+    0
+    8px
+    8px
+    0;
+
+  background: #f7faf9;
+
+  color: #60766e;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  line-height: 1.65;
+}
+
+
+/* ==========================================
+   CARDS DE DATOS
+   ========================================== */
+
+.data-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin:
+    20px
+    0;
+}
+
+
+.data-card {
+  padding:
+    17px
+    18px;
+
+  border:
+    1px solid var(--legal-border-soft);
+
+  border-radius: 11px;
+
+  background: #fafcfb;
+}
+
+
+.data-card-label {
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  color: var(--legal-secondary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.6px;
+
+  text-transform: uppercase;
+}
+
+
+.data-card h3 {
+  margin:
+    0
+    0
+    7px;
+
+  color: #31554b;
+
+  font-size: 13px;
+}
+
+
+.data-card p {
+  margin: 0;
+
+  font-size: 11.5px;
+
+  line-height: 1.6;
+}
+
+
+/* ==========================================
+   DATOS SENSIBLES
+   ========================================== */
+
+.sensitive-data-card {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+
+  margin:
+    20px
+    0;
+
+  padding:
+    18px;
+
+  border:
+    1px solid #d7e8e2;
+
+  border-radius: 12px;
+
+  background: #f2f8f6;
+}
+
+
+.sensitive-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 34px;
+
+  border-radius: 10px;
+
+  background: var(--legal-primary);
+
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+
+.sensitive-data-card strong {
+  display: block;
+
+  margin:
+    1px
+    0
+    5px;
+
+  color: var(--legal-primary);
+
+  font-size: 13px;
+}
+
+
+.sensitive-data-card p {
+  margin: 0;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+/* ==========================================
+   LISTAS
+   ========================================== */
+
+.legal-section ul {
+  margin:
+    16px
+    0
+    19px;
+
+  padding-left: 0;
+
+  list-style: none;
+
+  display: grid;
+
+  gap: 9px;
+}
+
+
+.legal-section li {
+  position: relative;
+
+  padding-left: 20px;
+
+  color: var(--legal-text-soft);
+
+  font-size: 13px;
+
+  line-height: 1.65;
+}
+
+
+.legal-section li::before {
+  content: "";
+
+  position: absolute;
+
+  top: 9px;
+  left: 2px;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: var(--legal-secondary);
+}
+
+
+/* ==========================================
+   PROMESA DE PRIVACIDAD V1
+   ========================================== */
+
+.privacy-promise {
+  margin:
+    20px
+    0;
+
+  padding:
+    20px;
+
+  border:
+    1px solid #d8e8e3;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #edf6f3,
+      #f8fbfa
+    );
+}
+
+
+.privacy-promise-label {
+  display: inline-flex;
+
+  margin-bottom: 9px;
+
+  padding:
+    4px
+    8px;
+
+  border-radius: 999px;
+
+  background: var(--legal-primary);
+
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.6px;
+
+  text-transform: uppercase;
+}
+
+
+.privacy-promise strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--legal-primary);
+
+  font-size: 14px;
+  font-weight: 750;
+}
+
+
+.privacy-promise p {
+  margin: 0;
+
+  color: #587069;
+
+  font-size: 12px;
+
+  line-height: 1.65;
+}
+
+
+/* ==========================================
+   MENORES
+   ========================================== */
+
+.age-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin:
+    20px
+    0;
+}
+
+
+.age-item {
+  padding:
+    16px;
+
+  border:
+    1px solid var(--legal-border-soft);
+
+  border-radius: 11px;
+
+  background: #fafcfb;
+}
+
+
+.age-badge {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 10px;
+
+  padding:
+    5px
+    8px;
+
+  border:
+    1px solid #d9e9e4;
+
+  border-radius: 999px;
+
+  background: #eef7f4;
+
+  color: var(--legal-primary);
+
+  font-size: 8.5px;
+  font-weight: 800;
+
+  letter-spacing: 0.4px;
+
+  text-transform: uppercase;
+}
+
+
+.age-item p {
+  margin:
+    0
+    0
+    8px;
+
+  font-size: 11.5px;
+
+  line-height: 1.6;
+}
+
+
+.age-item p:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ==========================================
+   PROVEEDORES
+   ========================================== */
+
+.provider-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin:
+    17px
+    0
+    20px;
+}
+
+
+.provider-list span {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 31px;
+
+  padding:
+    6px
+    11px;
+
+  border:
+    1px solid #dfe9e6;
+
+  border-radius: 999px;
+
+  background: #fafcfb;
+
+  color: #536d65;
+
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+
+/* ==========================================
+   PENDIENTES ANTES DE PRODUCCIÓN
+   ========================================== */
+
+.pending-card {
+  position: relative;
+
+  margin:
+    20px
+    0;
+
+  padding:
+    16px
+    17px;
+
+  border:
+    1px solid var(--pending-border);
+
+  border-radius: 10px;
+
+  background: var(--pending-background);
+}
+
+
+.pending-label {
+  display: inline-flex;
+
+  margin-bottom: 7px;
+
+  color: #846e44;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.55px;
+
+  text-transform: uppercase;
+}
+
+
+.pending-card p {
+  margin: 0;
+
+  color: var(--pending-text);
+
+  font-size: 11.5px;
+
+  line-height: 1.65;
+}
+
+
+/* ==========================================
+   LINKS
+   ========================================== */
+
+.inline-link {
+  display: inline-flex;
+  align-items: center;
+
+  margin-top: 7px;
+
+  color: var(--legal-primary);
+
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.inline-link:hover {
+  text-decoration: underline;
+}
+
+
+/* ==========================================
+   DOCUMENTOS RELACIONADOS
+   ========================================== */
+
+.related-documents {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 11px;
+
+  margin-top: 20px;
+}
+
+
+.document-link {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding:
+    16px
+    17px;
+
+  border:
+    1px solid var(--legal-border);
+
+  border-radius: 11px;
+
+  background: #fafcfb;
+
+  text-decoration: none;
+
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.document-link:hover {
+  border-color:
+    rgba(23, 72, 61, 0.3);
+
+  background: #f5faf8;
+
+  transform: translateY(-1px);
+}
+
+
+.document-link > div {
+  min-width: 0;
+}
+
+
+.document-link div span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #8a9b95;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+
+.document-link strong {
+  display: block;
+
+  color: var(--legal-primary);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+
+.document-arrow {
+  flex-shrink: 0;
+
+  color: var(--legal-primary);
+
+  font-size: 18px;
+}
+
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+
+.legal-footer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-top: 24px;
+
+  padding: 24px;
+
+  border:
+    1px solid var(--legal-border);
+
+  border-radius: 14px;
+
+  background: #fafcfb;
+}
+
+
+.legal-footer-card > div:first-child {
+  min-width: 0;
+}
+
+
+.legal-footer-card strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--legal-primary);
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+.legal-footer-card p {
+  margin: 0;
+
+  color: #7a8d86;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+.legal-footer-links {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  flex-shrink: 0;
+}
+
+
+.legal-footer-links a {
+  color: var(--legal-primary);
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.legal-footer-links a:hover {
+  text-decoration: underline;
+}
+
+
+/* ==========================================
+   TABLET
+   ========================================== */
+
+@media (max-width: 900px) {
+
+  .legal-main {
+    padding-top: 48px;
+  }
+
+
+  .legal-layout {
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+
+  .legal-index {
+    display: none;
+  }
+
+
+  .legal-document {
+    max-width: 760px;
+  }
+
+
+  .age-list {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 650px) {
+
+  .legal-header-content {
+    width: calc(100% - 32px);
+
+    min-height: 62px;
+  }
+
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+  }
+
+
+  .brand-name {
+    font-size: 17px;
+  }
+
+
+  .back-button {
+    min-height: 35px;
+
+    padding:
+      7px
+      10px;
+
+    font-size: 11px;
+  }
+
+
+  .legal-main {
+    width: calc(100% - 34px);
+
+    padding:
+      38px
+      0
+      55px;
+  }
+
+
+  /* HERO */
+
+  .legal-hero {
+    margin-bottom: 27px;
+  }
+
+
+  .legal-badge {
+    margin-bottom: 13px;
+
+    font-size: 9px;
+  }
+
+
+  .legal-hero h1 {
+    font-size: 31px;
+
+    letter-spacing: -1.1px;
+  }
+
+
+  .legal-subtitle {
+    margin-top: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+  }
+
+
+  .legal-update {
+    margin-top: 15px;
+  }
+
+
+  /* AVISO */
+
+  .draft-notice {
+    gap: 12px;
+
+    margin-bottom: 38px;
+
+    padding:
+      15px
+      14px;
+
+    border-radius: 11px;
+  }
+
+
+  .draft-notice-icon {
+    width: 28px;
+    height: 28px;
+
+    flex-basis: 28px;
+
+    font-size: 11px;
+  }
+
+
+  .draft-notice strong {
+    font-size: 12px;
+  }
+
+
+  .draft-notice p {
+    font-size: 11.5px;
+
+    line-height: 1.55;
+  }
+
+
+  /* SECCIONES */
+
+  .legal-section {
+    margin-bottom: 30px;
+
+    padding-bottom: 30px;
+
+    scroll-margin-top: 85px;
+  }
+
+
+  .section-number {
+    margin-bottom: 7px;
+
+    font-size: 9px;
+  }
+
+
+  .legal-section h2 {
+    margin-bottom: 16px;
+
+    font-size: 20px;
+
+    line-height: 1.3;
+  }
+
+
+  .legal-section h3 {
+    margin-top: 21px;
+
+    font-size: 13px;
+  }
+
+
+  .legal-section p {
+    margin-bottom: 13px;
+
+    font-size: 12.5px;
+
+    line-height: 1.72;
+  }
+
+
+  /* DATOS */
+
+  .data-grid {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+  }
+
+
+  .data-card {
+    padding:
+      14px
+      15px;
+  }
+
+
+  /* DATOS SENSIBLES */
+
+  .sensitive-data-card {
+    gap: 11px;
+
+    padding:
+      15px;
+  }
+
+
+  .sensitive-icon {
+    width: 30px;
+    height: 30px;
+
+    flex-basis: 30px;
+
+    border-radius: 9px;
+
+    font-size: 17px;
+  }
+
+
+  /* DESTACADOS */
+
+  .legal-highlight {
+    margin:
+      18px
+      0;
+
+    padding:
+      15px
+      15px
+      15px
+      17px;
+  }
+
+
+  .legal-highlight > strong {
+    font-size: 12.5px;
+  }
+
+
+  .legal-highlight p {
+    font-size: 11.5px;
+  }
+
+
+  .legal-note {
+    margin:
+      17px
+      0;
+
+    padding:
+      12px
+      13px;
+
+    font-size: 11.5px;
+  }
+
+
+  /* LISTAS */
+
+  .legal-section ul {
+    gap: 8px;
+
+    margin:
+      14px
+      0
+      17px;
+  }
+
+
+  .legal-section li {
+    font-size: 12.5px;
+  }
+
+
+  /* PRIVACIDAD V1 */
+
+  .privacy-promise {
+    padding:
+      16px;
+  }
+
+
+  .privacy-promise strong {
+    font-size: 13px;
+  }
+
+
+  /* MENORES */
+
+  .age-list {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+  }
+
+
+  .age-item {
+    padding:
+      14px;
+  }
+
+
+  /* PROVEEDORES */
+
+  .provider-list {
+    gap: 6px;
+  }
+
+
+  .provider-list span {
+    min-height: 29px;
+
+    padding:
+      5px
+      9px;
+
+    font-size: 10px;
+  }
+
+
+  /* PENDIENTES */
+
+  .pending-card {
+    padding:
+      14px;
+  }
+
+
+  /* DOCUMENTOS */
+
+  .related-documents {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+  }
+
+
+  /* FOOTER */
+
+  .legal-footer-card {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 18px;
+
+    padding: 19px;
+  }
+
+
+  .legal-footer-links {
+    width: 100%;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 9px;
+  }
+
+}
+
+
+/* ==========================================
+   MOBILE CHICO
+   ========================================== */
+
+@media (max-width: 390px) {
+
+  .legal-header-content {
+    width: calc(100% - 24px);
+  }
+
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+
+  .back-button {
+    padding:
+      7px
+      9px;
+  }
+
+
+  .legal-main {
+    width: calc(100% - 28px);
+  }
+
+
+  .legal-hero h1 {
+    font-size: 28px;
+  }
+
+
+  .legal-section h2 {
+    font-size: 19px;
+  }
+
+
+  .draft-notice {
+    padding:
+      14px
+      12px;
+  }
+
+}
+
+
+/* ==========================================
+   SELECCIÓN
+   ========================================== */
+
+::selection {
+  background:
+    rgba(23, 72, 61, 0.15);
+
+  color: var(--legal-primary-dark);
+}
+
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+a:focus-visible,
+button:focus-visible {
+  outline:
+    2px solid var(--legal-primary);
+
+  outline-offset: 3px;
+}

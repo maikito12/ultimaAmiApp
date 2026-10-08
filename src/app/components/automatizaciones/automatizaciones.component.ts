@@ -1281,7 +1281,7 @@ export class AutomatizacionesComponent implements OnInit {
           this.alertaService.success(
             'WhatsApp desconectado',
             this.esAlcanceProfesional
-              ? 'Se eliminó tu WhatsApp profesional. AmiApp podrá usar el general de la organización como respaldo.'
+              ? 'Se eliminó tu WhatsApp profesional. NexaSalud podrá usar el general de la organización como respaldo.'
               : 'La conexión general de WhatsApp se eliminó correctamente.'
           );
         },
@@ -1706,7 +1706,7 @@ export class AutomatizacionesComponent implements OnInit {
 
       this.alertaService.warning(
         'Formato no permitido',
-        'Por ahora AmiApp acepta videos MP4.'
+        'Por ahora NexaSalud acepta videos MP4.'
       );
 
       input.value = '';
@@ -2155,7 +2155,7 @@ export class AutomatizacionesComponent implements OnInit {
             'Desactivar automatización',
 
           mensaje:
-            'AmiApp dejará de ejecutarla automáticamente.',
+            'NexaSalud dejará de ejecutarla automáticamente.',
 
           textoConfirmar:
             'Desactivar',
@@ -2186,7 +2186,7 @@ export class AutomatizacionesComponent implements OnInit {
 
           this.alertaService.success(
             'Automatización desactivada',
-            'AmiApp dejó de ejecutar esta automatización.'
+            'NexaSalud dejó de ejecutar esta automatización.'
           );
         },
 
@@ -2388,7 +2388,7 @@ export class AutomatizacionesComponent implements OnInit {
         return 'Envía un saludo automático el día del cumpleaños.';
 
       default:
-        return 'Automatización de AmiApp.';
+        return 'Automatización de NexaSalud.';
     }
   }
 
@@ -2470,30 +2470,30 @@ export class AutomatizacionesComponent implements OnInit {
 
       case 'RecordatorioTurno':
         return usarVideo
-          ? 'recordatorio_turno_video_amiapp'
-          : 'recordatorio_turno_amiapp';
+          ? 'recordatorio_turno_video_NexaSalud'
+          : 'recordatorio_turno_NexaSalud';
 
       case 'TurnoConfirmado':
-        return 'turno_confirmado_amiapp';
+        return 'turno_confirmado_NexaSalud';
 
       case 'TurnoCancelado':
-        return 'turno_cancelado_amiapp';
+        return 'turno_cancelado_NexaSalud';
 
       case 'PostConsulta':
         return usarVideo
-          ? 'post_consulta_video_amiapp'
-          : 'post_consulta_amiapp';
+          ? 'post_consulta_video_NexaSalud'
+          : 'post_consulta_NexaSalud';
 
       case 'Cumpleanos':
         return usarVideo
-          ? 'cumpleanos_video_amiapp'
-          : 'cumpleanos_amiapp';
+          ? 'cumpleanos_video_NexaSalud'
+          : 'cumpleanos_NexaSalud';
 
       case 'TurnoCreado':
       default:
         return usarVideo
-          ? 'turno_reservado_video_amiapp'
-          : 'turno_reservado_amiapp';
+          ? 'turno_reservado_video_NexaSalud'
+          : 'turno_reservado_NexaSalud';
     }
   }
 

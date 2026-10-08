@@ -5,7 +5,25 @@ import { Observable } from 'rxjs';
 import { Suscripcion } from '../interfaces/suscripcion';
 import { environment } from '../../environments/environment';
 
+// =====================================================
+// PLAN PERSONALIZADO
+// =====================================================
 
+export interface SolicitudPlanPersonalizadoRequest {
+  cantidadProfesionales: number;
+  telefonoContacto: string;
+  mensaje?: string | null;
+}
+
+export interface SolicitudPlanPersonalizadoResponse {
+  id: string;
+  cantidadProfesionales: number;
+  estado: string;
+  telefonoContacto: string;
+  mensaje: string | null;
+  fechaSolicitud: string;
+  message: string;
+}
 // =====================================================
 // WHATSAPP - CUPO
 // =====================================================
@@ -291,6 +309,21 @@ export class SuscripcionService {
     );
 
   }
+
+  // ==========================================
+// SOLICITAR PLAN PERSONALIZADO
+// ==========================================
+
+solicitarPlanPersonalizado(
+  data: SolicitudPlanPersonalizadoRequest
+): Observable<SolicitudPlanPersonalizadoResponse> {
+
+  return this.http.post<SolicitudPlanPersonalizadoResponse>(
+    `${this.apiUrl}/plan-personalizado`,
+    data
+  );
+
+}
 // ==========================================
 // REACTIVAR / VOLVER A SUSCRIBIRSE
 // ==========================================

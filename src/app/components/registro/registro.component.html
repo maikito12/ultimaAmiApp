@@ -1,343 +1,609 @@
 <div class="register-page">
 
-  <div
-    class="register-card"
-    [class.selection-card]="modo === 'seleccion'"
-  >
+  <section class="register-shell">
 
-    <div class="brand">
-      <div class="brand-mark">A</div>
-      <span>AmiApp</span>
-    </div>
+    <!-- ===================================================== -->
+    <!-- HERO / BRAND -->
+    <!-- ===================================================== -->
 
-    <!-- ========================================= -->
-    <!-- SELECCIÓN DE TIPO DE CUENTA -->
-    <!-- ========================================= -->
+    <aside class="register-hero">
 
-    <ng-container *ngIf="modo === 'seleccion'">
+      <div class="hero-brand">
+        <div class="brand-mark">
+          A
+        </div>
 
-      <div class="register-header">
-        <h1>Creá tu cuenta</h1>
-        <p>
-          Elegí cómo querés empezar a usar AmiApp.
-        </p>
+        <span>
+          NexaSalud
+        </span>
       </div>
 
-      <div class="account-options">
 
-        <button
-          type="button"
-          class="account-option"
-          (click)="seleccionarModo('organizacion')"
-        >
-          <span class="option-icon">
+      <div class="hero-copy">
+
+        <span class="hero-eyebrow">
+          EMPEZÁ CON NexaSalud
+        </span>
+
+        <h1>
+          Todo tu equipo,
+          <span>en un solo lugar.</span>
+        </h1>
+
+        <p>
+          Creá tu cuenta, organizá tu consultorio y empezá a gestionar
+          turnos, pacientes y automatizaciones desde una misma plataforma.
+        </p>
+
+      </div>
+
+
+      <div class="hero-features">
+
+        <div class="hero-feature">
+          <span class="feature-icon">
             <i class="fas fa-clinic-medical"></i>
           </span>
 
-          <span class="option-copy">
-            <strong>Crear una organización</strong>
+          <div>
+            <strong>
+              Tu organización
+            </strong>
+
             <small>
-              Para administrar tu consultorio, clínica o equipo desde AmiApp.
+              Configurá consultorios, profesionales y sucursales.
             </small>
+          </div>
+        </div>
+
+
+        <div class="hero-feature">
+          <span class="feature-icon">
+            <i class="far fa-calendar-check"></i>
           </span>
 
-          <i class="fas fa-chevron-right option-arrow"></i>
-        </button>
+          <div>
+            <strong>
+              Agenda centralizada
+            </strong>
 
-        <button
-          type="button"
-          class="account-option"
-          (click)="seleccionarModo('usuario')"
-        >
-          <span class="option-icon">
-            <i class="fas fa-user"></i>
-          </span>
-
-          <span class="option-copy">
-            <strong>Crear una cuenta personal</strong>
             <small>
-              Creá tu usuario y unite a organizaciones cuando te inviten.
+              Gestioná reservas y disponibilidad desde un solo lugar.
             </small>
+          </div>
+        </div>
+
+
+        <div class="hero-feature">
+          <span class="feature-icon">
+            <i class="fas fa-bolt"></i>
           </span>
 
-          <i class="fas fa-chevron-right option-arrow"></i>
-        </button>
+          <div>
+            <strong>
+              Automatizaciones
+            </strong>
+
+            <small>
+              Confirmaciones y recordatorios sin tareas repetitivas.
+            </small>
+          </div>
+        </div>
 
       </div>
 
-      <div class="invitation-box">
+
+      <div class="hero-footer">
         <span>
-          ¿Ya te compartieron un código?
+          NexaSalud
         </span>
 
-        <button
-          type="button"
-          (click)="seleccionarModo('invitacion')"
-        >
-          Usar código de invitación
-        </button>
+        <small>
+          Gestión simple para equipos de salud.
+        </small>
       </div>
 
-    </ng-container>
+    </aside>
 
-    <!-- ========================================= -->
-    <!-- FORMULARIO -->
-    <!-- ========================================= -->
 
-    <ng-container *ngIf="modo !== 'seleccion'">
+    <!-- ===================================================== -->
+    <!-- REGISTRO -->
+    <!-- ===================================================== -->
 
-      <button
-        type="button"
-        class="back-button"
-        (click)="volverSeleccion()"
+    <main class="register-panel">
+
+      <div class="mobile-brand">
+        <div class="brand-mark">
+          A
+        </div>
+
+        <span>
+          NexaSalud
+        </span>
+      </div>
+
+
+      <div
+        class="register-card"
+        [class.selection-card]="modo === 'seleccion'"
       >
-        <i class="fas fa-arrow-left"></i>
-        Cambiar tipo de cuenta
-      </button>
 
-      <div class="register-header form-header">
-        <h1>{{ tituloFormulario }}</h1>
-        <p>{{ descripcionFormulario }}</p>
-      </div>
+        <!-- =============================================== -->
+        <!-- SELECCIÓN -->
+        <!-- =============================================== -->
 
-      <form (ngSubmit)="registrar()">
+        <ng-container *ngIf="modo === 'seleccion'">
 
-        <div
-          class="input-group"
-          *ngIf="modo === 'organizacion'"
-        >
-          <label for="organizacion">
-            Nombre de la organización
-          </label>
+          <div class="register-header">
 
-          <input
-            id="organizacion"
-            type="text"
-            placeholder="Ej. Consultorio Médico Central"
-            [(ngModel)]="nombreOrganizacion"
-            name="nombreOrganizacion"
-            autocomplete="organization"
-            required
-          />
-        </div>
+            <span class="register-eyebrow">
+              CREAR CUENTA
+            </span>
 
-        <div
-          class="input-group invitation-code-group"
-          *ngIf="modo === 'invitacion'"
-        >
-          <label for="codigoInvitacion">
-            Código de invitación
-          </label>
+            <h2>
+              ¿Cómo querés empezar?
+            </h2>
 
-          <input
-            id="codigoInvitacion"
-            class="invitation-code-input"
-            type="text"
-            placeholder="ABCD1234"
-            [(ngModel)]="codigoInvitacion"
-            (input)="normalizarCodigo()"
-            name="codigoInvitacion"
-            autocomplete="off"
-            maxlength="20"
-            required
-          />
+            <p>
+              Elegí la opción que mejor se adapte a cómo vas a usar NexaSalud.
+            </p>
 
-          <small class="field-help">
-            El código define automáticamente a qué organización y con qué rol vas a ingresar.
-          </small>
-        </div>
-
-        <div class="form-row">
-
-          <div class="input-group">
-            <label for="nombre">
-              Nombre
-            </label>
-
-            <input
-              id="nombre"
-              type="text"
-              placeholder="Juan"
-              [(ngModel)]="nombre"
-              name="nombre"
-              autocomplete="given-name"
-              required
-            />
           </div>
 
-          <div class="input-group">
-            <label for="apellido">
-              Apellido
-            </label>
 
-            <input
-              id="apellido"
-              type="text"
-              placeholder="Pérez"
-              [(ngModel)]="apellido"
-              name="apellido"
-              autocomplete="family-name"
-              required
-            />
-          </div>
-
-        </div>
-
-        <div class="input-group">
-          <label for="email">
-            Correo electrónico
-          </label>
-
-          <input
-            id="email"
-            type="email"
-            placeholder="tu@email.com"
-            [(ngModel)]="email"
-            name="email"
-            autocomplete="email"
-            required
-          />
-        </div>
-
-        <div class="input-group">
-          <label for="password">
-            Contraseña
-          </label>
-
-          <div class="password-wrapper">
-
-            <input
-              id="password"
-              [type]="mostrarPassword ? 'text' : 'password'"
-              placeholder="Mínimo 6 caracteres"
-              [(ngModel)]="password"
-              name="password"
-              autocomplete="new-password"
-              required
-            />
+          <div class="account-options">
 
             <button
               type="button"
-              class="password-toggle"
-              (click)="togglePassword()"
-              [attr.aria-label]="
-                mostrarPassword
-                  ? 'Ocultar contraseña'
-                  : 'Mostrar contraseña'
-              "
+              class="account-option"
+              (click)="seleccionarModo('organizacion')"
             >
-              <i
-                class="fa"
-                [ngClass]="
-                  mostrarPassword
-                    ? 'fa-eye-slash'
-                    : 'fa-eye'
-                "
-              ></i>
+
+              <span class="option-icon">
+                <i class="fas fa-clinic-medical"></i>
+              </span>
+
+              <span class="option-copy">
+                <strong>
+                  Crear una organización
+                </strong>
+
+                <small>
+                  Para administrar tu consultorio, clínica o equipo desde NexaSalud.
+                </small>
+              </span>
+
+              <i class="fas fa-chevron-right option-arrow"></i>
+
             </button>
 
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label for="repetirPassword">
-            Repetir contraseña
-          </label>
-
-          <div class="password-wrapper">
-
-            <input
-              id="repetirPassword"
-              [type]="
-                mostrarRepetirPassword
-                  ? 'text'
-                  : 'password'
-              "
-              placeholder="Repetí tu contraseña"
-              [(ngModel)]="repetirPassword"
-              name="repetirPassword"
-              autocomplete="new-password"
-              required
-            />
 
             <button
               type="button"
-              class="password-toggle"
-              (click)="toggleRepetirPassword()"
-              [attr.aria-label]="
-                mostrarRepetirPassword
-                  ? 'Ocultar contraseña'
-                  : 'Mostrar contraseña'
-              "
+              class="account-option"
+              (click)="seleccionarModo('usuario')"
             >
-              <i
-                class="fa"
-                [ngClass]="
-                  mostrarRepetirPassword
-                    ? 'fa-eye-slash'
-                    : 'fa-eye'
-                "
-              ></i>
+
+              <span class="option-icon">
+                <i class="fas fa-user"></i>
+              </span>
+
+              <span class="option-copy">
+                <strong>
+                  Crear una cuenta personal
+                </strong>
+
+                <small>
+                  Creá tu usuario y unite a organizaciones cuando te inviten.
+                </small>
+              </span>
+
+              <i class="fas fa-chevron-right option-arrow"></i>
+
             </button>
 
           </div>
+
+
+          <div class="invitation-box">
+
+            <span>
+              ¿Ya te compartieron un código?
+            </span>
+
+            <button
+              type="button"
+              (click)="seleccionarModo('invitacion')"
+            >
+              Usar código de invitación
+            </button>
+
+          </div>
+
+        </ng-container>
+
+
+        <!-- =============================================== -->
+        <!-- FORMULARIO -->
+        <!-- =============================================== -->
+
+        <ng-container *ngIf="modo !== 'seleccion'">
+
+          <button
+            type="button"
+            class="back-button"
+            (click)="volverSeleccion()"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Cambiar tipo de cuenta
+          </button>
+
+
+          <div class="register-header form-header">
+
+            <span class="register-eyebrow">
+              NexaSalud
+            </span>
+
+            <h2>
+              {{ tituloFormulario }}
+            </h2>
+
+            <p>
+              {{ descripcionFormulario }}
+            </p>
+
+          </div>
+
+
+          <form (ngSubmit)="registrar()">
+
+            <!-- ORGANIZACIÓN -->
+
+            <div
+              class="input-group"
+              *ngIf="modo === 'organizacion'"
+            >
+              <label for="organizacion">
+                Nombre de la organización
+              </label>
+
+              <div class="input-wrapper">
+
+                <span class="input-icon">
+                  <i class="fas fa-clinic-medical"></i>
+                </span>
+
+                <input
+                  id="organizacion"
+                  type="text"
+                  placeholder="Ej. Consultorio Médico Central"
+                  [(ngModel)]="nombreOrganizacion"
+                  name="nombreOrganizacion"
+                  autocomplete="organization"
+                  required
+                >
+
+              </div>
+            </div>
+
+
+            <!-- CÓDIGO -->
+
+            <div
+              class="input-group invitation-code-group"
+              *ngIf="modo === 'invitacion'"
+            >
+
+              <label for="codigoInvitacion">
+                Código de invitación
+              </label>
+
+              <div class="input-wrapper">
+
+                <span class="input-icon">
+                  <i class="fas fa-ticket-alt"></i>
+                </span>
+
+                <input
+                  id="codigoInvitacion"
+                  class="invitation-code-input"
+                  type="text"
+                  placeholder="ABCD1234"
+                  [(ngModel)]="codigoInvitacion"
+                  (input)="normalizarCodigo()"
+                  name="codigoInvitacion"
+                  autocomplete="off"
+                  maxlength="20"
+                  required
+                >
+
+              </div>
+
+              <small class="field-help">
+                El código define automáticamente a qué organización
+                y con qué rol vas a ingresar.
+              </small>
+
+            </div>
+
+
+            <!-- NOMBRE / APELLIDO -->
+
+            <div class="form-row">
+
+              <div class="input-group">
+
+                <label for="nombre">
+                  Nombre
+                </label>
+
+                <div class="input-wrapper">
+
+                  <span class="input-icon">
+                    <i class="far fa-user"></i>
+                  </span>
+
+                  <input
+                    id="nombre"
+                    type="text"
+                    placeholder="Juan"
+                    [(ngModel)]="nombre"
+                    name="nombre"
+                    autocomplete="given-name"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="input-group">
+
+                <label for="apellido">
+                  Apellido
+                </label>
+
+                <div class="input-wrapper">
+
+                  <span class="input-icon">
+                    <i class="far fa-user"></i>
+                  </span>
+
+                  <input
+                    id="apellido"
+                    type="text"
+                    placeholder="Pérez"
+                    [(ngModel)]="apellido"
+                    name="apellido"
+                    autocomplete="family-name"
+                    required
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="input-group">
+
+              <label for="email">
+                Correo electrónico
+              </label>
+
+              <div class="input-wrapper">
+
+                <span class="input-icon">
+                  <i class="far fa-envelope"></i>
+                </span>
+
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  [(ngModel)]="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="input-group">
+
+              <label for="password">
+                Contraseña
+              </label>
+
+              <div class="input-wrapper password-wrapper">
+
+                <span class="input-icon">
+                  <i class="fas fa-lock"></i>
+                </span>
+
+                <input
+                  id="password"
+                  [type]="mostrarPassword ? 'text' : 'password'"
+                  placeholder="Mínimo 6 caracteres"
+                  [(ngModel)]="password"
+                  name="password"
+                  autocomplete="new-password"
+                  required
+                >
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="togglePassword()"
+                  [attr.aria-label]="
+                    mostrarPassword
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'
+                  "
+                >
+                  <i
+                    class="fa"
+                    [ngClass]="
+                      mostrarPassword
+                        ? 'fa-eye-slash'
+                        : 'fa-eye'
+                    "
+                  ></i>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <!-- REPETIR PASSWORD -->
+
+            <div class="input-group">
+
+              <label for="repetirPassword">
+                Repetir contraseña
+              </label>
+
+              <div class="input-wrapper password-wrapper">
+
+                <span class="input-icon">
+                  <i class="fas fa-lock"></i>
+                </span>
+
+                <input
+                  id="repetirPassword"
+                  [type]="
+                    mostrarRepetirPassword
+                      ? 'text'
+                      : 'password'
+                  "
+                  placeholder="Repetí tu contraseña"
+                  [(ngModel)]="repetirPassword"
+                  name="repetirPassword"
+                  autocomplete="new-password"
+                  required
+                >
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  (click)="toggleRepetirPassword()"
+                  [attr.aria-label]="
+                    mostrarRepetirPassword
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'
+                  "
+                >
+                  <i
+                    class="fa"
+                    [ngClass]="
+                      mostrarRepetirPassword
+                        ? 'fa-eye-slash'
+                        : 'fa-eye'
+                    "
+                  ></i>
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <!-- CONSENTIMIENTO -->
+
+           <!-- CONSENTIMIENTO -->
+
+<label class="legal-consent">
+
+  <input
+    type="checkbox"
+    [(ngModel)]="aceptaTerminos"
+    name="aceptaTerminos"
+    required
+  >
+
+  <span>
+    Acepto los
+
+    <a
+      href="/terminos"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Términos y Condiciones
+    </a>
+
+    y declaro haber leído la
+
+    <a
+      href="/privacidad"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Política de Privacidad
+    </a>.
+  </span>
+
+</label>
+
+            <!-- CTA -->
+
+            <button
+              type="submit"
+              class="btn-register"
+              [disabled]="cargando"
+            >
+
+              <span
+                *ngIf="cargando"
+                class="spinner"
+              ></span>
+
+              <span>
+                {{ textoBoton }}
+              </span>
+
+            </button>
+
+          </form>
+
+        </ng-container>
+
+
+        <!-- =============================================== -->
+        <!-- LOGIN -->
+        <!-- =============================================== -->
+
+        <div class="login-section">
+
+          <span>
+            ¿Ya tenés una cuenta?
+          </span>
+
+          <button
+            type="button"
+            class="login-link"
+            (click)="volverLogin()"
+          >
+            Iniciar sesión
+          </button>
+
         </div>
 
-        <label class="legal-consent">
+      </div>
 
-          <input
-            type="checkbox"
-            [(ngModel)]="aceptaTerminos"
-            name="aceptaTerminos"
-            required
-          />
+    </main>
 
-          <span>
-            He leído y acepto los
-            <strong>Términos y Condiciones</strong>
-            y la
-            <a
-              href="/privacidad"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Política de Privacidad
-            </a>.
-          </span>
-
-        </label>
-
-        <button
-          type="submit"
-          class="btn-register"
-          [disabled]="cargando"
-        >
-          <span
-            *ngIf="cargando"
-            class="spinner"
-          ></span>
-
-          <span>
-            {{ textoBoton }}
-          </span>
-        </button>
-
-      </form>
-
-    </ng-container>
-
-    <div class="login-section">
-      <span>¿Ya tenés una cuenta?</span>
-
-      <button
-        type="button"
-        class="login-link"
-        (click)="volverLogin()"
-      >
-        Iniciar sesión
-      </button>
-    </div>
-
-  </div>
+  </section>
 
 </div>

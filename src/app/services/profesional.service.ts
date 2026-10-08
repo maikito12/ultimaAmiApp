@@ -58,6 +58,8 @@ export interface EstadoConfiguracionProfesional {
 
   tieneSucursales: boolean;
 
+  tieneAnticipacionReserva: boolean;
+
   tieneHorarios: boolean;
 
   porcentaje: number;
@@ -65,7 +67,6 @@ export interface EstadoConfiguracionProfesional {
   siguientePaso: number;
 
 }
-
 
 // ==========================================================
 // RESPUESTA API GENÉRICA
@@ -321,8 +322,13 @@ export interface UploadImagenResponse {
 // ==========================================================
 
 export interface MiReservaOnline {
+
   aceptaTurnosOnline: boolean;
+
   mostrarEnReservaOnline: boolean;
+
+  anticipacionMinimaReservaMinutos: number | null;
+
 }
 
 

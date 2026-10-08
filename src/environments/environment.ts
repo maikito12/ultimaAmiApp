@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://amiappbackend-production.up.railway.app/api'
+  apiUrl: 'https://NexaSaludbackend-production.up.railway.app/api'
 };
