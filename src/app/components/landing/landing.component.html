@@ -1,245 +1,491 @@
 <!-- Íconos SVG locales: no requieren paquetes ni llamadas externas. -->
+
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+
   <symbol id="landing-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+
   <symbol id="landing-arrow-up" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+
   <symbol id="landing-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h3m-3 3h7"/></symbol>
+
   <symbol id="landing-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1.1-1.1"/></symbol>
+
   <symbol id="landing-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2H3Zm13-15a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5h-4"/></symbol>
+
   <symbol id="landing-message" viewBox="0 0 24 24"><path d="M20 11.5a8 8 0 0 1-8.5 8 9 9 0 0 1-3.5-.8L3 20l1.4-4.5A8 8 0 1 1 20 11.5Z"/><path d="M8 11h8m-8 4h5"/></symbol>
+
   <symbol id="landing-building" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-5h6v5M8 8h2m4 0h2m-8 4h2m4 0h2"/></symbol>
+
   <symbol id="landing-chart" viewBox="0 0 24 24"><path d="M4 20V5m0 15h17M8 16l4-5 3 2 5-7"/></symbol>
+
   <symbol id="landing-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+
   <symbol id="landing-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+
   <symbol id="landing-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12h4"/></symbol>
+
   <symbol id="landing-file" viewBox="0 0 24 24"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10l-7-7Zm0 0v7h7M8 15h8m-8 3h6"/></symbol>
+
   <symbol id="landing-sparkle" viewBox="0 0 24 24"><path d="m12 2 2.1 7.9L22 12l-7.9 2.1L12 22l-2.1-7.9L2 12l7.9-2.1L12 2Z"/></symbol>
+
   <symbol id="landing-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+
   <symbol id="landing-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+
   <symbol id="landing-close" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+
   <symbol id="landing-shield" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.4 8.2 8 10 4.6-1.8 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></symbol>
+
 </svg>
+
+
 
 <a class="skip-link" href="#contenido-principal">Ir al contenido principal</a>
 
+
+
 <div class="landing-page">
+
   <header class="site-header">
+
     <div class="container header-inner">
+
       <a class="brand" href="#inicio" aria-label="Ir al inicio" (click)="cerrarMenu()">
+
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 36 36"><path d="M10 25V11l16 14V11"/></svg>
+
+          <img src="/logo.png"
+     alt="Logo de CoriaSalud" width="40" height="40" />
+
         </span>
+
         <span class="brand-name">{{ marca }}<span class="brand-period">.</span></span>
+
       </a>
 
+
+
       <nav class="main-nav" id="menu-principal" aria-label="Navegación principal" [class.is-open]="menuAbierto">
+
         <a href="#funcionalidades" (click)="cerrarMenu()">Funcionalidades</a>
+
         <a href="#como-funciona" (click)="cerrarMenu()">Cómo funciona</a>
+
         <a href="#nosotros" (click)="cerrarMenu()">Nosotros</a>
+
         <a href="#preguntas" (click)="cerrarMenu()">Preguntas frecuentes</a>
+
         <a routerLink="/login" class="nav-mobile-login" (click)="cerrarMenu()">Iniciar sesión</a>
+
         <a routerLink="/registro" class="nav-mobile-cta" (click)="cerrarMenu()">Empezar ahora <svg class="icon"><use href="#landing-arrow"/></svg></a>
+
       </nav>
 
+
+
       <div class="header-actions">
+
         <a routerLink="/login" class="header-login">Ingresar</a>
+
         <a routerLink="/registro" class="button button-dark header-cta">Empezar ahora <svg class="icon"><use href="#landing-arrow-up"/></svg></a>
+
       </div>
+
+
 
       <button
+
         type="button"
+
         class="menu-toggle"
+
         aria-label="Abrir o cerrar el menú"
+
         aria-controls="menu-principal"
+
         [attr.aria-expanded]="menuAbierto"
+
         (click)="toggleMenu()"
+
       >
+
         <svg class="icon"><use [attr.href]="menuAbierto ? '#landing-close' : '#landing-menu'"/></svg>
+
       </button>
+
     </div>
+
   </header>
 
+
+
   <main id="contenido-principal">
+
     <!-- HERO -->
+
     <section class="hero" id="inicio" aria-labelledby="hero-titulo">
+
       <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
+
       <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
 
+
+
       <div class="container hero-grid">
+
         <div class="hero-copy">
+
           <div class="eyebrow"><span class="eyebrow-dot"></span> EL FUTURO DE TU CONSULTORIO EMPIEZA ACÁ</div>
+
           <h1 id="hero-titulo">Menos tareas.<br>Más tiempo para <span class="highlight-word">cuidar<span class="highlight-swoosh" aria-hidden="true"></span></span>.</h1>
+
           <p class="hero-description">Una plataforma para organizar turnos, pacientes, profesionales y comunicaciones. Todo más simple, en un solo lugar.</p>
 
+
+
           <div class="hero-buttons">
+
             <a routerLink="/registro" class="button button-dark button-large">Empezar ahora <svg class="icon"><use href="#landing-arrow-up"/></svg></a>
+
             <a href="#como-funciona" class="button button-outline button-large">Conocer la plataforma <svg class="icon"><use href="#landing-arrow"/></svg></a>
+
           </div>
+
+
 
           <div class="hero-points" aria-label="Pensada para profesionales y organizaciones">
+
             <span><svg class="icon"><use href="#landing-check"/></svg> Profesionales independientes</span>
+
             <span><svg class="icon"><use href="#landing-check"/></svg> Centros de salud</span>
+
           </div>
+
         </div>
+
+
 
         <!-- Ilustración conceptual: no simula pantallas ni métricas del producto -->
+
         <div class="hero-visual" aria-label="Ilustración conceptual: agenda, pacientes, equipo y comunicaciones conectados">
+
           <div class="hero-visual-glow" aria-hidden="true"></div>
+
           <div class="concept-stage">
+
             <div class="concept-orbit concept-orbit-outer" aria-hidden="true"></div>
+
             <div class="concept-orbit concept-orbit-inner" aria-hidden="true"></div>
+
             <span class="concept-spark concept-spark-one" aria-hidden="true"></span>
+
             <span class="concept-spark concept-spark-two" aria-hidden="true"></span>
+
             <span class="concept-spark concept-spark-three" aria-hidden="true"></span>
 
+
+
             <div class="concept-core">
+
               <span class="concept-core-icon" aria-hidden="true">
+
                 <svg viewBox="0 0 96 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+
                   <path d="M5 29H25L35 12L47 46L60 20L68 29H91" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
                 </svg>
+
               </span>
+
               <span class="concept-core-kicker">UN SOLO LUGAR</span>
+
               <strong>Todo<br>conectado<span>.</span></strong>
+
               <span class="concept-core-subtitle">Más simple para todos</span>
+
             </div>
+
+
 
             <div class="concept-card concept-card-agenda">
+
               <span class="concept-card-icon concept-card-icon-mint"><svg class="icon"><use href="#landing-calendar"/></svg></span>
+
               <span class="concept-card-copy"><strong>Agenda</strong><small>Turnos organizados</small></span>
+
               <span class="concept-card-status" aria-hidden="true"></span>
+
             </div>
+
+
 
             <div class="concept-card concept-card-pacientes">
+
               <span class="concept-card-icon concept-card-icon-cream"><svg class="icon"><use href="#landing-users"/></svg></span>
+
               <span class="concept-card-copy"><strong>Pacientes</strong><small>Información clara</small></span>
+
               <span class="concept-card-status" aria-hidden="true"></span>
+
             </div>
+
+
 
             <div class="concept-card concept-card-equipo">
+
               <span class="concept-card-icon concept-card-icon-cream"><svg class="icon"><use href="#landing-building"/></svg></span>
+
               <span class="concept-card-copy"><strong>Tu equipo</strong><small>Trabajo coordinado</small></span>
+
               <span class="concept-card-status" aria-hidden="true"></span>
+
             </div>
+
+
 
             <div class="concept-card concept-card-mensajes">
+
               <span class="concept-card-icon concept-card-icon-mint"><svg class="icon"><use href="#landing-message"/></svg></span>
+
               <span class="concept-card-copy"><strong>Comunicación</strong><small>Todo más simple</small></span>
+
               <span class="concept-card-status" aria-hidden="true"></span>
+
             </div>
+
           </div>
+
           <span class="concept-caption">Una forma más conectada de gestionar tu consultorio</span>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <!-- BENEFICIOS CORTOS -->
+
     <section class="value-strip" aria-label="Beneficios principales">
+
       <div class="container value-strip-inner">
+
         <div><svg class="icon"><use href="#landing-calendar"/></svg><span>Tu agenda, más clara</span></div>
+
         <span class="strip-divider" aria-hidden="true"></span>
+
         <div><svg class="icon"><use href="#landing-users"/></svg><span>Tu equipo, conectado</span></div>
+
         <span class="strip-divider" aria-hidden="true"></span>
+
         <div><svg class="icon"><use href="#landing-sparkle"/></svg><span>Tu tiempo, mejor aprovechado</span></div>
+
       </div>
+
     </section>
+
+
 
     <!-- FUNCIONALIDADES -->
+
     <section class="section features-section" id="funcionalidades" aria-labelledby="funcionalidades-titulo">
+
       <div class="container">
+
         <div class="section-heading section-heading-centered">
+
           <span class="section-kicker"><span class="kicker-line"></span> TODO EN UN SOLO LUGAR</span>
+
           <h2 id="funcionalidades-titulo">Tu día a día, <span>mucho más simple.</span></h2>
+
           <p>Menos herramientas separadas. Más claridad para vos, tu equipo y las personas que atendés.</p>
+
         </div>
+
+
 
         <div class="feature-grid">
+
           @for (item of funcionalidades; track item.titulo; let i = $index) {
+
             <article class="feature-card" [class.feature-card-large]="i < 2" [class.feature-card-mint]="item.tono === 'menta'" [class.feature-card-cream]="item.tono === 'crema'" [class.feature-card-lavender]="item.tono === 'lavanda'">
+
               <div class="feature-card-top"><span class="feature-icon"><svg class="icon"><use [attr.href]="'#landing-' + item.icono"/></svg></span><span class="feature-index">0{{ i + 1 }}</span></div>
+
               <div class="feature-card-body"><span class="feature-label">{{ item.etiqueta }}</span><h3>{{ item.titulo }}</h3><p>{{ item.descripcion }}</p></div>
+
               @if (i === 0) {
+
                 <div class="feature-decoration feature-decoration-calendar" aria-hidden="true"><span>LU</span><span>MA</span><span>MI</span><span>JU</span><span>VI</span><b></b><b></b><b></b><b></b><b></b></div>
+
               }
+
               @if (i === 1) {
+
                 <div class="feature-decoration feature-decoration-link" aria-hidden="true"><svg class="icon"><use href="#landing-link"/></svg><span>reservas / tu-consultorio</span><svg class="icon"><use href="#landing-arrow-up"/></svg></div>
+
               }
+
             </article>
+
           }
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <!-- SECCIÓN OSCURA -->
+
     <section class="workflow-section" id="como-funciona" aria-labelledby="como-funciona-titulo">
+
       <div class="container workflow-grid">
+
         <div class="workflow-copy">
+
           <span class="section-kicker section-kicker-light"><span class="kicker-line"></span> UNA FORMA MÁS SIMPLE DE TRABAJAR</span>
+
           <h2 id="como-funciona-titulo">Más organización.<br><span>Menos ruido.</span></h2>
+
           <p>Dejá que la tecnología te ayude con la parte administrativa para concentrarte en lo importante: la atención.</p>
+
           <div class="workflow-list">
+
             <div><span><svg class="icon"><use href="#landing-check"/></svg></span><p>Visualizá los turnos y cambios de agenda.</p></div>
+
             <div><span><svg class="icon"><use href="#landing-check"/></svg></span><p>Coordiná profesionales y sucursales.</p></div>
+
             <div><span><svg class="icon"><use href="#landing-check"/></svg></span><p>Gestioná las comunicaciones operativas.</p></div>
+
           </div>
+
           <a routerLink="/registro" class="button button-light">Crear mi espacio <svg class="icon"><use href="#landing-arrow-up"/></svg></a>
+
         </div>
+
         <div class="workflow-visual" aria-label="Ejemplo de un flujo de reserva">
+
           <div class="workflow-card"><div class="workflow-card-icon"><svg class="icon"><use href="#landing-link"/></svg></div><div><span>PASO 01</span><strong>El paciente solicita un turno</strong><small>Desde tu enlace de reservas</small></div><span class="workflow-card-check"><svg class="icon"><use href="#landing-check"/></svg></span></div>
+
           <span class="workflow-connector" aria-hidden="true"></span>
+
           <div class="workflow-card workflow-card-middle"><div class="workflow-card-icon"><svg class="icon"><use href="#landing-calendar"/></svg></div><div><span>PASO 02</span><strong>La agenda se actualiza</strong><small>Disponibilidad centralizada</small></div><span class="workflow-card-check"><svg class="icon"><use href="#landing-check"/></svg></span></div>
+
           <span class="workflow-connector" aria-hidden="true"></span>
+
           <div class="workflow-card"><div class="workflow-card-icon"><svg class="icon"><use href="#landing-bell"/></svg></div><div><span>PASO 03</span><strong>Seguimiento del turno</strong><small>Confirmaciones y recordatorios configurables</small></div><span class="workflow-card-check"><svg class="icon"><use href="#landing-check"/></svg></span></div>
+
           <span class="workflow-visual-caption">Ejemplo del funcionamiento general</span>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <!-- CÓMO EMPEZAR -->
+
     <section class="section start-section" aria-labelledby="empezar-titulo">
+
       <div class="container">
+
         <div class="section-heading section-heading-centered">
+
           <span class="section-kicker"><span class="kicker-line"></span> EMPEZAR ES SIMPLE</span>
+
           <h2 id="empezar-titulo">Tu espacio, <span>en tres pasos.</span></h2>
+
           <p>Configurá la plataforma según la forma de trabajar de tu consultorio.</p>
+
         </div>
+
         <div class="steps-grid">
+
           <div class="step-card"><span class="step-number">01</span><span class="step-icon"><svg class="icon"><use href="#landing-users"/></svg></span><h3>Creá tu cuenta</h3><p>Registrá tu organización y empezá a configurar tu espacio de trabajo.</p></div>
+
           <div class="step-card"><span class="step-number">02</span><span class="step-icon"><svg class="icon"><use href="#landing-calendar"/></svg></span><h3>Organizá tu agenda</h3><p>Definí profesionales, sucursales, horarios y disponibilidad.</p></div>
+
           <div class="step-card"><span class="step-number">03</span><span class="step-icon"><svg class="icon"><use href="#landing-link"/></svg></span><h3>Compartí tus reservas</h3><p>Ofrecé un enlace público para que tus pacientes soliciten turnos.</p></div>
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <!-- NOSOTROS -->
+
     <section class="about-section" id="nosotros" aria-labelledby="nosotros-titulo">
+
       <div class="container about-grid">
-        <div class="about-art" aria-hidden="true"><span class="about-art-circle about-art-circle-one"></span><span class="about-art-circle about-art-circle-two"></span><span class="about-art-ring"></span><div class="about-art-center"><svg viewBox="0 0 36 36"><path d="M10 25V11l16 14V11"/></svg></div><span class="about-art-label">Tecnología con propósito<span>.</span></span></div>
+
+        <div class="about-art" aria-hidden="true"><span class="about-art-circle about-art-circle-one"></span><span class="about-art-circle about-art-circle-two"></span><span class="about-art-ring"></span><div class="about-art-center"><img src="/logosinfondo.png"
+     alt="Logo de CoriaSalud"width="40" height="40" /></div><span class="about-art-label">Tecnología con propósito<span>.</span></span></div>
+
         <div class="about-copy"><span class="section-kicker"><span class="kicker-line"></span> QUIÉNES SOMOS</span><h2 id="nosotros-titulo">Creemos en una salud <span>mejor organizada.</span></h2><p>{{ marca }} es un proyecto argentino de tecnología pensado para simplificar la gestión cotidiana de profesionales y organizaciones de salud.</p><p>Buscamos que las herramientas digitales sean claras, útiles y accesibles, y que acompañen el trabajo de quienes cuidan a otras personas.</p><div class="about-signature"><span class="about-signature-mark"><svg class="icon"><use href="#landing-sparkle"/></svg></span><span>Más tiempo para lo que importa.</span></div></div>
+
       </div>
+
     </section>
+
+
 
     <!-- FAQ -->
+
     <section class="section faq-section" id="preguntas" aria-labelledby="faq-titulo">
+
       <div class="container faq-grid">
+
         <div class="faq-heading"><span class="section-kicker"><span class="kicker-line"></span> PREGUNTAS FRECUENTES</span><h2 id="faq-titulo">¿Tenés dudas?<br><span>Te ayudamos.</span></h2><p>Respuestas simples para que conozcas cómo funciona la plataforma.</p></div>
+
         <div class="faq-list">
+
           @for (item of preguntas; track item.pregunta; let i = $index) {
+
             <div class="faq-item" [class.faq-item-open]="preguntaAbierta === i">
+
               <h3><button type="button" [id]="'pregunta-' + i" [attr.aria-expanded]="preguntaAbierta === i" [attr.aria-controls]="'respuesta-' + i" (click)="togglePregunta(i)"><span>{{ item.pregunta }}</span><span class="faq-toggle"><svg class="icon"><use href="#landing-chevron"/></svg></span></button></h3>
+
               <div class="faq-answer" [id]="'respuesta-' + i" role="region" [attr.aria-labelledby]="'pregunta-' + i" [hidden]="preguntaAbierta !== i"><p>{{ item.respuesta }}</p></div>
+
             </div>
+
           }
+
         </div>
+
       </div>
+
     </section>
+
+
 
     <!-- CTA FINAL -->
+
     <section class="final-cta" aria-labelledby="cta-titulo">
+
       <div class="container final-cta-inner"><div class="cta-deco cta-deco-one" aria-hidden="true"></div><div class="cta-deco cta-deco-two" aria-hidden="true"></div><span class="cta-eyebrow"><svg class="icon"><use href="#landing-sparkle"/></svg> EMPEZÁ A TRABAJAR DIFERENTE</span><h2 id="cta-titulo">Tu consultorio merece<br><span>una gestión más simple.</span></h2><p>Todo lo que necesitás para dar el siguiente paso.</p><div class="final-cta-buttons"><a routerLink="/registro" class="button button-light button-large">Crear mi cuenta <svg class="icon"><use href="#landing-arrow-up"/></svg></a><a routerLink="/login" class="button button-ghost-light button-large">Ya tengo una cuenta <svg class="icon"><use href="#landing-arrow"/></svg></a></div></div>
+
     </section>
+
   </main>
 
+
+
   <footer class="site-footer">
-    <div class="container footer-main"><div class="footer-brand-block"><a class="brand" href="#inicio" aria-label="Volver al inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M10 25V11l16 14V11"/></svg></span><span class="brand-name">{{ marca }}<span class="brand-period">.</span></span></a><p>Tecnología para una gestión de salud más simple.</p></div><div class="footer-links-group"><h3>Plataforma</h3><a href="#funcionalidades">Funcionalidades</a><a href="#como-funciona">Cómo funciona</a><a routerLink="/registro">Crear cuenta</a><a routerLink="/login">Iniciar sesión</a></div><div class="footer-links-group"><h3>Información</h3><a href="#nosotros">Quiénes somos</a><a href="#preguntas">Preguntas frecuentes</a><a routerLink="/terminos">Términos y condiciones</a><a routerLink="/privacidad">Política de privacidad</a><a routerLink="/condiciones-reserva">Condiciones de reserva</a></div></div>
+
+    <div class="container footer-main"><div class="footer-brand-block"><a class="brand" href="#inicio" aria-label="Volver al inicio"><span class="brand-mark" aria-hidden="true"><img src="/logosinfondo.png" alt="" width="40" height="40" /></span><span class="brand-name">{{ marca }}<span class="brand-period">.</span></span></a><p>Tecnología para una gestión de salud más simple.</p></div><div class="footer-links-group"><h3>Plataforma</h3><a href="#funcionalidades">Funcionalidades</a><a href="#como-funciona">Cómo funciona</a><a routerLink="/registro">Crear cuenta</a><a routerLink="/login">Iniciar sesión</a></div><div class="footer-links-group"><h3>Información</h3><a href="#nosotros">Quiénes somos</a><a href="#preguntas">Preguntas frecuentes</a><a routerLink="/terminos">Términos y condiciones</a><a routerLink="/privacidad">Política de privacidad</a><a routerLink="/condiciones-reserva">Condiciones de reserva</a></div></div>
+
     <div class="container footer-bottom"><span>© {{ anioActual }} {{ marca }}. Todos los derechos reservados.</span><span>Hecho en Argentina <span aria-hidden="true">✦</span></span></div>
+
   </footer>
+
 </div>

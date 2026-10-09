@@ -1281,7 +1281,7 @@ export class AutomatizacionesComponent implements OnInit {
           this.alertaService.success(
             'WhatsApp desconectado',
             this.esAlcanceProfesional
-              ? 'Se eliminó tu WhatsApp profesional. NexaSalud podrá usar el general de la organización como respaldo.'
+              ? 'Se eliminó tu WhatsApp profesional. CoriaSalud podrá usar el general de la organización como respaldo.'
               : 'La conexión general de WhatsApp se eliminó correctamente.'
           );
         },
@@ -1706,7 +1706,7 @@ export class AutomatizacionesComponent implements OnInit {
 
       this.alertaService.warning(
         'Formato no permitido',
-        'Por ahora NexaSalud acepta videos MP4.'
+        'Por ahora CoriaSalud acepta videos MP4.'
       );
 
       input.value = '';
@@ -2155,7 +2155,7 @@ export class AutomatizacionesComponent implements OnInit {
             'Desactivar automatización',
 
           mensaje:
-            'NexaSalud dejará de ejecutarla automáticamente.',
+            'CoriaSalud dejará de ejecutarla automáticamente.',
 
           textoConfirmar:
             'Desactivar',
@@ -2186,7 +2186,7 @@ export class AutomatizacionesComponent implements OnInit {
 
           this.alertaService.success(
             'Automatización desactivada',
-            'NexaSalud dejó de ejecutar esta automatización.'
+            'CoriaSalud dejó de ejecutar esta automatización.'
           );
         },
 
@@ -2388,7 +2388,7 @@ export class AutomatizacionesComponent implements OnInit {
         return 'Envía un saludo automático el día del cumpleaños.';
 
       default:
-        return 'Automatización de NexaSalud.';
+        return 'Automatización de CoriaSalud.';
     }
   }
 
@@ -2470,30 +2470,30 @@ export class AutomatizacionesComponent implements OnInit {
 
       case 'RecordatorioTurno':
         return usarVideo
-          ? 'recordatorio_turno_video_NexaSalud'
-          : 'recordatorio_turno_NexaSalud';
+          ? 'recordatorio_turno_video_CoriaSalud'
+          : 'recordatorio_turno_CoriaSalud';
 
       case 'TurnoConfirmado':
-        return 'turno_confirmado_NexaSalud';
+        return 'turno_confirmado_CoriaSalud';
 
       case 'TurnoCancelado':
-        return 'turno_cancelado_NexaSalud';
+        return 'turno_cancelado_CoriaSalud';
 
       case 'PostConsulta':
         return usarVideo
-          ? 'post_consulta_video_NexaSalud'
-          : 'post_consulta_NexaSalud';
+          ? 'post_consulta_video_CoriaSalud'
+          : 'post_consulta_CoriaSalud';
 
       case 'Cumpleanos':
         return usarVideo
-          ? 'cumpleanos_video_NexaSalud'
-          : 'cumpleanos_NexaSalud';
+          ? 'cumpleanos_video_CoriaSalud'
+          : 'cumpleanos_CoriaSalud';
 
       case 'TurnoCreado':
       default:
         return usarVideo
-          ? 'turno_reservado_video_NexaSalud'
-          : 'turno_reservado_NexaSalud';
+          ? 'turno_reservado_video_CoriaSalud'
+          : 'turno_reservado_CoriaSalud';
     }
   }
 

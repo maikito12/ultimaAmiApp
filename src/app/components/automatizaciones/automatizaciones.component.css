@@ -1,6 +1,6 @@
 /* =========================================================
 
-   AUTOMATIZACIONES - NexaSalud
+   AUTOMATIZACIONES - CoriaSalud
 
    Rediseño limpio / SaaS
 
@@ -2014,11 +2014,11 @@ button {
 
   animation:
 
-    NexaSalud-video-spin 0.8s linear infinite;
+    CoriaSalud-video-spin 0.8s linear infinite;
 
 }
 
-@keyframes NexaSalud-video-spin {
+@keyframes CoriaSalud-video-spin {
 
   to {
 

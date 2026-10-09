@@ -19,5 +19,5 @@ import { DialogoComponent } from './app/shared/dialogos/dialogo/dialogo.componen
 })
 export class AppComponent {
 
-  title = 'NexaSalud';
+  title = 'CoriaSalud';
 }

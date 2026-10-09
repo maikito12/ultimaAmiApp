@@ -831,3 +831,11 @@
   }
 
 }
+
+.hero-brand-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}

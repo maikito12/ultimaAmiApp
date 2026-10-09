@@ -2531,7 +2531,7 @@ async reactivarSuscripcion():
 
 
 
-      'Hola, quiero consultar por un paquete personalizado de mensajes de WhatsApp para NexaSalud.';
+      'Hola, quiero consultar por un paquete personalizado de mensajes de WhatsApp para CoriaSalud.';
 
 
 

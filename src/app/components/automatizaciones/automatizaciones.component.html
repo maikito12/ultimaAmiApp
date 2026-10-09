@@ -19,7 +19,7 @@
         </h1>
 
         <p>
-          Configurá cómo NexaSalud acompaña al paciente
+          Configurá cómo CoriaSalud acompaña al paciente
           antes y después de cada turno.
         </p>
 
@@ -70,7 +70,7 @@
           </p>
 
           <p *ngIf="!puedeCambiarAlcanceWhatsApp && !esAlcanceProfesional">
-            Administrás el número general que NexaSalud usa como respaldo
+            Administrás el número general que CoriaSalud usa como respaldo
             para los profesionales que no tienen un WhatsApp propio.
           </p>
 
@@ -123,7 +123,7 @@
           *ngIf="esAlcanceProfesional"
         >
           Este número se usa para tus propios pacientes.
-          Si no está conectado, NexaSalud puede usar el general como respaldo.
+          Si no está conectado, CoriaSalud puede usar el general como respaldo.
         </span>
 
         <span
@@ -255,7 +255,7 @@
             esAlcanceProfesional
           ">
             Todavía no conectaste tu WhatsApp profesional.
-            Mientras tanto, NexaSalud puede usar el número general
+            Mientras tanto, CoriaSalud puede usar el número general
             de la organización cuando esté disponible.
           </p>
 
@@ -329,13 +329,13 @@
           </h2>
 
           <p *ngIf="!esAlcanceProfesional">
-            La experiencia final de NexaSalud va a conectar la cuenta
+            La experiencia final de CoriaSalud va a conectar la cuenta
             directamente con Meta, sin pedir identificadores técnicos.
           </p>
 
           <p *ngIf="esAlcanceProfesional">
             Esta conexión corresponde solamente a tu WhatsApp profesional.
-            Si no configurás uno propio, NexaSalud puede usar el WhatsApp general
+            Si no configurás uno propio, CoriaSalud puede usar el WhatsApp general
             de la organización como respaldo.
           </p>
 
@@ -372,7 +372,7 @@
 
           <p>
             El usuario inicia sesión en Meta, elige su negocio y su número.
-            NexaSalud recibe la configuración automáticamente.
+            CoriaSalud recibe la configuración automáticamente.
           </p>
 
         </div>
@@ -788,7 +788,7 @@
 
         <p>
           Una regla general funciona como respaldo. Si un profesional
-          tiene una regla propia para el mismo evento, NexaSalud usa esa primero.
+          tiene una regla propia para el mismo evento, CoriaSalud usa esa primero.
           Podés aplicar una misma configuración a varios profesionales de una vez.
         </p>
 
@@ -830,7 +830,7 @@
 
           <p>
             Elegí un momento del recorrido del paciente.
-            NexaSalud te muestra solamente las opciones compatibles.
+            CoriaSalud te muestra solamente las opciones compatibles.
           </p>
 
         </div>
@@ -946,7 +946,7 @@
           </h1>
 
           <p *ngIf="formulario.evento === 'TurnoCreado'">
-            Definí cómo se comunica NexaSalud
+            Definí cómo se comunica CoriaSalud
             cuando un paciente reserva un turno.
           </p>
 
@@ -1194,7 +1194,7 @@
 
 
                 <div class="reminder-help">
-                  NexaSalud revisará los turnos automáticamente.
+                  CoriaSalud revisará los turnos automáticamente.
                   No necesitás dejar esta pantalla abierta.
                 </div>
 
@@ -1716,7 +1716,7 @@
                   </strong>
 
                   <span>
-                    NexaSalud la ejecutará cuando ocurra el evento.
+                    CoriaSalud la ejecutará cuando ocurra el evento.
                   </span>
 
                 </div>
@@ -1784,11 +1784,11 @@
             <div>
 
               <strong *ngIf="formulario.evento === 'TurnoCreado'">
-                NexaSalud detecta la reserva
+                CoriaSalud detecta la reserva
               </strong>
 
               <strong *ngIf="formulario.evento === 'RecordatorioTurno'">
-                NexaSalud espera el momento indicado
+                CoriaSalud espera el momento indicado
               </strong>
 
               <small *ngIf="formulario.evento === 'TurnoCreado'">
@@ -1853,7 +1853,7 @@
             </strong>
 
             <p>
-              NexaSalud toma automáticamente la organización,
+              CoriaSalud toma automáticamente la organización,
               el profesional, la especialidad, la fecha,
               la hora y la sucursal del turno.
             </p>

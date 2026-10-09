@@ -23,8 +23,7 @@ interface LandingFaq {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingComponent {
-  // Nombre provisional: cuando definamos la marca, lo cambiamos acá.
-  readonly marca = 'NexaSalud';
+  readonly marca = 'CoriaSalud';
   readonly anioActual = new Date().getFullYear();
 
   menuAbierto = false;
