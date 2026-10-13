@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 
 import {
-  environment
+  environmentProduccion
 } from '../../environments/environment';
 
 
@@ -83,7 +83,7 @@ export interface DashboardHomeResponse {
 export class DashboardHomeService {
 
   private readonly url =
-    `${environment.apiUrl}/dashboard/home`;
+    `${environmentProduccion.apiUrl}/dashboard/home`;
 
 
   constructor(

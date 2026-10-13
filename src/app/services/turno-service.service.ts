@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 export class TurnosService {
 
   private readonly URL_BASE =
-    `${environment.apiUrl}/Turnos`;
+    `${environmentProduccion.apiUrl}/Turnos`;
 
   constructor(
     private http: HttpClient

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 export interface ConfiguracionReservas {
   permitirReservaOnline: boolean;
@@ -34,7 +34,7 @@ export interface ConfiguracionReservas {
 export class ConfiguracionReservasService {
 
   private readonly URL =
-     `${environment.apiUrl}/configuracion-reservas`;
+     `${environmentProduccion.apiUrl}/configuracion-reservas`;
 
   constructor(private http: HttpClient) {}
 

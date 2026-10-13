@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Suscripcion } from '../interfaces/suscripcion';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 // =====================================================
 // PLAN PERSONALIZADO
@@ -132,7 +132,7 @@ export interface WhatsAppComprasResponse {
 export class SuscripcionService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/suscripciones`;
+    `${environmentProduccion.apiUrl}/suscripciones`;
 
 
   private readonly whatsappApiUrl =

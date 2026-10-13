@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 // ==========================================
@@ -227,7 +228,7 @@ export interface CrearBloqueoOrganizacion {
 export class ConfiguracionOrganizacionService {
 
   private readonly apiBaseUrl =
-     `${environment.apiUrl}`;
+     `${environmentProduccion.apiUrl}`;
 
   constructor(
     private http: HttpClient

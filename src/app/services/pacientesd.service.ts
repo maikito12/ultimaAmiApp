@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 export interface Paciente {
   id: string;
@@ -61,7 +61,7 @@ export interface PagedResult<T> {
 export class PacientesService {
 
   private readonly URL_BASE =
-    `${environment.apiUrl}/pacientes`;
+    `${environmentProduccion.apiUrl}/pacientes`;
 
   constructor(
     private http: HttpClient

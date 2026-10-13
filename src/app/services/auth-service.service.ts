@@ -10,7 +10,7 @@ import {
   LoginResponse
 } from '../interfaces/auth';
 
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,10 @@ import { environment } from '../../environments/environment';
 export class AuthService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/Auth`;
+    `${environmentProduccion.apiUrl}/Auth`;
 
   private readonly invitacionesUrl =
-    `${environment.apiUrl}/Invitaciones`;
+    `${environmentProduccion.apiUrl}/Invitaciones`;
 
   constructor(
     private http: HttpClient

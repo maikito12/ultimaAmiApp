@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 
 import {
-  environment
+  environmentProduccion
 } from '../../environments/environment';
 
 
@@ -204,13 +204,13 @@ export interface SubirVideoAutomatizacionRespuesta {
 export class AutomatizacionesService {
 
   private readonly apiBaseUrl =
-    `${environment.apiUrl}/automatizaciones`;
+    `${environmentProduccion.apiUrl}/automatizaciones`;
 
   private readonly apiR2BaseUrl =
-    `${environment.apiUrl}/r2`;
+    `${environmentProduccion.apiUrl}/r2`;
 
   private readonly apiWhatsAppBaseUrl =
-    `${environment.apiUrl}/WhatsApp`;
+    `${environmentProduccion.apiUrl}/WhatsApp`;
 
 
   constructor(

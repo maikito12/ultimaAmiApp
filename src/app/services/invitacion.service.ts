@@ -8,7 +8,8 @@ import {
   RegistroConInvitacion,
   UnirseOrganizacion
 } from '../interfaces/invitacion';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 @Injectable({
@@ -17,7 +18,7 @@ import { environment } from '../../environments/environment';
 export class InvitacionService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/Invitaciones`;
+    `${environmentProduccion.apiUrl}/Invitaciones`;
 
 
   constructor(

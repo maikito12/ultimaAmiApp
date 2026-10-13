@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 
 export type RolEquipoBackend =
@@ -68,7 +68,7 @@ export interface DesactivarIntegranteResponse {
 export class EquipoService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/equipo`;
+    `${environmentProduccion.apiUrl}/equipo`;
 
 
   constructor(

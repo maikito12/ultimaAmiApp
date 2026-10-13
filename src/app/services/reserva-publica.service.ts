@@ -10,6 +10,7 @@ import {
 import {
   Observable
 } from 'rxjs';
+import { environmentProduccion } from '../../environments/environment';
 
 export type EstadoDisponibilidadPublica =
   | 'muchos'
@@ -155,8 +156,8 @@ export interface ReservaPublicaInicial {
 })
 export class ReservaPublicaService {
 
-  private readonly apiBaseUrl =
-    'https://localhost:7203/api/publico/reserva';
+private readonly apiBaseUrl =
+  `${environmentProduccion.apiUrl}/publico/reserva`;
 
   constructor(
     private http: HttpClient

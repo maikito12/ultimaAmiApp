@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentProduccion } from '../../environments/environment';
 
 
 // ==========================================================
@@ -56,7 +56,7 @@ export interface CambiarOrganizacionResponse {
 export class ContextoService {
 
   private readonly apiUrl =
-   `${environment.apiUrl}/contexto`;
+   `${environmentProduccion.apiUrl}/contexto`;
 
 
   constructor(
