@@ -35,7 +35,11 @@ export interface AutomatizacionAccion {
 
   activo: boolean;
 }
-
+export interface IniciarWhatsAppOAuthRespuesta {
+  success: boolean;
+  state: string;
+  expiresInSeconds: number;
+}
 
 export interface Automatizacion {
   id: string;
@@ -61,7 +65,11 @@ export interface Automatizacion {
   acciones: AutomatizacionAccion[];
 }
 
-
+export interface FinalizarWhatsAppOAuthRespuesta {
+  success: boolean;
+  estado: string;
+  message: string;
+}
 export interface GuardarAutomatizacionAccionPayload {
   orden: number;
 
@@ -210,7 +218,22 @@ export class AutomatizacionesService {
       HttpClient
   ) {}
 
+// =====================================================
+// WHATSAPP - INICIAR CONEXIÓN CON META
+// =====================================================
 
+iniciarConexionWhatsAppMeta(
+  profesionalId: string | null = null
+): Observable<IniciarWhatsAppOAuthRespuesta> {
+
+  return this.http
+    .post<IniciarWhatsAppOAuthRespuesta>(
+      `${this.apiWhatsAppBaseUrl}/oauth/iniciar`,
+      {
+        profesionalId
+      }
+    );
+}
   // =====================================================
   // WHATSAPP - OBTENER CONFIGURACIÓN
   //
@@ -473,4 +496,25 @@ export class AutomatizacionesService {
         }
       );
   }
+
+  
+  // =====================================================
+  // WHATSAPP - FINALIZAR AUTORIZACIÓN META
+  // =====================================================
+
+  finalizarConexionWhatsAppMeta(
+    code: string,
+    state: string
+  ): Observable<FinalizarWhatsAppOAuthRespuesta> {
+
+    return this.http
+      .post<FinalizarWhatsAppOAuthRespuesta>(
+        `${this.apiWhatsAppBaseUrl}/oauth/finalizar`,
+        {
+          code,
+          state
+        }
+      );
+  }
+
 }

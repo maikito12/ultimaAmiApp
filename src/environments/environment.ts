@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://CoriaSaludbackend-production.up.railway.app/api'
+  apiUrl: 'amiappbackend-production.up.railway.app/api'
 };
