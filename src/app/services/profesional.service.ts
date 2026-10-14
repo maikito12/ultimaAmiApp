@@ -618,19 +618,17 @@ guardarProfesionalObrasSociales(
 
 }
 
+
 subirFotoProfesional(
   archivo: File
 ): Observable<UploadImagenResponse> {
 
   const formData = new FormData();
 
-  formData.append(
-    'archivo',
-    archivo
-  );
+  formData.append('archivo', archivo);
 
   return this.http.post<UploadImagenResponse>(
-    `${this.apiBaseUrl}/cloudinary/profesional`,
+    `${this.apiBaseUrl}/r2/profesional`,
     formData
   );
 }

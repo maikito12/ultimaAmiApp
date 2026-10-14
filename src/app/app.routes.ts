@@ -198,7 +198,12 @@ export const routes: Routes = [
 
     canActivate: [superAdminGuard]
   },
-
+{
+  path: 'eliminacion-de-datos',
+  loadComponent: () =>
+    import('./components/eliminacion-datos/eliminacion-datos.component')
+      .then(m => m.EliminacionDatosComponent)
+},
   // ==========================================
   // SUPER ADMIN - PANEL PRINCIPAL
   // ==========================================

@@ -1014,3 +1014,19 @@ form {
   display: block;
   flex-shrink: 0;
 }
+
+.legal-links {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.legal-links a {
+  color: #164e3e;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-links a:hover {
+  color: #0f392e;
+}
