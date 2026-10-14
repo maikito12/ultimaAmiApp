@@ -37,6 +37,7 @@ export interface CrearReservaPublicaPayload {
   nombre: string;
   apellido: string;
   dni: string;
+genero: string | null;
 
   email: string | null;
   telefono: string | null;

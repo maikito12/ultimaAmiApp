@@ -63,7 +63,7 @@ interface DatosPacienteReserva {
   apellido: string;
 
   dni: string;
-
+  genero: string;
   fechaNacimiento: string;
 
   telefono: string;
@@ -373,7 +373,7 @@ export class FormularioComponent implements OnInit {
     apellido: '',
 
     dni: '',
-
+  genero: '',
     fechaNacimiento: '',
 
     telefono: '',
@@ -2632,7 +2632,8 @@ confirmarTurno(): void {
         dni:
 
           this.paciente.dni.trim(),
-
+genero:
+  this.paciente.genero || null,
         email:
 
           this.paciente.email?.trim()
