@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { forkJoin } from 'rxjs';
-
+import { forkJoin, Subscription } from 'rxjs';
 import { TurnosService } from '../../services/turno-service.service';
 
 import { ContextoService } from '../../services/contexto.service';
@@ -19,6 +18,7 @@ import {
 import {
   DialogoService
 } from '../../services/dialogo.service';
+import { SignalrService } from '../../services/signalr.service';
 
 
 
@@ -137,8 +137,7 @@ interface ProfesionalFiltro {
 })
 
 export class TurnosComponent
-
-  implements OnInit {
+  implements OnInit, OnDestroy  {
 
 
 
@@ -319,7 +318,7 @@ export class TurnosComponent
     'todos';
 
 
-
+private signalrSubscription?: Subscription;
 
 
 
@@ -350,7 +349,8 @@ export class TurnosComponent
       AlertaService,
 
     private dialogoService:
-      DialogoService
+      DialogoService,
+      private signalrService: SignalrService
   ) {}
 
 
@@ -364,26 +364,38 @@ export class TurnosComponent
   // =======================================================
 
 
+ngOnInit(): void {
 
-  ngOnInit(): void {
+  this.cargarContexto();
 
+  this.cargarFechaDesdeUrl();
 
+  this.generarSemana();
 
-    this.cargarContexto();
+  // Carga inicial de la agenda.
+  this.cargarTurnos();
 
+  // Escuchamos los cambios enviados por SignalR.
+  this.signalrSubscription =
+    this.signalrService.turnosActualizados$
+      .subscribe(() => {
 
+        console.log(
+          'SignalR: actualizando agenda automáticamente'
+        );
 
-    this.cargarFechaDesdeUrl();
+        this.cargarTurnos();
 
+      });
+}
 
+ngOnDestroy(): void {
 
-    this.generarSemana();
+  // Evitamos suscripciones duplicadas
+  // cuando el usuario cambia de pantalla.
+  this.signalrSubscription?.unsubscribe();
 
-
-
-    this.cargarTurnos();
-
-  }
+}
 
 
 
