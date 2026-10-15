@@ -25,6 +25,7 @@ private readonly authService = inject(AuthService);
   readonly turnosActualizados$ =
     this.turnosActualizadosSubject.asObservable();
 
+
 async conectar(): Promise<void> {
 
   const token = this.authService.getToken();
@@ -38,12 +39,13 @@ async conectar(): Promise<void> {
 
   if (this.conexion) {
 
-    if (
-      this.conexion.state ===
-      HubConnectionState.Connected
-    ) {
-      return;
-    }
+   if (
+  this.conexion.state === HubConnectionState.Connected ||
+  this.conexion.state === HubConnectionState.Connecting ||
+  this.conexion.state === HubConnectionState.Reconnecting
+) {
+  return;
+}
 
     await this.desconectar();
   }
@@ -61,18 +63,74 @@ async conectar(): Promise<void> {
           this.authService.getToken() ?? ''
       }
     )
-    .withAutomaticReconnect()
+    .withAutomaticReconnect({
+  nextRetryDelayInMilliseconds: () => 5000
+})
     .configureLogging(LogLevel.Warning)
     .build();
+
+  // ==========================================
+  // EVENTO: TURNOS ACTUALIZADOS
+  // ==========================================
 
   this.conexion.on(
     'TurnosActualizados',
     () => {
+
       this.zone.run(() => {
         this.turnosActualizadosSubject.next();
       });
+
     }
   );
+
+  // ==========================================
+  // SIGNALR: RECONEXIÓN AUTOMÁTICA
+  // ==========================================
+
+  this.conexion.onreconnecting((error) => {
+
+    console.warn(
+      'SignalR: conexión perdida. Intentando reconectar...',
+      error
+    );
+
+  });
+
+  // ==========================================
+  // SIGNALR: CONEXIÓN RECUPERADA
+  // ==========================================
+
+  this.conexion.onreconnected(() => {
+
+    console.log(
+      'SignalR: conexión recuperada correctamente'
+    );
+
+    // Actualizar la agenda para recuperar
+    // los cambios ocurridos durante el corte.
+    this.zone.run(() => {
+      this.turnosActualizadosSubject.next();
+    });
+
+  });
+
+  // ==========================================
+  // SIGNALR: CONEXIÓN CERRADA
+  // ==========================================
+
+  this.conexion.onclose((error) => {
+
+    console.warn(
+      'SignalR: conexión cerrada',
+      error
+    );
+
+  });
+
+  // ==========================================
+  // INICIAR CONEXIÓN
+  // ==========================================
 
   try {
 
@@ -92,6 +150,7 @@ async conectar(): Promise<void> {
     throw error;
   }
 }
+
 
   async desconectar(): Promise<void> {
     if (!this.conexion) {

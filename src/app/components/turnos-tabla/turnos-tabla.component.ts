@@ -5,8 +5,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
-
-import { forkJoin, Subscription } from 'rxjs';
+import { forkJoin, Subscription, debounceTime } from 'rxjs';
 import { TurnosService } from '../../services/turno-service.service';
 
 import { ContextoService } from '../../services/contexto.service';
@@ -377,16 +376,19 @@ ngOnInit(): void {
 
   // Escuchamos los cambios enviados por SignalR.
   this.signalrSubscription =
-    this.signalrService.turnosActualizados$
-      .subscribe(() => {
+  this.signalrService.turnosActualizados$
+    .pipe(
+      debounceTime(300)
+    )
+    .subscribe(() => {
 
-        console.log(
-          'SignalR: actualizando agenda automáticamente'
-        );
+      console.log(
+        'SignalR: agenda sincronizada automáticamente'
+      );
 
-        this.cargarTurnos();
+      this.cargarTurnos();
 
-      });
+    });
 }
 
 ngOnDestroy(): void {
