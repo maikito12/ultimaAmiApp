@@ -35,6 +35,7 @@ import {
 } from '../../services/dashboard-home.service';
 
 import { AlertaService } from '../../services/alerta.service';
+import { SuscripcionService, WhatsAppEstadoCupo } from '../../services/suscripcion.service';
 
 interface InicioKpi {
 
@@ -174,7 +175,9 @@ export class InicioComponent
 
     private readonly alertaService:
 
-      AlertaService
+      AlertaService,
+
+    private readonly suscripcionService: SuscripcionService
 
   ) {}
 
@@ -348,6 +351,131 @@ export class InicioComponent
 
     );
 
+    // Se consulta después de conocer el rol real del usuario.
+    this.cargarAvisosInicio();
+
+  }
+
+  // =========================================================
+  // AVISOS: roles, fechas y cupo real
+  // =========================================================
+  mostrarAvisoSuscripcion = false;
+  mostrarAvisoWhatsApp = false;
+  diasRestantesSuscripcion: number | null = null;
+  mensajesWhatsAppDisponibles = 0;
+  private claveAvisoWhatsApp = '';
+
+  private readonly avisosCerrados = new Set<string>();
+
+  private get esAdministradorAvisos(): boolean {
+    // Admin + profesional mantiene el permiso incluso en "Mi agenda".
+    return this.rol === 'ADMIN' || this.esAdminYProfesional;
+  }
+
+  private get puedeVerAvisoWhatsApp(): boolean {
+    return this.rol !== 'SECRETARIA';
+  }
+
+  private estaCerrado(clave: string): boolean {
+    try {
+      return sessionStorage.getItem(clave) === '1';
+    } catch {
+      return this.avisosCerrados.has(clave);
+    }
+  }
+
+  private guardarCierre(clave: string): void {
+    this.avisosCerrados.add(clave);
+    try {
+      sessionStorage.setItem(clave, '1');
+    } catch {
+      // El cierre sigue funcionando aunque el navegador bloquee storage.
+    }
+  }
+
+  private claveSuscripcion(): string {
+    return `coria-aviso-suscripcion-${this.fechaVencimientoAviso}-${this.diasRestantesSuscripcion}`;
+  }
+
+  private fechaVencimientoAviso = '';
+
+  cerrarAvisoSuscripcion(): void {
+    this.guardarCierre(this.claveSuscripcion());
+    this.mostrarAvisoSuscripcion = false;
+  }
+
+  cerrarAvisoWhatsApp(): void {
+    this.guardarCierre(this.claveAvisoWhatsApp);
+    this.mostrarAvisoWhatsApp = false;
+  }
+
+  private cargarAvisosInicio(): void {
+    this.mostrarAvisoSuscripcion = false;
+    this.mostrarAvisoWhatsApp = false;
+
+    if (this.esAdministradorAvisos) {
+      this.suscripcionService.obtenerActual().subscribe({
+        next: (suscripcion) => {
+          const datos = suscripcion as unknown as Record<string, unknown>;
+          const estado = String(datos['estado'] ?? '').toLowerCase();
+          if (estado !== 'activa' && estado !== 'enprueba') return;
+
+          // La fecha exacta debe ser la fecha real de vencimiento de la API.
+          const valor = datos['fechaFin'];
+
+          if (typeof valor !== 'string' || !valor) return;
+
+          const fecha = this.fechaLocal(valor);
+          if (!fecha) return;
+
+          const hoy = new Date();
+          const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+          const dias = Math.round((Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()) - Date.UTC(inicioHoy.getFullYear(), inicioHoy.getMonth(), inicioHoy.getDate())) / 86400000);
+          this.diasRestantesSuscripcion = dias;
+          this.fechaVencimientoAviso = this.claveFecha(fecha);
+          this.mostrarAvisoSuscripcion =
+            (dias === 3 || dias === 0) && !this.estaCerrado(this.claveSuscripcion());
+        },
+        error: (error) => console.warn('No se pudo consultar el aviso de suscripción', error)
+      });
+    }
+
+    if (this.puedeVerAvisoWhatsApp) {
+      this.suscripcionService.obtenerEstadoWhatsApp().subscribe({
+        next: (estado: WhatsAppEstadoCupo) => {
+          const disponibles = Number(estado.mensajesDisponiblesTotales);
+          const consumidos = Number(estado.mensajesConsumidos) + Number(estado.mensajesExtraConsumidos ?? 0);
+          if (!Number.isFinite(disponibles) || !Number.isFinite(consumidos)
+              || disponibles < 0 || consumidos < 0) return;
+
+          // El 20% se calcula sobre el total real del ciclo (usados + disponibles).
+          const total = disponibles + consumidos;
+          if (total <= 0) return;
+
+          this.mensajesWhatsAppDisponibles = disponibles;
+          // Una compra o el nuevo ciclo generan una clave distinta.
+          // No se vuelve a mostrar durante el mismo episodio de saldo bajo.
+          const identidad = `${estado.periodoInicio}-${estado.mensajesIncluidos}-${total}`;
+          this.claveAvisoWhatsApp = `coria-aviso-whatsapp-${identidad}`;
+          this.mostrarAvisoWhatsApp = disponibles / total <= 0.20
+            && !this.estaCerrado(this.claveAvisoWhatsApp);
+        },
+        error: (error) => console.warn('No se pudo consultar el cupo de WhatsApp', error)
+      });
+    }
+  }
+
+  private fechaLocal(valor: string): Date | null {
+    const match = /^(\\d{4})-(\\d{2})-(\\d{2})/.exec(valor);
+    if (!match) return null;
+    const fecha = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    return fecha.getFullYear() === Number(match[1])
+      && fecha.getMonth() === Number(match[2]) - 1
+      && fecha.getDate() === Number(match[3]) ? fecha : null;
+  }
+
+  private claveFecha(fecha: Date): string {
+    return `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`;
   }
 
   // =========================================================

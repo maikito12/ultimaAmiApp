@@ -50,6 +50,50 @@
   </header>
 
 
+
+  <!-- Avisos del inicio: independientes y cerrables -->
+  <section class="inicio-avisos" aria-label="Avisos importantes"
+           *ngIf="mostrarAvisoSuscripcion || mostrarAvisoWhatsApp">
+
+    <article class="inicio-aviso inicio-aviso-suscripcion"
+             *ngIf="mostrarAvisoSuscripcion">
+      <span class="inicio-aviso-icono" aria-hidden="true">!</span>
+      <div class="inicio-aviso-contenido">
+        <strong>{{ diasRestantesSuscripcion === 0
+          ? 'Tu período actual finaliza hoy'
+          : 'Tu período actual finaliza en 3 días' }}</strong>
+        <p>{{ diasRestantesSuscripcion === 0
+          ? 'Tu período actual finaliza hoy. Revisá el estado de tu renovación en Mercado Pago.'
+          : 'Tu período actual finaliza dentro de 3 días. Revisá el estado de tu renovación automática.' }}</p>
+        <a routerLink="/dashboard/suscripcion" class="inicio-aviso-enlace">
+          Ver suscripción <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <button type="button" class="inicio-aviso-cerrar"
+              aria-label="Cerrar aviso de suscripción"
+              (click)="cerrarAvisoSuscripcion()">×</button>
+    </article>
+
+    <article class="inicio-aviso inicio-aviso-whatsapp"
+             *ngIf="mostrarAvisoWhatsApp">
+      <span class="inicio-aviso-icono" aria-hidden="true">!</span>
+      <div class="inicio-aviso-contenido">
+        <strong>Tus mensajes de WhatsApp están por agotarse</strong>
+        <p>Te quedan {{ mensajesWhatsAppDisponibles | number:'1.0-0' }}
+          mensajes disponibles. Para evitar interrupciones en las confirmaciones
+          y recordatorios de tus pacientes, te recomendamos adquirir un paquete adicional.</p>
+        <a routerLink="/dashboard/suscripcion"
+           class="inicio-aviso-enlace">
+          Comprar mensajes <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <button type="button" class="inicio-aviso-cerrar"
+              aria-label="Cerrar aviso de WhatsApp"
+              (click)="cerrarAvisoWhatsApp()">×</button>
+    </article>
+
+  </section>
+
   <!-- =======================================================
        KPIs
        ======================================================= -->

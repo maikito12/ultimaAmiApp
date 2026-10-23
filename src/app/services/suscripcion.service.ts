@@ -1,20 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { Suscripcion } from '../interfaces/suscripcion';
 import { environmentProduccion } from '../../environments/environment';
-
-// =====================================================
-// PLAN PERSONALIZADO
-// =====================================================
 
 export interface SolicitudPlanPersonalizadoRequest {
   cantidadProfesionales: number;
   telefonoContacto: string;
   mensaje?: string | null;
 }
-
 export interface SolicitudPlanPersonalizadoResponse {
   id: string;
   cantidadProfesionales: number;
@@ -24,317 +18,116 @@ export interface SolicitudPlanPersonalizadoResponse {
   fechaSolicitud: string;
   message: string;
 }
-// =====================================================
-// WHATSAPP - CUPO
-// =====================================================
-
 export interface WhatsAppEstadoCupo {
-
   success: boolean;
-
   periodoInicio: string;
-
   periodoFin: string;
-
   cantidadProfesionales: number;
-
   mensajesPorProfesional: number;
-
   mensajesIncluidos: number;
-
   mensajesConsumidos: number;
-
+  mensajesExtraConsumidos?: number;
+  mensajesExtraUtilidadDisponibles?: number;
+  mensajesExtraMarketingDisponibles?: number;
   mensajesIncluidosDisponibles: number;
-
   mensajesExtraDisponibles: number;
-
   mensajesDisponiblesTotales: number;
-
   porcentajeConsumido: number;
-
 }
-
-
-// =====================================================
-// WHATSAPP - PAQUETES
-// =====================================================
-
 export interface WhatsAppPaquete {
-
   id: string;
-
   nombre: string;
-
   cantidadMensajes: number;
-
   precio: number;
-
   orden: number;
-
 }
-
-
 export interface WhatsAppPaquetesResponse {
-
   success: boolean;
-
   items: WhatsAppPaquete[];
-
 }
-
-
-// =====================================================
-// WHATSAPP - COMPRAS
-// =====================================================
-
-export interface WhatsAppCompraMensajes {
-
-  id: string;
-
+export interface WhatsAppCompraRequest {
   paqueteId: string;
-
+  profesionalId?: string | null;
+  cantidadUtilidad: number;
+  cantidadMarketing: number;
+}
+export interface WhatsAppCompraMensajes {
+  id: string;
+  paqueteId: string;
   paquete: string;
-
   cantidadMensajes: number;
-
+  cantidadUtilidad?: number;
+  cantidadMarketing?: number;
+  profesionalId?: string | null;
   importe: number;
-
   estado: string;
-
   initPoint: string | null;
-
   createdAt: string;
-
 }
-
-
 export interface WhatsAppCompraResponse {
-
   success: boolean;
-
   compra: WhatsAppCompraMensajes;
-
 }
-
-
 export interface WhatsAppComprasResponse {
-
   success: boolean;
-
   items: WhatsAppCompraMensajes[];
-
 }
 
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class SuscripcionService {
+  private readonly apiUrl = `${environmentProduccion.apiUrl}/suscripciones`;
+  private readonly whatsappApiUrl = `${this.apiUrl}/whatsapp`;
 
-  private readonly apiUrl =
-    `${environmentProduccion.apiUrl}/suscripciones`;
+  constructor(private http: HttpClient) {}
 
-
-  private readonly whatsappApiUrl =
-    `${this.apiUrl}/whatsapp`;
-
-
-  constructor(
-    private http: HttpClient
-  ) {}
-
-
-  // ==========================================
-  // SUSCRIPCIÓN ACTUAL
-  // ==========================================
-
-  obtenerActual():
-    Observable<Suscripcion> {
-
-    return this.http.get<Suscripcion>(
-      `${this.apiUrl}/actual`
-    );
-
+  obtenerActual(): Observable<Suscripcion> {
+    return this.http.get<Suscripcion>(`${this.apiUrl}/actual`);
   }
-
-
-  // ==========================================
-  // CREAR CHECKOUT
-  // ==========================================
-
-  crearCheckout(
-    data: {
-      planId: string;
-      cantidadProfesionales: number;
-      modalidad: string;
-    }
-  ):
-    Observable<Suscripcion> {
-
-    return this.http.post<Suscripcion>(
-      `${this.apiUrl}/checkout`,
-      data
-    );
-
+  crearCheckout(data: {
+    planId: string;
+    cantidadProfesionales: number;
+    modalidad: string;
+  }): Observable<Suscripcion> {
+    return this.http.post<Suscripcion>(`${this.apiUrl}/checkout`, data);
   }
-
-
-  // ==========================================
-  // COTIZAR
-  // ==========================================
-
-  cotizar(
-    planId: string,
-    cantidadProfesionales: number
-  ):
-    Observable<any> {
-
-    return this.http.get(
-      `${this.apiUrl}/cotizar`,
-      {
-        params: {
-          planId,
-          cantidadProfesionales
-        }
-      }
-    );
-
+  cotizar(planId: string, cantidadProfesionales: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/cotizar`, {
+      params: { planId, cantidadProfesionales }
+    });
   }
-
-
-  // ==========================================
-  // CAMBIAR CANTIDAD DE PROFESIONALES
-  // ==========================================
-
-  cambiarCantidadProfesionales(
-    cantidadProfesionales: number
-  ):
-    Observable<any> {
-
-    return this.http.put(
-      `${this.apiUrl}/cantidad-profesionales`,
-      {
-        cantidadProfesionales
-      }
-    );
-
+  cambiarCantidadProfesionales(cantidadProfesionales: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/cantidad-profesionales`, {
+      cantidadProfesionales
+    });
   }
-
-
-  // ==========================================
-  // CANCELAR
-  // ==========================================
-
-  cancelar():
-    Observable<any> {
-
-    return this.http.post(
-      `${this.apiUrl}/cancelar`,
-      {}
-    );
-
+  cancelar(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/cancelar`, {});
   }
-
-
-  // ==========================================
-  // HISTORIAL
-  // ==========================================
-
-  obtenerHistorial():
-    Observable<any[]> {
-
-    return this.http.get<any[]>(
-      `${this.apiUrl}/historial`
-    );
-
+  obtenerHistorial(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/historial`);
   }
-
-
-  // ==========================================
-  // WHATSAPP - ESTADO DEL CUPO
-  // ==========================================
-
-  obtenerEstadoWhatsApp():
-    Observable<WhatsAppEstadoCupo> {
-
-    return this.http.get<WhatsAppEstadoCupo>(
-      this.whatsappApiUrl
-    );
-
+  obtenerEstadoWhatsApp(): Observable<WhatsAppEstadoCupo> {
+    return this.http.get<WhatsAppEstadoCupo>(this.whatsappApiUrl);
   }
-
-
-  // ==========================================
-  // WHATSAPP - PAQUETES DISPONIBLES
-  // ==========================================
-
-  obtenerPaquetesWhatsApp():
-    Observable<WhatsAppPaquetesResponse> {
-
-    return this.http.get<WhatsAppPaquetesResponse>(
-      `${this.whatsappApiUrl}/paquetes`
-    );
-
+  obtenerPaquetesWhatsApp(): Observable<WhatsAppPaquetesResponse> {
+    return this.http.get<WhatsAppPaquetesResponse>(`${this.whatsappApiUrl}/paquetes`);
   }
-
-
-  // ==========================================
-  // WHATSAPP - CREAR COMPRA PENDIENTE
-  // ==========================================
-
-  comprarPaqueteWhatsApp(
-    paqueteId: string
-  ):
-    Observable<WhatsAppCompraResponse> {
-
+  comprarPaqueteWhatsApp(data: WhatsAppCompraRequest): Observable<WhatsAppCompraResponse> {
     return this.http.post<WhatsAppCompraResponse>(
-      `${this.whatsappApiUrl}/compras`,
-      {
-        paqueteId
-      }
+      `${this.whatsappApiUrl}/compras`, data
     );
-
   }
-
-
-  // ==========================================
-  // WHATSAPP - HISTORIAL DE COMPRAS
-  // ==========================================
-
-  obtenerComprasWhatsApp():
-    Observable<WhatsAppComprasResponse> {
-
-    return this.http.get<WhatsAppComprasResponse>(
-      `${this.whatsappApiUrl}/compras`
+  obtenerComprasWhatsApp(): Observable<WhatsAppComprasResponse> {
+    return this.http.get<WhatsAppComprasResponse>(`${this.whatsappApiUrl}/compras`);
+  }
+  solicitarPlanPersonalizado(
+    data: SolicitudPlanPersonalizadoRequest
+  ): Observable<SolicitudPlanPersonalizadoResponse> {
+    return this.http.post<SolicitudPlanPersonalizadoResponse>(
+      `${this.apiUrl}/plan-personalizado`, data
     );
-
   }
-
-  // ==========================================
-// SOLICITAR PLAN PERSONALIZADO
-// ==========================================
-
-solicitarPlanPersonalizado(
-  data: SolicitudPlanPersonalizadoRequest
-): Observable<SolicitudPlanPersonalizadoResponse> {
-
-  return this.http.post<SolicitudPlanPersonalizadoResponse>(
-    `${this.apiUrl}/plan-personalizado`,
-    data
-  );
-
-}
-// ==========================================
-// REACTIVAR / VOLVER A SUSCRIBIRSE
-// ==========================================
-
-reactivar():
-  Observable<Suscripcion> {
-
-  return this.http.post<Suscripcion>(
-    `${this.apiUrl}/reactivar`,
-    {}
-  );
-
-}
+  reactivar(): Observable<Suscripcion> {
+    return this.http.post<Suscripcion>(`${this.apiUrl}/reactivar`, {});
+  }
 }

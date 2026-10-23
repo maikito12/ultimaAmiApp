@@ -269,6 +269,60 @@ export class SuscripcionComponent implements OnInit {
 
       null;
 
+  // Modal de distribución de mensajes: no altera el tamaño de las tarjetas.
+  paqueteWhatsAppSeleccionado: WhatsAppPaquete | null = null;
+  cantidadUtilidadWhatsApp = 0;
+  cantidadMarketingWhatsApp = 0;
+  readonly precioUtilidadWhatsApp = 60;
+  readonly precioMarketingWhatsApp = 130;
+  // null: compra para la clínica. Para profesionales, el backend
+  // debe resolver el perfil autenticado o recibir su ID válido.
+  profesionalIdCompraWhatsApp: string | null = null;
+
+  get subtotalUtilidadWhatsApp(): number {
+    return this.cantidadUtilidadWhatsApp * this.precioUtilidadWhatsApp;
+  }
+
+  get subtotalMarketingWhatsApp(): number {
+    return this.cantidadMarketingWhatsApp * this.precioMarketingWhatsApp;
+  }
+
+  get totalCompraWhatsApp(): number {
+    return this.subtotalUtilidadWhatsApp + this.subtotalMarketingWhatsApp;
+  }
+
+  get distribucionWhatsAppValida(): boolean {
+    const paquete = this.paqueteWhatsAppSeleccionado;
+    return !!paquete &&
+      Number.isInteger(this.cantidadUtilidadWhatsApp) &&
+      Number.isInteger(this.cantidadMarketingWhatsApp) &&
+      this.cantidadUtilidadWhatsApp >= 0 &&
+      this.cantidadMarketingWhatsApp >= 0 &&
+      this.cantidadUtilidadWhatsApp + this.cantidadMarketingWhatsApp === paquete.cantidadMensajes;
+  }
+
+  actualizarCantidadUtilidadWhatsApp(valor: number | string): void {
+    const maximo = this.paqueteWhatsAppSeleccionado?.cantidadMensajes ?? 0;
+    const numero = Number(valor);
+    this.cantidadUtilidadWhatsApp = Number.isFinite(numero)
+      ? Math.min(maximo, Math.max(0, Math.trunc(numero))) : 0;
+    this.cantidadMarketingWhatsApp = maximo - this.cantidadUtilidadWhatsApp;
+  }
+
+  actualizarCantidadMarketingWhatsApp(valor: number | string): void {
+    const maximo = this.paqueteWhatsAppSeleccionado?.cantidadMensajes ?? 0;
+    const numero = Number(valor);
+    this.cantidadMarketingWhatsApp = Number.isFinite(numero)
+      ? Math.min(maximo, Math.max(0, Math.trunc(numero))) : 0;
+    this.cantidadUtilidadWhatsApp = maximo - this.cantidadMarketingWhatsApp;
+  }
+
+  cerrarModalCompraWhatsApp(): void {
+    if (this.paqueteComprandoId) return;
+    this.paqueteWhatsAppSeleccionado = null;
+  }
+
+
 
 
   // ==========================================
@@ -2275,229 +2329,44 @@ async reactivarSuscripcion():
 
 
 
-  async comprarPaqueteWhatsApp(
-
-
-
-    paquete:
-
-
-
-      WhatsAppPaquete
-
-
-
-  ):
-
-
-
-    Promise<void> {
-
-
-
-    if (
-
-
-
-      this.paqueteComprandoId
-
-
-
-    ) {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    const confirmado =
-
-
-
-      await this.dialogoService
-
-
-
-        .confirmar({
-
-
-
-          titulo:
-
-
-
-            'Comprar mensajes extra',
-
-
-
-          mensaje:
-
-
-
-            `Vas a solicitar ${this.formatearNumero(paquete.cantidadMensajes)} mensajes por $${this.formatearPrecio(paquete.precio)}.`,
-
-
-
-          textoConfirmar:
-
-
-
-            'Continuar',
-
-
-
-          textoCancelar:
-
-
-
-            'Volver'
-
-
-
-        });
-
-
-
-    if (!confirmado) {
-
-
-
-      return;
-
-
-
-    }
-
-
-
-    this.paqueteComprandoId =
-
-
-
-      paquete.id;
-
-
-
-    this.suscripcionService
-
-
-
-      .comprarPaqueteWhatsApp(
-
-
-
-        paquete.id
-
-
-
-      )
-
-
-
-      .subscribe({
-
-
-
-       next: (respuesta) => {
-
-
-
-  this.paqueteComprandoId = null;
-
-
-
-  if (respuesta.compra.initPoint) {
-
-
-
-    window.location.href =
-
-
-
-      respuesta.compra.initPoint;
-
-
-
-    return;
-
-
-
+  comprarPaqueteWhatsApp(paquete: WhatsAppPaquete): void {
+    if (this.paqueteComprandoId) return;
+    this.paqueteWhatsAppSeleccionado = paquete;
+    this.cantidadUtilidadWhatsApp = paquete.cantidadMensajes;
+    this.cantidadMarketingWhatsApp = 0;
   }
 
+  confirmarCompraWhatsApp(): void {
+    const paquete = this.paqueteWhatsAppSeleccionado;
+    if (!paquete || this.paqueteComprandoId || !this.distribucionWhatsAppValida) return;
 
-
-  this.alertaService.error(
-
-
-
-    'No se pudo iniciar el pago',
-
-
-
-    'Mercado Pago no devolvió el enlace de pago.'
-
-
-
-  );
-
-
-
-},
-
-
-
-        error: (err: any) => {
-
-
-
-          this.paqueteComprandoId =
-
-
-
-            null;
-
-
-
-          this.alertaService.error(
-
-
-
-            'No se pudo crear la compra',
-
-
-
-            err?.error?.message
-
-
-
-            ||
-
-
-
-            'Intentá nuevamente.'
-
-
-
-          );
-
-
-
+    this.paqueteComprandoId = paquete.id;
+    this.suscripcionService.comprarPaqueteWhatsApp({
+      paqueteId: paquete.id,
+      profesionalId: this.profesionalIdCompraWhatsApp,
+      cantidadUtilidad: this.cantidadUtilidadWhatsApp,
+      cantidadMarketing: this.cantidadMarketingWhatsApp
+    }).subscribe({
+      next: (respuesta) => {
+        this.paqueteComprandoId = null;
+        if (respuesta.compra?.initPoint) {
+          window.location.href = respuesta.compra.initPoint;
+          return;
         }
-
-
-
-      });
-
-
-
+        this.alertaService.error(
+          'No se pudo iniciar el pago',
+          'Mercado Pago no devolvió el enlace de pago.'
+        );
+      },
+      error: (err: any) => {
+        this.paqueteComprandoId = null;
+        this.alertaService.error(
+          'No se pudo crear la compra',
+          err?.error?.message || 'Intentá nuevamente.'
+        );
+      }
+    });
   }
-
-
 
   // ==========================================
 
@@ -2551,7 +2420,7 @@ async reactivarSuscripcion():
 
 
 
-      '\\_blank'
+      '\_blank'
 
 
 

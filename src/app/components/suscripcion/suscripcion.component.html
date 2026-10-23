@@ -874,7 +874,7 @@
 
 
 
-\\======================================= -->
+\======================================= -->
 
 
 
@@ -1082,7 +1082,7 @@
 
 
 
-\\======================================= -->
+\======================================= -->
 
 
 
@@ -1102,7 +1102,7 @@
 
 
 
-\>
+>
 
 
 
@@ -1554,7 +1554,7 @@
 
 
 
-\\======================================= -->
+\======================================= -->
 
 
 
@@ -1574,7 +1574,7 @@
 
 
 
-\>
+>
 
 
 
@@ -2833,7 +2833,7 @@
 
 
 
-\>
+>
 
 
 
@@ -4081,7 +4081,7 @@
 
 
 
-      <div class="whatsapp-packages-heading">
+      <div id="paquetes-whatsapp" class="whatsapp-packages-heading">
 
 
 
@@ -4361,7 +4361,7 @@
 
 
 
-            ${{ formatearPrecio(paquete.precio) }}
+            Desde ${{ formatearPrecio(paquete.precio) }}
 
 
 
@@ -5429,4 +5429,66 @@
 
 
 
+
+  <!-- Modal propio de distribución: no cambia las dimensiones de la página -->
+  <div class="wa-compra-overlay" *ngIf="paqueteWhatsAppSeleccionado as paquete"
+       (click)="cerrarModalCompraWhatsApp()">
+    <section class="wa-compra-dialog" role="dialog" aria-modal="true"
+             aria-labelledby="wa-compra-titulo" (click)="$event.stopPropagation()">
+      <div class="wa-compra-encabezado">
+        <div>
+          <span class="wa-compra-eyebrow">MENSAJES EXTRA</span>
+          <h2 id="wa-compra-titulo">Personalizá tu paquete</h2>
+          <p>Distribuí los {{ formatearNumero(paquete.cantidadMensajes) }} mensajes como prefieras.</p>
+        </div>
+        <button type="button" class="wa-compra-cerrar" aria-label="Cerrar"
+                [disabled]="paqueteComprandoId !== null"
+                (click)="cerrarModalCompraWhatsApp()">×</button>
+      </div>
+
+      <div class="wa-compra-tipo">
+        <div class="wa-compra-tipo-titulo">
+          <div><strong>Mensajes de utilidad</strong><small>Confirmaciones y recordatorios</small></div>
+          <span>$60 / mensaje</span>
+        </div>
+        <input type="number" min="0" step="1"
+               [max]="paquete.cantidadMensajes"
+               [ngModel]="cantidadUtilidadWhatsApp"
+               (ngModelChange)="actualizarCantidadUtilidadWhatsApp($event)"
+               [disabled]="paqueteComprandoId !== null"
+               aria-label="Cantidad de mensajes de utilidad">
+        <div class="wa-compra-subtotal">Subtotal: <strong>${{ formatearPrecio(subtotalUtilidadWhatsApp) }}</strong></div>
+      </div>
+
+      <div class="wa-compra-tipo">
+        <div class="wa-compra-tipo-titulo">
+          <div><strong>Mensajes de marketing</strong><small>Promociones y comunicaciones comerciales</small></div>
+          <span>$130 / mensaje</span>
+        </div>
+        <input type="number" min="0" step="1"
+               [max]="paquete.cantidadMensajes"
+               [ngModel]="cantidadMarketingWhatsApp"
+               (ngModelChange)="actualizarCantidadMarketingWhatsApp($event)"
+               [disabled]="paqueteComprandoId !== null"
+               aria-label="Cantidad de mensajes de marketing">
+        <div class="wa-compra-subtotal">Subtotal: <strong>${{ formatearPrecio(subtotalMarketingWhatsApp) }}</strong></div>
+      </div>
+
+      <div class="wa-compra-resumen">
+        <span>{{ cantidadUtilidadWhatsApp + cantidadMarketingWhatsApp }} de {{ paquete.cantidadMensajes }} mensajes</span>
+        <div><span>Total a pagar</span><strong>${{ formatearPrecio(totalCompraWhatsApp) }}</strong></div>
+      </div>
+      <p class="wa-compra-aclaracion">El pago se procesa de forma segura mediante Mercado Pago. Los créditos se acreditan al confirmarse el pago.</p>
+      <div class="wa-compra-acciones">
+        <button type="button" class="btn-secondary"
+                [disabled]="paqueteComprandoId !== null"
+                (click)="cerrarModalCompraWhatsApp()">Volver</button>
+        <button type="button" class="btn-primary"
+                [disabled]="!distribucionWhatsAppValida || paqueteComprandoId !== null"
+                (click)="confirmarCompraWhatsApp()">
+          {{ paqueteComprandoId !== null ? 'Procesando...' : 'Continuar al pago' }}
+        </button>
+      </div>
+    </section>
+  </div>
 </div>
