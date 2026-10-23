@@ -2972,3 +2972,21 @@
   .wa-compra-acciones { flex-direction: column-reverse; }
   .wa-compra-acciones button { width: 100%; }
 }
+
+/* Modal de compra: más ancho y sin barra interna en escritorio. */
+@media (min-width: 701px) and (min-height: 650px) {
+  .wa-compra-dialog {
+    width: min(640px, calc(100vw - 48px));
+    max-width: 640px;
+    max-height: calc(100dvh - 48px);
+    overflow: visible;
+    padding: 24px 30px;
+  }
+  .wa-compra-tipo { padding: 11px 0; }
+  .wa-compra-tipo input { margin-top: 8px; padding: 9px 12px; }
+  .wa-compra-aclaracion { margin: 9px 0; }
+}
+/* En pantallas bajas o celulares se permite desplazamiento para no ocultar el pago. */
+@media (max-height: 649px) {
+  .wa-compra-dialog { max-height: calc(100dvh - 24px); overflow-y: auto; }
+}
