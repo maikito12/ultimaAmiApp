@@ -2368,6 +2368,13 @@ trackById(
   cargandoConsultorios = false;
   procesandoConsultorio = false;
   errorConsultorios = '';
+  menuConsultorioAbierto = false;
+  mostrarTodosConsultorios = false;
+  hayConsultoriosActivos = false;
+  hayConsultoriosDisponiblesGlobal = false;
+  private ocupacionConsultada = false;
+  private consultoriosVerificados = false;
+  private consultaGeneracion = 0;
   private modalConsultorioOmitido = false;
   private get claveModalConsultorio(): string {
     return `coria-consultorio-omitido-${this.nombreUsuario}`;
@@ -2389,34 +2396,100 @@ trackById(
     return this.consultorios.filter(c => c.activo && !c.ocupado);
   }
 
+  get consultoriosActivos(): Consultorio[] {
+    return this.consultorios.filter(c => c.activo);
+  }
+
+  get consultoriosVisibles(): Consultorio[] {
+    return this.mostrarTodosConsultorios ? this.consultoriosActivos : this.consultoriosActivos.slice(0, 5);
+  }
+
+  alternarMenuConsultorio(): void {
+    this.menuConsultorioAbierto = !this.menuConsultorioAbierto;
+  }
+
+  private evaluarModalAutomatico(): void {
+    if (this.tienePerfilProfesional && this.ocupacionConsultada && this.consultoriosVerificados &&
+        !this.miOcupacion && !this.modalConsultorioOmitido && this.hayConsultoriosDisponiblesGlobal) {
+      this.modalConsultorioAbierto = true;
+    }
+  }
+
   iniciarConsultorios(): void {
     try { this.modalConsultorioOmitido = sessionStorage.getItem(this.claveModalConsultorio) === '1'; } catch {}
+    if (this.tienePerfilProfesional) this.consultarMiOcupacion();
     this.configuracionOrganizacionService.obtenerSucursales().subscribe({
       next: sucursales => {
         this.sucursalesConsultorios = sucursales;
-        if (sucursales.length) {
-          this.sucursalConsultorioId = sucursales[0].id;
-          this.cargarConsultorios();
-        }
-        if (this.tienePerfilProfesional) this.consultarMiOcupacion();
+        if (!sucursales.length) { this.consultoriosVerificados = true; return; }
+        this.sucursalConsultorioId = sucursales[0].id;
+        // Revisar TODAS las sucursales antes de ofrecer un consultorio.
+        let pendientes = sucursales.length;
+        let hayActivos = false;
+        let hayDisponibles = false;
+        sucursales.forEach(sucursal => {
+          this.consultoriosService.obtenerPorSucursal(sucursal.id).subscribe({
+            next: lista => {
+              if (lista.some(c => c.activo)) hayActivos = true;
+              if (lista.some(c => c.activo && !c.ocupado)) hayDisponibles = true;
+              if (sucursal.id === this.sucursalConsultorioId) {
+                this.consultorios = lista;
+                this.cargandoConsultorios = false;
+              }
+              if (--pendientes === 0) {
+                this.hayConsultoriosActivos = hayActivos;
+                this.hayConsultoriosDisponiblesGlobal = hayDisponibles;
+                this.consultoriosVerificados = true;
+                if (!this.consultoriosDisponibles.length && hayDisponibles) {
+                  const primera = sucursales.find(s => s.id !== this.sucursalConsultorioId);
+                  if (primera) this.buscarSucursalDisponible(sucursales);
+                }
+                this.evaluarModalAutomatico();
+              }
+            },
+            error: () => {
+              // No abrir automáticamente si alguna sucursal no pudo verificarse.
+              this.errorConsultorios = 'No pudimos verificar todos los consultorios.';
+              if (--pendientes === 0) {
+                this.hayConsultoriosActivos = hayActivos;
+                this.consultoriosVerificados = false;
+              }
+            }
+          });
+        });
       },
       error: () => { this.errorConsultorios = 'No pudimos obtener las sucursales.'; }
     });
   }
 
+  private buscarSucursalDisponible(sucursales: Sucursal[]): void {
+    // Se prioriza la sucursal con consultorios disponibles.
+    for (const sucursal of sucursales) {
+      this.consultoriosService.obtenerPorSucursal(sucursal.id).subscribe({
+        next: lista => {
+          if (this.modalConsultorioAbierto && !this.consultoriosDisponibles.length && lista.some(c => c.activo && !c.ocupado)) {
+            this.sucursalConsultorioId = sucursal.id;
+            this.consultorios = lista;
+          }
+        }
+      });
+    }
+  }
+
   cargarConsultorios(): void {
     if (!this.sucursalConsultorioId) { this.consultorios = []; return; }
+    const generacion = ++this.consultaGeneracion;
     this.cargandoConsultorios = true;
     this.errorConsultorios = '';
     this.consultoriosService.obtenerPorSucursal(this.sucursalConsultorioId).subscribe({
       next: consultorios => {
+        if (generacion !== this.consultaGeneracion) return;
         this.consultorios = consultorios;
         this.cargandoConsultorios = false;
-        if (!this.consultoriosDisponibles.some(c => c.id === this.consultorioElegidoId)) {
-          this.consultorioElegidoId = '';
-        }
+        if (!this.consultoriosDisponibles.some(c => c.id === this.consultorioElegidoId)) this.consultorioElegidoId = '';
       },
       error: error => {
+        if (generacion !== this.consultaGeneracion) return;
         this.cargandoConsultorios = false;
         this.errorConsultorios = this.obtenerMensajeError(error, 'No pudimos cargar los consultorios.');
       }
@@ -2426,24 +2499,22 @@ trackById(
   consultarMiOcupacion(): void {
     this.consultoriosService.obtenerMiOcupacion().subscribe({
       next: ocupacion => {
+        this.ocupacionConsultada = true;
         this.miOcupacion = ocupacion?.activa ? ocupacion : null;
         if (this.miOcupacion) {
           this.modalConsultorioAbierto = false;
           this.sucursalConsultorioId = this.miOcupacion.sucursalId;
           this.cargarConsultorios();
-        } else if (!this.modalConsultorioOmitido && this.sucursalesConsultorios.length) {
-          this.modalConsultorioAbierto = true;
-        }
+        } else this.evaluarModalAutomatico();
       },
       error: error => {
-        // No mostrar modal si no se pudo comprobar la ocupación actual.
         this.errorConsultorios = this.obtenerMensajeError(error, 'No pudimos consultar tu ocupación actual.');
       }
     });
   }
 
   abrirModalConsultorio(): void {
-    if (!this.tienePerfilProfesional || this.miOcupacion) return;
+    if (!this.tienePerfilProfesional || this.miOcupacion || !this.hayConsultoriosDisponiblesGlobal) return;
     this.modalConsultorioAbierto = true;
     this.cargarConsultorios();
   }
@@ -2465,6 +2536,8 @@ trackById(
         this.miOcupacion = ocupacion;
         this.procesandoConsultorio = false;
         this.modalConsultorioAbierto = false;
+        this.menuConsultorioAbierto = false;
+        this.modalConsultorioOmitido = true;
         this.cargarConsultorios();
       },
       error: error => {
@@ -2481,6 +2554,7 @@ trackById(
     this.consultoriosService.finalizar().subscribe({
       next: () => {
         this.miOcupacion = null;
+        this.menuConsultorioAbierto = false;
         this.procesandoConsultorio = false;
         this.cargarConsultorios();
       },

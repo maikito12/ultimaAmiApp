@@ -40,6 +40,19 @@
         </button>
       </div>
 
+      <div class="consultorio-chip-wrap" *ngIf="tienePerfilProfesional && hayConsultoriosActivos">
+        <button type="button" class="consultorio-chip" (click)="miOcupacion ? alternarMenuConsultorio() : abrirModalConsultorio()" [disabled]="procesandoConsultorio">
+          <span class="consultorio-chip-dot" [class.sin-asignar]="!miOcupacion"></span>
+          <span>{{ miOcupacion ? miOcupacion.nombreConsultorio : 'Elegir consultorio' }}</span>
+          <span aria-hidden="true">⌄</span>
+        </button>
+        <div class="consultorio-chip-menu" *ngIf="menuConsultorioAbierto && miOcupacion">
+          <strong>{{ miOcupacion.nombreConsultorio }}</strong>
+          <small *ngIf="miOcupacion.piso">{{ miOcupacion.piso }}</small>
+          <button type="button" (click)="finalizarMiConsultorio()" [disabled]="procesandoConsultorio">Finalizar ocupación</button>
+        </div>
+      </div>
+
       <a
         class="btn-primary"
         routerLink="/dashboard/turnos/nuevo">
@@ -94,48 +107,6 @@
 
   </section>
 
-
-  <!-- CONSULTORIOS: jornada y disponibilidad por sucursal -->
-  <section class="panel consultorios-panel" aria-label="Consultorios">
-    <div class="panel-header">
-      <div><span class="panel-kicker">Jornada</span><h2>Consultorios</h2></div>
-      <button class="consultorios-refrescar" type="button" (click)="cargarConsultorios()" [disabled]="cargandoConsultorios">Actualizar</button>
-    </div>
-    <div class="consultorios-contenido">
-      <div class="consultorio-mi-jornada" *ngIf="tienePerfilProfesional">
-        <ng-container *ngIf="miOcupacion; else sinConsultorioAsignado">
-          <span class="consultorio-estado disponible">Mi consultorio</span>
-          <strong>{{ miOcupacion.nombreConsultorio }}</strong>
-          <small *ngIf="miOcupacion.piso">{{ miOcupacion.piso }}</small>
-          <button type="button" class="consultorios-refrescar" (click)="finalizarMiConsultorio()" [disabled]="procesandoConsultorio">Finalizar jornada</button>
-        </ng-container>
-        <ng-template #sinConsultorioAsignado>
-          <span>Hoy todavía no seleccionaste un consultorio.</span>
-          <button type="button" class="consultorios-elegir" (click)="abrirModalConsultorio()">Elegir consultorio</button>
-        </ng-template>
-      </div>
-      <label class="consultorios-label" for="sucursal-consultorios">Sucursal</label>
-      <select id="sucursal-consultorios" class="consultorios-select" [(ngModel)]="sucursalConsultorioId" (ngModelChange)="cargarConsultorios()">
-        <option *ngFor="let sucursal of sucursalesConsultorios" [value]="sucursal.id">{{ sucursal.nombre }}</option>
-      </select>
-      <p class="consultorios-error" *ngIf="errorConsultorios">{{ errorConsultorios }}</p>
-      <p class="consultorios-vacio" *ngIf="cargandoConsultorios">Cargando consultorios...</p>
-      <p class="consultorios-vacio" *ngIf="!cargandoConsultorios && !consultorios.length">No hay consultorios para mostrar en esta sucursal.</p>
-      <div class="consultorios-lista" *ngIf="!cargandoConsultorios">
-        <div class="consultorio-fila" *ngFor="let consultorio of consultorios">
-          <div class="consultorio-detalle">
-            <strong>{{ consultorio.nombre }}</strong>
-            <small *ngIf="consultorio.piso">{{ consultorio.piso }}</small>
-            <small *ngIf="puedeVerOcupantes && consultorio.ocupado && consultorio.nombreProfesional">{{ consultorio.nombreProfesional }}</small>
-          </div>
-          <span class="consultorio-estado" [class.ocupado]="consultorio.ocupado" [class.inactivo]="!consultorio.activo" [class.disponible]="consultorio.activo && !consultorio.ocupado">
-            {{ !consultorio.activo ? 'Inactivo' : consultorio.ocupado ? 'Ocupado' : 'Disponible' }}
-          </span>
-          <button *ngIf="puedeAdministrarConsultorios && consultorio.ocupado" type="button" class="consultorios-refrescar" [disabled]="procesandoConsultorio" (click)="liberarConsultorioAdmin(consultorio)">Liberar</button>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- =======================================================
        KPIs
@@ -208,6 +179,7 @@
 
   <div class="content-grid">
 
+    <div class="inicio-columna-principal">
     <!-- PRÓXIMOS TURNOS -->
     <section class="panel agenda-panel">
 
@@ -297,6 +269,40 @@
       </ng-template>
     </section>
 
+
+    <!-- CONSULTORIOS: vista compacta de administración y secretaría -->
+    <section class="panel consultorios-compactos" *ngIf="puedeVerOcupantes && hayConsultoriosActivos" aria-label="Estado de consultorios">
+      <div class="panel-header">
+        <div><span class="panel-kicker">Organización</span><h2>Estado de consultorios</h2></div>
+        <button type="button" class="consultorios-refrescar" (click)="cargarConsultorios()" [disabled]="cargandoConsultorios">Actualizar</button>
+      </div>
+      <div class="consultorios-compactos-cuerpo">
+        <div class="consultorios-compactos-filtros">
+          <label for="sucursal-consultorios">Sucursal</label>
+          <select id="sucursal-consultorios" [(ngModel)]="sucursalConsultorioId" (ngModelChange)="cargarConsultorios()">
+            <option *ngFor="let sucursal of sucursalesConsultorios" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+          </select>
+        </div>
+        <p class="consultorios-error" *ngIf="errorConsultorios">{{ errorConsultorios }}</p>
+        <p class="consultorios-vacio" *ngIf="cargandoConsultorios">Cargando consultorios...</p>
+        <div class="consultorios-compactos-lista" *ngIf="!cargandoConsultorios">
+          <div class="consultorio-compacto" *ngFor="let consultorio of consultoriosVisibles">
+            <div class="consultorio-compacto-icono" aria-hidden="true">▣</div>
+            <div class="consultorio-compacto-info">
+              <strong>{{ consultorio.nombre }}</strong>
+              <small>{{ consultorio.ocupado ? (consultorio.nombreProfesional || 'Ocupado') : 'Disponible' }}<ng-container *ngIf="consultorio.piso"> · {{ consultorio.piso }}</ng-container></small>
+            </div>
+            <span class="consultorio-estado" [class.ocupado]="consultorio.ocupado" [class.disponible]="!consultorio.ocupado">{{ consultorio.ocupado ? 'Ocupado' : 'Libre' }}</span>
+            <button *ngIf="puedeAdministrarConsultorios && consultorio.ocupado" type="button" class="consultorio-liberar" (click)="liberarConsultorioAdmin(consultorio)" [disabled]="procesandoConsultorio">Liberar</button>
+          </div>
+        </div>
+        <button type="button" class="consultorios-ver-todos" *ngIf="consultoriosActivos.length > 5" (click)="mostrarTodosConsultorios = !mostrarTodosConsultorios">
+          {{ mostrarTodosConsultorios ? 'Ver menos' : 'Ver todos (' + consultoriosActivos.length + ')' }}
+        </button>
+      </div>
+    </section>
+
+    </div>
 
     <!-- COLUMNA DERECHA -->
     <aside class="side-column">
@@ -508,7 +514,7 @@
 
 
 
-  <div class="consultorio-modal-fondo" *ngIf="modalConsultorioAbierto" role="presentation">
+  <div class="consultorio-modal-fondo" *ngIf="modalConsultorioAbierto && hayConsultoriosDisponiblesGlobal" role="presentation">
     <section class="consultorio-modal" role="dialog" aria-modal="true" aria-labelledby="consultorio-modal-titulo">
       <button type="button" class="consultorio-modal-cerrar" (click)="cerrarModalConsultorio()" aria-label="Cerrar">×</button>
       <span class="panel-kicker">Comenzar jornada</span>

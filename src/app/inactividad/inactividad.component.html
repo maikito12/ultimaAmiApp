@@ -3078,17 +3078,11 @@
         <h2>Consultorios</h2>
         <p>Administrá los consultorios de cada sucursal y consultá su disponibilidad.</p>
       </div>
-      <div class="form-group consultorios-branch">
-        <label for="consultoriosSucursal">Sucursal</label>
-        <select id="consultoriosSucursal" [(ngModel)]="sucursalConsultoriosId" (ngModelChange)="seleccionarSucursalConsultorios()">
-          <option value="">Seleccionar sucursal</option>
-          <option *ngFor="let sucursal of listaSucursales" [value]="sucursal.id">{{ sucursal.nombre }}</option>
-        </select>
-      </div>
+
     </div>
 
-    <div class="content-grid" *ngIf="sucursalConsultoriosId; else sinSucursalConsultorios">
-      <article class="settings-card">
+    <div class="content-grid">
+      <article class="settings-card" *ngIf="sucursalConsultoriosId; else sinSucursalConsultorios">
         <div class="card-header"><div>
           <span class="card-label">{{ consultorioEditandoId ? 'EDITAR ESPACIO' : 'NUEVO ESPACIO' }}</span>
           <h2>{{ consultorioEditandoId ? 'Editar consultorio' : 'Agregar consultorio' }}</h2>
@@ -3120,6 +3114,14 @@
           <h2>Espacios registrados <span class="consultorios-count">{{ listaConsultorios.length }}</span></h2>
           <p>Consultá el estado de cada espacio y administrá su disponibilidad.</p>
         </div></div>
+        <div class="form-group consultorios-branch consultorios-branch-inline">
+          <label for="consultoriosSucursal">Sucursal</label>
+          <select id="consultoriosSucursal" [(ngModel)]="sucursalConsultoriosId" (ngModelChange)="seleccionarSucursalConsultorios()">
+            <option value="">Seleccionar sucursal</option>
+            <option *ngFor="let sucursal of listaSucursales" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+          </select>
+        </div>
+        <ng-container *ngIf="sucursalConsultoriosId; else sinListadoConsultorios">
         <div *ngIf="cargandoConsultorios" class="loading-state"><div class="mini-spinner"></div> Cargando consultorios...</div>
         <div *ngIf="!cargandoConsultorios && !listaConsultorios.length" class="empty-state">
           <div class="empty-icon"><i class="fas fa-door-open"></i></div>
@@ -3142,10 +3144,14 @@
             </button>
           </div>
         </div>
+        </ng-container>
+        <ng-template #sinListadoConsultorios>
+          <div class="consultorios-placeholder">Seleccioná una sucursal para ver sus consultorios.</div>
+        </ng-template>
       </article>
     </div>
     <ng-template #sinSucursalConsultorios>
-      <div class="empty-state"><div class="empty-icon"><i class="fas fa-building"></i></div><strong>Seleccioná una sucursal</strong><span>Necesitás una sucursal para configurar sus consultorios.</span></div>
+      <article class="settings-card"><div class="consultorios-placeholder">Seleccioná una sucursal en «Espacios registrados» para crear un consultorio.</div></article>
     </ng-template>
   </section>
 
