@@ -208,17 +208,21 @@ export class ContextoService {
   // HELPERS DE ROL
   // ========================================================
 
-  esAdmin(): boolean {
+ esAdmin(): boolean {
+  const rol = (this.getRol() ?? '')
+    .trim()
+    .toLowerCase();
 
-    const rol =
-      this.getRol()
-        ?.toLowerCase();
+  const roles = rol
+    .split(/[,;|]/)
+    .map(r => r.trim());
 
-    return (
-      rol === 'admin' ||
-      rol === '1'
-    );
-  }
+  return roles.some(r =>
+    r === 'admin' ||
+    r === 'administrador' ||
+    r === '1'
+  );
+}
 
 
   esSecretaria(): boolean {
