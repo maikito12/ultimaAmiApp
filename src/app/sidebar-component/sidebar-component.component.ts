@@ -1,3 +1,6 @@
+import { firstValueFrom } from 'rxjs';
+import { ConsultoriosService } from '../services/consultorios.service';
+
 import {
   Component,
   Input,
@@ -150,7 +153,10 @@ export class SidebarComponent
       AlertaService,
 
     private readonly dialogoService:
-      DialogoService
+      DialogoService,
+
+    private readonly consultoriosService:
+      ConsultoriosService
 
   ) {}
 
@@ -661,51 +667,42 @@ export class SidebarComponent
   // CERRAR SESIÓN
   // =====================================================
 
-  async cerrarSesion():
-    Promise<void> {
+  cerrandoSesion = false;
 
-    const confirmar =
-      await this.dialogoService
-        .confirmar({
+  async cerrarSesion(): Promise<void> {
+    if (this.cerrandoSesion) return;
 
-          titulo:
-            'Cerrar sesión',
+    const confirmar = await this.dialogoService.confirmar({
+      titulo: 'Cerrar sesión',
+      mensaje: 'Vas a salir de tu cuenta.',
+      textoConfirmar: 'Sí, salir',
+      textoCancelar: 'Cancelar',
+      variante: 'danger'
+    });
 
-          mensaje:
-            'Vas a salir de tu cuenta.',
+    if (!confirmar) return;
+    this.cerrandoSesion = true;
 
-          textoConfirmar:
-            'Sí, salir',
-
-          textoCancelar:
-            'Cancelar',
-
-          variante:
-            'danger'
-
-        });
-
-
-    if (
-      !confirmar
-    ) {
-
-      return;
-
+    try {
+      // El JWT todavía está vigente: primero finalizamos la ocupación.
+      // Incluye a administradores que también ejercen como profesionales.
+      if (this.tieneCapacidadProfesional) {
+        await firstValueFrom(this.consultoriosService.finalizar());
+      }
+    } catch (error: any) {
+      // No impedimos salir por un error de red o por no tener ocupación activa.
+      console.warn('No se pudo finalizar la ocupación al cerrar sesión:', error);
+      this.alertaService.error(
+        'No se pudo liberar el consultorio',
+        'Se cerrará tu sesión, pero el consultorio podría seguir ocupado. Avisá a administración si corresponde.'
+      );
+    } finally {
+      // Logout siempre después del intento de finalizar (nunca antes).
+      this.authService.logout();
+      await this.router.navigate(['/login']);
+      this.cerrandoSesion = false;
     }
-
-
-    this.authService
-      .logout();
-
-
-    this.router
-      .navigate([
-        '/login'
-      ]);
-
   }
-
 
   // =====================================================
   // NOMBRE DEL ROL

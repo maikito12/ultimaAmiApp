@@ -1976,7 +1976,21 @@ if (
 
     }
 
+if (
+  !this.esHorarioReservable(
+    this.fechaSeleccionada,
+    this.horaSeleccionada
+  )
+) {
+  this.mostrarValidacion(
+    'El horario seleccionado ya pasó o faltan menos de 10 minutos. Elegí otro horario.'
+  );
 
+  this.horaSeleccionada = '';
+  this.generarHorasDisponibles();
+
+  return;
+}
 
     this.guardando = true;
 
@@ -3665,17 +3679,16 @@ generarHorasDisponibles(): void {
 
 
 
-
-  const horariosGenerados =
-
-    Array.from(
-
-      new Set(slots)
-
+const horariosGenerados = Array.from(
+  new Set(slots)
+)
+  .filter(hora =>
+    this.esHorarioReservable(
+      this.fechaSeleccionada,
+      hora
     )
-
-      .sort();
-
+  )
+  .sort();
 
 
 
@@ -3688,23 +3701,12 @@ generarHorasDisponibles(): void {
 
 
 
-  if (
+const profesionalId = this.obtenerProfesionalId();
 
-    !this.profesionalActualId
-
-  ) {
-
-
-
-    this.horasDisponibles =
-
-      horariosGenerados;
-
-
-
-    return;
-
-  }
+if (!profesionalId) {
+  this.horasDisponibles = [];
+  return;
+}
 
 
 
@@ -3728,9 +3730,8 @@ generarHorasDisponibles(): void {
 
 
 
-    profesionalOrganizacionId:
-
-      this.profesionalActualId,
+  profesionalOrganizacionId:
+  profesionalId,
 
   };
 
@@ -4360,6 +4361,39 @@ continuarDesdeFecha(): void {
 
     'confirmacion';
 
+}
+
+private esHorarioReservable(
+  fecha: string,
+  hora: string
+): boolean {
+
+  if (!fecha || !hora) {
+    return false;
+  }
+
+  const fechaTurno = this.parseFechaLocal(fecha);
+
+  const [horas, minutos] = hora
+    .split(':')
+    .map(Number);
+
+  fechaTurno.setHours(
+    horas,
+    minutos,
+    0,
+    0
+  );
+
+  const ahora = new Date();
+
+  // Margen mínimo de 10 minutos.
+  const minimoPermitido = new Date(
+    ahora.getTime() + 10 * 60 * 1000
+  );
+
+  return fechaTurno.getTime() >=
+    minimoPermitido.getTime();
 }
 
 }

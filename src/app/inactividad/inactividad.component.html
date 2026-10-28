@@ -296,6 +296,9 @@
 
     </button>
 
+      <button type="button" [class.active]="tabActiva === 'consultorios'" (click)="cambiarTab('consultorios')">
+      <i class="fas fa-door-open"></i><span>Consultorios</span>
+    </button>
   </nav>
 
 <!-- ======================================================= -->
@@ -3064,6 +3067,86 @@
 
     </div>
 
+  </section>
+
+
+  <!-- CONSULTORIOS -->
+  <section class="tab-content" *ngIf="tabActiva === 'consultorios'">
+    <div class="consultorios-topbar">
+      <div>
+        <span class="card-label">ESPACIOS DE ATENCIÓN</span>
+        <h2>Consultorios</h2>
+        <p>Administrá los consultorios de cada sucursal y consultá su disponibilidad.</p>
+      </div>
+      <div class="form-group consultorios-branch">
+        <label for="consultoriosSucursal">Sucursal</label>
+        <select id="consultoriosSucursal" [(ngModel)]="sucursalConsultoriosId" (ngModelChange)="seleccionarSucursalConsultorios()">
+          <option value="">Seleccionar sucursal</option>
+          <option *ngFor="let sucursal of listaSucursales" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="content-grid" *ngIf="sucursalConsultoriosId; else sinSucursalConsultorios">
+      <article class="settings-card">
+        <div class="card-header"><div>
+          <span class="card-label">{{ consultorioEditandoId ? 'EDITAR ESPACIO' : 'NUEVO ESPACIO' }}</span>
+          <h2>{{ consultorioEditandoId ? 'Editar consultorio' : 'Agregar consultorio' }}</h2>
+          <p>Identificá cada espacio de atención dentro de esta sucursal.</p>
+        </div></div>
+        <form (ngSubmit)="guardarConsultorio()">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="nombreConsultorio">Nombre del consultorio</label>
+              <input id="nombreConsultorio" name="nombreConsultorio" type="text" maxlength="100" required [(ngModel)]="formularioConsultorio.nombre" placeholder="Ej: Consultorio 1">
+            </div>
+            <div class="form-group full">
+              <label for="pisoConsultorio">Piso o ubicación (opcional)</label>
+              <input id="pisoConsultorio" name="pisoConsultorio" type="text" maxlength="100" [(ngModel)]="formularioConsultorio.piso" placeholder="Ej: Planta baja">
+            </div>
+          </div>
+          <div class="card-footer consultorios-actions">
+            <button *ngIf="consultorioEditandoId" type="button" class="secondary-button" (click)="cancelarEdicionConsultorio()">Cancelar</button>
+            <button type="submit" class="primary-button" [disabled]="guardandoConsultorio || !formularioConsultorio.nombre.trim()">
+              <i class="fas" [class.fa-spinner]="guardandoConsultorio" [class.fa-spin]="guardandoConsultorio" [class.fa-floppy-disk]="!guardandoConsultorio"></i>
+              {{ guardandoConsultorio ? 'Guardando...' : (consultorioEditandoId ? 'Guardar cambios' : 'Crear consultorio') }}
+            </button>
+          </div>
+        </form>
+      </article>
+      <article class="settings-card">
+        <div class="card-header"><div>
+          <span class="card-label">CONSULTORIOS DE LA SUCURSAL</span>
+          <h2>Espacios registrados <span class="consultorios-count">{{ listaConsultorios.length }}</span></h2>
+          <p>Consultá el estado de cada espacio y administrá su disponibilidad.</p>
+        </div></div>
+        <div *ngIf="cargandoConsultorios" class="loading-state"><div class="mini-spinner"></div> Cargando consultorios...</div>
+        <div *ngIf="!cargandoConsultorios && !listaConsultorios.length" class="empty-state">
+          <div class="empty-icon"><i class="fas fa-door-open"></i></div>
+          <strong>No hay consultorios registrados</strong><span>Creá el primer consultorio de esta sucursal.</span>
+        </div>
+        <div *ngIf="!cargandoConsultorios && listaConsultorios.length" class="item-list">
+          <div class="organization-item consultorio-item" *ngFor="let consultorio of listaConsultorios">
+            <div class="item-icon"><i class="fas fa-door-open"></i></div>
+            <div class="item-main">
+              <strong>{{ consultorio.nombre }}</strong>
+              <span>{{ consultorio.piso || 'Sin piso especificado' }}</span>
+              <span *ngIf="consultorio.ocupado && consultorio.nombreProfesional">Atiende: {{ consultorio.nombreProfesional }}</span>
+            </div>
+            <span class="consultorio-status" [class.is-busy]="consultorio.activo && consultorio.ocupado" [class.is-inactive]="!consultorio.activo">
+              {{ !consultorio.activo ? 'Inactivo' : (consultorio.ocupado ? 'Ocupado' : 'Disponible') }}
+            </span>
+            <button type="button" class="icon-button" [attr.aria-label]="'Editar ' + consultorio.nombre" title="Editar" (click)="editarConsultorio(consultorio)"><i class="fas fa-pen"></i></button>
+            <button type="button" class="icon-button" [disabled]="!!cambiandoEstadoConsultorioId" [attr.aria-label]="(consultorio.activo ? 'Desactivar ' : 'Activar ') + consultorio.nombre" [title]="consultorio.activo ? 'Desactivar' : 'Activar'" (click)="cambiarEstadoConsultorio(consultorio)">
+              <i class="fas" [class.fa-toggle-on]="consultorio.activo" [class.fa-toggle-off]="!consultorio.activo"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+    <ng-template #sinSucursalConsultorios>
+      <div class="empty-state"><div class="empty-icon"><i class="fas fa-building"></i></div><strong>Seleccioná una sucursal</strong><span>Necesitás una sucursal para configurar sus consultorios.</span></div>
+    </ng-template>
   </section>
 
 </div>

@@ -35,13 +35,18 @@ import {
   Sucursal
 
 } from '../services/configuracion-organizacion.service';
+import { Consultorio, ConsultoriosService } from '../services/consultorios.service';
 
 import {
+
   AlertaService
+
 } from '../services/alerta.service';
 
 import {
+
   DialogoService
+
 } from '../services/dialogo.service';
 
 @Component({
@@ -91,6 +96,7 @@ export class InactividadComponent
   | 'obras'
 
   | 'bloqueos'
+    | 'consultorios'
 
   = 'general';
 
@@ -259,6 +265,16 @@ subiendoFotoSucursal = false;
 previewFotoSucursal: string | null = null;
 
   listaSucursales: Sucursal[] = [];
+
+  // Consultorios por sucursal
+  sucursalConsultoriosId = '';
+  listaConsultorios: Consultorio[] = [];
+  cargandoConsultorios = false;
+  guardandoConsultorio = false;
+  cambiandoEstadoConsultorioId: string | null = null;
+  consultorioEditandoId: string | null = null;
+  formularioConsultorio = { nombre: '', piso: '' };
+
 
 sucursalEditandoId: string | null = null;
 
@@ -431,14 +447,20 @@ cargandoObrasSociales = false;
   };
 
   constructor(
+
+    private readonly consultoriosService: ConsultoriosService,
     private readonly configuracionService:
+
       ConfiguracionOrganizacionService,
 
     private readonly alertaService:
+
       AlertaService,
 
     private readonly dialogoService:
+
       DialogoService
+
   ) {}
 
   // ==========================================
@@ -484,10 +506,12 @@ cargandoObrasSociales = false;
     | 'obras'
 
     | 'bloqueos'
+    | 'consultorios'
 
 ): void {
 
   this.tabActiva = tab;
+  if (tab === 'consultorios' && this.sucursalConsultoriosId) this.cargarConsultorios();
 
 }
 
@@ -964,6 +988,10 @@ guardarOrganizacion(): void {
           this.listaSucursales =
 
             data;
+            if (!this.sucursalConsultoriosId && data.length) {
+              this.sucursalConsultoriosId = data[0].id;
+              if (this.tabActiva === 'consultorios') this.cargarConsultorios();
+            }
 
           this.cargandoSucursales =
 
@@ -1274,36 +1302,63 @@ cancelarEdicionSucursal(): void {
   // ==========================================
 
   async eliminarSucursal(
+
     id: string
+
   ): Promise<void> {
+
     const confirmado =
+
       await this.dialogoService.confirmar({
+
         titulo: '¿Eliminar sucursal?',
+
         mensaje: 'La sede dejará de estar disponible.',
+
         textoConfirmar: 'Eliminar',
+
         textoCancelar: 'Cancelar',
+
         variante: 'danger'
+
       });
 
     if (!confirmado) {
+
       return;
+
     }
 
     this.configuracionService
+
       .eliminarSucursal(id)
+
       .subscribe({
+
         next: () => {
+
           this.cargarSucursales();
+
           this.cargarHorarios();
+
           this.mostrarToast('Sucursal eliminada');
+
         },
+
         error: (error) => {
+
           this.mostrarErrorBackend(
+
             error,
+
             'No pudimos eliminar la sucursal.'
+
           );
+
         }
+
       });
+
   }
 
   // ==========================================
@@ -1503,38 +1558,61 @@ cancelarEdicionSucursal(): void {
   }
 
   private verificarFinGuardadoHorarios(
+
     completados: number,
+
     errores: number,
+
     total: number
+
   ): void {
+
     if (completados !== total) {
+
       return;
+
     }
 
     this.guardando = false;
+
     this.cargarHorarios();
 
     if (errores === 0) {
+
       this.nuevoHorario = {
+
         sucursalId: '',
+
         horaInicio: '',
+
         horaFin: ''
+
       };
 
       this.diasSemana.forEach(
+
         d => d.seleccionado = false
+
       );
 
       this.mostrarToast(
+
         'Horario de apertura guardado'
+
       );
+
       return;
+
     }
 
     this.alertaService.warning(
+
       'Algunos horarios no se guardaron',
+
       `Se produjeron ${errores} errores. Revisá si ya existen horarios superpuestos.`
+
     );
+
   }
 
   // ==========================================
@@ -1732,35 +1810,61 @@ cancelarEdicionSucursal(): void {
   // ==========================================
 
   async eliminarEspecialidad(
+
     id: string
+
   ): Promise<void> {
+
     const confirmado =
+
       await this.dialogoService.confirmar({
+
         titulo: '¿Eliminar especialidad?',
+
         mensaje: 'Los profesionales dejarán de poder seleccionarla.',
+
         textoConfirmar: 'Eliminar',
+
         textoCancelar: 'Cancelar',
+
         variante: 'danger'
+
       });
 
     if (!confirmado) {
+
       return;
+
     }
 
     this.configuracionService
+
       .eliminarEspecialidad(id)
+
       .subscribe({
+
         next: () => {
+
           this.cargarEspecialidades();
+
           this.mostrarToast('Especialidad eliminada');
+
         },
+
         error: (error) => {
+
           this.mostrarErrorBackend(
+
             error,
+
             'No pudimos eliminar la especialidad.'
+
           );
+
         }
+
       });
+
   }
 
   // ==========================================
@@ -1966,35 +2070,61 @@ guardarObraSocial(): void {
 // ==========================================
 
 async eliminarObraSocial(
+
     id: string
+
   ): Promise<void> {
+
     const confirmado =
+
       await this.dialogoService.confirmar({
+
         titulo: '¿Eliminar obra social?',
+
         mensaje: 'Dejará de estar disponible para los profesionales.',
+
         textoConfirmar: 'Eliminar',
+
         textoCancelar: 'Cancelar',
+
         variante: 'danger'
+
       });
 
     if (!confirmado) {
+
       return;
+
     }
 
     this.configuracionService
+
       .eliminarObraSocial(id)
+
       .subscribe({
+
         next: () => {
+
           this.cargarObrasSociales();
+
           this.mostrarToast('Obra social eliminada');
+
         },
+
         error: (error) => {
+
           this.mostrarErrorBackend(
+
             error,
+
             'No pudimos eliminar la obra social.'
+
           );
+
         }
+
       });
+
   }
 
   // ==========================================
@@ -2204,44 +2334,75 @@ async eliminarObraSocial(
   }
 
   async eliminarBloqueo(
+
     id: string
+
   ): Promise<void> {
+
     const confirmado =
+
       await this.dialogoService.confirmar({
+
         titulo: '¿Eliminar bloqueo general?',
+
         mensaje: 'La organización volverá a estar disponible durante ese período.',
+
         textoConfirmar: 'Eliminar bloqueo',
+
         textoCancelar: 'Cancelar',
+
         variante: 'danger'
+
       });
 
     if (!confirmado) {
+
       return;
+
     }
 
     this.configuracionService
+
       .eliminarBloqueoOrganizacion(id)
+
       .subscribe({
+
         next: () => {
+
           this.listaBloqueos =
+
             this.listaBloqueos.filter(
+
               x => x.id !== id
+
             );
 
           this.mostrarToast('Bloqueo eliminado');
+
         },
+
         error: (error) => {
+
           console.error(
+
             'Error eliminando bloqueo de organización:',
+
             error
+
           );
 
           this.mostrarErrorBackend(
+
             error,
+
             'No pudimos eliminar el bloqueo de la organización.'
+
           );
+
         }
+
       });
+
   }
 
   // ==========================================
@@ -2341,39 +2502,67 @@ async eliminarObraSocial(
   // ==========================================
 
   private mostrarToast(
+
     mensaje: string
+
   ): void {
+
     this.alertaService.success(
+
       mensaje
+
     );
+
   }
 
   private mostrarError(
+
     mensaje: string
+
   ): void {
+
     this.alertaService.warning(
+
       'Revisá los datos',
+
       mensaje
+
     );
+
   }
 
   private mostrarErrorBackend(
+
     error: any,
+
     fallback: string
+
   ): void {
+
     const mensaje =
+
       error?.error?.message
+
       ||
+
       (
+
         typeof error?.error === 'string'
+
           ? error.error
+
           : fallback
+
       );
 
     this.alertaService.error(
+
       'Ocurrió un problema',
+
       mensaje
+
     );
+
   }
 
 // ==========================================
@@ -2645,5 +2834,94 @@ seleccionarLogoOrganizacion(
     });
 
 }
+
+  // ==========================================
+  // CONSULTORIOS
+  // ==========================================
+  seleccionarSucursalConsultorios(): void {
+    this.cancelarEdicionConsultorio();
+    this.listaConsultorios = [];
+    if (this.sucursalConsultoriosId) this.cargarConsultorios();
+  }
+
+  cargarConsultorios(): void {
+    const sucursalId = this.sucursalConsultoriosId;
+    if (!sucursalId) { this.listaConsultorios = []; return; }
+    this.cargandoConsultorios = true;
+    this.consultoriosService.obtenerPorSucursal(sucursalId).subscribe({
+      next: (data) => {
+        if (this.sucursalConsultoriosId !== sucursalId) return;
+        this.listaConsultorios = data;
+        this.cargandoConsultorios = false;
+      },
+      error: (error) => {
+        if (this.sucursalConsultoriosId !== sucursalId) return;
+        this.cargandoConsultorios = false;
+        this.mostrarErrorBackend(error, 'No pudimos cargar los consultorios.');
+      }
+    });
+  }
+
+  editarConsultorio(consultorio: Consultorio): void {
+    this.consultorioEditandoId = consultorio.id;
+    this.formularioConsultorio = { nombre: consultorio.nombre, piso: consultorio.piso ?? '' };
+  }
+
+  cancelarEdicionConsultorio(): void {
+    this.consultorioEditandoId = null;
+    this.formularioConsultorio = { nombre: '', piso: '' };
+  }
+
+  guardarConsultorio(): void {
+    if (this.guardandoConsultorio) return;
+    const nombre = this.formularioConsultorio.nombre.trim();
+    const piso = this.formularioConsultorio.piso.trim() || null;
+    if (!this.sucursalConsultoriosId) {
+      this.mostrarError('Seleccioná una sucursal.'); return;
+    }
+    if (!nombre || nombre.length > 100 || (piso && piso.length > 100)) {
+      this.mostrarError('Ingresá un nombre de hasta 100 caracteres y un piso de hasta 100 caracteres.'); return;
+    }
+    const actual = this.listaConsultorios.find(c => c.id === this.consultorioEditandoId);
+    const solicitud = actual
+      ? this.consultoriosService.actualizar(actual.id, { nombre, piso, activo: actual.activo })
+      : this.consultoriosService.crear({ sucursalId: this.sucursalConsultoriosId, nombre, piso });
+    this.guardandoConsultorio = true;
+    solicitud.subscribe({
+      next: () => {
+        this.guardandoConsultorio = false;
+        this.cancelarEdicionConsultorio();
+        this.cargarConsultorios();
+        this.mostrarToast(actual ? 'Consultorio actualizado' : 'Consultorio creado');
+      },
+      error: error => {
+        this.guardandoConsultorio = false;
+        this.mostrarErrorBackend(error, 'No pudimos guardar el consultorio.');
+      }
+    });
+  }
+
+  cambiarEstadoConsultorio(consultorio: Consultorio): void {
+    if (this.cambiandoEstadoConsultorioId) return;
+    if (consultorio.activo && consultorio.ocupado) {
+      this.mostrarError('No podés desactivar un consultorio ocupado.'); return;
+    }
+    this.cambiandoEstadoConsultorioId = consultorio.id;
+    this.consultoriosService.actualizar(consultorio.id, {
+      nombre: consultorio.nombre,
+      piso: consultorio.piso,
+      activo: !consultorio.activo
+    }).subscribe({
+      next: () => {
+        this.cambiandoEstadoConsultorioId = null;
+        this.cargarConsultorios();
+        this.mostrarToast(consultorio.activo ? 'Consultorio desactivado' : 'Consultorio activado');
+      },
+      error: error => {
+        this.cambiandoEstadoConsultorioId = null;
+        this.mostrarErrorBackend(error, 'No pudimos cambiar el estado del consultorio.');
+      }
+    });
+  }
 
 }

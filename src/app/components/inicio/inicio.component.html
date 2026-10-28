@@ -94,6 +94,49 @@
 
   </section>
 
+
+  <!-- CONSULTORIOS: jornada y disponibilidad por sucursal -->
+  <section class="panel consultorios-panel" aria-label="Consultorios">
+    <div class="panel-header">
+      <div><span class="panel-kicker">Jornada</span><h2>Consultorios</h2></div>
+      <button class="consultorios-refrescar" type="button" (click)="cargarConsultorios()" [disabled]="cargandoConsultorios">Actualizar</button>
+    </div>
+    <div class="consultorios-contenido">
+      <div class="consultorio-mi-jornada" *ngIf="tienePerfilProfesional">
+        <ng-container *ngIf="miOcupacion; else sinConsultorioAsignado">
+          <span class="consultorio-estado disponible">Mi consultorio</span>
+          <strong>{{ miOcupacion.nombreConsultorio }}</strong>
+          <small *ngIf="miOcupacion.piso">{{ miOcupacion.piso }}</small>
+          <button type="button" class="consultorios-refrescar" (click)="finalizarMiConsultorio()" [disabled]="procesandoConsultorio">Finalizar jornada</button>
+        </ng-container>
+        <ng-template #sinConsultorioAsignado>
+          <span>Hoy todavía no seleccionaste un consultorio.</span>
+          <button type="button" class="consultorios-elegir" (click)="abrirModalConsultorio()">Elegir consultorio</button>
+        </ng-template>
+      </div>
+      <label class="consultorios-label" for="sucursal-consultorios">Sucursal</label>
+      <select id="sucursal-consultorios" class="consultorios-select" [(ngModel)]="sucursalConsultorioId" (ngModelChange)="cargarConsultorios()">
+        <option *ngFor="let sucursal of sucursalesConsultorios" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+      </select>
+      <p class="consultorios-error" *ngIf="errorConsultorios">{{ errorConsultorios }}</p>
+      <p class="consultorios-vacio" *ngIf="cargandoConsultorios">Cargando consultorios...</p>
+      <p class="consultorios-vacio" *ngIf="!cargandoConsultorios && !consultorios.length">No hay consultorios para mostrar en esta sucursal.</p>
+      <div class="consultorios-lista" *ngIf="!cargandoConsultorios">
+        <div class="consultorio-fila" *ngFor="let consultorio of consultorios">
+          <div class="consultorio-detalle">
+            <strong>{{ consultorio.nombre }}</strong>
+            <small *ngIf="consultorio.piso">{{ consultorio.piso }}</small>
+            <small *ngIf="puedeVerOcupantes && consultorio.ocupado && consultorio.nombreProfesional">{{ consultorio.nombreProfesional }}</small>
+          </div>
+          <span class="consultorio-estado" [class.ocupado]="consultorio.ocupado" [class.inactivo]="!consultorio.activo" [class.disponible]="consultorio.activo && !consultorio.ocupado">
+            {{ !consultorio.activo ? 'Inactivo' : consultorio.ocupado ? 'Ocupado' : 'Disponible' }}
+          </span>
+          <button *ngIf="puedeAdministrarConsultorios && consultorio.ocupado" type="button" class="consultorios-refrescar" [disabled]="procesandoConsultorio" (click)="liberarConsultorioAdmin(consultorio)">Liberar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- =======================================================
        KPIs
        ======================================================= -->
@@ -463,6 +506,31 @@
     </div>
   </section>
 
+
+
+  <div class="consultorio-modal-fondo" *ngIf="modalConsultorioAbierto" role="presentation">
+    <section class="consultorio-modal" role="dialog" aria-modal="true" aria-labelledby="consultorio-modal-titulo">
+      <button type="button" class="consultorio-modal-cerrar" (click)="cerrarModalConsultorio()" aria-label="Cerrar">×</button>
+      <span class="panel-kicker">Comenzar jornada</span>
+      <h2 id="consultorio-modal-titulo">¿En qué consultorio vas a atender?</h2>
+      <p>Elegí una sucursal y un consultorio disponible. Podés hacerlo más tarde desde Inicio.</p>
+      <label for="modal-sucursal-consultorio">Sucursal</label>
+      <select id="modal-sucursal-consultorio" [(ngModel)]="sucursalConsultorioId" (ngModelChange)="cargarConsultorios()">
+        <option *ngFor="let sucursal of sucursalesConsultorios" [value]="sucursal.id">{{ sucursal.nombre }}</option>
+      </select>
+      <label for="modal-consultorio">Consultorio disponible</label>
+      <select id="modal-consultorio" [(ngModel)]="consultorioElegidoId">
+        <option value="">Seleccioná un consultorio</option>
+        <option *ngFor="let consultorio of consultoriosDisponibles" [value]="consultorio.id">{{ consultorio.nombre }}{{ consultorio.piso ? ' · ' + consultorio.piso : '' }}</option>
+      </select>
+      <p *ngIf="!cargandoConsultorios && !consultoriosDisponibles.length">No hay consultorios disponibles en esta sucursal.</p>
+      <p class="consultorios-error" *ngIf="errorConsultorios">{{ errorConsultorios }}</p>
+      <div class="consultorio-modal-acciones">
+        <button type="button" class="consultorios-refrescar" (click)="cerrarModalConsultorio()">Ahora no, ir al panel</button>
+        <button type="button" class="consultorios-elegir" [disabled]="!consultorioElegidoId || procesandoConsultorio" (click)="ocuparConsultorio()">{{ procesandoConsultorio ? 'Guardando...' : 'Comenzar jornada' }}</button>
+      </div>
+    </section>
+  </div>
 
   <!-- CARGANDO -->
   <div class="loading-layer" *ngIf="cargando">

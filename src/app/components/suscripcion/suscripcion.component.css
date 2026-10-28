@@ -2973,20 +2973,22 @@
   .wa-compra-acciones button { width: 100%; }
 }
 
-/* Modal de compra: más ancho y sin barra interna en escritorio. */
-@media (min-width: 701px) and (min-height: 650px) {
+/* Modal de compra: diseño horizontal compacto en escritorio, incluso con poca altura. */
+@media (min-width: 701px) {
   .wa-compra-dialog {
-    width: min(640px, calc(100vw - 48px));
-    max-width: 640px;
-    max-height: calc(100dvh - 48px);
-    overflow: visible;
-    padding: 24px 30px;
+    width: min(720px, calc(100vw - 48px));
+    max-width: 720px;
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    padding: 18px 28px;
+    scrollbar-width: none;
   }
-  .wa-compra-tipo { padding: 11px 0; }
-  .wa-compra-tipo input { margin-top: 8px; padding: 9px 12px; }
-  .wa-compra-aclaracion { margin: 9px 0; }
-}
-/* En pantallas bajas o celulares se permite desplazamiento para no ocultar el pago. */
-@media (max-height: 649px) {
-  .wa-compra-dialog { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  .wa-compra-dialog::-webkit-scrollbar { display: none; }
+  .wa-compra-encabezado p { margin-bottom: 8px; }
+  .wa-compra-tipo { padding: 9px 0; }
+  .wa-compra-tipo input { margin-top: 6px; padding: 7px 11px; }
+  .wa-compra-subtotal { margin-top: 5px; }
+  .wa-compra-resumen { padding: 10px 14px; }
+  .wa-compra-aclaracion { margin: 7px 0; }
+  .wa-compra-acciones button { padding-top: 9px; padding-bottom: 9px; }
 }
