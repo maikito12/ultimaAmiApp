@@ -84,7 +84,12 @@ sincronizarOrganizacionActual(
   const actual =
     organizaciones.find(o => o.esActual) ??
     (organizaciones.length === 1 ? organizaciones[0] : null);
-
+console.log('SINCRONIZANDO ORGANIZACIÓN:', {
+  encontrada: !!actual,
+  rol: actual?.rol,
+  esActual: actual?.esActual,
+  cantidadOrganizaciones: organizaciones.length
+});
   if (!actual) return;
 
   const organizacionGuardada = this.getOrganizacionId();
@@ -200,7 +205,11 @@ sincronizarOrganizacionActual(
             );
 
           }
-
+console.log('CONTEXTO DESPUÉS DEL CAMBIO:', {
+  organizacionId: localStorage.getItem('organizacionId'),
+  rolOrganizacion: localStorage.getItem('rolOrganizacion'),
+  esProfesional: localStorage.getItem('esProfesional')
+});
         })
 
       );
