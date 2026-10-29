@@ -130,6 +130,11 @@ console.log('SINCRONIZANDO ORGANIZACIÓN:', {
   } else {
     localStorage.removeItem('profesionalOrganizacionId');
   }
+  console.log('CONTEXTO GUARDADO:', {
+  rol: localStorage.getItem('rolOrganizacion'),
+  organizacion: localStorage.getItem('organizacionId'),
+  esProfesional: localStorage.getItem('esProfesional')
+});
 }
 
   // ========================================================
