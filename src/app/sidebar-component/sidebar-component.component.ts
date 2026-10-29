@@ -486,7 +486,9 @@ export class SidebarComponent
             this.organizacionesContexto =
               organizaciones;
 
-
+this.contextoService.sincronizarOrganizacionActual(
+  organizaciones
+);
             this.organizacionActual =
               organizaciones.find(
                 organizacion =>
@@ -687,7 +689,15 @@ export class SidebarComponent
       // El JWT todavía está vigente: primero finalizamos la ocupación.
       // Incluye a administradores que también ejercen como profesionales.
       if (this.tieneCapacidadProfesional) {
-        await firstValueFrom(this.consultoriosService.finalizar());
+        const ocupacion = await firstValueFrom(
+          this.consultoriosService.obtenerMiOcupacion()
+        );
+
+        if (ocupacion?.activa) {
+          await firstValueFrom(
+            this.consultoriosService.finalizar()
+          );
+        }
       }
     } catch (error: any) {
       // No impedimos salir por un error de red o por no tener ocupación activa.

@@ -61,6 +61,7 @@ export class ContextoService {
 
   constructor(
     private http: HttpClient
+    
   ) {}
 
 
@@ -76,6 +77,55 @@ export class ContextoService {
     );
   }
 
+
+sincronizarOrganizacionActual(
+  organizaciones: OrganizacionContexto[]
+): void {
+  const actual =
+    organizaciones.find(o => o.esActual) ??
+    (organizaciones.length === 1 ? organizaciones[0] : null);
+
+  if (!actual) return;
+
+  const organizacionGuardada = this.getOrganizacionId();
+
+  // No sobrescribir el contexto de otra organización.
+  if (
+    organizacionGuardada &&
+    organizacionGuardada !== actual.organizacionId
+  ) {
+    return;
+  }
+
+  localStorage.setItem(
+    'organizacionId',
+    actual.organizacionId
+  );
+
+  localStorage.setItem(
+    'organizacionNombre',
+    actual.nombre
+  );
+
+  localStorage.setItem(
+    'rolOrganizacion',
+    String(actual.rol)
+  );
+
+  localStorage.setItem(
+    'esProfesional',
+    String(actual.esProfesional)
+  );
+
+  if (actual.profesionalOrganizacionId) {
+    localStorage.setItem(
+      'profesionalOrganizacionId',
+      actual.profesionalOrganizacionId
+    );
+  } else {
+    localStorage.removeItem('profesionalOrganizacionId');
+  }
+}
 
   // ========================================================
   // CAMBIAR ORGANIZACIÓN

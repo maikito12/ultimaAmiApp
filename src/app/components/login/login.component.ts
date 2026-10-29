@@ -3,9 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-
+import { switchMap, map, of } from 'rxjs';
 import { AuthService } from '../../services/auth-service.service';
 import { AlertaService } from '../../services/alerta.service';
+import { ContextoService } from '../../services/contexto.service';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class LoginComponent {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private alertaService: AlertaService
+    private alertaService: AlertaService,
+    private contextoService: ContextoService
   ) {}
 
   login(event: Event): void {
@@ -46,59 +48,69 @@ export class LoginComponent {
 
     this.cargando = true;
 
-    this.auth.login({
-      email: this.email.trim(),
-      password: this.password
-    }).subscribe({
+  
+this.auth.login({
+  email: this.email.trim(),
+  password: this.password
+}).pipe(
+  switchMap(() => {
+    if (this.auth.esSuperAdmin()) {
+      return of('super-admin');
+    }
 
-    next: () => {
+    return this.contextoService.obtenerOrganizaciones().pipe(
+      switchMap(organizaciones => {
+        if (organizaciones.length === 0) {
+          return of('sin-organizacion');
+        }
 
-  this.cargando = false;
+        const organizacion =
+          organizaciones.find(o => o.esActual) ??
+          (organizaciones.length === 1 ? organizaciones[0] : null);
 
+        if (!organizacion) {
+          return of('seleccionar-organizacion');
+        }
 
-  // ==========================================
-  // SUPER ADMIN
-  // ==========================================
-
-  if (
-    this.auth.esSuperAdmin()
-  ) {
-
-    this.router.navigate(
-      ['/super-admin']
+        return this.contextoService
+          .cambiarOrganizacion(organizacion.organizacionId)
+          .pipe(map(() => 'dashboard'));
+      })
     );
+  })
+).subscribe({
+  next: destino => {
+    this.cargando = false;
 
-    return;
+    if (destino === 'super-admin') {
+      this.router.navigate(['/super-admin']);
+    } else if (destino === 'dashboard') {
+      this.router.navigate(['/dashboard']);
+    } else {
+      // Usar acá las rutas reales de tu aplicación
+      // para seleccionar organización o mostrar
+      // el estado sin organización.
+      this.alertaService.info(
+        'Seleccionar organización',
+        'Necesitás seleccionar una organización para continuar.'
+      );
+    }
+  },
+  error: error => {
+    this.cargando = false;
+
+    console.error('Error al iniciar sesión:', error);
+
+    this.alertaService.error(
+      'No se pudo iniciar sesión',
+      this.obtenerMensajeError(
+        error,
+        'No pudimos cargar tu organización.'
+      )
+    );
   }
+});
 
-
-  // ==========================================
-  // USUARIO NORMAL
-  // ==========================================
-
-  this.router.navigate(
-    ['/dashboard']
-  );
-
-},
-
-      error: (error) => {
-        this.cargando = false;
-
-        console.error(
-          'Error de login:',
-          error
-        );
-
-        this.alertaService.error(
-          'No se pudo iniciar sesión',
-          this.obtenerMensajeError(
-            error,
-            'Verificá tu correo electrónico y contraseña.'
-          )
-        );
-      }
-    });
   }
 
   togglePassword(): void {
