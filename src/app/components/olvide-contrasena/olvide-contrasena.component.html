@@ -1,0 +1,232 @@
+
+<div class="auth-page">
+
+  <section class="auth-shell">
+
+    <!-- PANEL DE PRESENTACIÓN -->
+
+    <aside class="auth-hero">
+
+      <div class="hero-brand">
+        <img
+          src="/logosinfondo.png"
+          alt="Logo de CoriaSalud"
+          class="hero-brand-logo"
+        />
+
+        <span>CoriaSalud</span>
+      </div>
+
+      <div class="hero-copy">
+
+        <span class="hero-eyebrow">
+          SEGURIDAD DE TU CUENTA
+        </span>
+
+        <h1>
+          Recuperá el acceso.
+          <span>Seguí trabajando tranquilo.</span>
+        </h1>
+
+        <p>
+          Tu agenda, tus pacientes y la gestión
+          de tu organización siguen en un solo lugar.
+        </p>
+
+      </div>
+
+      <div class="hero-footer">
+        <span>CoriaSalud</span>
+
+        <small>
+          Gestión simple para equipos de salud.
+        </small>
+      </div>
+
+    </aside>
+
+    <!-- FORMULARIO -->
+
+    <main class="auth-panel">
+
+      <div class="mobile-brand">
+        <img
+          src="/logosinfondo.png"
+          alt="Logo de CoriaSalud"
+        />
+
+        <span>CoriaSalud</span>
+      </div>
+
+      <div class="auth-card">
+
+        <ng-container *ngIf="!enviado; else correoEnviado">
+
+          <div class="auth-icon">
+            <i class="far fa-envelope"></i>
+          </div>
+
+          <div class="auth-header">
+
+            <span class="auth-eyebrow">
+              RECUPERAR ACCESO
+            </span>
+
+            <h2>
+              ¿Olvidaste tu contraseña?
+            </h2>
+
+            <p>
+              Ingresá el correo electrónico asociado
+              a tu cuenta y te enviaremos un enlace
+              para crear una contraseña nueva.
+            </p>
+
+          </div>
+
+          <form
+            #recuperacionForm="ngForm"
+            class="auth-form"
+            (ngSubmit)="enviar()"
+          >
+
+            <div class="input-group">
+
+              <label for="email">
+                Correo electrónico
+              </label>
+
+              <div class="input-wrapper">
+
+                <span class="input-icon">
+                  <i class="far fa-envelope"></i>
+                </span>
+
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="tu@email.com"
+                  [(ngModel)]="email"
+                  #emailInput="ngModel"
+                  autocomplete="email"
+                  required
+                  email
+                  [disabled]="cargando"
+                />
+
+              </div>
+
+              <small
+                class="field-error"
+                *ngIf="
+                  emailInput.invalid &&
+                  emailInput.touched
+                "
+              >
+                Ingresá un correo electrónico válido.
+              </small>
+
+            </div>
+
+            <div
+              class="alert alert-error"
+              role="alert"
+              *ngIf="error"
+            >
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ error }}</span>
+            </div>
+
+            <button
+              class="btn-primary"
+              type="submit"
+              [disabled]="
+                cargando ||
+                recuperacionForm.invalid
+              "
+            >
+
+              <span
+                *ngIf="cargando"
+                class="spinner"
+              ></span>
+
+              {{
+                cargando
+                  ? 'Enviando solicitud...'
+                  : 'Enviar enlace de recuperación'
+              }}
+
+            </button>
+
+          </form>
+
+          <a
+            class="back-link"
+            routerLink="/login"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Volver a iniciar sesión
+          </a>
+
+        </ng-container>
+
+        <!-- ESTADO EXITOSO -->
+
+        <ng-template #correoEnviado>
+
+          <div
+            class="auth-icon success-icon"
+            aria-hidden="true"
+          >
+            <i class="fas fa-check"></i>
+          </div>
+
+          <div
+            class="auth-header"
+            aria-live="polite"
+          >
+
+            <span class="auth-eyebrow">
+              SOLICITUD RECIBIDA
+            </span>
+
+            <h2>
+              Revisá tu correo
+            </h2>
+
+            <p>
+              Si el correo está registrado en
+              CoriaSalud, vas a recibir un enlace
+              para restablecer tu contraseña.
+            </p>
+
+          </div>
+
+          <div class="info-box">
+            <i class="far fa-clock"></i>
+
+            <span>
+              El enlace estará disponible
+              durante 30 minutos.
+              Revisá también la carpeta de spam.
+            </span>
+          </div>
+
+          <a
+            routerLink="/login"
+            class="btn-primary btn-as-link"
+          >
+            Volver a iniciar sesión
+          </a>
+
+        </ng-template>
+
+      </div>
+
+    </main>
+
+  </section>
+
+</div>

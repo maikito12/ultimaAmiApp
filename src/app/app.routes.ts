@@ -60,6 +60,30 @@ export const routes: Routes = [
   },
 
   // ==========================================
+  // RECUPERACIÓN DE CONTRASEÑA
+  // ==========================================
+
+  {
+    path: 'olvide-contrasena',
+    loadComponent: () =>
+      import(
+        './components/olvide-contrasena/olvide-contrasena.component'
+      ).then(
+        m => m.OlvideContrasenaComponent
+      )
+  },
+
+  {
+    path: 'restablecer-contrasena',
+    loadComponent: () =>
+      import(
+        './components/restablecer-contrasena/restablecer-contrasena.component'
+      ).then(
+        m => m.RestablecerContrasenaComponent
+      )
+  },
+
+  // ==========================================
   // DOCUMENTOS LEGALES
   // ==========================================
 

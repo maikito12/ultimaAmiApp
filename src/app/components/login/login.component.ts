@@ -120,7 +120,9 @@ this.auth.login({
   irARegistro(): void {
     this.router.navigate(['/registro']);
   }
-
+recuperarPassword(): void {
+  this.router.navigate(['/olvide-contrasena']);
+}
   irAInvitacion(): void {
     this.router.navigate(
       ['/registro'],
@@ -132,12 +134,7 @@ this.auth.login({
     );
   }
 
-  recuperarPassword(): void {
-    this.alertaService.info(
-      'Recuperación de contraseña',
-      'Esta opción la conectamos cuando armemos el flujo de recuperación por correo.'
-    );
-  }
+
 
   private obtenerMensajeError(
     error: any,

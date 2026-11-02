@@ -356,4 +356,28 @@ esProfesional(): boolean {
     return false;
   }
 }
+
+
+
+
+forgotPassword(email: string): Observable<any> {
+  return this.http.post(
+    `${this.apiUrl}/forgot-password`,
+    { email }
+  );
+}
+
+resetPassword(
+  token: string,
+  newPassword: string
+): Observable<any> {
+  return this.http.post(
+    `${this.apiUrl}/reset-password`,
+    {
+      token,
+      newPassword
+    }
+  );
+}
+
 }

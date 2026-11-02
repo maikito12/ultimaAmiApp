@@ -1,0 +1,326 @@
+
+<div class="auth-page">
+
+  <section class="auth-shell">
+
+    <!-- PRESENTACIÓN -->
+
+    <aside class="auth-hero">
+
+      <div class="hero-brand">
+        <img
+          src="/logosinfondo.png"
+          alt="CoriaSalud"
+          class="hero-brand-logo"
+        />
+
+        <span>CoriaSalud</span>
+      </div>
+
+      <div class="hero-copy">
+
+        <span class="hero-eyebrow">
+          SEGURIDAD DE TU CUENTA
+        </span>
+
+        <h1>
+          Tu cuenta,
+          <span>siempre protegida.</span>
+        </h1>
+
+        <p>
+          Recuperá el acceso a tu cuenta y
+          seguí organizando tu consultorio
+          desde un solo lugar.
+        </p>
+
+      </div>
+
+      <div class="hero-footer">
+        <span>CoriaSalud</span>
+
+        <small>
+          Gestión simple para equipos de salud.
+        </small>
+      </div>
+
+    </aside>
+
+    <!-- PANEL PRINCIPAL -->
+
+    <main class="auth-panel">
+
+      <div class="mobile-brand">
+        <img
+          src="/logosinfondo.png"
+          alt="CoriaSalud"
+        />
+
+        <span>CoriaSalud</span>
+      </div>
+
+      <div class="auth-card">
+
+        <!-- CAMBIO EXITOSO -->
+
+        <ng-container *ngIf="completado; else pendiente">
+
+          <div class="auth-icon success-icon">
+            <i class="fas fa-check"></i>
+          </div>
+
+          <div class="auth-header">
+
+            <span class="auth-eyebrow">
+              CONTRASEÑA ACTUALIZADA
+            </span>
+
+            <h2>¡Todo listo!</h2>
+
+            <p>
+              Tu contraseña se actualizó correctamente.
+              Ya podés iniciar sesión en CoriaSalud.
+            </p>
+
+          </div>
+
+          <a
+            routerLink="/login"
+            class="btn-primary btn-as-link"
+          >
+            Iniciar sesión
+          </a>
+
+        </ng-container>
+
+        <ng-template #pendiente>
+
+          <!-- SIN TOKEN -->
+
+          <ng-container *ngIf="!token; else formulario">
+
+            <div class="auth-icon">
+              <i class="fas fa-link"></i>
+            </div>
+
+            <div class="auth-header">
+
+              <span class="auth-eyebrow">
+                ENLACE NO DISPONIBLE
+              </span>
+
+              <h2>
+                Enlace de recuperación inválido
+              </h2>
+
+              <p>
+                Necesitás abrir el enlace
+                que enviamos a tu correo electrónico.
+              </p>
+
+            </div>
+
+            <a
+              routerLink="/olvide-contrasena"
+              class="btn-primary btn-as-link"
+            >
+              Solicitar un nuevo enlace
+            </a>
+
+          </ng-container>
+
+          <!-- FORMULARIO -->
+
+          <ng-template #formulario>
+
+            <div class="auth-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+
+            <div class="auth-header">
+
+              <span class="auth-eyebrow">
+                RECUPERACIÓN DE CUENTA
+              </span>
+
+              <h2>
+                Creá tu nueva contraseña
+              </h2>
+
+              <p>
+                Elegí una contraseña segura
+                para volver a acceder a CoriaSalud.
+              </p>
+
+            </div>
+
+            <form
+              class="auth-form"
+              #resetForm="ngForm"
+              (ngSubmit)="guardarPassword()"
+            >
+
+              <!-- NUEVA CONTRASEÑA -->
+
+              <div class="input-group">
+
+                <label for="password">
+                  Nueva contraseña
+                </label>
+
+                <div class="input-wrapper">
+
+                  <span class="input-icon">
+                    <i class="fas fa-lock"></i>
+                  </span>
+
+                  <input
+                    id="password"
+                    name="password"
+                    [type]="mostrarPassword ? 'text' : 'password'"
+                    placeholder="Ingresá tu nueva contraseña"
+                    [(ngModel)]="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    [disabled]="cargando"
+                  />
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePassword()"
+                    [attr.aria-label]="mostrarPassword
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'"
+                  >
+                    <i
+                      class="fa"
+                      [ngClass]="mostrarPassword
+                        ? 'fa-eye-slash'
+                        : 'fa-eye'"
+                    ></i>
+                  </button>
+
+                </div>
+
+                <small class="field-help">
+                  Mínimo 8 caracteres.
+                </small>
+
+              </div>
+
+              <!-- CONFIRMAR CONTRASEÑA -->
+
+              <div class="input-group">
+
+                <label for="confirmarPassword">
+                  Confirmar contraseña
+                </label>
+
+                <div class="input-wrapper">
+
+                  <span class="input-icon">
+                    <i class="fas fa-lock"></i>
+                  </span>
+
+                  <input
+                    id="confirmarPassword"
+                    name="confirmarPassword"
+                    [type]="mostrarConfirmacion ? 'text' : 'password'"
+                    placeholder="Repetí la contraseña"
+                    [(ngModel)]="confirmarPassword"
+                    autocomplete="new-password"
+                    required
+                    [disabled]="cargando"
+                  />
+
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="toggleConfirmacion()"
+                    [attr.aria-label]="mostrarConfirmacion
+                      ? 'Ocultar contraseña'
+                      : 'Mostrar contraseña'"
+                  >
+                    <i
+                      class="fa"
+                      [ngClass]="mostrarConfirmacion
+                        ? 'fa-eye-slash'
+                        : 'fa-eye'"
+                    ></i>
+                  </button>
+
+                </div>
+
+                <small
+                  class="field-error"
+                  *ngIf="
+                    confirmarPassword &&
+                    !contrasenasCoinciden
+                  "
+                >
+                  Las contraseñas no coinciden.
+                </small>
+
+              </div>
+
+              <!-- ERRORES -->
+
+              <div
+                class="alert-error"
+                role="alert"
+                *ngIf="error"
+              >
+                <i class="fas fa-exclamation-circle"></i>
+
+                <span>{{ error }}</span>
+              </div>
+
+              <!-- GUARDAR -->
+
+              <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="
+                  cargando ||
+                  resetForm.invalid ||
+                  !contrasenasCoinciden ||
+                  !passwordValida
+                "
+              >
+
+                <span
+                  class="spinner"
+                  *ngIf="cargando"
+                ></span>
+
+                {{
+                  cargando
+                    ? 'Actualizando contraseña...'
+                    : 'Guardar nueva contraseña'
+                }}
+
+              </button>
+
+            </form>
+
+            <a
+              routerLink="/login"
+              class="back-link"
+            >
+              <i class="fas fa-arrow-left"></i>
+              Volver a iniciar sesión
+            </a>
+
+          </ng-template>
+
+        </ng-template>
+
+      </div>
+
+    </main>
+
+  </section>
+
+</div>
