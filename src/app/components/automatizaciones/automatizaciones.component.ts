@@ -221,8 +221,11 @@ private metaOAuthState: string | null = null;
       'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'
     ];
 
-    if (!exitosos.includes(mensaje.evento ?? mensaje.event)) {
-      return;
+   const eventoMeta = mensaje.event ?? mensaje.evento;
+
+if (!exitosos.includes(eventoMeta)) {
+  return;
+
     }
 
     const wabaId = String(mensaje.data?.waba_id ?? '');
@@ -236,10 +239,10 @@ private metaOAuthState: string | null = null;
     }
 
     this.metaSignupInfo = {
-      wabaId,
-      phoneNumberId,
-      evento: String(mensaje.event)
-    };
+  wabaId,
+  phoneNumberId,
+  evento: eventoMeta
+};
 
     this.resolverMetaInfo?.(this.metaSignupInfo);
     this.resolverMetaInfo = null;

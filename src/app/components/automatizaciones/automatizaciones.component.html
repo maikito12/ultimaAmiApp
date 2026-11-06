@@ -438,7 +438,7 @@
 
           [disabled]="cargandoWhatsApp"
 
-          (click)="abrirConfiguracionWhatsApp()"
+          (click)="whatsAppConectado ? abrirConfiguracionWhatsApp() : iniciarConexionMeta()"
 
         >
 
