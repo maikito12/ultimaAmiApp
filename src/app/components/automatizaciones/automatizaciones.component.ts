@@ -2471,71 +2471,38 @@ this.abrirMetaEmbeddedSignup();
 
   }
 
-  seleccionarAutomatizacion(
 
-    opcion: OpcionAutomatizacionCatalogo
+seleccionarAutomatizacion(
+  opcion: OpcionAutomatizacionCatalogo
+): void {
 
-  ): void {
-
-    if (!opcion.disponible) {
-
-      return;
-
-    }
-
-    this.editandoId =
-
-      null;
-
-    this.formulario =
-
-      this.formularioParaEvento(
-
-        opcion.evento
-
-      );
-
-    this.resetearAlcanceAutomatizacion();
-
-    if (
-
-      this.esEventoCumpleanos(
-
-        opcion.evento
-
-      )
-
-    ) {
-
-      this.alcanceAutomatizacion =
-
-        'organizacion';
-
-    }
-
-    this.videoNombreArchivo =
-
-      '';
-
-    this.modoCatalogo =
-
-      false;
-
-    this.modoEditor =
-
-      true;
-
-    if (usarVideo) this.consultarEstadoPlantillaVideo();
-
-    window.scrollTo({
-
-      top: 0,
-
-      behavior: 'smooth'
-
-    });
-
+  if (!opcion.disponible) {
+    return;
   }
+
+  this.editandoId = null;
+
+  this.formulario = this.formularioParaEvento(
+    opcion.evento
+  );
+
+  this.resetearAlcanceAutomatizacion();
+
+  if (this.esEventoCumpleanos(opcion.evento)) {
+    this.alcanceAutomatizacion = 'organizacion';
+  }
+
+  this.videoNombreArchivo = '';
+
+  this.modoCatalogo = false;
+  this.modoEditor = true;
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+
+}
 
   seleccionarAnticipacion(
 
