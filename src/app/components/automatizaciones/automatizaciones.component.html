@@ -2373,7 +2373,7 @@
 
                     <span class="video-ready-pill">
 
-                      ✓ Video listo
+                      ✓ Video cargado
 
                     </span>
 
@@ -2510,6 +2510,69 @@
         ================================================== -->
 
         <aside class="summary-card">
+
+          <!-- VISTA PREVIA DEL MENSAJE DE WHATSAPP -->
+          <div class="wa-preview" aria-label="Vista previa del mensaje automático">
+            <div class="wa-preview-header">
+              <span class="eyebrow">VISTA PREVIA</span>
+              <h2>Mensaje que verá el paciente</h2>
+              <p>Datos ficticios de ejemplo. El texto corresponde a la plantilla seleccionada.</p>
+            </div>
+
+            <ng-container *ngIf="vistaPreviaWhatsApp as vista; else vistaNoDisponible">
+              <div class="wa-preview-chat">
+                <div class="wa-preview-contact">
+                  <span class="wa-preview-avatar">WA</span>
+                  <div>
+                    <strong>Consultorio de ejemplo</strong>
+                    <small>WhatsApp Business</small>
+                  </div>
+                </div>
+                <div class="wa-preview-date">HOY</div>
+                <div class="wa-preview-bubble">
+                  <div class="wa-preview-video" *ngIf="vista.video">
+                    <video *ngIf="formulario.archivoUrl; else vistaSinVideo"
+                           [src]="formulario.archivoUrl"
+                           controls
+                           preload="metadata"></video>
+                    <ng-template #vistaSinVideo>
+                      <div class="wa-preview-video-empty">▶ Video del profesional</div>
+                    </ng-template>
+                  </div>
+                  <div class="wa-preview-body" [innerHTML]="vista.contenidoHtml"></div>
+                  <span class="wa-preview-time">10:00</span>
+                </div>
+                <div *ngIf="vista.botones.length" class="wa-preview-buttons">
+                  <span *ngFor="let boton of vista.botones">{{ boton }}</span>
+                </div>
+              </div>
+              <p class="wa-preview-identity">Plantilla: <strong>{{ vista.nombre }}</strong> · {{ vista.idioma }}</p>
+              <div class="wa-template-status" *ngIf="vista.video">
+                <div class="wa-template-status-top">
+                  <strong>Estado de plantilla en Meta</strong>
+                  <span [class.wa-template-status-approved]="estadoPlantillaVideo === 'APPROVED'"
+                        [class.wa-template-status-pending]="estadoPlantillaVideo === 'PENDING' || estadoPlantillaVideo === 'IN_REVIEW'">
+                    {{ cargandoEstadoPlantilla ? 'Consultando...' : estadoPlantillaVideo === 'APPROVED' ? 'Aprobada' : estadoPlantillaVideo === 'PENDING' || estadoPlantillaVideo === 'IN_REVIEW' ? 'En revisión' : estadoPlantillaVideo === 'CREACION_SOLICITADA' ? 'Solicitada' : estadoPlantillaVideo === 'NO_EXISTE' ? 'No instalada' : estadoPlantillaVideo === 'SIN_CONEXION' ? 'Sin WhatsApp' : estadoPlantillaVideo === 'REJECTED' ? 'Rechazada' : estadoPlantillaVideo === 'ERROR' ? 'No disponible' : estadoPlantillaVideo }}
+                  </span>
+                </div>
+                <p>{{ descripcionEstadoPlantillaVideo }}</p>
+                <button type="button" class="button button-secondary"
+                        [disabled]="cargandoEstadoPlantilla"
+                        (click)="consultarEstadoPlantillaVideo()">
+                  Actualizar estado
+                </button>
+              </div>
+            </ng-container>
+
+            <ng-template #vistaNoDisponible>
+              <div class="wa-preview-unknown">
+                No tenemos una vista previa local para <strong>{{ formulario.templateNombre }}</strong>
+                ({{ formulario.templateIdioma }}). Revisá que coincida con una plantilla instalada en Meta.
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="wa-summary-divider"></div>
 
           <span class="eyebrow">
 

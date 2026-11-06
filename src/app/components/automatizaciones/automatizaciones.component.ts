@@ -74,6 +74,180 @@ interface ProfesionalAlcance {
 
 }
 
+
+// Plantillas modelo de Coria Salud, obtenidas de las versiones aprobadas en la WABA de prueba.
+// Esta vista previa NO verifica en tiempo real la aprobación en la WABA conectada.
+// Los valores sustituidos son ficticios; nunca se muestran datos reales de pacientes.
+interface VistaPreviaPlantilla {
+  texto: string;
+  ejemplo: string[];
+  botones?: string[];
+  video?: boolean;
+}
+
+const PLANTILLAS_VISTA_PREVIA: Record<string, VistaPreviaPlantilla> = {
+  'turno_reservado_amiapp|es_EC': {
+    texto: `Hola {{1}} 👋😊
+
+✅ **¡Tu turno fue reservado correctamente!**
+
+👨‍⚕️ Profesional: {{2}}
+🩺 Especialidad: {{3}}
+📅 Fecha: {{4}}
+🕐 Hora: {{5}}
+📍 Sucursal: {{6}}
+🏥 Dirección: {{7}}
+
+⏳ **Tu turno se encuentra pendiente de confirmación.**
+
+Te avisaremos por este mismo medio cuando el turno sea confirmado o ante cualquier cambio. 📲💜
+
+¡Gracias por reservar tu turno! 🙌`,
+    ejemplo: ['María González', 'Dra. Andrea López', 'Oftalmología', '18/11/2026', '10:00', 'Consultorio Centro', 'Av. Colón 1234']
+  },
+  'turno_reservado_amiapp|es_AR': {
+    texto: `Hola {{1}} 👋😊
+
+✅ **¡Tu turno fue reservado correctamente!**
+
+👨‍⚕️ Profesional: {{2}}
+🩺 Especialidad: {{3}}
+📅 Fecha: {{4}}
+🕐 Hora: {{5}}
+📍 Sucursal: {{6}}
+🏥 Dirección: {{7}}
+
+Si necesitás realizar algún cambio, podés comunicarte por este medio.
+
+¡Gracias por elegirnos! 💜`,
+    ejemplo: ['María González', 'Dra. Andrea López', 'Oftalmología', '18/11/2026', '10:00', 'Consultorio Centro', 'Av. Colón 1234']
+  },
+  'recordatorio_turno_amiapp|es_AR': {
+    texto: `Hola {{1}} 👋😊
+
+⏰ **Te recordamos que tenés un turno próximo.**
+
+👨‍⚕️ Profesional: {{2}}
+🩺 Especialidad: {{3}}
+📅 Fecha: {{4}}
+🕐 Hora: {{5}}
+📍 Sucursal: {{6}}
+🏥 Dirección: {{7}}
+
+❓ **¿Vas a poder asistir?**
+
+Seleccioná una opción debajo para confirmar tu asistencia. 👇`,
+    ejemplo: ['María González', 'Dra. Andrea López', 'Oftalmología', '18/11/2026', '10:00', 'Consultorio Centro', 'Av. Colón 1234'],
+    botones: ['Confirmar', 'Cancelar', 'Reagendar']
+  },
+  'turno_confirmado_amiapp|es_AR': {
+    texto: `Hola {{1}} 👋😊
+
+✅ **¡Tu turno quedó confirmado!**
+
+📅 Fecha: {{2}}
+🕐 Hora: {{3}}
+
+Ya está todo listo para tu consulta. 🙌
+
+¡Te esperamos! 💜`,
+    ejemplo: ['María González', '18/11/2026', '10:00']
+  },
+  'turno_cancelado_amiapp|es_AR': {
+    texto: `❌ **Tu turno fue cancelado correctamente**
+
+📅 Fecha: {{1}}
+🕐 Hora: {{2}}
+👤 Cancelado por: {{3}}
+
+Si querés reprogramarlo, podés reservar un nuevo turno cuando te quede más cómodo. 💜
+
+¡Esperamos verte pronto! ✨`,
+    ejemplo: ['18/11/2026', '10:00', 'Profesional']
+  },
+  'post_consulta_amiapp|es_AR': {
+    texto: `🙌 **¡Gracias por asistir a tu consulta con {{1}}!**
+
+Esperamos que la atención haya sido de ayuda y que te hayas sentido acompañado/a durante la consulta. 💜
+
+📅 Si necesitás realizar una nueva consulta, podés volver a reservar tu turno cuando quieras.
+
+¡Gracias por confiar en nosotros! ✨`,
+    ejemplo: ['Dra. Andrea López']
+  },
+  'cumpleanos_amiapp|es_AR': {
+    texto: `🎉 **¡Feliz cumpleaños, {{1}}!** 🎂
+
+Desde **{{2}}** queremos acompañarte en este día especial y desearte un excelente cumpleaños. ✨
+
+Esperamos que disfrutes mucho tu día y que este nuevo año venga acompañado de salud, bienestar y muchos buenos momentos. 💜
+
+¡Que tengas un gran día! 🎈`,
+    ejemplo: ['María González', 'Centro Médico Ejemplo']
+  },
+  // Las cuatro plantillas con video todavía requieren instalación y aprobación por WABA.
+  'turno_reservado_video_amiapp|es_AR': {
+    texto: `Hola {{1}} 👋😊
+
+✅ **¡Tu turno fue reservado correctamente!**
+
+👨‍⚕️ Profesional: {{2}}
+📅 Fecha: {{3}}
+🕐 Hora: {{4}}
+📍 Sucursal: {{5}}
+
+🎥 Te dejamos este video con información importante para tener en cuenta antes de tu consulta.
+
+Te recomendamos verlo con atención para llegar preparado/a. 🙌
+
+¡Nos vemos pronto! 💜`,
+    ejemplo: ['María González', 'Dra. Andrea López', '18/11/2026', '10:00', 'Consultorio Centro'],
+    video: true
+  },
+  'recordatorio_turno_video_amiapp|es_AR': {
+    texto: `Hola {{1}} 👋😊
+
+⏰ **Te recordamos que tenés un turno próximo.**
+
+📅 Fecha: {{2}}
+🕐 Hora: {{3}}
+👨‍⚕️ Profesional: {{4}}
+
+🎥 Te dejamos este video con información importante para tener en cuenta antes de tu consulta.
+
+Por favor, miralo con atención para llegar preparado/a. 🙌
+
+❓ **¿Vas a poder asistir?**`,
+    ejemplo: ['María González', '18/11/2026', '10:00', 'Dra. Andrea López'],
+    botones: ['Confirmar', 'Cancelar', 'Reagendar'],
+    video: true
+  },
+  'post_consulta_video_amiapp|es_AR': {
+    texto: `¡Gracias por asistir a tu consulta con {{1}}! 🙌💜
+
+🎥 Te compartimos este video con información importante para tener en cuenta después de tu consulta.
+
+Te recomendamos verlo con atención para aprovechar mejor las indicaciones recibidas. 😊
+
+📅 Si necesitás realizar una nueva consulta, podés volver a reservar tu turno cuando quieras.
+
+¡Esperamos verte nuevamente! ✨`,
+    ejemplo: ['Dra. Andrea López'],
+    video: true
+  },
+  'cumpleanos_video_amiapp|en': {
+    texto: `🎉 **¡Feliz cumpleaños, {{1}}!** 🎂
+
+Queremos desearte que tengas un día hermoso, lleno de buenos momentos y mucha alegría. ✨
+
+Te dejamos este saludo especialmente para vos. 💜🎈
+
+¡Que disfrutes mucho tu día! 🥳`,
+    ejemplo: ['María González'],
+    video: true
+  }
+};
+
 @Component({
 
   selector: 'app-automatizaciones',
@@ -167,6 +341,53 @@ export class AutomatizacionesComponent implements OnInit, OnDestroy {
   cargando = false;
 
   guardando = false;
+
+  // Estado provisto por Meta; nunca se infiere por haber subido un archivo.
+  estadoPlantillaVideo: string = 'SIN_CONSULTAR';
+  cargandoEstadoPlantilla = false;
+
+  get descripcionEstadoPlantillaVideo(): string {
+    switch (this.estadoPlantillaVideo) {
+      case 'APPROVED': return 'Aprobada en Meta. El video se puede usar con esta plantilla.';
+      case 'PENDING': case 'IN_REVIEW': return 'En revisión por Meta. Todavía no está habilitada para enviar.';
+      case 'REJECTED': return 'Rechazada por Meta. Hay que revisar la plantilla antes de enviarla.';
+      case 'PAUSED': case 'DISABLED': return 'La plantilla está pausada o deshabilitada en Meta.';
+      case 'CREACION_SOLICITADA': return 'Solicitud recibida por Meta. Actualizá para consultar el estado real.';
+      case 'NO_EXISTE': return 'Todavía no está instalada. Se solicitará al guardar la automatización.';
+      case 'SIN_CONEXION': return 'Conectá WhatsApp para instalar y consultar la plantilla.';
+      case 'ERROR': return 'No pudimos consultar el estado en Meta.';
+      default: return 'Al guardar, Coria Salud consultará o solicitará esta plantilla.';
+    }
+  }
+
+  private profesionalIdPlantillasActual(): string | null {
+    // No administrar la WABA personal de otro médico desde la sesión actual.
+    return this.profesionalSeleccionadoId === this.profesionalIdActual
+      ? this.profesionalIdActual : null;
+  }
+
+  consultarEstadoPlantillaVideo(): void {
+    if (!this.formulario.usarVideo) {
+      this.estadoPlantillaVideo = 'SIN_CONSULTAR';
+      return;
+    }
+    const eventoConsultado = this.formulario.evento;
+    this.cargandoEstadoPlantilla = true;
+    this.automatizacionesService.obtenerEstadoPlantillaWhatsApp(
+      eventoConsultado, 'Video', this.profesionalIdPlantillasActual()
+    ).subscribe({
+      next: respuesta => {
+        if (this.formulario.evento !== eventoConsultado || !this.formulario.usarVideo) return;
+        this.cargandoEstadoPlantilla = false;
+        this.estadoPlantillaVideo = respuesta.estado;
+      },
+      error: (error) => {
+        if (this.formulario.evento !== eventoConsultado || !this.formulario.usarVideo) return;
+        this.cargandoEstadoPlantilla = false;
+        this.estadoPlantillaVideo = error?.status === 409 ? 'SIN_CONEXION' : 'ERROR';
+      }
+    });
+  }
 
   subiendoVideo = false;
 
@@ -397,6 +618,48 @@ if (!exitosos.includes(eventoMeta)) {
   ];
 
   formulario = this.formularioInicial();
+
+  // Previsualización local: reproduce la versión del catálogo y usa datos de ejemplo.
+  // No realiza llamadas a Meta ni puede confirmar si la plantilla está aprobada.
+  get vistaPreviaWhatsApp(): {
+    nombre: string;
+    idioma: string;
+    contenidoHtml: string;
+    botones: string[];
+    video: boolean;
+  } | null {
+    const nombre = (this.formulario.templateNombre || '').trim().toLowerCase();
+    const idioma = (this.formulario.templateIdioma || '').trim();
+    const plantilla = PLANTILLAS_VISTA_PREVIA[`${nombre}|${idioma}`];
+
+    if (!plantilla) {
+      return null;
+    }
+
+    const textoConEjemplos = plantilla.texto.replace(/\{\{(\d+)\}\}/g, (_, numero: string) => {
+      const indice = Number(numero) - 1;
+      return plantilla.ejemplo[indice] ?? `[Dato ${numero}]`;
+    });
+
+    // Solo entran textos constantes definidos arriba y ejemplos ficticios.
+    // Angular sanitiza el resultado de [innerHTML] en el template.
+    const contenidoHtml = textoConEjemplos
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+
+    return {
+      nombre: this.formulario.templateNombre,
+      idioma,
+      contenidoHtml,
+      botones: plantilla.botones ?? [],
+      video: !!plantilla.video
+    };
+  }
+
+
 
   constructor(
 
@@ -2262,6 +2525,8 @@ this.abrirMetaEmbeddedSignup();
 
       true;
 
+    if (usarVideo) this.consultarEstadoPlantillaVideo();
+
     window.scrollTo({
 
       top: 0,
@@ -2430,11 +2695,9 @@ this.abrirMetaEmbeddedSignup();
 
       templateIdioma:
 
-        this.obtenerIdiomaEvento(
+        accion?.templateIdioma
 
-          automatizacion.evento
-
-        ),
+        ?? this.obtenerIdiomaEvento(automatizacion.evento, usarVideo),
 
       usarVideo,
 
@@ -2584,11 +2847,10 @@ this.abrirMetaEmbeddedSignup();
 
     this.formulario.templateIdioma =
 
-      this.obtenerIdiomaEvento(
+      this.obtenerIdiomaEvento(this.formulario.evento, usarVideo);
 
-        this.formulario.evento
-
-      );
+    if (usarVideo) this.consultarEstadoPlantillaVideo();
+    else this.estadoPlantillaVideo = 'SIN_CONSULTAR';
 
     if (!usarVideo) {
 
@@ -2714,9 +2976,9 @@ this.abrirMetaEmbeddedSignup();
 
           this.alertaService.success(
 
-            'Video subido',
+            'Video guardado',
 
-            'El archivo quedó guardado en R2 y listo para usar.'
+            'El MP4 quedó en R2. Para enviar mensajes con video, la plantilla debe estar aprobada en Meta.'
 
           );
 
@@ -3094,11 +3356,7 @@ this.abrirMetaEmbeddedSignup();
 
                 templateIdioma:
 
-                  this.obtenerIdiomaEvento(
-
-                    evento
-
-                  ),
+                  this.formulario.templateIdioma.trim(),
 
                 delayMinutos:
 
@@ -3165,6 +3423,28 @@ this.abrirMetaEmbeddedSignup();
       .subscribe({
 
         next: () => {
+
+          // El guardado no depende de Meta: la revisión puede demorar.
+          // La solicitud es idempotente por nombre + idioma + WABA.
+          if (this.formulario.usarVideo && this.formulario.archivoUrl) {
+            const evento = this.formulario.evento;
+            const profesionalId = this.profesionalIdPlantillasActual();
+            this.automatizacionesService.solicitarPlantillaVideo(evento, profesionalId)
+              .subscribe({
+                next: res => {
+                  this.estadoPlantillaVideo = res.estado;
+                  if (res.estado === 'APPROVED') {
+                    this.alertaService.success('Plantilla aprobada', 'El video ya puede enviarse con esta plantilla de Meta.');
+                  } else {
+                    this.alertaService.info('Plantilla de video', 'Solicitud procesada. Revisá su estado en Meta antes de utilizarla.');
+                  }
+                },
+                error: error => {
+                  this.alertaService.warning('Plantilla pendiente de instalación',
+                    error?.error?.message ?? 'La automatización se guardó, pero no pudimos solicitar la plantilla. Reintentá desde el editor.');
+                }
+              });
+          }
 
           this.guardando =
 
@@ -3714,98 +3994,32 @@ this.abrirMetaEmbeddedSignup();
 
   }
 
-  private obtenerTemplateEvento(
-
-    evento: string,
-
-    usarVideo: boolean
-
-  ): string {
-
+  private obtenerTemplateEvento(evento: string, usarVideo: boolean): string {
     switch (evento) {
-
       case 'RecordatorioTurno':
-
-        return usarVideo
-
-          ? 'recordatorio_turno_video_CoriaSalud'
-
-          : 'recordatorio_turno_CoriaSalud';
-
+      case 'Recordatorio':
+        return usarVideo ? 'recordatorio_turno_video_amiapp' : 'recordatorio_turno_amiapp';
       case 'TurnoConfirmado':
-
-        return 'turno_confirmado_CoriaSalud';
-
+        return 'turno_confirmado_amiapp';
       case 'TurnoCancelado':
-
-        return 'turno_cancelado_CoriaSalud';
-
+        return 'turno_cancelado_amiapp';
       case 'PostConsulta':
-
-        return usarVideo
-
-          ? 'post_consulta_video_CoriaSalud'
-
-          : 'post_consulta_CoriaSalud';
-
+      case 'TurnoAtendido':
+      case 'DiasDespues':
+        return usarVideo ? 'post_consulta_video_amiapp' : 'post_consulta_amiapp';
       case 'Cumpleanos':
-
-        return usarVideo
-
-          ? 'cumpleanos_video_CoriaSalud'
-
-          : 'cumpleanos_CoriaSalud';
-
+      case 'Cumpleaños':
+        return usarVideo ? 'cumpleanos_video_amiapp' : 'cumpleanos_amiapp';
       case 'TurnoCreado':
-
       default:
-
-        return usarVideo
-
-          ? 'turno_reservado_video_CoriaSalud'
-
-          : 'turno_reservado_CoriaSalud';
-
+        return usarVideo ? 'turno_reservado_video_amiapp' : 'turno_reservado_amiapp';
     }
-
   }
 
-  private obtenerIdiomaEvento(
-
-    evento: string
-
-  ): string {
-
-    switch (evento) {
-
-      case 'TurnoCreado':
-
-        return 'es_EC';
-
-      case 'RecordatorioTurno':
-
-      case 'Recordatorio':
-
-      case 'TurnoConfirmado':
-
-      case 'TurnoCancelado':
-
-      case 'PostConsulta':
-
-      case 'TurnoAtendido':
-
-      case 'DiasDespues':
-
-      case 'Cumpleanos':
-
-      case 'Cumpleaños':
-
-      default:
-
-        return 'es_AR';
-
-    }
-
+  private obtenerIdiomaEvento(evento: string, usarVideo = false): string {
+    // En esta instalación la nueva plantilla cumpleaños/video se solicita en es_AR.
+    if (evento === 'TurnoCreado' && !usarVideo) return 'es_EC';
+    return 'es_AR';
   }
 
   private formularioParaEvento(

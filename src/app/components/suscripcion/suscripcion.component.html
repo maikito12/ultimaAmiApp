@@ -1245,625 +1245,100 @@
     </div>
 
     <!-- ==========================================
-
-         WHATSAPP
-
+         CONSUMO DE WHATSAPP (FACTURACIÓN DIRECTA CON META)
     =========================================== -->
-
-    <section
-
-      class="whatsapp-section"
-
-      *ngIf="esActiva || esEnPrueba"
-
-    >
-
+    <section class="whatsapp-section" *ngIf="esActiva || esEnPrueba">
       <div class="whatsapp-section-header">
-
         <div>
-
-          <span class="card-label">
-
-            WHATSAPP
-
-          </span>
-
-          <h2>
-
-            Mensajes de WhatsApp
-
-          </h2>
-
+          <span class="card-label">WHATSAPP BUSINESS</span>
+          <h2>Consumo de mensajes</h2>
           <p>
-
-            Cada profesional incluye 250 mensajes por ciclo.
-
-            Los mensajes extra que compres no vencen.
-
+            Consultá las entregas del mes y los precios de referencia de Meta.
+            Los mensajes se facturan directamente desde tu cuenta de Meta;
+            Coria Salud no vende paquetes ni cobra por cada mensaje.
           </p>
-
         </div>
-
-        <button
-
-          type="button"
-
-          class="btn-secondary"
-
-          (click)="cargarWhatsApp()"
-
-          [disabled]="
-
-            cargandoWhatsApp ||
-
-            cargandoPaquetesWhatsApp
-
-          "
-
-        >
-
-          Actualizar
-
+        <button type="button" class="btn-secondary"
+                (click)="cargarConsumoWhatsApp()"
+                [disabled]="cargandoConsumoWhatsApp">
+          {{ cargandoConsumoWhatsApp ? 'Actualizando…' : 'Actualizar' }}
         </button>
-
       </div>
 
-      <!-- ESTADO DEL CUPO -->
+      <div class="whatsapp-periodo">
+        <span class="whatsapp-periodo-punto"></span>
+        Período: {{ periodoWhatsAppActual }} · Destinatarios de Argentina (+54)
+      </div>
 
-      <div
-
-        class="whatsapp-loading"
-
-        *ngIf="cargandoWhatsApp"
-
-      >
-
+      <div class="whatsapp-loading" *ngIf="cargandoConsumoWhatsApp" role="status">
         <div class="loading-spinner small"></div>
-
-        <span>
-
-          Cargando consumo de WhatsApp...
-
-        </span>
-
+        <span>Consultando las entregas de mensajes...</span>
       </div>
 
-      <div
+      <!-- Sin datos no se muestra cero: todavía no conocemos el consumo real. -->
+      <div class="whatsapp-consumo-pendiente"
+           *ngIf="!cargandoConsumoWhatsApp && !consumoWhatsApp"
+           role="status">
+        <strong>Consumo mensual todavía no disponible</strong>
+        <p>{{ mensajeConsumoWhatsApp }}</p>
+        <small>
+          Para mostrar cifras reales, el backend debe contabilizar los mensajes
+          entregados por Meta, separados por categoría y por cuenta autorizada.
+        </small>
+      </div>
 
-        class="whatsapp-usage-grid"
-
-        *ngIf="
-
-          !cargandoWhatsApp &&
-
-          whatsappEstado
-
-        "
-
-      >
-
+      <div class="whatsapp-usage-grid" *ngIf="!cargandoConsumoWhatsApp && consumoWhatsApp">
         <article class="whatsapp-stat">
-
-          <span>
-
-            Incluidos este ciclo
-
-          </span>
-
-          <strong>
-
-            {{
-
-              formatearNumero(
-
-                whatsappEstado.mensajesIncluidos
-
-              )
-
-            }}
-
-          </strong>
-
-          <small>
-
-            {{
-
-              whatsappEstado.cantidadProfesionales
-
-            }}
-
-            profesionales ×
-
-            {{
-
-              whatsappEstado.mensajesPorProfesional
-
-            }}
-
-          </small>
-
+          <span>Mensajes de utilidad</span>
+          <strong>{{ consumoWhatsApp.utilidadEntregados | number:'1.0-0' }}</strong>
+          <small>Confirmaciones, cancelaciones y recordatorios entregados.</small>
         </article>
-
         <article class="whatsapp-stat">
-
-          <span>
-
-            Consumidos
-
-          </span>
-
-          <strong>
-
-            {{
-
-              formatearNumero(
-
-                whatsappEstado.mensajesConsumidos
-
-              )
-
-            }}
-
-          </strong>
-
-          <small>
-
-            {{
-
-              whatsappEstado.porcentajeConsumido
-
-                | number:'1.0-1'
-
-            }}%
-
-            del cupo incluido
-
-          </small>
-
+          <span>Mensajes de marketing</span>
+          <strong>{{ consumoWhatsApp.marketingEntregados | number:'1.0-0' }}</strong>
+          <small>Ej.: saludos de cumpleaños entregados.</small>
         </article>
-
-        <article class="whatsapp-stat">
-
-          <span>
-
-            Incluidos disponibles
-
-          </span>
-
-          <strong>
-
-            {{
-
-              formatearNumero(
-
-                whatsappEstado.mensajesIncluidosDisponibles
-
-              )
-
-            }}
-
-          </strong>
-
-          <small>
-
-            Se renuevan en cada ciclo
-
-          </small>
-
-        </article>
-
-        <article class="whatsapp-stat accent">
-
-          <span>
-
-            Extras disponibles
-
-          </span>
-
-          <strong>
-
-            {{
-
-              formatearNumero(
-
-                whatsappEstado.mensajesExtraDisponibles
-
-              )
-
-            }}
-
-          </strong>
-
-          <small>
-
-            No vencen
-
-          </small>
-
-        </article>
-
         <article class="whatsapp-stat total">
-
-          <span>
-
-            Total disponible
-
-          </span>
-
-          <strong>
-
-            {{
-
-              formatearNumero(
-
-                whatsappEstado.mensajesDisponiblesTotales
-
-              )
-
-            }}
-
-          </strong>
-
-          <small>
-
-            Incluidos + extras
-
-          </small>
-
+          <span>Total de estas categorías</span>
+          <strong>{{ totalMensajesWhatsApp | number:'1.0-0' }}</strong>
+          <small>Solo mensajes entregados a números de Argentina.</small>
         </article>
-
       </div>
 
-      <!-- PAQUETES -->
-
-      <div id="paquetes-whatsapp" class="whatsapp-packages-heading">
-
+      <div class="whatsapp-precios-header">
         <div>
-
-          <h3>
-
-            Comprar mensajes extra
-
-          </h3>
-
-          <p>
-
-            Elegí el paquete que necesites.
-
-          </p>
-
+          <h3>¿Cuánto cobra Meta por mensaje?</h3>
+          <p>Tarifas de referencia para números de Argentina, sin impuestos.</p>
         </div>
-
+      </div>
+      <div class="whatsapp-tarifas-grid">
+        <div class="whatsapp-tarifa">
+          <span>Utilidad</span>
+          <strong>USD {{ precioUtilidadWhatsAppUsd | number:'1.4-4' }}</strong>
+          <small>Por mensaje entregado</small>
+        </div>
+        <div class="whatsapp-tarifa">
+          <span>Marketing</span>
+          <strong>USD {{ precioMarketingWhatsAppUsd | number:'1.4-4' }}</strong>
+          <small>Por mensaje entregado</small>
+        </div>
+      </div>
+      <div class="whatsapp-estimacion" *ngIf="consumoWhatsApp">
+        <div>
+          <span>Estimación de estas dos categorías</span>
+          <small>Aplicando tarifas de lista, sin impuestos ni ajustes.</small>
+        </div>
+        <strong>USD {{ costoWhatsAppEstimadoUsd | number:'1.2-4' }}</strong>
       </div>
 
-      <div
-
-        class="whatsapp-loading"
-
-        *ngIf="cargandoPaquetesWhatsApp"
-
-      >
-
-        <div class="loading-spinner small"></div>
-
-        <span>
-
-          Cargando paquetes...
-
-        </span>
-
-      </div>
-
-      <div
-
-        class="whatsapp-packages-grid"
-
-        *ngIf="
-
-          !cargandoPaquetesWhatsApp &&
-
-          paquetesWhatsApp.length > 0
-
-        "
-
-      >
-
-        <article
-
-          class="whatsapp-package-card"
-
-          *ngFor="
-
-            let paquete
-
-            of paquetesWhatsApp
-
-          "
-
-        >
-
-          <div>
-
-            <span class="package-label">
-
-              PAQUETE EXTRA
-
-            </span>
-
-            <h3>
-
-              +
-
-              {{
-
-                formatearNumero(
-
-                  paquete.cantidadMensajes
-
-                )
-
-              }}
-
-            </h3>
-
-            <p>
-
-              mensajes
-
-            </p>
-
-          </div>
-
-          <strong class="package-price">
-
-            Desde ${{ formatearPrecio(paquete.precio) }}
-
-          </strong>
-
-          <button
-
-            type="button"
-
-            class="btn-primary package-button"
-
-            [disabled]="
-
-              paqueteComprandoId !== null
-
-            "
-
-            (click)="
-
-              comprarPaqueteWhatsApp(
-
-                paquete
-
-              )
-
-            "
-
-          >
-
-            {{
-
-              paqueteComprandoId === paquete.id
-
-                ? 'Creando...'
-
-                : 'Comprar'
-
-            }}
-
-          </button>
-
-        </article>
-
-        <article
-
-          class="whatsapp-package-card custom-package"
-
-        >
-
-          <div>
-
-            <span class="package-label">
-
-              PERSONALIZADO
-
-            </span>
-
-            <h3>
-
-              ¿Necesitás más?
-
-            </h3>
-
-            <p>
-
-              Armamos un paquete especial
-
-              para tu organización.
-
-            </p>
-
-          </div>
-
-          <button
-
-            type="button"
-
-            class="btn-secondary package-button"
-
-            (click)="solicitarPaqueteWhatsAppPersonalizado()"
-
-          >
-
-            Consultar
-
-          </button>
-
-        </article>
-
-      </div>
-
-      <!-- HISTORIAL -->
-
-      <div class="whatsapp-purchases">
-
-        <div class="whatsapp-purchases-header">
-
-          <div>
-
-            <h3>
-
-              Compras de mensajes
-
-            </h3>
-
-            <p>
-
-              Historial de paquetes solicitados.
-
-            </p>
-
-          </div>
-
-        </div>
-
-        <div
-
-          class="whatsapp-loading"
-
-          *ngIf="cargandoComprasWhatsApp"
-
-        >
-
-          <div class="loading-spinner small"></div>
-
-          <span>
-
-            Cargando compras...
-
-          </span>
-
-        </div>
-
-        <div
-
-          class="whatsapp-empty"
-
-          *ngIf="
-
-            !cargandoComprasWhatsApp &&
-
-            comprasWhatsApp.length === 0
-
-          "
-
-        >
-
-          Todavía no hay compras de mensajes extra.
-
-        </div>
-
-        <div
-
-          class="whatsapp-purchase-list"
-
-          *ngIf="
-
-            !cargandoComprasWhatsApp &&
-
-            comprasWhatsApp.length > 0
-
-          "
-
-        >
-
-          <div
-
-            class="whatsapp-purchase-row"
-
-            *ngFor="
-
-              let compra
-
-              of comprasWhatsApp
-
-            "
-
-          >
-
-            <div>
-
-              <strong>
-
-                +
-
-                {{
-
-                  formatearNumero(
-
-                    compra.cantidadMensajes
-
-                  )
-
-                }}
-
-                mensajes
-
-              </strong>
-
-              <span>
-
-                {{
-
-                  compra.createdAt
-
-                    | date:'dd/MM/yyyy HH:mm'
-
-                }}
-
-              </span>
-
-            </div>
-
-            <div class="purchase-right">
-
-              <strong>
-
-                ${{ formatearPrecio(compra.importe) }}
-
-              </strong>
-
-              <span
-
-                class="purchase-status"
-
-                [ngClass]="
-
-                  claseCompraWhatsApp(
-
-                    compra.estado
-
-                  )
-
-                "
-
-              >
-
-                {{ compra.estado }}
-
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
+      <p class="whatsapp-aclaracion">
+        Las tarifas son orientativas y pueden variar por país del destinatario,
+        descuentos por volumen o cambios de Meta. La estimación no es una factura,
+        no incluye otras categorías, impuestos ni ajustes de cambio de moneda.
+        Consultá tus cargos definitivos en Meta Business.
+        <a href="https://developers.facebook.com/docs/whatsapp/pricing"
+           target="_blank" rel="noopener noreferrer">Ver precios de Meta</a>
+      </p>
     </section>
 
     <!-- ==========================================
@@ -1996,7 +1471,7 @@
 
   </ng-container>
 
-  <!-- CAMBIO DE PLAN: modal independiente de la compra de WhatsApp -->
+  <!-- CAMBIO DE PLAN -->
   <div class="cambio-plan-overlay" *ngIf="mostrarCambioPlan"
        (click)="cerrarCambioPlan()">
     <section class="cambio-plan-dialog" role="dialog" aria-modal="true"
@@ -2065,65 +1540,4 @@
     </section>
   </div>
 
-  <!-- Modal propio de distribución: no cambia las dimensiones de la página -->
-  <div class="wa-compra-overlay" *ngIf="paqueteWhatsAppSeleccionado as paquete"
-       (click)="cerrarModalCompraWhatsApp()">
-    <section class="wa-compra-dialog" role="dialog" aria-modal="true"
-             aria-labelledby="wa-compra-titulo" (click)="$event.stopPropagation()">
-      <div class="wa-compra-encabezado">
-        <div>
-          <span class="wa-compra-eyebrow">MENSAJES EXTRA</span>
-          <h2 id="wa-compra-titulo">Personalizá tu paquete</h2>
-          <p>Distribuí los {{ formatearNumero(paquete.cantidadMensajes) }} mensajes como prefieras.</p>
-        </div>
-        <button type="button" class="wa-compra-cerrar" aria-label="Cerrar"
-                [disabled]="paqueteComprandoId !== null"
-                (click)="cerrarModalCompraWhatsApp()">×</button>
-      </div>
-
-      <div class="wa-compra-tipo">
-        <div class="wa-compra-tipo-titulo">
-          <div><strong>Mensajes de utilidad</strong><small>Confirmaciones y recordatorios</small></div>
-          <span>$60 / mensaje</span>
-        </div>
-        <input type="number" min="0" step="1"
-               [max]="paquete.cantidadMensajes"
-               [ngModel]="cantidadUtilidadWhatsApp"
-               (ngModelChange)="actualizarCantidadUtilidadWhatsApp($event)"
-               [disabled]="paqueteComprandoId !== null"
-               aria-label="Cantidad de mensajes de utilidad">
-        <div class="wa-compra-subtotal">Subtotal: <strong>${{ formatearPrecio(subtotalUtilidadWhatsApp) }}</strong></div>
-      </div>
-
-      <div class="wa-compra-tipo">
-        <div class="wa-compra-tipo-titulo">
-          <div><strong>Mensajes de marketing</strong><small>Promociones y comunicaciones comerciales</small></div>
-          <span>$130 / mensaje</span>
-        </div>
-        <input type="number" min="0" step="1"
-               [max]="paquete.cantidadMensajes"
-               [ngModel]="cantidadMarketingWhatsApp"
-               (ngModelChange)="actualizarCantidadMarketingWhatsApp($event)"
-               [disabled]="paqueteComprandoId !== null"
-               aria-label="Cantidad de mensajes de marketing">
-        <div class="wa-compra-subtotal">Subtotal: <strong>${{ formatearPrecio(subtotalMarketingWhatsApp) }}</strong></div>
-      </div>
-
-      <div class="wa-compra-resumen">
-        <span>{{ cantidadUtilidadWhatsApp + cantidadMarketingWhatsApp }} de {{ paquete.cantidadMensajes }} mensajes</span>
-        <div><span>Total a pagar</span><strong>${{ formatearPrecio(totalCompraWhatsApp) }}</strong></div>
-      </div>
-      <p class="wa-compra-aclaracion">El pago se procesa de forma segura mediante Mercado Pago. Los créditos se acreditan al confirmarse el pago.</p>
-      <div class="wa-compra-acciones">
-        <button type="button" class="btn-secondary"
-                [disabled]="paqueteComprandoId !== null"
-                (click)="cerrarModalCompraWhatsApp()">Volver</button>
-        <button type="button" class="btn-primary"
-                [disabled]="!distribucionWhatsAppValida || paqueteComprandoId !== null"
-                (click)="confirmarCompraWhatsApp()">
-          {{ paqueteComprandoId !== null ? 'Procesando...' : 'Continuar al pago' }}
-        </button>
-      </div>
-    </section>
-  </div>
 </div>

@@ -1,3 +1,6 @@
+import { HttpClient } from '@angular/common/http';
+import { environmentProduccion } from '../../environments/environment';
+
 import { Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -5,9 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 import {
   SuscripcionService,
-  WhatsAppCompraMensajes,
   WhatsAppEstadoCupo,
-  WhatsAppPaquete,
   SolicitudPlanPersonalizadoRequest
 } from '../../services/suscripcion.service';
 
@@ -20,6 +21,19 @@ import { PlanService } from '../../services/plan-service.service';
 import { AlertaService } from '../../services/alerta.service';
 
 import { DialogoService } from '../../services/dialogo.service';
+
+/**
+ * Contrato a implementar en backend:
+ * GET /api/WhatsApp/consumo-mensual
+ * Debe devolver solo mensajes realmente ENTREGADOS a destinatarios +54
+ * de las WABA autorizadas para la organización, sin duplicados.
+ * No utilizar "aceptado por Cloud API" como entrega facturable.
+ */
+interface ConsumoWhatsAppMensual {
+  periodo: string; // YYYY-MM
+  utilidadEntregados: number;
+  marketingEntregados: number;
+}
 
 @Component({
 
@@ -120,98 +134,39 @@ export class SuscripcionComponent implements OnInit {
   private cotizacionRequestId = 0;
 
   // ==========================================
-
-  // WHATSAPP
-
+  // WHATSAPP: ESTADÍSTICAS DE ENTREGA
   // ==========================================
 
-  whatsappEstado:
+  // Se mantiene la lectura del DTO antiguo ÚNICAMENTE como respaldo de
+  // cantidadProfesionales en "Cambiar plan" (no se muestran cupos ni paquetes).
+  whatsappEstado: WhatsAppEstadoCupo | null = null;
 
-    WhatsAppEstadoCupo | null =
+  consumoWhatsApp: ConsumoWhatsAppMensual | null = null;
+  cargandoConsumoWhatsApp = false;
+  mensajeConsumoWhatsApp = 'Todavía no está conectado el reporte de entregas de Meta.';
 
-      null;
+  // Tarifa de lista de Meta para destinatarios de Argentina (+54),
+  // octubre 2026, expresada en USD, SIN impuestos ni cargos bancarios.
+  // Se actualiza manualmente al cambiar el tarifario oficial.
+  readonly precioUtilidadWhatsAppUsd = 0.0260;
+  readonly precioMarketingWhatsAppUsd = 0.0618;
 
-  paquetesWhatsApp:
-
-    WhatsAppPaquete[] =
-
-      [];
-
-  comprasWhatsApp:
-
-    WhatsAppCompraMensajes[] =
-
-      [];
-
-  cargandoWhatsApp =
-
-    false;
-
-  cargandoPaquetesWhatsApp =
-
-    false;
-
-  cargandoComprasWhatsApp =
-
-    false;
-
-  paqueteComprandoId:
-
-    string | null =
-
-      null;
-
-  // Modal de distribución de mensajes: no altera el tamaño de las tarjetas.
-  paqueteWhatsAppSeleccionado: WhatsAppPaquete | null = null;
-  cantidadUtilidadWhatsApp = 0;
-  cantidadMarketingWhatsApp = 0;
-  readonly precioUtilidadWhatsApp = 60;
-  readonly precioMarketingWhatsApp = 130;
-  // null: compra para la clínica. Para profesionales, el backend
-  // debe resolver el perfil autenticado o recibir su ID válido.
-  profesionalIdCompraWhatsApp: string | null = null;
-
-  get subtotalUtilidadWhatsApp(): number {
-    return this.cantidadUtilidadWhatsApp * this.precioUtilidadWhatsApp;
+  get periodoWhatsAppActual(): string {
+    return new Intl.DateTimeFormat('es-AR', {
+      month: 'long', year: 'numeric'
+    }).format(new Date());
   }
 
-  get subtotalMarketingWhatsApp(): number {
-    return this.cantidadMarketingWhatsApp * this.precioMarketingWhatsApp;
+  get totalMensajesWhatsApp(): number {
+    if (!this.consumoWhatsApp) return 0;
+    return this.consumoWhatsApp.utilidadEntregados +
+      this.consumoWhatsApp.marketingEntregados;
   }
 
-  get totalCompraWhatsApp(): number {
-    return this.subtotalUtilidadWhatsApp + this.subtotalMarketingWhatsApp;
-  }
-
-  get distribucionWhatsAppValida(): boolean {
-    const paquete = this.paqueteWhatsAppSeleccionado;
-    return !!paquete &&
-      Number.isInteger(this.cantidadUtilidadWhatsApp) &&
-      Number.isInteger(this.cantidadMarketingWhatsApp) &&
-      this.cantidadUtilidadWhatsApp >= 0 &&
-      this.cantidadMarketingWhatsApp >= 0 &&
-      this.cantidadUtilidadWhatsApp + this.cantidadMarketingWhatsApp === paquete.cantidadMensajes;
-  }
-
-  actualizarCantidadUtilidadWhatsApp(valor: number | string): void {
-    const maximo = this.paqueteWhatsAppSeleccionado?.cantidadMensajes ?? 0;
-    const numero = Number(valor);
-    this.cantidadUtilidadWhatsApp = Number.isFinite(numero)
-      ? Math.min(maximo, Math.max(0, Math.trunc(numero))) : 0;
-    this.cantidadMarketingWhatsApp = maximo - this.cantidadUtilidadWhatsApp;
-  }
-
-  actualizarCantidadMarketingWhatsApp(valor: number | string): void {
-    const maximo = this.paqueteWhatsAppSeleccionado?.cantidadMensajes ?? 0;
-    const numero = Number(valor);
-    this.cantidadMarketingWhatsApp = Number.isFinite(numero)
-      ? Math.min(maximo, Math.max(0, Math.trunc(numero))) : 0;
-    this.cantidadUtilidadWhatsApp = maximo - this.cantidadMarketingWhatsApp;
-  }
-
-  cerrarModalCompraWhatsApp(): void {
-    if (this.paqueteComprandoId) return;
-    this.paqueteWhatsAppSeleccionado = null;
+  get costoWhatsAppEstimadoUsd(): number {
+    if (!this.consumoWhatsApp) return 0;
+    return this.consumoWhatsApp.utilidadEntregados * this.precioUtilidadWhatsAppUsd +
+      this.consumoWhatsApp.marketingEntregados * this.precioMarketingWhatsAppUsd;
   }
 
   // ==========================================
@@ -228,7 +183,8 @@ export class SuscripcionComponent implements OnInit {
 
     private alertaService: AlertaService,
 
-    private dialogoService: DialogoService
+    private dialogoService: DialogoService,
+    private http: HttpClient
 
   ) {}
 
@@ -819,8 +775,8 @@ disminuirProfesionales(): void {
       return;
     }
 
-    // Priorizamos la cantidad de la suscripción real. El cupo de
-    // WhatsApp se utiliza como alternativa si el DTO no la expone.
+    // Priorizamos la cantidad de la suscripción real; mantenemos el
+    // dato heredado de WhatsApp solo como respaldo temporal.
     const suscripcion = this.suscripcion as Suscripcion & {
       cantidadProfesionales?: number;
       cantidadProfesionalesContratados?: number;
@@ -1168,366 +1124,50 @@ async reactivarSuscripcion():
 }
 
   // ==========================================
-
-  // WHATSAPP - CARGA GENERAL
-
+  // WHATSAPP: CARGA DE CONSUMO REAL DEL MES
   // ==========================================
 
   cargarWhatsApp(): void {
-
-    this.cargarEstadoWhatsApp();
-
-    this.cargarPaquetesWhatsApp();
-
-    this.cargarComprasWhatsApp();
-
+    // Esta consulta heredada sirve solamente para respaldar el conteo de
+    // profesionales de Cambiar plan hasta ampliar /suscripciones/actual.
+    this.suscripcionService.obtenerEstadoWhatsApp().subscribe({
+      next: (respuesta) => { this.whatsappEstado = respuesta; },
+      error: () => { this.whatsappEstado = null; }
+    });
+    this.cargarConsumoWhatsApp();
   }
 
-  // ==========================================
-
-  // WHATSAPP - ESTADO
-
-  // ==========================================
-
-  cargarEstadoWhatsApp(): void {
-
-    this.cargandoWhatsApp =
-
-      true;
-
-    this.suscripcionService
-
-      .obtenerEstadoWhatsApp()
-
-      .subscribe({
-
-        next: (respuesta) => {
-
-          this.whatsappEstado =
-
-            respuesta;
-
-          this.cargandoWhatsApp =
-
-            false;
-
-        },
-
-        error: (err: any) => {
-
-          console.error(
-
-            'Error al obtener cupo WhatsApp:',
-
-            err
-
-          );
-
-          this.whatsappEstado =
-
-            null;
-
-          this.cargandoWhatsApp =
-
-            false;
-
-        }
-
-      });
-
-  }
-
-  // ==========================================
-
-  // WHATSAPP - PAQUETES
-
-  // ==========================================
-
-  cargarPaquetesWhatsApp(): void {
-
-    this.cargandoPaquetesWhatsApp =
-
-      true;
-
-    this.suscripcionService
-
-      .obtenerPaquetesWhatsApp()
-
-      .subscribe({
-
-        next: (respuesta) => {
-
-          this.paquetesWhatsApp =
-
-            respuesta.items
-
-            ??
-
-            [];
-
-          this.cargandoPaquetesWhatsApp =
-
-            false;
-
-        },
-
-        error: (err: any) => {
-
-          console.error(
-
-            'Error al obtener paquetes WhatsApp:',
-
-            err
-
-          );
-
-          this.paquetesWhatsApp =
-
-            [];
-
-          this.cargandoPaquetesWhatsApp =
-
-            false;
-
-          this.alertaService.error(
-
-            'No se pudieron cargar los paquetes',
-
-            'Intentá nuevamente en unos segundos.'
-
-          );
-
-        }
-
-      });
-
-  }
-
-  // ==========================================
-
-  // WHATSAPP - HISTORIAL DE COMPRAS
-
-  // ==========================================
-
-  cargarComprasWhatsApp(): void {
-
-    this.cargandoComprasWhatsApp =
-
-      true;
-
-    this.suscripcionService
-
-      .obtenerComprasWhatsApp()
-
-      .subscribe({
-
-        next: (respuesta) => {
-
-          this.comprasWhatsApp =
-
-            respuesta.items
-
-            ??
-
-            [];
-
-          this.cargandoComprasWhatsApp =
-
-            false;
-
-        },
-
-        error: (err: any) => {
-
-          console.error(
-
-            'Error al obtener compras WhatsApp:',
-
-            err
-
-          );
-
-          this.comprasWhatsApp =
-
-            [];
-
-          this.cargandoComprasWhatsApp =
-
-            false;
-
-        }
-
-      });
-
-  }
-
-  // ==========================================
-
-  // WHATSAPP - COMPRAR PAQUETE
-
-  // ==========================================
-
-  comprarPaqueteWhatsApp(paquete: WhatsAppPaquete): void {
-    if (this.paqueteComprandoId) return;
-    this.paqueteWhatsAppSeleccionado = paquete;
-    this.cantidadUtilidadWhatsApp = paquete.cantidadMensajes;
-    this.cantidadMarketingWhatsApp = 0;
-  }
-
-  confirmarCompraWhatsApp(): void {
-    const paquete = this.paqueteWhatsAppSeleccionado;
-    if (!paquete || this.paqueteComprandoId || !this.distribucionWhatsAppValida) return;
-
-    this.paqueteComprandoId = paquete.id;
-    this.suscripcionService.comprarPaqueteWhatsApp({
-      paqueteId: paquete.id,
-      profesionalId: this.profesionalIdCompraWhatsApp,
-      cantidadUtilidad: this.cantidadUtilidadWhatsApp,
-      cantidadMarketing: this.cantidadMarketingWhatsApp
-    }).subscribe({
+  cargarConsumoWhatsApp(): void {
+    if (this.cargandoConsumoWhatsApp) return;
+    this.cargandoConsumoWhatsApp = true;
+
+    // La ruta está reservada para el backend. Si aún no existe, la
+    // pantalla muestra un estado vacío, NUNCA estadísticas inventadas.
+    this.http.get<ConsumoWhatsAppMensual>(
+      `${environmentProduccion.apiUrl}/WhatsApp/consumo-mensual`
+    ).subscribe({
       next: (respuesta) => {
-        this.paqueteComprandoId = null;
-        if (respuesta.compra?.initPoint) {
-          window.location.href = respuesta.compra.initPoint;
-          return;
-        }
-        this.alertaService.error(
-          'No se pudo iniciar el pago',
-          'Mercado Pago no devolvió el enlace de pago.'
-        );
+        const mesActual = new Date();
+        const periodoActual = `${mesActual.getFullYear()}-${String(mesActual.getMonth() + 1).padStart(2, '0')}`;
+        const valido = respuesta?.periodo === periodoActual &&
+          Number.isSafeInteger(respuesta?.utilidadEntregados) &&
+          Number.isSafeInteger(respuesta?.marketingEntregados) &&
+          respuesta.utilidadEntregados >= 0 &&
+          respuesta.marketingEntregados >= 0;
+        this.consumoWhatsApp = valido ? respuesta : null;
+        this.mensajeConsumoWhatsApp = valido
+          ? ''
+          : 'El reporte recibido no corresponde al mes actual o está incompleto.';
+        this.cargandoConsumoWhatsApp = false;
       },
       error: (err: any) => {
-        this.paqueteComprandoId = null;
-        this.alertaService.error(
-          'No se pudo crear la compra',
-          err?.error?.message || 'Intentá nuevamente.'
-        );
+        this.consumoWhatsApp = null;
+        this.cargandoConsumoWhatsApp = false;
+        this.mensajeConsumoWhatsApp = err?.status === 404
+          ? 'El reporte de consumo aún no está disponible. Falta conectar las entregas de Meta al backend.'
+          : 'No pudimos consultar el consumo mensual. Reintentá desde Actualizar.';
       }
     });
-  }
-
-  // ==========================================
-
-  // WHATSAPP - PAQUETE PERSONALIZADO
-
-  // ==========================================
-
-  solicitarPaqueteWhatsAppPersonalizado():
-
-    void {
-
-    const numero =
-
-      '5492235824005';
-
-    const mensaje =
-
-      'Hola, quiero consultar por un paquete personalizado de mensajes de WhatsApp para CoriaSalud.';
-
-    const url =
-
-      `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-    window.open(
-
-      url,
-
-      '\_blank'
-
-    );
-
-  }
-
-  // ==========================================
-
-  // FORMATEAR NÚMERO
-
-  // ==========================================
-
-  formatearNumero(
-
-    valor:
-
-      number
-
-  ):
-
-    string {
-
-    return new Intl.NumberFormat(
-
-      'es-AR'
-
-    )
-
-      .format(
-
-        valor
-
-      );
-
-  }
-
-  // ==========================================
-
-  // CLASE DE COMPRA
-
-  // ==========================================
-
-  claseCompraWhatsApp(
-
-    estado:
-
-      string
-
-  ):
-
-    string {
-
-    const valor =
-
-      String(
-
-        estado
-
-        ??
-
-        ''
-
-      )
-
-        .toLowerCase();
-
-    if (
-
-      valor === 'pagada'
-
-      ||
-
-      valor === 'aprobada'
-
-    ) {
-
-      return 'purchase-paid';
-
-    }
-
-    if (
-
-      valor === 'cancelada'
-
-      ||
-
-      valor === 'rechazada'
-
-    ) {
-
-      return 'purchase-cancelled';
-
-    }
-
-    return 'purchase-pending';
-
   }
 
 // ==========================================

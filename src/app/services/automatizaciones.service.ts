@@ -198,6 +198,16 @@ export interface SubirVideoAutomatizacionRespuesta {
 }
 
 
+export interface EstadoPlantillaWhatsAppRespuesta {
+  success: boolean;
+  nombre: string;
+  idioma: string;
+  estado: string; // Estado REAL de Meta: APPROVED, PENDING, REJECTED, PAUSED, NO_EXISTE, etc.
+  categoria?: string | null;
+  enNumeroGeneral?: boolean;
+  message?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -212,6 +222,27 @@ export class AutomatizacionesService {
   private readonly apiWhatsAppBaseUrl =
     `${environmentProduccion.apiUrl}/WhatsApp`;
 
+  private readonly apiPlantillasBaseUrl =
+    `${environmentProduccion.apiUrl}/whatsapp/plantillas`;
+
+
+  // Consulta el estado real de la plantilla en la WABA autorizada.
+  obtenerEstadoPlantillaWhatsApp(
+    evento: string, tipo: 'Video' | 'Mensaje', profesionalId: string | null = null
+  ): Observable<EstadoPlantillaWhatsAppRespuesta> {
+    let params = new HttpParams().set('evento', evento).set('tipo', tipo);
+    if (profesionalId) params = params.set('profesionalId', profesionalId);
+    return this.http.get<EstadoPlantillaWhatsAppRespuesta>(
+      `${this.apiPlantillasBaseUrl}/estado`, { params });
+  }
+
+  // Solo indica el evento: el servidor resuelve el WABA, token y muestra.
+  solicitarPlantillaVideo(
+    evento: string, profesionalId: string | null = null
+  ): Observable<EstadoPlantillaWhatsAppRespuesta> {
+    return this.http.post<EstadoPlantillaWhatsAppRespuesta>(
+      `${this.apiPlantillasBaseUrl}/instalar-video`, { evento, profesionalId });
+  }
 
   constructor(
     private http:
