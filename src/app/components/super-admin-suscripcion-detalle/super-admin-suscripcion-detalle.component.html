@@ -288,6 +288,116 @@
       *ngIf="data.suscripcion"
     >
 
+      <!-- CUPOS DE PROFESIONALES - SUPER ADMIN -->
+      <article class="management-card cupos-card">
+        <div class="card-header">
+          <div>
+            <span class="card-eyebrow">CAPACIDAD CONTRATADA</span>
+            <h2>Profesionales habilitados</h2>
+            <p>
+              Podés aumentar o disminuir el cupo, incluso para
+              organizaciones de más de 15 profesionales.
+            </p>
+          </div>
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+
+        <div class="card-body">
+          <div class="cupos-resumen">
+            <div>
+              <small>Cupos actuales</small>
+              <strong>{{ cuposActuales }}</strong>
+            </div>
+            <div>
+              <small>Profesionales activos</small>
+              <strong>{{ profesionalesActivos }}</strong>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="admin-cantidad-profesionales">Nuevo límite de profesionales</label>
+            <div class="cupos-control">
+              <button
+                type="button"
+                aria-label="Quitar un cupo"
+                (click)="disminuirCupos()"
+                [disabled]="guardandoCupos || (cuposForm.cantidadProfesionales ?? 0) <= profesionalesActivos || (cuposForm.cantidadProfesionales ?? 0) <= 1"
+              >−</button>
+              <input
+                id="admin-cantidad-profesionales"
+                type="number"
+                min="1"
+                step="1"
+                [(ngModel)]="cuposForm.cantidadProfesionales"
+                [disabled]="guardandoCupos"
+                aria-label="Cantidad de profesionales permitidos"
+              />
+              <button
+                type="button"
+                aria-label="Agregar un cupo"
+                (click)="aumentarCupos()"
+                [disabled]="guardandoCupos"
+              >+</button>
+            </div>
+            <small class="cupos-ayuda">
+              El cupo nunca puede ser menor que los profesionales activos.
+              El Super Admin no tiene el límite comercial de 15.
+            </small>
+          </div>
+
+          <div class="field full" *ngIf="data.suscripcion.tieneCobroMercadoPago">
+            <label for="admin-nuevo-importe">Nuevo importe recurrente acordado (ARS)</label>
+            <div class="money-input">
+              <span>$</span>
+              <input id="admin-nuevo-importe" type="number" min="1"
+                     max="2000000" step="0.01"
+                     [(ngModel)]="cuposForm.importeTotal"
+                     [disabled]="guardandoCupos"
+                     placeholder="Ingresá el nuevo monto a cobrar" />
+            </div>
+            <small>Obligatorio para Mercado Pago. Se verificará el nuevo cobro
+              antes de guardar los cupos. Límite de la integración actual: $2.000.000.</small>
+          </div>
+
+          <div class="field full" *ngIf="!data.suscripcion.tieneCobroMercadoPago">
+            <label for="admin-importe-manual">Nuevo importe habitual (opcional)</label>
+            <div class="money-input">
+              <span>$</span>
+              <input id="admin-importe-manual" type="number" min="1"
+                     step="0.01" [(ngModel)]="cuposForm.importeTotal"
+                     [disabled]="guardandoCupos"
+                     placeholder="Dejar vacío para conservar el precio" />
+            </div>
+            <small>Para cobro manual: si lo dejás vacío, solo se ajustan los cupos.</small>
+          </div>
+
+          <div class="info-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>
+              No se borra ningún profesional ni historia clínica.
+              Si la organización paga con Mercado Pago, el cambio de cupos y el
+              nuevo importe acordado deben confirmarse juntos.
+              Las condiciones comerciales para más de 15 profesionales son personalizadas.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="guardandoCupos || !cuposValidos"
+            (click)="actualizarCupos()"
+          >
+            <i
+              class="fa-solid"
+              [class.fa-spinner]="guardandoCupos"
+              [class.fa-spin]="guardandoCupos"
+              [class.fa-check]="!guardandoCupos"
+            ></i>
+            {{ guardandoCupos ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </article>
+
       <article class="management-card">
 
         <div class="card-header">

@@ -502,19 +502,30 @@ iniciarConexionWhatsAppMeta(
   // WHATSAPP - FINALIZAR AUTORIZACIÓN META
   // =====================================================
 
+  // =====================================================
+  // WHATSAPP - FINALIZAR AUTORIZACIÓN META
+  // =====================================================
+
   finalizarConexionWhatsAppMeta(
     code: string,
-    state: string
+    state: string,
+    wabaId: string | null,
+    phoneNumberId: string | null,
+    evento: string | null
   ): Observable<FinalizarWhatsAppOAuthRespuesta> {
 
     return this.http
       .post<FinalizarWhatsAppOAuthRespuesta>(
         `${this.apiWhatsAppBaseUrl}/oauth/finalizar`,
         {
-          code,
-          state
-        }
+  code,
+  state,
+  businessAccountId: wabaId,
+  phoneNumberId,
+  evento
+}
       );
   }
+
 
 }

@@ -30,6 +30,12 @@ interface PrecioSuscripcionForm {
   precioPorProfesional: number | null;
 }
 
+// Cupos administrados por el Super Admin (no es el número de usuarios registrados).
+interface CuposProfesionalesForm {
+  cantidadProfesionales: number | null;
+  importeTotal: number | null;
+}
+
 
 @Component({
   selector: 'app-super-admin-suscripcion-detalle',
@@ -58,6 +64,7 @@ export class SuperAdminSuscripcionDetalleComponent
   errorCarga = false;
   guardandoPago = false;
   guardandoPrecio = false;
+  guardandoCupos = false;
 
   pagoForm:
     PagoManualForm =
@@ -66,6 +73,8 @@ export class SuperAdminSuscripcionDetalleComponent
   precioForm:
     PrecioSuscripcionForm =
       this.crearPrecioForm();
+
+  cuposForm: CuposProfesionalesForm = this.crearCuposForm();
 
 
   constructor(
@@ -129,6 +138,9 @@ export class SuperAdminSuscripcionDetalleComponent
 
           this.precioForm =
             this.crearPrecioForm();
+
+          this.cuposForm =
+            this.crearCuposForm();
 
           this.cargando =
             false;
@@ -413,6 +425,114 @@ export class SuperAdminSuscripcionDetalleComponent
   }
 
 
+  // ==========================================
+  // SUPER ADMIN - MODIFICAR CUPOS DE PROFESIONALES
+  // ==========================================
+
+  get cuposActuales(): number {
+    return Number(this.detalle?.suscripcion?.cantidadProfesionales ?? 0);
+  }
+
+  get profesionalesActivos(): number {
+    return Number(this.detalle?.uso?.profesionales ?? 0);
+  }
+
+  get cuposValidos(): boolean {
+    const valor = this.cuposForm.cantidadProfesionales;
+    const esMp = !!this.detalle?.suscripcion?.tieneCobroMercadoPago;
+    const importe = this.cuposForm.importeTotal;
+    const importeValido = !esMp || (
+      importe !== null && Number.isFinite(Number(importe)) &&
+      Number(importe) > 0 && Number(importe) <= 2_000_000
+    );
+    const cambianCupos = Number(valor) !== this.cuposActuales;
+    const cambiaPrecio = importe !== null && Number(importe) !==
+      Number(this.detalle?.suscripcion?.importeTotal ?? 0);
+    const importeManualValido = esMp || importe === null || (
+      Number.isFinite(Number(importe)) && Number(importe) > 0
+    );
+    return valor !== null &&
+      Number.isSafeInteger(Number(valor)) &&
+      Number(valor) >= Math.max(1, this.profesionalesActivos) &&
+      (cambianCupos || cambiaPrecio) && importeValido && importeManualValido;
+  }
+
+  aumentarCupos(): void {
+    if (this.guardandoCupos) return;
+    const actual = Number(this.cuposForm.cantidadProfesionales ?? this.cuposActuales);
+    if (Number.isSafeInteger(actual) && actual < Number.MAX_SAFE_INTEGER) {
+      this.cuposForm.cantidadProfesionales = actual + 1;
+    }
+  }
+
+  disminuirCupos(): void {
+    if (this.guardandoCupos) return;
+    const minimo = Math.max(1, this.profesionalesActivos);
+    const actual = Number(this.cuposForm.cantidadProfesionales ?? this.cuposActuales);
+    if (Number.isSafeInteger(actual)) {
+      this.cuposForm.cantidadProfesionales = Math.max(minimo, actual - 1);
+    }
+  }
+
+  async actualizarCupos(): Promise<void> {
+    if (!this.detalle?.suscripcion || this.guardandoCupos) return;
+
+    if (!this.cuposValidos) {
+      this.alertaService.warning(
+        'Cantidad inválida',
+        `Ingresá un número entero distinto al actual y no menor a los ${this.profesionalesActivos} profesionales activos.`
+      );
+      return;
+    }
+
+    const cantidad = Number(this.cuposForm.cantidadProfesionales);
+    const esMp = !!this.detalle.suscripcion.tieneCobroMercadoPago;
+    const importeTotal = this.cuposForm.importeTotal;
+    const mensajeImporte = esMp
+      ? ` El nuevo importe recurrente acordado es ${this.formatearDinero(importeTotal)}. ` +
+        'Este cambio también se realizará en Mercado Pago.'
+      : ' El precio habitual permanece igual si no cargaste un nuevo importe.';
+    const confirmado = await this.dialogoService.confirmar({
+      titulo: 'Confirmar cambio de suscripción',
+      mensaje:
+        `Vas a cambiar el límite de ${this.detalle.organizacion.nombre} ` +
+        `de ${this.cuposActuales} a ${cantidad} profesionales. ` +
+        mensajeImporte,
+      textoConfirmar: 'Confirmar cupos',
+      textoCancelar: 'Volver'
+    });
+
+    if (!confirmado) return;
+
+    this.guardandoCupos = true;
+
+    // Endpoint protegido por política SuperAdmin en .NET.
+    this.superAdminService.actualizarCantidadProfesionales(
+      this.organizacionId,
+      {
+        cantidadProfesionales: cantidad,
+        ...(esMp ? { importeTotal: Number(importeTotal) } :
+          (importeTotal != null ? { importeTotal: Number(importeTotal) } : {}))
+      }
+    ).subscribe({
+      next: (respuesta) => {
+        this.guardandoCupos = false;
+        this.alertaService.success(
+          'Cupos actualizados',
+          respuesta.message || 'Se actualizó el límite de profesionales.'
+        );
+        this.cargarTodo();
+      },
+      error: (error) => {
+        this.guardandoCupos = false;
+        this.alertaService.error(
+          'No se pudieron cambiar los cupos',
+          this.obtenerMensajeError(error, 'No se aplicó el cambio. Intentá nuevamente.')
+        );
+      }
+    });
+  }
+
   get ultimoPago():
     PagoSuscripcion | null {
 
@@ -622,6 +742,14 @@ export class SuperAdminSuscripcionDetalleComponent
       .format(date);
   }
 
+
+  private crearCuposForm(): CuposProfesionalesForm {
+    return {
+      cantidadProfesionales:
+        this.detalle?.suscripcion?.cantidadProfesionales ?? null,
+      importeTotal: null
+    };
+  }
 
   private crearPagoForm():
     PagoManualForm {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
@@ -94,7 +94,7 @@ interface ProfesionalAlcance {
 
 })
 
-export class AutomatizacionesComponent implements OnInit {
+export class AutomatizacionesComponent implements OnInit, OnDestroy {
 
   automatizaciones: Automatizacion[] = [];
 
@@ -178,6 +178,95 @@ export class AutomatizacionesComponent implements OnInit {
 
   editandoId: string | null = null;
 private metaOAuthState: string | null = null;
+
+  private metaSignupInfo: {
+    wabaId: string;
+    phoneNumberId: string | null;
+    evento: string;
+  } | null = null;
+
+  private resolverMetaInfo: ((info: {
+    wabaId: string;
+    phoneNumberId: string | null;
+    evento: string;
+  }) => void) | null = null;
+
+  // Meta informa los activos autorizados por un mensaje independiente
+  // del callback de FB.login, especialmente en el flujo de coexistencia.
+  private readonly escucharMetaSignup = (event: MessageEvent): void => {
+    if (
+      event.origin !== 'https://www.facebook.com' &&
+      event.origin !== 'https://web.facebook.com' &&
+      event.origin !== 'https://business.facebook.com'
+    ) {
+      return;
+    }
+
+    let mensaje: any;
+    try {
+      mensaje = typeof event.data === 'string'
+        ? JSON.parse(event.data)
+        : event.data;
+    } catch {
+      return;
+    }
+
+    if (mensaje?.type !== 'WA_EMBEDDED_SIGNUP') {
+      return;
+    }
+
+    const exitosos = [
+      'FINISH',
+      'FINISH_ONLY_WABA',
+      'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'
+    ];
+
+    if (!exitosos.includes(mensaje.evento ?? mensaje.event)) {
+      return;
+    }
+
+    const wabaId = String(mensaje.data?.waba_id ?? '');
+    const phoneNumberId = mensaje.data?.phone_number_id != null
+      ? String(mensaje.data.phone_number_id)
+      : null;
+
+    if (!/^\d+$/.test(wabaId) ||
+        (phoneNumberId && !/^\d+$/.test(phoneNumberId))) {
+      return;
+    }
+
+    this.metaSignupInfo = {
+      wabaId,
+      phoneNumberId,
+      evento: String(mensaje.event)
+    };
+
+    this.resolverMetaInfo?.(this.metaSignupInfo);
+    this.resolverMetaInfo = null;
+  };
+
+  private esperarMetaSignupInfo(): Promise<{
+    wabaId: string;
+    phoneNumberId: string | null;
+    evento: string;
+  } | null> {
+    if (this.metaSignupInfo) {
+      return Promise.resolve(this.metaSignupInfo);
+    }
+
+    return new Promise(resolve => {
+      const espera = window.setTimeout(() => {
+        this.resolverMetaInfo = null;
+        resolve(null);
+      }, 2000);
+
+      this.resolverMetaInfo = (info) => {
+        window.clearTimeout(espera);
+        resolve(info);
+      };
+    });
+  }
+
   readonly catalogoAutomatizaciones:
 
     OpcionAutomatizacionCatalogo[] = [
@@ -326,8 +415,13 @@ ngOnInit(): void {
   this.inicializarWhatsApp();
   this.cargar();
 
+  window.addEventListener('message', this.escucharMetaSignup);
   this.inicializarMetaSDK();
 }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('message', this.escucharMetaSignup);
+  }
 
   // =====================================================
 
@@ -1655,6 +1749,7 @@ iniciarConexionMeta(): void {
   }
 
   this.cargandoWhatsApp = true;
+  this.metaSignupInfo = null;
 
   const profesionalId =
     this.profesionalSeleccionadoId ?? null;
@@ -3879,11 +3974,11 @@ private abrirMetaEmbeddedSignup(): void {
   }
 
   FB.login(
-    (respuesta: any) => {
-
+    async (respuesta: any) => {
       const codigo = respuesta?.authResponse?.code;
 
       if (!codigo) {
+        this.metaOAuthState = null;
         this.alertaService.info(
           'Conexión no completada',
           'No se recibió la autorización de Meta.'
@@ -3891,50 +3986,61 @@ private abrirMetaEmbeddedSignup(): void {
         return;
       }
 
-      // Próximo paso:
-      // enviar código + state al backend.
-   
-const state = this.metaOAuthState;
-
-if (!state) {
-  this.alertaService.error(
-    'Autorización inválida',
-    'No encontramos el identificador de seguridad.'
-  );
-  return;
-}
-
-// Evitamos reutilizar el state desde el frontend.
-this.metaOAuthState = null;
-
-this.automatizacionesService
-  .finalizarConexionWhatsAppMeta(codigo, state)
-  .subscribe({
-    next: (resultado) => {
-      if (!resultado.success) {
+      const state = this.metaOAuthState;
+      if (!state) {
         this.alertaService.error(
-          'No se pudo completar la autorización',
-          resultado.message
+          'Autorización inválida',
+          'No encontramos el identificador de seguridad.'
         );
         return;
       }
 
-      this.alertaService.info(
-        'Meta autorizó la conexión',
-        'La autorización fue recibida. Todavía falta verificar y registrar el número de WhatsApp.'
-      );
-    },
+      // El código llega por FB.login y la WABA por el mensaje del signup.
+      const info = await this.esperarMetaSignupInfo();
+      if (!info) {
+        this.metaOAuthState = null;
+        this.alertaService.error(
+          'Faltan datos de Meta',
+          'Meta autorizó el acceso, pero no informó la cuenta de WhatsApp. Iniciá una nueva conexión.'
+        );
+        return;
+      }
 
-    error: (error) => {
-      this.alertaService.error(
-        'Error de autorización',
-        error?.error?.message ??
-          'No pudimos completar la autorización con Meta.'
-      );
-    }
-  });
+      this.metaOAuthState = null;
+      this.guardandoWhatsApp = true;
 
+      this.automatizacionesService.finalizarConexionWhatsAppMeta(
+        codigo,
+        state,
+        info.wabaId,
+        info.phoneNumberId,
+        info.evento
+      ).subscribe({
+        next: (resultado) => {
+          this.guardandoWhatsApp = false;
+          if (!resultado.success) {
+            this.alertaService.error(
+              'No se pudo conectar WhatsApp',
+              resultado.message ?? 'Meta no completó la conexión.'
+            );
+            return;
+          }
 
+          this.alertaService.success(
+            'WhatsApp vinculado',
+            resultado.message ?? 'La cuenta fue conectada correctamente.'
+          );
+          this.mostrarConfiguracionWhatsApp = false;
+          this.cargarWhatsApp();
+        },
+        error: (error) => {
+          this.guardandoWhatsApp = false;
+          this.alertaService.error(
+            'Error de conexión',
+            error?.error?.message ?? 'No pudimos conectar WhatsApp con Meta.'
+          );
+        }
+      });
     },
     {
       config_id: '1088656597208320',

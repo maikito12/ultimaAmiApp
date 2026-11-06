@@ -238,6 +238,7 @@ export interface SuperAdminOrganizacionDetalle {
     estado: string;
     modalidad: string;
     cantidadProfesionales: number;
+    tieneCobroMercadoPago: boolean;
     precioPorProfesional: number;
     importeTotal: number;
     fechaInicio: string;
@@ -422,6 +423,21 @@ export interface ActualizarPrecioSuscripcionResponse {
 
 }
 
+
+// =====================================================
+// CAMBIAR CUPOS DE PROFESIONALES - SUPER ADMIN
+// =====================================================
+export interface ActualizarCantidadProfesionalesRequest {
+  cantidadProfesionales: number;
+  // Obligatorio al cambiar un cobro recurrente de Mercado Pago.
+  // Opcional para una organización de pago manual.
+  importeTotal?: number | null;
+}
+
+export interface ActualizarCantidadProfesionalesResponse {
+  message?: string;
+  success?: boolean;
+}
 
 // =====================================================
 // SERVICE
@@ -625,4 +641,19 @@ generarCheckoutPersonalizado(
 
 }
 
+
+  // ===================================================
+  // CAMBIAR CUPOS DE PROFESIONALES (SUPER ADMIN)
+  // ===================================================
+  // Ruta implementada en SuperAdminController.cs.
+  // Acepta un nuevo importe acordado para suscripciones de MP.
+  actualizarCantidadProfesionales(
+    organizacionId: string,
+    request: ActualizarCantidadProfesionalesRequest
+  ): Observable<ActualizarCantidadProfesionalesResponse> {
+    return this.http.put<ActualizarCantidadProfesionalesResponse>(
+      `${this.apiUrl}/organizaciones/${organizacionId}/cantidad-profesionales`,
+      request
+    );
+  }
 }

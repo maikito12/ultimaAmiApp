@@ -11,12 +11,7 @@
   padding: 28px 32px 48px;
   background: #f7f9f8;
   color: #33443f;
-  font-family:
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .detail-topbar,
@@ -540,5 +535,155 @@ tbody tr:last-child td {
   .info-note,
   .primary-button {
     grid-column: auto;
+  }
+}
+
+/* =========================================================
+   NUEVO: SUPER ADMIN — AUMENTAR / DISMINUIR CUPOS
+   Se corresponde con el HTML de la tarjeta .cupos-card.
+   ========================================================= */
+
+/* La gestión de cupos ocupa una fila completa; los formularios
+   de pago y precio quedan lado a lado en la siguiente fila. */
+.management-grid .cupos-card {
+  grid-column: 1 / -1;
+}
+
+.cupos-card .cupos-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.cupos-card .cupos-resumen > div {
+  border: 1px solid #e2ebe6;
+  border-radius: 12px;
+  background: #f7faf8;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cupos-card .cupos-resumen small {
+  font-size: 12px;
+  color: #73847b;
+}
+
+.cupos-card .cupos-resumen strong {
+  font-size: 23px;
+  font-weight: 750;
+  color: #173f35;
+}
+
+.cupos-card .cupos-control {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+}
+
+.cupos-card .cupos-control button {
+  width: 46px;
+  min-width: 46px;
+  border: 1px solid #d9e5df;
+  border-radius: 10px;
+  background: #f4f8f6;
+  color: #173f35;
+  font-size: 22px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.cupos-card .cupos-control button:hover:not(:disabled) {
+  background: #e9f3ed;
+}
+
+.cupos-card .cupos-control button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.cupos-card .cupos-control input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  border: 1px solid #d9e5df;
+  border-radius: 10px;
+  color: #173f35;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.cupos-card .cupos-control input:focus-visible {
+  outline: 2px solid #b8d7c8;
+  outline-offset: 1px;
+}
+
+.cupos-card .cupos-ayuda {
+  display: block;
+  margin-top: 8px;
+  color: #73847b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cupos-card .primary-button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 540px) {
+  .subscription-detail-page {
+    padding: 16px 12px 28px;
+  }
+
+  .organization-main {
+    align-items: flex-start;
+  }
+
+  .organization-header {
+    padding: 18px;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-card {
+    min-height: 114px;
+    padding: 13px;
+  }
+
+  .summary-card strong {
+    overflow-wrap: anywhere;
+    font-size: 17px;
+  }
+
+  .card-header,
+  .history-header {
+    padding: 17px;
+  }
+
+  .card-body {
+    padding: 17px;
+  }
+
+  .cupos-card .cupos-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .cupos-card .cupos-control {
+    gap: 8px;
+  }
+
+  .cupos-card .cupos-control button {
+    width: 42px;
+    min-width: 42px;
   }
 }
