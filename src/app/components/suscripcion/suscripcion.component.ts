@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { environmentProduccion } from '../../environments/environment';
+
 
 import { Component, OnInit } from '@angular/core';
 
@@ -21,6 +21,7 @@ import { PlanService } from '../../services/plan-service.service';
 import { AlertaService } from '../../services/alerta.service';
 
 import { DialogoService } from '../../services/dialogo.service';
+import { environmentProduccion } from '../../../environments/environment';
 
 /**
  * Contrato a implementar en backend:
