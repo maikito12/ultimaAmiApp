@@ -49,7 +49,7 @@
         <div class="consultorio-chip-menu" *ngIf="menuConsultorioAbierto && miOcupacion">
           <strong>{{ miOcupacion.nombreConsultorio }}</strong>
           <small *ngIf="miOcupacion.piso">{{ miOcupacion.piso }}</small>
-          <button type="button" (click)="finalizarMiConsultorio()" [disabled]="procesandoConsultorio">Finalizar ocupación</button>
+          <button type="button" (click)="finalizarMiConsultorio()" [disabled]="procesandoConsultorio || confirmandoConsultorio">Finalizar ocupación</button>
         </div>
       </div>
 
@@ -66,7 +66,7 @@
 
   <!-- Avisos del inicio: independientes y cerrables -->
   <section class="inicio-avisos" aria-label="Avisos importantes"
-           *ngIf="mostrarAvisoSuscripcion || mostrarAvisoWhatsApp">
+           *ngIf="mostrarAvisoSuscripcion">
 
     <article class="inicio-aviso inicio-aviso-suscripcion"
              *ngIf="mostrarAvisoSuscripcion">
@@ -85,24 +85,6 @@
       <button type="button" class="inicio-aviso-cerrar"
               aria-label="Cerrar aviso de suscripción"
               (click)="cerrarAvisoSuscripcion()">×</button>
-    </article>
-
-    <article class="inicio-aviso inicio-aviso-whatsapp"
-             *ngIf="mostrarAvisoWhatsApp">
-      <span class="inicio-aviso-icono" aria-hidden="true">!</span>
-      <div class="inicio-aviso-contenido">
-        <strong>Tus mensajes de WhatsApp están por agotarse</strong>
-        <p>Te quedan {{ mensajesWhatsAppDisponibles | number:'1.0-0' }}
-          mensajes disponibles. Para evitar interrupciones en las confirmaciones
-          y recordatorios de tus pacientes, te recomendamos adquirir un paquete adicional.</p>
-        <a routerLink="/dashboard/suscripcion"
-           class="inicio-aviso-enlace">
-          Comprar mensajes <span aria-hidden="true">→</span>
-        </a>
-      </div>
-      <button type="button" class="inicio-aviso-cerrar"
-              aria-label="Cerrar aviso de WhatsApp"
-              (click)="cerrarAvisoWhatsApp()">×</button>
     </article>
 
   </section>
@@ -293,7 +275,7 @@
               <small>{{ consultorio.ocupado ? (consultorio.nombreProfesional || 'Ocupado') : 'Disponible' }}<ng-container *ngIf="consultorio.piso"> · {{ consultorio.piso }}</ng-container></small>
             </div>
             <span class="consultorio-estado" [class.ocupado]="consultorio.ocupado" [class.disponible]="!consultorio.ocupado">{{ consultorio.ocupado ? 'Ocupado' : 'Libre' }}</span>
-            <button *ngIf="puedeAdministrarConsultorios && consultorio.ocupado" type="button" class="consultorio-liberar" (click)="liberarConsultorioAdmin(consultorio)" [disabled]="procesandoConsultorio">Liberar</button>
+            <button *ngIf="puedeAdministrarConsultorios && consultorio.ocupado" type="button" class="consultorio-liberar" (click)="liberarConsultorioAdmin(consultorio)" [disabled]="procesandoConsultorio || confirmandoConsultorio">Liberar</button>
           </div>
         </div>
         <button type="button" class="consultorios-ver-todos" *ngIf="consultoriosActivos.length > 5" (click)="mostrarTodosConsultorios = !mostrarTodosConsultorios">
@@ -533,7 +515,7 @@
       <p class="consultorios-error" *ngIf="errorConsultorios">{{ errorConsultorios }}</p>
       <div class="consultorio-modal-acciones">
         <button type="button" class="consultorios-refrescar" (click)="cerrarModalConsultorio()">Ahora no, ir al panel</button>
-        <button type="button" class="consultorios-elegir" [disabled]="!consultorioElegidoId || procesandoConsultorio" (click)="ocuparConsultorio()">{{ procesandoConsultorio ? 'Guardando...' : 'Comenzar jornada' }}</button>
+        <button type="button" class="consultorios-elegir" [disabled]="!consultorioElegidoId || procesandoConsultorio || confirmandoConsultorio" (click)="ocuparConsultorio()">{{ procesandoConsultorio ? 'Guardando...' : 'Comenzar jornada' }}</button>
       </div>
     </section>
   </div>

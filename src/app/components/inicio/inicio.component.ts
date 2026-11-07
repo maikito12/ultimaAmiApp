@@ -71,11 +71,12 @@ import {
 
 
 import { AlertaService } from '../../services/alerta.service';
+import { DialogoService } from '../../services/dialogo.service';
 import { FormsModule } from '@angular/forms';
 import { ConsultoriosService, Consultorio, ConsultorioOcupacion } from '../../services/consultorios.service';
 import { ConfiguracionOrganizacionService, Sucursal } from '../../services/configuracion-organizacion.service';
 
-import { SuscripcionService, WhatsAppEstadoCupo } from '../../services/suscripcion.service';
+import { SuscripcionService } from '../../services/suscripcion.service';
 
 
 
@@ -357,6 +358,7 @@ export class InicioComponent
 
 
       AlertaService,
+    private readonly dialogoService: DialogoService,
 
 
 
@@ -732,13 +734,10 @@ export class InicioComponent
 
   mostrarAvisoSuscripcion = false;
 
-  mostrarAvisoWhatsApp = false;
 
   diasRestantesSuscripcion: number | null = null;
 
-  mensajesWhatsAppDisponibles = 0;
 
-  private claveAvisoWhatsApp = '';
 
 
 
@@ -756,11 +755,6 @@ export class InicioComponent
 
 
 
-  private get puedeVerAvisoWhatsApp(): boolean {
-
-    return this.rol !== 'SECRETARIA';
-
-  }
 
 
 
@@ -820,13 +814,6 @@ export class InicioComponent
 
 
 
-  cerrarAvisoWhatsApp(): void {
-
-    this.guardarCierre(this.claveAvisoWhatsApp);
-
-    this.mostrarAvisoWhatsApp = false;
-
-  }
 
 
 
@@ -834,7 +821,6 @@ export class InicioComponent
 
     this.mostrarAvisoSuscripcion = false;
 
-    this.mostrarAvisoWhatsApp = false;
 
 
 
@@ -892,55 +878,7 @@ export class InicioComponent
 
 
 
-    if (this.puedeVerAvisoWhatsApp) {
-
-      this.suscripcionService.obtenerEstadoWhatsApp().subscribe({
-
-        next: (estado: WhatsAppEstadoCupo) => {
-
-          const disponibles = Number(estado.mensajesDisponiblesTotales);
-
-          const consumidos = Number(estado.mensajesConsumidos) + Number(estado.mensajesExtraConsumidos ?? 0);
-
-          if (!Number.isFinite(disponibles) || !Number.isFinite(consumidos)
-
-              || disponibles < 0 || consumidos < 0) return;
-
-
-
-          // El 20% se calcula sobre el total real del ciclo (usados + disponibles).
-
-          const total = disponibles + consumidos;
-
-          if (total <= 0) return;
-
-
-
-          this.mensajesWhatsAppDisponibles = disponibles;
-
-          // Una compra o el nuevo ciclo generan una clave distinta.
-
-          // No se vuelve a mostrar durante el mismo episodio de saldo bajo.
-
-          const identidad = `${estado.periodoInicio}-${estado.mensajesIncluidos}-${total}`;
-
-          this.claveAvisoWhatsApp = `coria-aviso-whatsapp-${identidad}`;
-
-          this.mostrarAvisoWhatsApp = disponibles / total <= 0.20
-
-            && !this.estaCerrado(this.claveAvisoWhatsApp);
-
-        },
-
-        error: (error) => console.warn('No se pudo consultar el cupo de WhatsApp', error)
-
-      });
-
-    }
-
   }
-
-
 
   private fechaLocal(valor: string): Date | null {
 
@@ -2367,6 +2305,7 @@ trackById(
   modalConsultorioAbierto = false;
   cargandoConsultorios = false;
   procesandoConsultorio = false;
+  confirmandoConsultorio = false;
   errorConsultorios = '';
   menuConsultorioAbierto = false;
   mostrarTodosConsultorios = false;
@@ -2538,46 +2477,93 @@ trackById(
         this.modalConsultorioAbierto = false;
         this.menuConsultorioAbierto = false;
         this.modalConsultorioOmitido = true;
+        this.errorConsultorios = '';
         this.cargarConsultorios();
+        this.alertaService.success(
+          'Consultorio ocupado',
+          `Ya estás ocupando ${ocupacion.nombreConsultorio}. Podés comenzar a atender.`
+        );
       },
       error: error => {
         this.procesandoConsultorio = false;
         this.errorConsultorios = this.obtenerMensajeError(error, 'No se pudo ocupar el consultorio.');
+        this.alertaService.error('No se pudo ocupar el consultorio', this.errorConsultorios);
         this.cargarConsultorios();
       }
     });
   }
 
-  finalizarMiConsultorio(): void {
-    if (this.procesandoConsultorio || !this.miOcupacion) return;
+  async finalizarMiConsultorio(): Promise<void> {
+    if (this.procesandoConsultorio || this.confirmandoConsultorio || !this.miOcupacion) return;
+
+    const nombre = this.miOcupacion.nombreConsultorio;
+    this.confirmandoConsultorio = true;
+    let confirmado = false;
+    try {
+      confirmado = await this.dialogoService.confirmar({
+        titulo: 'Liberar consultorio',
+        mensaje: `¿Querés finalizar tu ocupación de ${nombre}? El consultorio quedará disponible para otro profesional.`,
+        textoConfirmar: 'Sí, liberar',
+        textoCancelar: 'Cancelar'
+      });
+    } catch {
+      confirmado = false;
+    } finally {
+      this.confirmandoConsultorio = false;
+    }
+    if (!confirmado || this.procesandoConsultorio || !this.miOcupacion) return;
+
     this.procesandoConsultorio = true;
     this.consultoriosService.finalizar().subscribe({
       next: () => {
         this.miOcupacion = null;
         this.menuConsultorioAbierto = false;
         this.procesandoConsultorio = false;
+        this.errorConsultorios = '';
         this.cargarConsultorios();
+        this.alertaService.success('Consultorio liberado', `${nombre} quedó disponible nuevamente.`);
       },
       error: error => {
         this.procesandoConsultorio = false;
         this.errorConsultorios = this.obtenerMensajeError(error, 'No se pudo liberar tu consultorio.');
+        this.alertaService.error('No se pudo liberar el consultorio', this.errorConsultorios);
       }
     });
   }
 
-  liberarConsultorioAdmin(consultorio: Consultorio): void {
-    if (!this.puedeAdministrarConsultorios || !consultorio.ocupado || this.procesandoConsultorio) return;
-    if (!window.confirm(`¿Liberar el consultorio ${consultorio.nombre}?`)) return;
+  async liberarConsultorioAdmin(consultorio: Consultorio): Promise<void> {
+    if (!this.puedeAdministrarConsultorios || !consultorio.ocupado ||
+        this.procesandoConsultorio || this.confirmandoConsultorio) return;
+
+    this.confirmandoConsultorio = true;
+    let confirmado = false;
+    try {
+      confirmado = await this.dialogoService.confirmar({
+        titulo: 'Liberar consultorio',
+        mensaje: `¿Querés liberar ${consultorio.nombre}? La ocupación actual finalizará y el consultorio quedará disponible.`,
+        textoConfirmar: 'Sí, liberar',
+        textoCancelar: 'Cancelar'
+      });
+    } catch {
+      confirmado = false;
+    } finally {
+      this.confirmandoConsultorio = false;
+    }
+    if (!confirmado || this.procesandoConsultorio) return;
+
     this.procesandoConsultorio = true;
     this.consultoriosService.liberarPorAdmin(consultorio.id).subscribe({
       next: () => {
         this.procesandoConsultorio = false;
         if (this.miOcupacion?.consultorioId === consultorio.id) this.miOcupacion = null;
+        this.errorConsultorios = '';
         this.cargarConsultorios();
+        this.alertaService.success('Consultorio liberado', `${consultorio.nombre} quedó disponible nuevamente.`);
       },
       error: error => {
         this.procesandoConsultorio = false;
         this.errorConsultorios = this.obtenerMensajeError(error, 'No se pudo liberar el consultorio.');
+        this.alertaService.error('No se pudo liberar el consultorio', this.errorConsultorios);
       }
     });
   }
