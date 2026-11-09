@@ -3577,3 +3577,9 @@
 
 
 }
+
+/* Impide iniciar otra acción mientras se guarda un cambio de estado. */
+.hero-actions button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}

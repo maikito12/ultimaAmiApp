@@ -3528,3 +3528,80 @@
   }
 
 }
+/* Agregar AL FINAL de tu suscripcion.component.css existente.
+   No reemplaces tu archivo CSS completo con este fragmento. */
+
+.whatsapp-billing-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px;
+  background: #f7faf8;
+  border: 1px solid #dfe9e4;
+  border-radius: 12px;
+}
+
+.whatsapp-billing-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  height: 38px;
+  background: #e5f1eb;
+  color: #17483d;
+  border-radius: 10px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.whatsapp-billing-info {
+  min-width: 0;
+}
+
+.whatsapp-billing-info > strong {
+  display: block;
+  color: #263d34;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.whatsapp-billing-info > p {
+  margin: 7px 0 13px;
+  color: #74817c;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.whatsapp-billing-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 39px;
+  padding: 0 15px;
+  color: #ffffff;
+  background: #17483d;
+  border: 1px solid #17483d;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.whatsapp-billing-link:hover,
+.whatsapp-billing-link:focus-visible {
+  color: #ffffff;
+  background: #123c33;
+}
+
+@media (max-width: 650px) {
+  .whatsapp-billing-content {
+    padding: 15px;
+  }
+
+  .whatsapp-billing-link {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

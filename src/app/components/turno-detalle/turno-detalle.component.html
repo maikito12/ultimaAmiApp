@@ -242,7 +242,8 @@
 
     *ngIf="puedeConfirmar()"
 
-    (click)="confirmarTurno()"
+    [disabled]="accionEnCurso"
+     (click)="confirmarTurno()"
 
   >
 
@@ -262,7 +263,8 @@
 
     *ngIf="puedeCheckIn()"
 
-    (click)="checkIn()"
+    [disabled]="accionEnCurso"
+     (click)="checkIn()"
 
   >
 
@@ -282,7 +284,8 @@
 
     *ngIf="puedeIniciar()"
 
-    (click)="iniciarAtencion()"
+    [disabled]="accionEnCurso"
+     (click)="iniciarAtencion()"
 
   >
 
@@ -302,7 +305,8 @@
 
     *ngIf="puedeFinalizar()"
 
-    (click)="finalizarAtencion()"
+    [disabled]="accionEnCurso"
+     (click)="finalizarAtencion()"
 
   >
 
@@ -318,9 +322,11 @@
 
           *ngIf="
 
-            puedeNoAsistio() ||
+            !accionEnCurso &&
 
-            puedeCancelar()
+            (puedeNoAsistio() ||
+
+            puedeCancelar())
 
           "
 

@@ -1245,99 +1245,43 @@
     </div>
 
     <!-- ==========================================
-         CONSUMO DE WHATSAPP (FACTURACIÓN DIRECTA CON META)
+         FACTURACIÓN DE WHATSAPP (DIRECTAMENTE EN META)
     =========================================== -->
     <section class="whatsapp-section" *ngIf="esActiva || esEnPrueba">
       <div class="whatsapp-section-header">
         <div>
           <span class="card-label">WHATSAPP BUSINESS</span>
-          <h2>Consumo de mensajes</h2>
+          <h2>Facturación de WhatsApp</h2>
           <p>
-            Consultá las entregas del mes y los precios de referencia de Meta.
-            Los mensajes se facturan directamente desde tu cuenta de Meta;
-            Coria Salud no vende paquetes ni cobra por cada mensaje.
+            Los mensajes que envían tus automatizaciones se facturan directamente
+            desde tu cuenta de Meta. La suscripción a Coria Salud corresponde
+            solamente al uso de la plataforma.
           </p>
         </div>
-        <button type="button" class="btn-secondary"
-                (click)="cargarConsumoWhatsApp()"
-                [disabled]="cargandoConsumoWhatsApp">
-          {{ cargandoConsumoWhatsApp ? 'Actualizando…' : 'Actualizar' }}
-        </button>
       </div>
 
-      <div class="whatsapp-periodo">
-        <span class="whatsapp-periodo-punto"></span>
-        Período: {{ periodoWhatsAppActual }} · Destinatarios de Argentina (+54)
-      </div>
-
-      <div class="whatsapp-loading" *ngIf="cargandoConsumoWhatsApp" role="status">
-        <div class="loading-spinner small"></div>
-        <span>Consultando las entregas de mensajes...</span>
-      </div>
-
-      <!-- Sin datos no se muestra cero: todavía no conocemos el consumo real. -->
-      <div class="whatsapp-consumo-pendiente"
-           *ngIf="!cargandoConsumoWhatsApp && !consumoWhatsApp"
-           role="status">
-        <strong>Consumo mensual todavía no disponible</strong>
-        <p>{{ mensajeConsumoWhatsApp }}</p>
-        <small>
-          Para mostrar cifras reales, el backend debe contabilizar los mensajes
-          entregados por Meta, separados por categoría y por cuenta autorizada.
-        </small>
-      </div>
-
-      <div class="whatsapp-usage-grid" *ngIf="!cargandoConsumoWhatsApp && consumoWhatsApp">
-        <article class="whatsapp-stat">
-          <span>Mensajes de utilidad</span>
-          <strong>{{ consumoWhatsApp.utilidadEntregados | number:'1.0-0' }}</strong>
-          <small>Confirmaciones, cancelaciones y recordatorios entregados.</small>
-        </article>
-        <article class="whatsapp-stat">
-          <span>Mensajes de marketing</span>
-          <strong>{{ consumoWhatsApp.marketingEntregados | number:'1.0-0' }}</strong>
-          <small>Ej.: saludos de cumpleaños entregados.</small>
-        </article>
-        <article class="whatsapp-stat total">
-          <span>Total de estas categorías</span>
-          <strong>{{ totalMensajesWhatsApp | number:'1.0-0' }}</strong>
-          <small>Solo mensajes entregados a números de Argentina.</small>
-        </article>
-      </div>
-
-      <div class="whatsapp-precios-header">
-        <div>
-          <h3>¿Cuánto cobra Meta por mensaje?</h3>
-          <p>Tarifas de referencia para números de Argentina, sin impuestos.</p>
+      <div class="whatsapp-billing-content">
+        <div class="whatsapp-billing-icon" aria-hidden="true">↗</div>
+        <div class="whatsapp-billing-info">
+          <strong>Consultá tus cargos desde Meta</strong>
+          <p>
+            Desde Meta Business podés revisar el consumo de WhatsApp,
+            tus métodos de pago y la facturación de tu cuenta.
+          </p>
+          <a
+            class="whatsapp-billing-link"
+            href="https://business.facebook.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Abrir Meta Business ↗
+          </a>
         </div>
-      </div>
-      <div class="whatsapp-tarifas-grid">
-        <div class="whatsapp-tarifa">
-          <span>Utilidad</span>
-          <strong>USD {{ precioUtilidadWhatsAppUsd | number:'1.4-4' }}</strong>
-          <small>Por mensaje entregado</small>
-        </div>
-        <div class="whatsapp-tarifa">
-          <span>Marketing</span>
-          <strong>USD {{ precioMarketingWhatsAppUsd | number:'1.4-4' }}</strong>
-          <small>Por mensaje entregado</small>
-        </div>
-      </div>
-      <div class="whatsapp-estimacion" *ngIf="consumoWhatsApp">
-        <div>
-          <span>Estimación de estas dos categorías</span>
-          <small>Aplicando tarifas de lista, sin impuestos ni ajustes.</small>
-        </div>
-        <strong>USD {{ costoWhatsAppEstimadoUsd | number:'1.2-4' }}</strong>
       </div>
 
       <p class="whatsapp-aclaracion">
-        Las tarifas son orientativas y pueden variar por país del destinatario,
-        descuentos por volumen o cambios de Meta. La estimación no es una factura,
-        no incluye otras categorías, impuestos ni ajustes de cambio de moneda.
-        Consultá tus cargos definitivos en Meta Business.
-        <a href="https://developers.facebook.com/docs/whatsapp/pricing"
-           target="_blank" rel="noopener noreferrer">Ver precios de Meta</a>
+        Los importes y tarifas dependen de Meta y de la cuenta conectada.
+        Coria Salud no vende paquetes de mensajes ni cobra por mensaje enviado.
       </p>
     </section>
 

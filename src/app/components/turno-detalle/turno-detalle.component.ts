@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import {
   AuthService
@@ -51,6 +52,12 @@ export class TurnoDetalleComponent
   fechaOrigen = '';
 
   cargando = true;
+
+  // Bloquea acciones duplicadas mientras se guarda el cambio.
+  accionEnCurso = false;
+
+  // Ignora lecturas HTTP anteriores a una operación más reciente.
+  private versionCarga = 0;
 
   puedeAccederClinica =
     false;
@@ -136,51 +143,114 @@ export class TurnoDetalleComponent
   // CARGAR TURNO
   // =======================================================
 
-  cargarTurno(): void {
+  cargarTurno(mostrarCargando = true, estadoEsperado?: string): void {
+    if (!this.turnoId || this.accionEnCurso) {
+      return;
+    }
 
-    this.cargando =
-      true;
+    const version = ++this.versionCarga;
 
+    // En segundo plano no ocultamos la ficha ni hacemos parpadear la pantalla.
+    if (mostrarCargando && !this.turno) {
+      this.cargando = true;
+    }
 
-    this.turnosService
-      .obtenerDetalleTurno(
-        this.turnoId
-      )
-      .subscribe({
-
-        next: (
-          response: any
-        ) => {
-
-          this.turno =
-            response;
-
-          this.cargando =
-            false;
-        },
-
-
-        error: (
-          error: any
-        ) => {
-
-          console.error(
-            'Error cargando turno:',
-            error
-          );
-
-
-          this.cargando =
-            false;
-
-
-          this.mostrarError(
-            error,
-            'Ocurrió un error al obtener la información del turno.',
-            'No se pudo cargar el turno'
-          );
+    this.turnosService.obtenerDetalleTurno(this.turnoId).subscribe({
+      next: (response: any) => {
+        if (version !== this.versionCarga) {
+          return;
         }
-      });
+
+        this.cargando = false;
+
+        // Si el servidor responde con otro estado, no damos por confirmada
+        // una operación que la lectura de la BD no pudo corroborar.
+        if (estadoEsperado &&
+            this.normalizarEstado(response?.estado) !== estadoEsperado) {
+          console.warn('El GET del turno devolvió un estado diferente al esperado:', {
+            esperado: estadoEsperado,
+            recibido: response?.estado,
+            turnoId: this.turnoId
+          });
+
+          this.turno = response;
+          this.alertaService.info(
+            'Estado no confirmado por el servidor',
+            'La acción respondió correctamente, pero el detalle todavía informa otro estado. Se muestra el valor del servidor; revisá el backend si persiste.'
+          );
+          return;
+        }
+
+        this.turno = response;
+      },
+      error: (error: any) => {
+        if (version !== this.versionCarga) {
+          return;
+        }
+
+        this.cargando = false;
+        console.error('Error cargando turno:', error);
+
+        // Si acabamos de confirmar una acción, conservamos lo que se mostró
+        // localmente y avisamos de que falta verificar la lectura del backend.
+        if (estadoEsperado) {
+          this.alertaService.info(
+            'No se pudo verificar el estado',
+            'El cambio fue aceptado, pero falló la actualización del detalle. Volvé a entrar al turno para comprobarlo.'
+          );
+          return;
+        }
+
+        this.mostrarError(
+          error,
+          'Ocurrió un error al obtener la información del turno.',
+          'No se pudo cargar el turno'
+        );
+      }
+    });
+  }
+
+  // Si se confirmó/canceló desde WhatsApp u otra computadora,
+  // al volver a esta pestaña consultamos el estado actualizado.
+  @HostListener('window:focus')
+  alRecuperarFoco(): void {
+    if (this.turnoId && this.turno && !this.cargando && !this.accionEnCurso) {
+      this.cargarTurno(false);
+    }
+  }
+
+  // Único punto para actualizar la UI tras una respuesta exitosa del backend.
+  private ejecutarCambioEstado(
+    solicitud: Observable<any>,
+    estadoFinal: string,
+    mensajeExito: string,
+    mensajeError: string
+  ): void {
+    if (!this.turnoId || this.accionEnCurso) {
+      return;
+    }
+
+    this.accionEnCurso = true;
+    ++this.versionCarga; // Descarta consultas GET que habían comenzado antes del POST.
+
+    solicitud.subscribe({
+      next: () => {
+        this.accionEnCurso = false;
+
+        // Cambia badge y visibilidad de botones inmediatamente.
+        this.turno = { ...this.turno, estado: estadoFinal };
+        this.alertaService.success(mensajeExito);
+
+        // Contrasta con la información real, sin ocultar la ficha.
+        this.cargarTurno(false, this.normalizarEstado(estadoFinal));
+      },
+      error: (error: any) => {
+        this.accionEnCurso = false;
+        this.mostrarError(error, mensajeError);
+        // En caso de error NO inventamos un nuevo estado.
+        this.cargarTurno(false);
+      }
+    });
   }
 
 
@@ -335,31 +405,15 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .confirmarTurno(
         this.turnoId
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Turno confirmado'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo confirmar el turno.'
-          );
-        }
-      });
+      ),
+      'Confirmado',
+      'Turno confirmado',
+      'No se pudo confirmar el turno.'
+    );
   }
 
 
@@ -374,31 +428,15 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .hacerCheckIn(
         this.turnoId
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Paciente ingresado a sala'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo realizar el check-in.'
-          );
-        }
-      });
+      ),
+      'EnSala',
+      'Paciente ingresado a sala',
+      'No se pudo realizar el check-in.'
+    );
   }
 
 
@@ -413,31 +451,15 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .iniciarAtencion(
         this.turnoId
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Atención iniciada'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo iniciar la atención.'
-          );
-        }
-      });
+      ),
+      'EnAtencion',
+      'Atención iniciada',
+      'No se pudo iniciar la atención.'
+    );
   }
 
 
@@ -475,31 +497,15 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .finalizarAtencion(
         this.turnoId
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Consulta finalizada'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo finalizar la atención.'
-          );
-        }
-      });
+      ),
+      'Atendido',
+      'Consulta finalizada',
+      'No se pudo finalizar la atención.'
+    );
   }
 
 
@@ -537,31 +543,15 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .registrarNoAsistio(
         this.turnoId
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Marcado como no asistió'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo actualizar el turno.'
-          );
-        }
-      });
+      ),
+      'NoAsistio',
+      'Marcado como no asistió',
+      'No se pudo actualizar el turno.'
+    );
   }
 
 
@@ -614,32 +604,16 @@ export class TurnoDetalleComponent
     }
 
 
-    this.turnosService
+    this.ejecutarCambioEstado(
+      this.turnosService
       .cancelarTurno(
         this.turnoId,
         motivo
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.alertaService.success(
-            'Turno cancelado'
-          );
-
-
-          this.cargarTurno();
-        },
-
-
-        error: error => {
-
-          this.mostrarError(
-            error,
-            'No se pudo cancelar el turno.'
-          );
-        }
-      });
+      ),
+      'Cancelado',
+      'Turno cancelado',
+      'No se pudo cancelar el turno.'
+    );
   }
 
 
