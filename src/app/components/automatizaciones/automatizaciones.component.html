@@ -446,6 +446,13 @@
 
     </section>
 
+    <div class="wa-template-connection-notice" *ngIf="whatsAppConectado && !cargandoWhatsApp">
+      <strong>Plantillas de WhatsApp</strong>
+      <p>Al conectar tu cuenta, Coria Salud solicita las plantillas predeterminadas a Meta.
+      Su aprobación puede demorar hasta 24 horas o más. Que WhatsApp aparezca conectado no significa que todas estén aprobadas.
+      Abrí una automatización para consultar el estado de su plantilla.</p>
+    </div>
+
     <!-- =====================================================
 
          AUTOMATIZACIONES
@@ -2172,7 +2179,7 @@
                 </div>
               </div>
               
-              <div class="wa-template-status" *ngIf="vista.video">
+              <div class="wa-template-status">
                 <div class="wa-template-status-top">
                   <strong>Estado de plantilla en Meta</strong>
                   <span [class.wa-template-status-approved]="estadoPlantillaVideo === 'APPROVED'"
@@ -2181,6 +2188,9 @@
                   </span>
                 </div>
                 <p>{{ descripcionEstadoPlantillaVideo }}</p>
+                <p class="wa-template-approval-hint" *ngIf="estadoPlantillaVideo === 'PENDING' || estadoPlantillaVideo === 'IN_REVIEW' || estadoPlantillaVideo === 'CREACION_SOLICITADA'">
+                  La aprobación suele realizarse en menos de 24 horas, pero Meta puede demorar más.
+                </p>
                 <button type="button" class="button button-secondary"
                         [disabled]="cargandoEstadoPlantilla"
                         (click)="consultarEstadoPlantillaVideo()">

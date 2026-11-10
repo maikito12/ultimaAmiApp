@@ -342,21 +342,24 @@ export class AutomatizacionesComponent implements OnInit, OnDestroy {
 
   guardando = false;
 
-  // Estado provisto por Meta; nunca se infiere por haber subido un archivo.
+  // Estado real de la plantilla (texto o video) de la cuenta WABA consultada.
   estadoPlantillaVideo: string = 'SIN_CONSULTAR';
   cargandoEstadoPlantilla = false;
+  private consultaPlantillaId = 0;
 
   get descripcionEstadoPlantillaVideo(): string {
     switch (this.estadoPlantillaVideo) {
-      case 'APPROVED': return 'Aprobada en Meta. El video se puede usar con esta plantilla.';
-      case 'PENDING': case 'IN_REVIEW': return 'En revisión por Meta. Todavía no está habilitada para enviar.';
-      case 'REJECTED': return 'Rechazada por Meta. Hay que revisar la plantilla antes de enviarla.';
-      case 'PAUSED': case 'DISABLED': return 'La plantilla está pausada o deshabilitada en Meta.';
-      case 'CREACION_SOLICITADA': return 'Solicitud recibida por Meta. Actualizá para consultar el estado real.';
-      case 'NO_EXISTE': return 'Todavía no está instalada. Se solicitará al guardar la automatización.';
-      case 'SIN_CONEXION': return 'Conectá WhatsApp para instalar y consultar la plantilla.';
-      case 'ERROR': return 'No pudimos consultar el estado en Meta.';
-      default: return 'Al guardar, Coria Salud consultará o solicitará esta plantilla.';
+      case 'APPROVED': return 'Plantilla aprobada por Meta y disponible para enviar.';
+      case 'PENDING': case 'IN_REVIEW': case 'CREACION_SOLICITADA':
+        return 'Meta está revisando la plantilla. Puede demorar hasta 24 horas o más. Todavía no está habilitada para enviar.';
+      case 'REJECTED': return 'Meta rechazó esta plantilla. Revisá el motivo antes de utilizarla.';
+      case 'PAUSED': case 'DISABLED': return 'Esta plantilla está pausada o deshabilitada en Meta.';
+      case 'NO_EXISTE': return this.formulario.usarVideo
+        ? 'La plantilla de video aún no está instalada. Se solicitará al guardar la automatización.'
+        : 'Esta plantilla todavía no aparece en la cuenta de Meta. Revisá la conexión o su instalación.';
+      case 'SIN_CONEXION': return 'Conectá WhatsApp para consultar el estado de esta plantilla.';
+      case 'ERROR': return 'No pudimos consultar el estado en Meta. Reintentá más tarde.';
+      default: return 'Consultá el estado real de la plantilla antes de utilizarla.';
     }
   }
 
@@ -367,22 +370,23 @@ export class AutomatizacionesComponent implements OnInit, OnDestroy {
   }
 
   consultarEstadoPlantillaVideo(): void {
-    if (!this.formulario.usarVideo) {
-      this.estadoPlantillaVideo = 'SIN_CONSULTAR';
-      return;
-    }
     const eventoConsultado = this.formulario.evento;
+    const tipoConsultado: 'Video' | 'Mensaje' = this.formulario.usarVideo ? 'Video' : 'Mensaje';
+    const id = ++this.consultaPlantillaId;
     this.cargandoEstadoPlantilla = true;
+    this.estadoPlantillaVideo = 'SIN_CONSULTAR';
     this.automatizacionesService.obtenerEstadoPlantillaWhatsApp(
-      eventoConsultado, 'Video', this.profesionalIdPlantillasActual()
+      eventoConsultado, tipoConsultado, this.profesionalIdPlantillasActual()
     ).subscribe({
       next: respuesta => {
-        if (this.formulario.evento !== eventoConsultado || !this.formulario.usarVideo) return;
+        if (id !== this.consultaPlantillaId || this.formulario.evento !== eventoConsultado ||
+            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado) return;
         this.cargandoEstadoPlantilla = false;
-        this.estadoPlantillaVideo = respuesta.estado;
+        this.estadoPlantillaVideo = respuesta.estado || 'ERROR';
       },
       error: (error) => {
-        if (this.formulario.evento !== eventoConsultado || !this.formulario.usarVideo) return;
+        if (id !== this.consultaPlantillaId || this.formulario.evento !== eventoConsultado ||
+            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado) return;
         this.cargandoEstadoPlantilla = false;
         this.estadoPlantillaVideo = error?.status === 409 ? 'SIN_CONEXION' : 'ERROR';
       }
@@ -2496,6 +2500,7 @@ seleccionarAutomatizacion(
 
   this.modoCatalogo = false;
   this.modoEditor = true;
+  this.consultarEstadoPlantillaVideo();
 
   window.scrollTo({
     top: 0,
@@ -2694,6 +2699,8 @@ seleccionarAutomatizacion(
 
       true;
 
+    this.consultarEstadoPlantillaVideo();
+
     window.scrollTo({
 
       top: 0,
@@ -2816,8 +2823,7 @@ seleccionarAutomatizacion(
 
       this.obtenerIdiomaEvento(this.formulario.evento, usarVideo);
 
-    if (usarVideo) this.consultarEstadoPlantillaVideo();
-    else this.estadoPlantillaVideo = 'SIN_CONSULTAR';
+    this.consultarEstadoPlantillaVideo();
 
     if (!usarVideo) {
 
@@ -3391,27 +3397,8 @@ seleccionarAutomatizacion(
 
         next: () => {
 
-          // El guardado no depende de Meta: la revisión puede demorar.
-          // La solicitud es idempotente por nombre + idioma + WABA.
-          if (this.formulario.usarVideo && this.formulario.archivoUrl) {
-            const evento = this.formulario.evento;
-            const profesionalId = this.profesionalIdPlantillasActual();
-            this.automatizacionesService.solicitarPlantillaVideo(evento, profesionalId)
-              .subscribe({
-                next: res => {
-                  this.estadoPlantillaVideo = res.estado;
-                  if (res.estado === 'APPROVED') {
-                    this.alertaService.success('Plantilla aprobada', 'El video ya puede enviarse con esta plantilla de Meta.');
-                  } else {
-                    this.alertaService.info('Plantilla de video', 'Solicitud procesada. Revisá su estado en Meta antes de utilizarla.');
-                  }
-                },
-                error: error => {
-                  this.alertaService.warning('Plantilla pendiente de instalación',
-                    error?.error?.message ?? 'La automatización se guardó, pero no pudimos solicitar la plantilla. Reintentá desde el editor.');
-                }
-              });
-          }
+          // El backend instala/consulta la plantilla de video al guardar.
+          // Evitamos una segunda solicitud desde Angular.
 
           this.guardando =
 

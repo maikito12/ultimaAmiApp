@@ -8025,3 +8025,16 @@ button {
 .wa-template-status-top .wa-template-status-pending { color: #986300; }
 .wa-template-status p { font-size: 12px; line-height: 1.5; color: #5e6c64; margin: 9px 0 12px; }
 .wa-template-status button { min-height: 33px; font-size: 11px; }
+
+/* Estado de aprobación Meta: avisos informativos, sin alterar el resto del diseño. */
+.wa-template-connection-notice {
+  margin: 12px 0 24px;
+  padding: 14px 16px;
+  border: 1px solid #cbded3;
+  border-radius: 12px;
+  background: #f4f8f5;
+  color: #254737;
+}
+.wa-template-connection-notice strong { display: block; margin-bottom: 5px; }
+.wa-template-connection-notice p { margin: 0; font-size: 0.9rem; line-height: 1.5; }
+.wa-template-approval-hint { font-size: 0.84rem; opacity: 0.85; }
