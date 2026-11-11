@@ -235,7 +235,7 @@ Te recomendamos verlo con atención para aprovechar mejor las indicaciones recib
     ejemplo: ['Dra. Andrea López'],
     video: true
   },
-  'cumpleanos_video_amiapp|en': {
+  'cumpleanos_video_amiapp|es_AR': {
     texto: `🎉 **¡Feliz cumpleaños, {{1}}!** 🎂
 
 Queremos desearte que tengas un día hermoso, lleno de buenos momentos y mucha alegría. ✨
@@ -355,7 +355,7 @@ export class AutomatizacionesComponent implements OnInit, OnDestroy {
       case 'REJECTED': return 'Meta rechazó esta plantilla. Revisá el motivo antes de utilizarla.';
       case 'PAUSED': case 'DISABLED': return 'Esta plantilla está pausada o deshabilitada en Meta.';
       case 'NO_EXISTE': return this.formulario.usarVideo
-        ? 'La plantilla de video aún no está instalada. Se solicitará al guardar la automatización.'
+        ? 'Esta plantilla de video todavía no existe en la cuenta consultada. Guardá la configuración y comprobá si el backend solicitó su instalación.'
         : 'Esta plantilla todavía no aparece en la cuenta de Meta. Revisá la conexión o su instalación.';
       case 'SIN_CONEXION': return 'Conectá WhatsApp para consultar el estado de esta plantilla.';
       case 'ERROR': return 'No pudimos consultar el estado en Meta. Reintentá más tarde.';
@@ -372,21 +372,24 @@ export class AutomatizacionesComponent implements OnInit, OnDestroy {
   consultarEstadoPlantillaVideo(): void {
     const eventoConsultado = this.formulario.evento;
     const tipoConsultado: 'Video' | 'Mensaje' = this.formulario.usarVideo ? 'Video' : 'Mensaje';
+    const cuentaConsultada = this.profesionalIdPlantillasActual();
     const id = ++this.consultaPlantillaId;
     this.cargandoEstadoPlantilla = true;
     this.estadoPlantillaVideo = 'SIN_CONSULTAR';
     this.automatizacionesService.obtenerEstadoPlantillaWhatsApp(
-      eventoConsultado, tipoConsultado, this.profesionalIdPlantillasActual()
+      eventoConsultado, tipoConsultado, cuentaConsultada
     ).subscribe({
       next: respuesta => {
         if (id !== this.consultaPlantillaId || this.formulario.evento !== eventoConsultado ||
-            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado) return;
+            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado ||
+            this.profesionalIdPlantillasActual() !== cuentaConsultada) return;
         this.cargandoEstadoPlantilla = false;
         this.estadoPlantillaVideo = respuesta.estado || 'ERROR';
       },
       error: (error) => {
         if (id !== this.consultaPlantillaId || this.formulario.evento !== eventoConsultado ||
-            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado) return;
+            (this.formulario.usarVideo ? 'Video' : 'Mensaje') !== tipoConsultado ||
+            this.profesionalIdPlantillasActual() !== cuentaConsultada) return;
         this.cargandoEstadoPlantilla = false;
         this.estadoPlantillaVideo = error?.status === 409 ? 'SIN_CONEXION' : 'ERROR';
       }
@@ -1110,6 +1113,11 @@ ngOnInit(): void {
     this.profesionalSeleccionadoId =
 
       nuevoProfesionalId;
+
+    // Invalidar consultas de estado iniciadas para la cuenta anterior.
+    this.consultaPlantillaId++;
+    this.cargandoEstadoPlantilla = false;
+    this.estadoPlantillaVideo = 'SIN_CONSULTAR';
 
     this.mostrarConfiguracionWhatsApp =
 

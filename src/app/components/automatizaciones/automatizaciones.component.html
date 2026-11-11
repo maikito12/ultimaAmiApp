@@ -2188,8 +2188,12 @@
                   </span>
                 </div>
                 <p>{{ descripcionEstadoPlantillaVideo }}</p>
+                <p class="wa-template-video-warning"
+                   *ngIf="formulario.usarVideo && !cargandoEstadoPlantilla && estadoPlantillaVideo !== 'APPROVED'">
+                  El video todavía no está habilitado para WhatsApp. Guardar la automatización no significa que Meta haya aprobado la plantilla.
+                </p>
                 <p class="wa-template-approval-hint" *ngIf="estadoPlantillaVideo === 'PENDING' || estadoPlantillaVideo === 'IN_REVIEW' || estadoPlantillaVideo === 'CREACION_SOLICITADA'">
-                  La aprobación suele realizarse en menos de 24 horas, pero Meta puede demorar más.
+                  Meta está revisando la plantilla. Podés actualizar el estado cuando quieras.
                 </p>
                 <button type="button" class="button button-secondary"
                         [disabled]="cargandoEstadoPlantilla"
