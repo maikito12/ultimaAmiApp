@@ -3427,3 +3427,22 @@
 
   cursor: not-allowed;
 }
+/* Selector de obra social en la edición del paciente */
+.patient-edit-field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: #33443f;
+  font: inherit;
+  border: 1px solid #dce5e1;
+  border-radius: 9px;
+  background: #fff;
+  box-sizing: border-box;
+}
+.patient-edit-field select:focus {
+  outline: 2px solid #9db8ae;
+  outline-offset: 1px;
+}
+.patient-edit-field select:disabled { opacity: .65; cursor: not-allowed; }
+.obra-social-error { color: #a23a3a; }
+.obra-social-error button { color: #17483d; text-decoration: underline; background: none; border: 0; cursor: pointer; }

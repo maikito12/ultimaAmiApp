@@ -1036,24 +1036,29 @@
           </label>
 
 
-          <div class="patient-edit-field read-only-field">
-
-            <span>
-              Obra social
-            </span>
-
-            <div class="read-only-value">
-              {{
-                paciente.obra_social ||
-                'Particular'
-              }}
-            </div>
-
-            <small>
-              La cobertura actual se conserva.
+          <label class="patient-edit-field">
+            <span>Obra social</span>
+            <select
+              name="pacienteObraSocial"
+              [(ngModel)]="formularioPaciente.obra_social_id"
+              [disabled]="cargandoObrasSociales || guardandoPaciente"
+            >
+              <option value="">Particular (sin obra social)</option>
+              <option
+                *ngFor="let obra of obrasSociales"
+                [value]="obra.id"
+              >{{ obra.nombre }}</option>
+              <option
+                *ngIf="obraSocialActualFueraDeCatalogo"
+                [value]="paciente?.obra_social_id"
+              >{{ paciente?.obra_social || 'Cobertura anterior' }} (no disponible)</option>
+            </select>
+            <small *ngIf="cargandoObrasSociales">Cargando obras sociales...</small>
+            <small *ngIf="errorObrasSociales" class="obra-social-error">
+              No se pudo cargar el catálogo. Reintentá antes de guardar.
+              <button type="button" (click)="cargarObrasSociales()">Reintentar</button>
             </small>
-
-          </div>
+          </label>
 
 
           <label class="patient-edit-field">
@@ -1065,6 +1070,7 @@
             <input
               type="text"
               name="pacienteNumeroAfiliado"
+              [disabled]="!formularioPaciente.obra_social_id"
               [(ngModel)]="
                 formularioPaciente.numero_afiliado
               "

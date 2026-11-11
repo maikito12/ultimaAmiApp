@@ -42,6 +42,7 @@ import {
   DialogoService
 } from '../../services/dialogo.service';
 import { AuthService } from '../../services/auth-service.service';
+import { ObraSocial, ObrasSocialesService } from '../../services/obras-sociales.service';
 
 
 type SeccionPaciente =
@@ -87,6 +88,7 @@ interface FormularioPaciente {
   direccion: string;
   sexo: string;
   numero_afiliado: string;
+  obra_social_id: string;
 }
 
 
@@ -136,6 +138,31 @@ puedeAccederClinica =
 
   guardandoPaciente =
     false;
+
+  obrasSociales: ObraSocial[] = [];
+  cargandoObrasSociales = false;
+  errorObrasSociales = false;
+
+  get obraSocialActualFueraDeCatalogo(): boolean {
+    const id = this.paciente?.obra_social_id;
+    return !!id && !this.obrasSociales.some(o => o.id === id);
+  }
+
+  cargarObrasSociales(): void {
+    this.cargandoObrasSociales = true;
+    this.errorObrasSociales = false;
+    this.obrasSocialesService.obtenerTodas().subscribe({
+      next: obras => {
+        this.obrasSociales = obras;
+        this.cargandoObrasSociales = false;
+      },
+      error: () => {
+        this.errorObrasSociales = true;
+        this.cargandoObrasSociales = false;
+      }
+    });
+  }
+
 
 finalizandoConsultaId: string | null = null;
   formularioPaciente:
@@ -268,6 +295,9 @@ finalizandoConsultaId: string | null = null;
 
     private readonly pacientesService:
       PacientesService,
+
+    private readonly obrasSocialesService:
+      ObrasSocialesService,
 
     private readonly consultasMedicasService:
       ConsultasMedicasService,
@@ -1396,12 +1426,17 @@ volver(): void {
         ??
         '',
 
+      obra_social_id:
+        this.paciente.obra_social_id ?? '',
+
       numero_afiliado:
         this.paciente.numero_afiliado
         ??
         ''
     };
 
+
+    this.cargarObrasSociales();
 
     this.editandoPaciente =
       true;
@@ -1455,6 +1490,21 @@ volver(): void {
       return;
     }
 
+
+    if (this.cargandoObrasSociales || this.errorObrasSociales) {
+      this.alertaService.warning(
+        'Obras sociales',
+        'Esperá a que cargue el catálogo de obras sociales antes de guardar.'
+      );
+      return;
+    }
+
+    if (this.formularioPaciente.obra_social_id &&
+        !this.obrasSociales.some(o => o.id === this.formularioPaciente.obra_social_id) &&
+        this.formularioPaciente.obra_social_id !== this.paciente.obra_social_id) {
+      this.alertaService.warning('Obra social inválida', 'Seleccioná una cobertura disponible.');
+      return;
+    }
 
     const nombre =
       this.formularioPaciente
@@ -1535,16 +1585,12 @@ volver(): void {
         ),
 
       obra_social_id:
-        this.paciente
-          .obra_social_id
-        ??
-        null,
+        this.formularioPaciente.obra_social_id || null,
 
       numero_afiliado:
-        this.normalizarTexto(
-          this.formularioPaciente
-            .numero_afiliado
-        ),
+        this.formularioPaciente.obra_social_id
+          ? this.normalizarTexto(this.formularioPaciente.numero_afiliado)
+          : null,
 
       activo:
         this.paciente.activo
@@ -3452,7 +3498,8 @@ async eliminarConsulta(
       fecha_nacimiento: '',
       direccion: '',
       sexo: '',
-      numero_afiliado: ''
+      numero_afiliado: '',
+      obra_social_id: ''
     };
   }
 
