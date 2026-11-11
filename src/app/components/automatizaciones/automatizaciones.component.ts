@@ -3405,8 +3405,54 @@ seleccionarAutomatizacion(
 
         next: () => {
 
-          // El backend instala/consulta la plantilla de video al guardar.
-          // Evitamos una segunda solicitud desde Angular.
+          // La automatización ya fue guardada. Instalamos la plantilla solamente
+          // en una cuenta sobre la que el usuario actual tiene permiso de escritura.
+          // No gestionamos automáticamente las WABA de profesionales ajenos.
+          const esVideoGuardado = this.formulario.usarVideo;
+          const alcanceUnico = destinatarios.length === 1;
+          const destinoUnico = alcanceUnico ? destinatarios[0] : null;
+          const puedeSolicitarInstalacion = esVideoGuardado && alcanceUnico && (
+            destinoUnico === null
+              ? this.esAdminActual
+              : destinoUnico === this.profesionalIdActual
+          );
+
+          if (puedeSolicitarInstalacion) {
+            this.automatizacionesService.solicitarPlantillaVideo(
+              evento,
+              destinoUnico
+            ).subscribe({
+              next: resultado => {
+                const estado = (resultado.estado || '').toUpperCase();
+                if (estado === 'APPROVED' || estado === 'YA_EXISTE_APPROVED') {
+                  this.alertaService.success(
+                    'Plantilla de video aprobada',
+                    'Meta confirmó que esta plantilla ya está disponible para enviar.'
+                  );
+                } else {
+                  this.alertaService.info(
+                    'Plantilla de video solicitada',
+                    `Estado informado: ${resultado.estado || 'solicitud recibida'}. ` +
+                    'La automatización está guardada, pero el video no se enviará hasta que Meta la apruebe.'
+                  );
+                }
+              },
+              error: error => {
+                console.error('Error solicitando plantilla de video:', error);
+                this.alertaService.warning(
+                  'Automatización guardada, plantilla pendiente',
+                  'La automatización se guardó, pero no se pudo solicitar la plantilla a Meta. ' +
+                  'Revisá la conexión de WhatsApp y reintentá desde la configuración.'
+                );
+              }
+            });
+          } else if (esVideoGuardado) {
+            this.alertaService.info(
+              'Plantilla de video sin instalación automática',
+              'La automatización se guardó. Las plantillas de cuentas de terceros ' +
+              'deben instalarse desde una sesión autorizada para cada WhatsApp.'
+            );
+          }
 
           this.guardando =
 

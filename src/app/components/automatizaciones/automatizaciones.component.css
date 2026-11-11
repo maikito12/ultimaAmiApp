@@ -8038,6 +8038,10 @@ button {
 .wa-template-connection-notice strong { display: block; margin-bottom: 5px; }
 .wa-template-connection-notice p { margin: 0; font-size: 0.9rem; line-height: 1.5; }
 .wa-template-approval-hint { font-size: 0.84rem; opacity: 0.85; }
+
+
+
+
 /* Agregar al final del CSS existente; no reemplazar el archivo completo. */
 .wa-template-video-warning {
   margin: 10px 0;
