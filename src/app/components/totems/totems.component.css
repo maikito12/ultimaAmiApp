@@ -1,0 +1,54 @@
+:host { display:block; width:100%; min-height:100dvh; }
+* { box-sizing:border-box; }
+button { font:inherit; cursor:pointer; touch-action:manipulation; }
+.totem { --marca:#17483D; --marca-secundaria:#5B8871; color:#203f31; background:radial-gradient(circle at 50% 40%, #fff 0%, #f3f8f5 80%); min-height:100dvh; width:100%; font-family:inherit; }
+.totem-estado, .totem-vinculacion { min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:clamp(16px,3vw,48px); text-align:center; }
+.totem-estado { flex-direction:column; }
+.simbolo { color:var(--marca); font-size:clamp(36px,5vw,62px); font-weight:700; }
+.marca-coria { font-size:12px; letter-spacing:.24em; color:var(--marca); font-weight:800; margin:5px 0 15px; }
+.vinculacion-panel { width:min(100%,460px); padding:clamp(20px,4vw,40px); background:#fff; border:1px solid #dfece3; border-radius:24px; box-shadow:0 20px 55px #17483d0e; }
+.vinculacion-panel h1 { font-size:clamp(24px,3vw,34px); margin:0 0 10px; }
+.vinculacion-panel p { color:#667d71; line-height:1.55; font-size:clamp(14px,1.5vw,17px); }
+.codigo { margin:24px auto 18px; min-height:62px; border:2px solid #d7e5dc; border-radius:15px; background:#f8fbf9; display:flex; align-items:center; justify-content:center; letter-spacing:.3em; padding-left:.3em; font-size:clamp(27px,4vw,40px); font-weight:750; font-variant-numeric:tabular-nums; }
+.teclado { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.teclado button { min-height:clamp(54px,9dvh,76px); border:none; border-radius:13px; background:#eff5f1; color:#204c38; font-size:clamp(23px,3vw,29px); font-weight:650; }
+.teclado button:active { background:#dcece2; }
+.boton-primario { width:100%; margin-top:16px; background:var(--marca); color:white; border:0; border-radius:14px; min-height:60px; font-weight:700; font-size:clamp(17px,2vw,21px); }
+.boton-primario:disabled { opacity:.5; cursor:not-allowed; }
+.error { color:#b42318!important; }
+.totem-bienvenida { min-height:100dvh; display:grid; grid-template-rows:auto 1fr auto; align-items:center; padding:clamp(20px,4vw,65px); cursor:pointer; outline-offset:-8px; }
+.encabezado-reposo { justify-self:center; align-self:start; color:#809689; font-size:clamp(10px,1vw,13px); font-weight:700; letter-spacing:.2em; }
+.marca-centro { justify-self:center; align-self:center; display:flex; align-items:center; flex-direction:column; gap:clamp(12px,2vh,24px); width:min(90%,900px); text-align:center; animation:entrada .65s ease both; }
+.logo { display:block; width:min(48vw,240px); max-height:min(30dvh,220px); height:auto; object-fit:contain; }
+.logo-fallback { display:grid; place-items:center; width:clamp(100px,16vw,160px); aspect-ratio:1; border-radius:50%; background:#e1efe6; color:var(--marca); font-size:clamp(56px,9vw,90px); }
+.marca-centro h1 { margin:0; color:var(--marca); line-height:1.12; font-size:clamp(28px,4.4vw,66px); font-weight:750; overflow-wrap:anywhere; }
+.slogan { margin:0; color:#647d6d; font-size:clamp(17px,2vw,29px); line-height:1.4; }
+.instruccion-reposo { justify-self:center; align-self:end; text-align:center; animation:entrada .7s ease .2s both; }
+.instruccion-reposo p { color:var(--marca); font-size:clamp(15px,1.7vw,23px); font-weight:650; margin:5px 0 9px; animation:pulso 2.6s ease-in-out infinite; }
+.instruccion-reposo small { color:#8aa092; font-size:clamp(12px,1vw,15px); }
+.indicador-toque { color:var(--marca-secundaria); font-size:32px; }
+.totem-menu { min-height:100dvh; display:flex; flex-direction:column; padding:clamp(20px,3vw,48px); }
+.menu-cabecera { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.nombre-organizacion { font-weight:750; color:var(--marca); font-size:clamp(16px,2vw,24px); }
+.volver { border:1px solid #cfe0d5; border-radius:13px; padding:13px 18px; color:var(--marca); background:#fff; }
+.menu-cuerpo { margin:auto; width:min(100%,1000px); text-align:center; }
+.menu-cuerpo h1 { font-size:clamp(27px,4vw,55px); color:var(--marca); margin:12px 0; }
+.menu-cuerpo > p { color:#718679; }
+.opciones { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(14px,3vw,30px); margin-top:clamp(24px,5vh,50px); }
+.opcion { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:clamp(160px,27vh,300px); gap:16px; padding:26px; border-radius:24px; background:white; border:2px solid #d9e9df; }
+.opcion .emoji { color:var(--marca); font-size:50px; }.opcion strong { color:var(--marca); font-size:clamp(22px,2.7vw,31px); }.opcion small { color:#75877e; font-size:clamp(13px,1.2vw,16px); }
+.aviso { font-size:13px; }.totem-menu footer { text-align:center; color:#82998b; font-size:13px; padding-top:20px; }
+@media (orientation:portrait), (max-width:700px) { .opciones { grid-template-columns:1fr; } .totem-menu .opcion { min-height:150px; }.marca-centro .logo { width:min(55vw,220px); } }
+@media (max-height:580px) and (orientation:landscape) { .totem-bienvenida { padding:12px 30px; }.logo { max-height:22dvh; }.marca-centro { gap:7px; }.instruccion-reposo p { margin:0; }.vinculacion-panel { padding:14px; }.teclado button { min-height:42px; }.codigo { min-height:43px; margin:10px auto; } }
+@keyframes pulso { 0%,100% {opacity:.65} 50% {opacity:1} }
+@keyframes entrada { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none!important; transition:none!important; } }
+
+/* Pantalla de llegada y confirmación */
+.totem-vinculacion .volver, .totem-estado .volver { margin-top: 16px; }
+.totem-estado h1 { color: var(--marca); font-size: clamp(28px, 5vw, 56px); margin: 12px; }
+.totem-estado h2 { color: var(--marca); font-size: clamp(20px, 3vw, 30px); }
+.totem-estado p { font-size: clamp(16px, 2vw, 24px); }
+.destino { display: flex; flex-direction: column; gap: 8px; padding: 24px; margin: 20px; background: white; border: 1px solid #d9e9df; border-radius: 18px; min-width: min(90%, 340px); color: var(--marca); }
+.destino strong { font-size: clamp(24px, 4vw, 36px); }
+.destino span { font-size: clamp(18px, 2vw, 25px); }

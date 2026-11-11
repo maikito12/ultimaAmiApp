@@ -1,0 +1,227 @@
+<section class="totems-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">ORGANIZACIÓN · AUTOGESTIÓN</span>
+      <h1>Tótems de autogestión</h1>
+      <p>Administrá los dispositivos de recepción y conectalos con tu clínica.</p>
+    </div>
+    <button class="btn btn-primary" type="button" (click)="abrirCrear()" [disabled]="cargando || sucursales.length === 0">
+      <span aria-hidden="true">＋</span> Crear tótem
+    </button>
+  </header>
+
+  <div class="alert alert-error" role="alert" *ngIf="error">{{ error }}</div>
+  <div class="alert alert-success" role="status" *ngIf="exito">{{ exito }}</div>
+
+  <div *ngIf="cargando" class="panel muted">Cargando tótems y sucursales...</div>
+
+  <ng-container *ngIf="!cargando">
+    <div class="stats">
+      <article class="stat-card"><span>Total de tótems</span><strong>{{ totems.length }}</strong></article>
+      <article class="stat-card"><span>Vinculados</span><strong>{{ vinculados }}</strong></article>
+      <article class="stat-card"><span>Sin vincular</span><strong>{{ sinVincular }}</strong></article>
+    </div>
+
+    <div class="panel empty" *ngIf="sucursales.length === 0">
+      <h2>Primero creá una sucursal</h2>
+      <p>Un tótem necesita una sucursal física. Podés agregarla desde Información general.</p>
+    </div>
+
+    <div class="panel empty" *ngIf="totems.length === 0 && sucursales.length > 0">
+      <div class="empty-icon" aria-hidden="true">▣</div>
+      <h2>Todavía no hay tótems</h2>
+      <p>Creá el primero, obtené un código de 10 minutos y vinculá tu tablet.</p>
+      <button class="btn btn-primary" type="button" (click)="abrirCrear()">Crear primer tótem</button>
+    </div>
+
+    <div class="devices" *ngIf="totems.length > 0">
+      <article class="panel device-card" *ngFor="let totem of totems">
+        <div class="device-icon" aria-hidden="true">▣</div>
+        <div class="device-info">
+          <div class="device-heading"><h2>{{ totem.nombre }}</h2>
+            <span class="pill" [class.linked]="totem.vinculado">{{ totem.vinculado ? 'Vinculado' : 'Sin vincular' }}</span>
+          </div>
+          <p>{{ nombreSucursal(totem.sucursal_fisica_id) }} · {{ descripcionOrientacion(totem.orientacion) }}</p>
+          <div class="meta">
+            <span>{{ descripcionAlcance(totem.alcance_reservas) }}</span>
+            <span *ngIf="totem.alcance_reservas === 'PISOS' && totem.pisos.length">{{ totem.pisos.join(', ') }}</span>
+          </div>
+          <small *ngIf="totem.vinculado">Vinculado no significa conectado en tiempo real.</small>
+        </div>
+        <div class="device-actions">
+          <button *ngIf="!totem.vinculado" class="btn btn-secondary" type="button"
+            (click)="regenerar(totem)" [disabled]="!!procesandoId">
+            {{ procesandoId === totem.id ? 'Generando...' : 'Generar código' }}
+          </button>
+          <button *ngIf="totem.vinculado" class="btn btn-danger" type="button"
+            (click)="desvincular(totem)" [disabled]="!!procesandoId">
+            {{ procesandoId === totem.id ? 'Desvinculando...' : 'Desvincular' }}
+          </button>
+        </div>
+      </article>
+    </div>
+  </ng-container>
+
+
+<!-- VINCULACIÓN DEL TÓTEM -->
+<div class="overlay" *ngIf="codigoVisible" role="presentation">
+  <section
+    class="dialog code-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="codigo-titulo"
+  >
+    <div class="dialog-head">
+      <div>
+        <span class="eyebrow">VINCULACIÓN</span>
+        <h2 id="codigo-titulo">
+          Vincular {{ codigoVisible.totemNombre }}
+        </h2>
+      </div>
+
+      <button
+        class="close-btn"
+        type="button"
+        (click)="cerrarCodigo()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <p class="helper">
+      Seguí estos pasos desde la tablet o pantalla táctil
+      que vas a utilizar como tótem.
+    </p>
+
+    <div class="vinculacion-paso">
+      <strong>1. Abrí esta dirección en el dispositivo</strong>
+
+      <div class="vinculacion-enlace">
+        <a
+          [href]="urlTotem"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ urlTotem }}
+        </a>
+
+        <button
+          class="btn btn-secondary"
+          type="button"
+          (click)="copiarEnlaceTotem()"
+        >
+          {{ enlaceCopiado ? '¡Copiado!' : 'Copiar enlace' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="vinculacion-paso">
+      <strong>2. Ingresá este código de vinculación</strong>
+
+      <div
+        class="code-number"
+        *ngIf="segundosRestantes > 0"
+      >
+        {{ codigoVisible.codigo.slice(0, 3) }}
+        {{ codigoVisible.codigo.slice(3) }}
+      </div>
+
+      <div
+        class="code-number expired"
+        *ngIf="segundosRestantes === 0"
+      >
+        Código vencido
+      </div>
+
+      <div class="countdown">
+        {{
+          segundosRestantes > 0
+            ? 'Vence en ' + reloj
+            : 'Generá uno nuevo desde el listado'
+        }}
+      </div>
+    </div>
+
+    <div class="vinculacion-paso">
+      <strong>3. ¡Listo!</strong>
+
+      <p class="helper">
+        El tótem mostrará automáticamente el logo,
+        nombre, slogan y colores de tu institución.
+      </p>
+
+      <p class="helper">
+        No tendrás que ingresar el código nuevamente
+        mientras el dispositivo conserve su vinculación.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary full"
+      (click)="cerrarCodigo()"
+    >
+      Entendido
+    </button>
+  </section>
+</div>
+
+
+  <div class="overlay" *ngIf="formularioAbierto" role="presentation">
+    <section class="dialog create-dialog" role="dialog" aria-modal="true" aria-labelledby="crear-titulo">
+      <div class="dialog-head">
+        <div><span class="eyebrow">NUEVO DISPOSITIVO</span><h2 id="crear-titulo">Crear tótem</h2></div>
+        <button type="button" class="close-btn" (click)="formularioAbierto = false" aria-label="Cerrar">×</button>
+      </div>
+      <form (ngSubmit)="guardar()" #formTotem="ngForm">
+        <label class="field">Nombre del tótem
+          <input name="nombre" [(ngModel)]="formulario.nombre" maxlength="120" required placeholder="Ej. Recepción principal" />
+        </label>
+        <label class="field">Sucursal donde estará instalado
+          <select name="sucursalFisicaId" [(ngModel)]="formulario.sucursalFisicaId" required>
+            <option value="" disabled>Seleccioná una sucursal</option>
+            <option *ngFor="let s of sucursales" [value]="s.id">{{ s.nombre }}</option>
+          </select>
+        </label>
+        <label class="field">Alcance para reservar turnos
+          <select name="alcanceReservas" [(ngModel)]="formulario.alcanceReservas">
+            <option value="SUCURSAL">Solo esta sucursal</option>
+            <option value="PISOS">Determinados pisos de esta sucursal</option>
+            <option value="TODAS">Todas las sucursales de la organización</option>
+          </select>
+        </label>
+        <label class="field" *ngIf="formulario.alcanceReservas === 'PISOS'">Pisos autorizados (separados por comas)
+          <input name="pisos" [(ngModel)]="pisosTexto" placeholder="Ej. Planta baja, Primer piso" maxlength="500" />
+          <small>Ingresá los nombres reales. El filtrado por consultorio se conectará en una próxima etapa.</small>
+        </label>
+        <p class="helper" *ngIf="formulario.alcanceReservas === 'TODAS'">La reserva podrá abarcar todas las sucursales. Las llegadas presenciales se limitarán a ubicaciones autorizadas cuando implementemos el check-in.</p>
+        <label class="field">Slogan de bienvenida
+          <input name="slogan" [(ngModel)]="formulario.slogan" maxlength="500" placeholder="Ej. Cuidamos tu salud, cerca tuyo" />
+        </label>
+        <div class="two-cols">
+          <label class="field">Color principal
+            <input type="color" name="colorPrincipal" [(ngModel)]="formulario.colorPrincipal" />
+          </label>
+          <label class="field">Color secundario
+            <input type="color" name="colorSecundario" [(ngModel)]="formulario.colorSecundario" />
+          </label>
+        </div>
+        <label class="field">Orientación de pantalla
+          <select name="orientacion" [(ngModel)]="formulario.orientacion">
+            <option value="AUTO">Automática (recomendada)</option>
+            <option value="VERTICAL">Vertical</option>
+            <option value="HORIZONTAL">Horizontal</option>
+          </select>
+          <small>Es una preferencia visual; la rotación física se configura en el dispositivo.</small>
+        </label>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" type="button" (click)="formularioAbierto = false">Cancelar</button>
+          <button class="btn btn-primary" type="submit" [disabled]="guardando || formTotem.invalid">
+            {{ guardando ? 'Creando...' : 'Crear tótem' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

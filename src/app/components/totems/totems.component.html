@@ -1,0 +1,98 @@
+<main class="totem" [style.--marca]="colorPrincipal" [style.--marca-secundaria]="colorSecundario">
+  <section *ngIf="pantalla === 'cargando'" class="totem-estado" aria-live="polite">
+    <div class="simbolo">✚</div>
+    <h1>Coria Salud</h1>
+    <p *ngIf="!error">Preparando dispositivo...</p>
+    <p *ngIf="error" class="error">{{ error }}</p>
+    <button *ngIf="error" type="button" class="boton-primario" (click)="cargarConfiguracion()">Reintentar</button>
+  </section>
+
+  <section *ngIf="pantalla === 'vinculacion'" class="totem-vinculacion" aria-label="Vinculación de tótem">
+    <div class="vinculacion-panel">
+      <div class="simbolo">✚</div>
+      <div class="marca-coria">CORIA SALUD</div>
+      <h1>Vincular dispositivo</h1>
+      <p>Ingresá el código de 6 dígitos generado desde el panel de la clínica.</p>
+      <div class="codigo" aria-label="Código de vinculación">{{ codigo.padEnd(6, '•') }}</div>
+      <div class="teclado" aria-label="Teclado numérico">
+        <button *ngFor="let tecla of ['1','2','3','4','5','6','7','8','9']" type="button"
+          [disabled]="vinculando" (click)="ingresarDigito(tecla)">{{ tecla }}</button>
+        <button type="button" [disabled]="vinculando" (click)="limpiarCodigo()" aria-label="Borrar todo">C</button>
+        <button type="button" [disabled]="vinculando" (click)="ingresarDigito('0')">0</button>
+        <button type="button" [disabled]="vinculando" (click)="borrarDigito()" aria-label="Borrar último dígito">⌫</button>
+      </div>
+      <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+      <button type="button" class="boton-primario" [disabled]="vinculando || codigo.length !== 6" (click)="vincular()">
+        {{ vinculando ? 'Vinculando...' : 'Vincular dispositivo' }}
+      </button>
+    </div>
+  </section>
+
+  <section *ngIf="pantalla === 'bienvenida' && configuracion" class="totem-bienvenida"
+    role="button" tabindex="0" aria-label="Toque cualquier parte de la pantalla para comenzar"
+    (click)="comenzar()" (keydown.enter)="comenzar()" (keydown.space)="comenzar()">
+    <div class="encabezado-reposo">AUTOGESTIÓN DE PACIENTES</div>
+    <div class="marca-centro">
+      <img *ngIf="configuracion.logoUrl" class="logo" [src]="configuracion.logoUrl" [alt]="'Logo de ' + configuracion.nombreOrganizacion" />
+      <div *ngIf="!configuracion.logoUrl" class="logo-fallback" aria-hidden="true">✚</div>
+      <h1>{{ configuracion.nombreOrganizacion }}</h1>
+      <p *ngIf="configuracion.slogan" class="slogan">{{ configuracion.slogan }}</p>
+    </div>
+    <div class="instruccion-reposo">
+      <div class="indicador-toque" aria-hidden="true">◎</div>
+      <p>Toque cualquier parte de la pantalla para comenzar</p>
+      <small>{{ configuracion.sucursalNombre }}</small>
+    </div>
+  </section>
+
+  <section *ngIf="pantalla === 'menu' && configuracion" class="totem-menu" (pointerdown)="reiniciarTemporizadorMenu()" (keydown)="reiniciarTemporizadorMenu()">
+    <header class="menu-cabecera">
+      <span class="nombre-organizacion">{{ configuracion.nombreOrganizacion }}</span>
+      <button type="button" class="volver" (click)="irBienvenida()">Volver al inicio</button>
+    </header>
+    <div class="menu-cuerpo">
+      <h1>¿Qué necesitás hacer?</h1>
+      <p>Elegí una opción para continuar.</p>
+      <div class="opciones">
+        <div class="opcion pendiente"><span class="emoji" aria-hidden="true">▦</span><strong>Sacar un turno</strong><small>Próximamente: misma reserva pública, interfaz táctil</small></div>
+        <button type="button" class="opcion" (click)="abrirLlegada()"><span class="emoji" aria-hidden="true">✓</span><strong>Avisar que llegué</strong><small>Registrá tu llegada con DNI y los últimos 4 números de tu teléfono.</small></button>
+      </div>
+      <p class="aviso">La reserva de nuevos turnos se conectará en una próxima etapa.</p>
+    </div>
+    <footer>Si no hay actividad durante 30 segundos, volveremos al inicio.</footer>
+  </section>
+  <section *ngIf="pantalla === 'llegada' && configuracion" class="totem-vinculacion" (pointerdown)="reiniciarTemporizadorMenu()">
+    <div class="vinculacion-panel">
+      <div class="marca-coria">{{ configuracion.nombreOrganizacion }}</div>
+      <h1>Avisar que llegué</h1>
+      <p *ngIf="faseLlegada === 'dni'">Ingresá tu DNI, sin puntos.</p>
+      <p *ngIf="faseLlegada === 'telefono'">Ingresá los últimos cuatro números del teléfono asociado a tu reserva.</p>
+      <div class="codigo" *ngIf="faseLlegada === 'dni'">{{ dni || 'DNI' }}</div>
+      <div class="codigo" *ngIf="faseLlegada === 'telefono'">{{ ultimos4Telefono.padEnd(4, '•') }}</div>
+      <div class="teclado">
+        <button *ngFor="let tecla of ['1','2','3','4','5','6','7','8','9']" type="button" [disabled]="registrandoLlegada" (click)="ingresarDato(tecla)">{{ tecla }}</button>
+        <button type="button" (click)="faseLlegada === 'dni' ? dni = '' : ultimos4Telefono = ''" [disabled]="registrandoLlegada">C</button>
+        <button type="button" (click)="ingresarDato('0')" [disabled]="registrandoLlegada">0</button>
+        <button type="button" (click)="borrarDato()" [disabled]="registrandoLlegada">⌫</button>
+      </div>
+      <p *ngIf="error" class="error" role="alert">{{ error }}</p>
+      <button *ngIf="faseLlegada === 'dni'" type="button" class="boton-primario" [disabled]="dni.length < 7 || dni.length > 9" (click)="siguientePasoLlegada()">Continuar</button>
+      <button *ngIf="faseLlegada === 'telefono'" type="button" class="boton-primario" [disabled]="registrandoLlegada || ultimos4Telefono.length !== 4" (click)="confirmarLlegada()">{{ registrandoLlegada ? 'Registrando...' : 'Confirmar llegada' }}</button>
+      <button type="button" class="volver" (click)="irBienvenida()">Finalizar y volver al inicio</button>
+    </div>
+  </section>
+
+  <section *ngIf="pantalla === 'exito' && llegada" class="totem-estado" aria-live="polite">
+    <div class="simbolo">✓</div>
+    <h1>¡Hola, {{ llegada.nombre }}!</h1>
+    <h2>Tu llegada fue registrada</h2>
+    <p>{{ llegada.profesional }} te llamará pronto.</p>
+    <div class="destino" *ngIf="llegada.consultorio">
+      <strong>{{ llegada.consultorio }}</strong>
+      <span *ngIf="llegada.piso">{{ llegada.piso }}</span>
+    </div>
+    <p *ngIf="!llegada.consultorio">Esperá a ser llamado.</p>
+    <small>Esta pantalla se cerrará automáticamente.</small>
+    <button type="button" class="volver" (click)="irBienvenida()">Finalizar</button>
+  </section>
+</main>

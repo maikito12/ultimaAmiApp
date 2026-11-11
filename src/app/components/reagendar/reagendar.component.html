@@ -1,0 +1,86 @@
+<div class="page" [style.--principal]="contexto?.colorPrincipal || '#17483d'">
+  <header class="header">
+    <div class="marca">
+      <img *ngIf="contexto?.logoUrl" [src]="contexto?.logoUrl" alt="Logo de la organización">
+      <strong>{{ contexto?.organizacionNombre || 'Coria Salud' }}</strong>
+    </div>
+    <span>Gestionado con <b>Coria Salud</b></span>
+  </header>
+
+  <main class="contenedor">
+    <section class="tarjeta" *ngIf="cargando">
+      <p>Cargando tu turno...</p>
+    </section>
+
+    <section class="tarjeta" *ngIf="!cargando && error && !contexto">
+      <h1>No pudimos abrir el reagendamiento</h1>
+      <p class="error">{{ error }}</p>
+      <p>Comunicate con el consultorio para solicitar un cambio de horario.</p>
+    </section>
+
+    <section class="tarjeta" *ngIf="contexto as c">
+      <ng-container *ngIf="resultado as r; else formulario">
+        <div class="exito-icono">✓</div>
+        <h1>¡Turno reagendado!</h1>
+        <p>El horario de tu reserva fue actualizado.</p>
+        <div class="resumen">
+          <strong>{{ c.profesional }} · {{ c.especialidad }}</strong>
+          <p>{{ r.fecha }} · {{ r.horaInicio }}</p>
+          <p>{{ c.sucursal }}</p>
+        </div>
+        <p class="aviso">{{ r.message }}</p>
+        <p class="aviso">La notificación por WhatsApp depende de la aceptación y entrega del proveedor.</p>
+      </ng-container>
+
+      <ng-template #formulario>
+        <span class="subtitulo">CAMBIO DE HORARIO</span>
+        <h1>Reagendá tu turno</h1>
+        <p>Elegí otro día y horario con el mismo profesional. Tu turno original se mantiene hasta que confirmes el cambio.</p>
+
+        <div class="resumen">
+          <small>TURNO ACTUAL</small>
+          <strong>{{ c.profesional }} · {{ c.especialidad }}</strong>
+          <p>{{ c.fechaActual }} · {{ c.horaActual }}</p>
+          <p>{{ c.sucursal }}</p>
+        </div>
+
+        <h2>Elegí una nueva fecha</h2>
+        <div class="mes-barra">
+          <button type="button" (click)="cambiarMes(-1)" [disabled]="!puedeVolver || cargandoDisponibilidad" aria-label="Mes anterior">‹</button>
+          <strong>{{ nombreMes }}</strong>
+          <button type="button" (click)="cambiarMes(1)" [disabled]="cargandoDisponibilidad" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="calendario">
+          <div class="semana" *ngFor="let nombre of diasSemana">{{ nombre }}</div>
+          <button *ngFor="let dia of dias" type="button" class="dia"
+                  [class.vacio]="!dia.actual" [class.elegido]="dia.fecha === fechaSeleccionada"
+                  [disabled]="!dia.habilitado || cargandoDisponibilidad"
+                  (click)="elegirDia(dia)">
+            {{ dia.actual ? dia.numero : '' }}
+            <span *ngIf="dia.habilitado" class="punto"></span>
+          </button>
+        </div>
+        <p class="aviso" *ngIf="cargandoDisponibilidad">Consultando disponibilidad...</p>
+        <p class="error" *ngIf="errorDisponibilidad">{{ errorDisponibilidad }}</p>
+        <button class="texto-boton" type="button" *ngIf="errorDisponibilidad" (click)="cargarDisponibilidad()">Reintentar</button>
+
+        <ng-container *ngIf="fechaSeleccionada">
+          <h2>Horarios para {{ fechaSeleccionada }}</h2>
+          <div class="horarios" *ngIf="horarios.length; else sinHorarios">
+            <button *ngFor="let hora of horarios" type="button"
+                    [class.elegido]="hora === horaSeleccionada"
+                    (click)="elegirHora(hora)">{{ hora }}</button>
+          </div>
+          <ng-template #sinHorarios><p class="aviso">No quedan horarios disponibles para este día.</p></ng-template>
+        </ng-container>
+
+        <p class="error" *ngIf="error">{{ error }}</p>
+        <button type="button" class="confirmar" (click)="confirmar()"
+                [disabled]="!fechaSeleccionada || !horaSeleccionada || guardando || cargandoDisponibilidad">
+          {{ guardando ? 'Confirmando cambio...' : 'Confirmar nuevo horario' }}
+        </button>
+        <p class="nota">Si cerrás esta página sin confirmar, tu turno original no cambia.</p>
+      </ng-template>
+    </section>
+  </main>
+</div>

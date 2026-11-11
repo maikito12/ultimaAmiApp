@@ -192,7 +192,14 @@ export const routes: Routes = [
       {
         path: 'automatizaciones',
         component: AutomatizacionesComponent
-      }
+      },
+
+{
+  path: 'totems',
+  loadComponent: () =>
+    import('./components/totems-admin/totems-admin.component')
+      .then(m => m.TotemsAdminComponent)
+}
 
     ]
   },
@@ -250,6 +257,22 @@ export const routes: Routes = [
   // ==========================================
   // RUTAS DESCONOCIDAS
   // ==========================================
+
+
+{
+  path: 'totem',
+  loadComponent: () =>
+    import('./components/totems/totems.component')
+      .then(m => m.TotemsComponent)
+},
+
+
+{
+  path: 'reagendar',
+  loadComponent: () =>
+    import('./components/reagendar/reagendar.component')
+      .then(m => m.ReagendarComponent)
+},
 
   {
     path: '**',
