@@ -1,0 +1,56 @@
+:host { display: block; }
+.motivos-card { background: #fff; border: 1px solid #dfe7e3; border-radius: 16px; padding: 24px; margin-top: 20px; color: #33443f; }
+.motivos-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.motivos-eyebrow { display:block; color:#78928a; font-size: 10px; font-weight:700; letter-spacing: 1.2px; margin-bottom: 6px; }
+h3 { margin: 0; color: #073b34; font-size: 19px; }
+.motivos-header p { color:#71817c; font-size: 13px; margin: 7px 0 0; }
+button { cursor: pointer; font: inherit; font-size: 12px; border-radius: 9px; padding: 10px 13px; background:#fff; border:1px solid #dce5e1; color:#17483d; }
+button:disabled { opacity: .5; cursor:not-allowed; }
+.motivo-primary { background: #17483d; border-color: #17483d; color: white; font-weight: 600; white-space: nowrap; }
+.motivo-secondary { background: #fff; }
+.motivos-empty { background:#f8faf9; border-radius: 10px; padding: 20px; margin-top: 18px; font-size:13px; color:#72847c; }
+.motivos-list { margin-top: 18px; display: grid; gap: 10px; }
+.motivo-item { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:15px; border:1px solid #e3eae7; border-radius:12px; }
+.motivo-item.inactivo { opacity:.64; }
+.motivo-info { display:grid; gap:5px; min-width: 0; }
+.motivo-info strong { font-size: 14px; color:#073b34; }
+.motivo-info span { font-size:12px; color:#697a74; }
+.motivo-info small { font-size:12px; color:#87968f; }
+.motivo-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.motivo-actions .danger, .danger { color:#a34343; }
+.availability-button { background:#eff6f2; border-color:#d6e6dd; font-weight:600; }
+.motivo-form { margin-top:18px; padding:18px; border-radius:12px; border:1px solid #d5e4dd; background:#f9fcfa; }
+.motivo-form h4 { margin:0 0 18px; font-size:15px; color:#073b34; }
+.motivo-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.motivo-form-grid label { display:grid; gap:6px; min-width:0; font-size:12px; font-weight:600; }
+.motivo-form-grid input, .motivo-form-grid select { box-sizing:border-box; width:100%; min-width:0; padding:11px; font:inherit; font-size:13px; border:1px solid #dce5e1; border-radius:9px; color:#33443f; background:#fff; }
+.motivo-help { font-size:12px; color:#71817c; line-height:1.5; }
+.motivo-form-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+.inactivos-toggle { display:flex; align-items:center; gap:7px; font-size:12px; margin-top:14px; color:#71817c; }
+
+/* Nuevos estilos: disponibilidad por motivo, aislados del resto del perfil. */
+.disponibilidad-panel { margin-top:20px; border:1px solid #cfded6; background:#fbfdfc; border-radius:14px; padding:20px; }
+.disponibilidad-header { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+.disponibilidad-header h4 { margin:0; font-size:17px; color:#073b34; }
+.disponibilidad-header p { margin:7px 0 0; color:#71817c; font-size:12px; line-height:1.5; }
+.disponibilidad-info { display:flex; gap:12px; padding:14px; margin:18px 0; background:#edf5f1; border:1px solid #dbe9e1; border-radius:10px; color:#315b4c; font-size:12px; }
+.disponibilidad-info i { margin-top:2px; }
+.disponibilidad-info p { margin:5px 0 0; line-height:1.55; }
+.sucursales-disponibilidad { display:grid; gap:14px; margin-top:16px; }
+.sucursal-disponibilidad { border:1px solid #e0e9e4; border-radius:12px; overflow:hidden; background:#fff; }
+.sucursal-titulo { display:flex; gap:10px; align-items:center; padding:14px 16px; color:#17483d; background:#f1f7f3; border-bottom:1px solid #e1eae5; }
+.sucursal-titulo h5 { margin:0; font-size:14px; }
+.horario-habitual { padding:14px 16px; border-bottom:1px solid #eff2f0; }
+.horario-habitual:last-child { border-bottom:none; }
+.horario-cabecera { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.horario-cabecera > div { display:flex; flex-direction:column; gap:4px; }
+.horario-cabecera strong { font-size:13px; color:#304f42; }
+.horario-cabecera span { font-size:12px; color:#71817c; }
+.sin-franjas { font-size:12px; margin:10px 0 0; color:#9ba8a1; }
+.franja-editable { display:flex; align-items:end; gap:12px; flex-wrap:wrap; padding:12px; margin-top:10px; background:#f8faf8; border:1px solid #e3ebe6; border-radius:10px; }
+.franja-editable > label:not(.exclusivo-check) { display:flex; flex-direction:column; gap:5px; font-size:11px; color:#61786b; }
+.franja-editable input[type=time] { padding:9px; min-height:37px; border:1px solid #cedfd6; border-radius:8px; font:inherit; font-size:13px; background:#fff; color:#274d3d; }
+.exclusivo-check { display:flex; align-items:center; gap:6px; min-height:38px; color:#365d4e; font-size:12px; }
+.exclusivo-check input { accent-color:#17483d; }
+.quitar-franja { min-height:38px; }
+@media (max-width: 720px) { .motivos-header, .motivo-item { align-items:stretch; flex-direction:column; } .motivo-form-grid { grid-template-columns:1fr; } .motivo-actions { justify-content:flex-start; } .disponibilidad-panel { padding:14px; } .disponibilidad-header, .horario-cabecera { align-items:stretch; flex-direction:column; } .franja-editable { gap:8px; } }

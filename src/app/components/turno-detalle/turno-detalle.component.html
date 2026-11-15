@@ -1144,6 +1144,23 @@
 
 
 
+      <!-- PRESTACION CONFIGURADA DEL TURNO (snapshot de la reserva) -->
+      <article class="prestacion-turno-card">
+        <div class="prestacion-turno-encabezado">
+          <div>
+            <span class="prestacion-turno-etiqueta">TIPO DE CONSULTA</span>
+            <h3>{{ obtenerNombrePrestacion() }}</h3>
+          </div>
+          <span class="prestacion-turno-duracion" *ngIf="turno?.motivoDuracionMinutos != null">
+            {{ turno.motivoDuracionMinutos }} min
+          </span>
+        </div>
+        <div class="prestacion-turno-precio" *ngIf="turno?.motivoPrecio != null">
+          <span>Valor registrado al reservar</span>
+          <strong>{{ formatearPrecioPrestacion() }}</strong>
+        </div>
+      </article>
+
       <div class="notes-grid">
 
 
@@ -1154,7 +1171,7 @@
 
           <span class="note-label">
 
-            MOTIVO DE CONSULTA
+            ACLARACIÓN DEL PACIENTE
 
           </span>
 
@@ -1162,7 +1179,7 @@
 
           <h3>
 
-            Motivo
+            Motivo informado
 
           </h3>
 

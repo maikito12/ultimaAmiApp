@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ProfesionalMotivosComponent } from '../profesional-motivos/profesional-motivos.component';
 
 
 
@@ -120,7 +121,8 @@ import { AlertaService } from '../../services/alerta.service';
 
 
 
-    FormsModule
+    FormsModule,
+    ProfesionalMotivosComponent
 
 
 

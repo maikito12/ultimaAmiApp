@@ -372,7 +372,51 @@ horaSeleccionada = '';
 
 
 
-motivoConsulta = '';
+  motivoConsulta = '';
+  prestaciones: { id: string; nombre: string; precio: number | null; duracionMinutos: number | null }[] = [];
+  prestacionSeleccionadaId: string | null = null;
+  cargandoPrestaciones = false;
+
+  get prestacionSeleccionada() {
+    return this.prestaciones.find(p => p.id === this.prestacionSeleccionadaId) ?? null;
+  }
+
+  get duracionActual(): number {
+    return this.prestacionSeleccionada?.duracionMinutos || Number(this.especialidadSeleccionada?.duracionTurno) || 30;
+  }
+
+  cambiarPrestacion(): void {
+    this.horaSeleccionada = '';
+    if (this.fechaSeleccionada) this.generarHorasDisponibles();
+  }
+
+  cargarPrestaciones(): void {
+    const profesionalId = this.obtenerProfesionalId();
+    const especialidadId = this.especialidadSeleccionada?.id;
+    this.prestaciones = [];
+    this.prestacionSeleccionadaId = null;
+    if (!profesionalId || !especialidadId) return;
+    this.cargandoPrestaciones = true;
+    this.turnosService.obtenerMotivosInternos(
+      profesionalId,
+      especialidadId
+    ).subscribe({
+      next: motivos => {
+        // Evitamos mostrar una respuesta atrasada tras cambiar de profesional.
+        if (this.obtenerProfesionalId() !== profesionalId ||
+            this.especialidadSeleccionada?.id !== especialidadId) return;
+        this.prestaciones = motivos ?? [];
+        this.cargandoPrestaciones = false;
+        if (this.fechaSeleccionada) this.generarHorasDisponibles();
+      },
+      error: () => {
+        this.cargandoPrestaciones = false;
+        this.alertaService.warning('No se cargaron las prestaciones',
+          'El turno puede seguir usando la duracion de la especialidad.');
+      }
+    });
+  }
+
 
 
 
@@ -1505,6 +1549,8 @@ if (
     this.especialidades = [];
 
     this.sucursales = [];
+    this.prestaciones = [];
+    this.prestacionSeleccionadaId = null;
 
 
 
@@ -1675,6 +1721,8 @@ if (
     this.especialidadSeleccionada =
 
       especialidad;
+
+    this.cargarPrestaciones();
 
 
 
@@ -2043,6 +2091,8 @@ horaInicio:
   ),
 
 
+
+      profesionalMotivoConsultaId: this.prestacionSeleccionadaId,
 
       motivoConsulta:
 
@@ -3481,460 +3531,67 @@ seleccionarFechaCalendario(
 }
 
 generarHorasDisponibles(): void {
-
-
-
-  if (
-
-    !this.fechaSeleccionada ||
-
-    !this.especialidadSeleccionada
-
-  ) {
-
-
-
+  const profesionalId = this.obtenerProfesionalId();
+  if (!this.fechaSeleccionada || !this.especialidadSeleccionada || !profesionalId) {
     this.horasDisponibles = [];
-
-
-
     return;
-
   }
-
-
-
-
-
-  const fecha =
-
-    this.parseFechaLocal(
-
-      this.fechaSeleccionada
-
-    );
-
-
-
-
-
-  const diaSemana =
-
-    this.convertirDiaSemana(
-
-      fecha
-
-    );
-
-
-
-
-
-  const horariosDia =
-
-    this.horariosFiltrados
-
-      .filter(
-
-        horario =>
-
-          horario.diaSemana === diaSemana
-
-      );
-
-
-
-
-
-  const duracion =
-
-    Number(
-
-      this.especialidadSeleccionada
-
-        .duracionTurno
-
-    );
-
-
-
-
-
-  if (
-
-    !duracion ||
-
-    duracion <= 0
-
-  ) {
-
-
-
-    console.error(
-
-      'Duración de turno inválida:',
-
-      this.especialidadSeleccionada
-
-    );
-
-
-
-    this.horasDisponibles = [];
-
-
-
-    return;
-
-  }
-
-
-
-
-
-  // =======================================================
-
-  // 1. GENERAMOS TODOS LOS HORARIOS POSIBLES
-
-  // =======================================================
-
-
-
-  const slots: string[] = [];
-
-
-
-
-
-  horariosDia.forEach(
-
-    horario => {
-
-
-
-      const inicio =
-
-        this.horaAMinutos(
-
-          horario.horaInicio
-
-        );
-
-
-
-
-
-      const fin =
-
-        this.horaAMinutos(
-
-          horario.horaFin
-
-        );
-
-
-
-
-
-      let actual =
-
-        inicio;
-
-
-
-
-
-      while (
-
-        actual + duracion <= fin
-
-      ) {
-
-
-
-        slots.push(
-
-          this.minutosAHora(
-
-            actual
-
-          )
-
-        );
-
-
-
-
-
-        actual +=
-
-          duracion;
-
-      }
-
-    }
-
-  );
-
-
-
-
-const horariosGenerados = Array.from(
-  new Set(slots)
-)
-  .filter(hora =>
-    this.esHorarioReservable(
-      this.fechaSeleccionada,
-      hora
-    )
-  )
-  .sort();
-
-
-
-
-  // =======================================================
-
-  // 2. SI NO TENEMOS PROFESIONAL, NO PODEMOS VALIDAR OCUPACIÓN
-
-  // =======================================================
-
-
-
-const profesionalId = this.obtenerProfesionalId();
-
-if (!profesionalId) {
-  this.horasDisponibles = [];
-  return;
-}
-
-
-
-
-
-  // =======================================================
-
-  // 3. CONSULTAMOS TURNOS YA CREADOS PARA ESE DÍA
-
-  // =======================================================
-
-
-
-  const filtro = {
-
-
-
-    fecha:
-
-      this.fechaSeleccionada,
-
-
-
-  profesionalOrganizacionId:
-  profesionalId,
-
-  };
-
-
-
-
-
-  this.turnosService
-
-    .obtenerAgenda(
-
-      filtro
-
-    )
-
-    .subscribe({
-
-
-
-      next: (response: any) => {
-
-
-
-        const turnos =
-
-          Array.isArray(response)
-
-            ? response
-
-            : response?.data ?? [];
-
-
-
-
-
-        // =================================================
-
-        // HORAS YA OCUPADAS
-
-        // =================================================
-
-
-
-        const horasOcupadas =
-
-          new Set<string>(
-
-            turnos.map(
-
-              (turno: any) =>
-
-                this.normalizarHora(
-
-                  turno?.horaInicio ??
-
-                  turno?.hora
-
-                )
-
-            )
-
-          );
-
-
-
-
-
-        // =================================================
-
-        // SACAMOS LOS HORARIOS OCUPADOS
-
-        // =================================================
-
-
-
-        this.horasDisponibles =
-
-          horariosGenerados
-
-            .filter(
-
-              hora =>
-
-                !horasOcupadas.has(
-
-                  this.normalizarHora(
-
-                    hora
-
-                  )
-
-                )
-
-            );
-
-
-
-
-
-        // =================================================
-
-        // SI TENÍA SELECCIONADO UNO QUE AHORA ESTÁ OCUPADO
-
-        // =================================================
-
-
-
-        if (
-
-          this.horaSeleccionada &&
-
-          horasOcupadas.has(
-
-            this.normalizarHora(
-
-              this.horaSeleccionada
-
-            )
-
-          )
-
-        ) {
-
-
-
-          this.horaSeleccionada = '';
-
+  const fechaConsultada = this.fechaSeleccionada;
+  const prestacionConsultada = this.prestacionSeleccionadaId;
+  const duracion = this.duracionActual;
+  const diaSemana = this.convertirDiaSemana(this.parseFechaLocal(fechaConsultada));
+  const horariosDia = this.horariosFiltrados.filter(h => h.diaSemana === diaSemana);
+  this.cargandoHorarios = true;
+  this.turnosService.obtenerAgenda({
+    fecha: fechaConsultada, profesionalOrganizacionId: profesionalId
+  }).subscribe({
+    next: (response: any) => {
+      if (this.fechaSeleccionada !== fechaConsultada ||
+          this.prestacionSeleccionadaId !== prestacionConsultada ||
+          this.obtenerProfesionalId() !== profesionalId) return;
+      const turnos: any[] = Array.isArray(response) ? response : response?.data ?? [];
+      // Usamos intervalos completos, NO solo las horas de inicio.
+      const ocupados = turnos
+        .filter(t => t.estado !== 'Cancelado' && t.estado !== 3 && t.activo !== false)
+        .map(t => ({
+          inicio: this.horaAMinutos(this.normalizarHora(t.horaInicio ?? t.hora_inicio ?? t.hora)),
+          fin: this.horaAMinutos(this.normalizarHora(t.horaFin ?? t.hora_fin))
+        }))
+        .filter(x => x.fin > x.inicio)
+        .sort((a, b) => a.inicio - b.inicio);
+      const slots = new Set<string>();
+      for (const horario of horariosDia) {
+        const desde = this.horaAMinutos(horario.horaInicio);
+        const hasta = this.horaAMinutos(horario.horaFin);
+        let cursor = desde;
+        const bloques: Array<{ inicio: number; fin: number }> = [];
+        for (const turno of ocupados) {
+          if (turno.fin <= desde || turno.inicio >= hasta) continue;
+          const ocupadoDesde = Math.max(turno.inicio, desde);
+          const ocupadoHasta = Math.min(turno.fin, hasta);
+          if (ocupadoDesde > cursor) bloques.push({ inicio: cursor, fin: ocupadoDesde });
+          cursor = Math.max(cursor, ocupadoHasta);
+          if (cursor >= hasta) break;
         }
-
-
-
-
-
-        console.log(
-
-          'HORARIOS GENERADOS:',
-
-          horariosGenerados
-
-        );
-
-
-
-        console.log(
-
-          'HORAS OCUPADAS:',
-
-          Array.from(
-
-            horasOcupadas
-
-          )
-
-        );
-
-
-
-        console.log(
-
-          'HORARIOS DISPONIBLES:',
-
-          this.horasDisponibles
-
-        );
-
-      },
-
-
-
-
-
-      error: error => {
-
-
-
-        console.error(
-
-          'Error consultando agenda:',
-
-          error
-
-        );
-
-
-
-
-
-        /*
-
-         * Mejor no mostrar horarios si no pudimos
-
-         * comprobar cuáles están ocupados.
-
-         */
-
-        this.horasDisponibles = [];
-
+        if (cursor < hasta) bloques.push({ inicio: cursor, fin: hasta });
+        for (const bloque of bloques) {
+          for (let minuto = bloque.inicio; minuto + duracion <= bloque.fin; minuto += duracion) {
+            const hora = this.minutosAHora(minuto);
+            if (this.esHorarioReservable(fechaConsultada, hora)) slots.add(hora);
+          }
+        }
       }
-
-    });
-
+      this.horasDisponibles = [...slots].sort();
+      if (!this.horasDisponibles.includes(this.horaSeleccionada)) this.horaSeleccionada = '';
+      this.cargandoHorarios = false;
+    },
+    error: (error: any) => {
+      console.error('Error calculando agenda interna:', error);
+      this.horasDisponibles = [];
+      this.cargandoHorarios = false;
+    }
+  });
 }
-
 private normalizarHora(
 
   hora: string | null | undefined

@@ -2267,6 +2267,20 @@
 
 
  <section *ngIf="pasoActual === 'fecha'">
+  <!-- Prestacion interna: independiente del texto libre de motivo. -->
+  <div class="form-group" *ngIf="prestaciones.length > 0">
+    <label for="prestacionNuevoTurno">Prestación / tipo de consulta</label>
+    <select id="prestacionNuevoTurno" [(ngModel)]="prestacionSeleccionadaId"
+            (ngModelChange)="cambiarPrestacion()" class="prestacion-select">
+      <option [ngValue]="null">Consulta general (duración de especialidad)</option>
+      <option *ngFor="let prestacion of prestaciones" [ngValue]="prestacion.id">
+        {{ prestacion.nombre }}{{ prestacion.precio != null ? ' · $' + (prestacion.precio | number:'1.0-0':'es-AR') : '' }}
+      </option>
+    </select>
+    <small *ngIf="prestacionSeleccionada">Duración: {{ duracionActual }} minutos</small>
+  </div>
+  <p *ngIf="cargandoPrestaciones" class="info-message">Cargando prestaciones...</p>
+
 
 
 
@@ -3277,6 +3291,11 @@
 
 
 
+
+          <div class="summary-row" *ngIf="prestacionSeleccionada">
+            <span>Prestación</span>
+            <strong>{{ prestacionSeleccionada.nombre }} ({{ duracionActual }} min)</strong>
+          </div>
 
           <div
 

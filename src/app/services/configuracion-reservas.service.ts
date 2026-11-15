@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environmentProduccion } from '../../environments/environment';
 
+
+
 export interface ConfiguracionReservas {
   permitirReservaOnline: boolean;
   maxTurnosActivos: number;

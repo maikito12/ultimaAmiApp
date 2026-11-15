@@ -4,6 +4,7 @@ import { Observable, EMPTY } from 'rxjs';
 import { expand, map, reduce } from 'rxjs/operators';
 import { environmentProduccion } from '../../environments/environment';
 
+
 export interface ObraSocial {
   id: string;
   nombre: string;

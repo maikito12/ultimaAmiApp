@@ -23,6 +23,8 @@ import { AlertaService } from '../../services/alerta.service';
 import { DialogoService } from '../../services/dialogo.service';
 import { environmentProduccion } from '../../../environments/environment';
 
+
+
 /**
  * Contrato a implementar en backend:
  * GET /api/WhatsApp/consumo-mensual

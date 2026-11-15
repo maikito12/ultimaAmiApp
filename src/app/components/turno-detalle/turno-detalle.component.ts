@@ -821,6 +821,27 @@ export class TurnoDetalleComponent
   }
 
 
+  // Prestación elegida (snapshot), distinta de la aclaración libre del paciente.
+  obtenerNombrePrestacion(): string {
+    const nombre = this.turno?.motivoNombre;
+    return typeof nombre === 'string' && nombre.trim()
+      ? nombre.trim()
+      : 'Consulta general';
+  }
+
+  formatearPrecioPrestacion(): string {
+    const precio = this.turno?.motivoPrecio;
+    if (precio === null || precio === undefined) return '';
+    const valor = Number(precio);
+    if (!Number.isFinite(valor)) return '';
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(valor);
+  }
+
   obtenerMotivo(): string {
 
     return (

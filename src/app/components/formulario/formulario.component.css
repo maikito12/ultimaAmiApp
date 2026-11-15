@@ -5195,7 +5195,6 @@
   }
 }
 
-
 /* =========================================================
    AFILIADO / CONSENTIMIENTO
    ========================================================= */
@@ -5292,7 +5291,6 @@
 }
 
 @media (max-width: 650px) {
- 
 
   .consent-card {
     padding: 13px 12px;
@@ -5514,7 +5512,6 @@
   display: none;
 }
 
-
 /* =========================================================
    CARD PROFESIONAL - MOBILE
    ========================================================= */
@@ -5600,7 +5597,6 @@
   }
 }
 
-
 /* En pantallas muy angostas, la información secundaria usa todo el ancho. */
 @media (max-width: 420px) {
 
@@ -5642,5 +5638,37 @@
   .professional-meta .next-slot {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* Modo tótem: mismos pasos y lógica, controles táctiles */
+.booking-page.booking-kiosk { background:#f7f5fc; }
+.booking-kiosk .booking-main { width:min(1160px,calc(100% - 32px)); }
+.booking-kiosk .booking-card { max-width:880px; padding:clamp(22px,3vw,42px); }
+.booking-kiosk button,.booking-kiosk select { min-height:56px; touch-action:manipulation; }
+.booking-kiosk .field-group input, .booking-kiosk .field-group select { height:58px; font-size:19px; }
+.booking-kiosk .specialty-option, .booking-kiosk .search-mode-card { min-height:72px; }
+.booking-kiosk .booking-header { display:none; }
+.booking-kiosk .field-group label { font-size:17px; }
+.booking-kiosk .continue-button,.booking-kiosk .back-button { min-height:58px; font-size:17px; }
+@media(max-width:700px){.booking-kiosk .booking-main{width:100%;}.booking-kiosk .booking-card{padding:18px;}}
+
+/* Motivos públicos: sólo presentación, no altera el calendario existente. */
+.motivo-publico-panel { margin-top: 20px; }
+.motivo-publico-panel .field-group { max-width: 100%; }
+.motivo-publico-help { display:block; margin-top:7px; font-size:12px; color:#71817c; }
+.motivo-publico-error { padding:12px; color:#9c3333; background:#fff4f4; border-radius:9px; font-size:13px; }
+.motivo-publico-error button { margin-left:8px; border:1px solid #dec5c5; border-radius:8px; padding:6px 12px; background:#fff; }
+.motivo-publico-resumen { font-size:13px; color:#425e55; margin:10px 0 16px; }
+
+
+/* Navegación guiada en celular: mantiene espacio antes del objetivo. */
+@media (max-width: 650px) {
+  #reserva-elegir-sucursal,
+  #reserva-elegir-motivo,
+  #reserva-continuar-paso4,
+  #reserva-horarios-disponibles,
+  #reserva-revisar-turno {
+    scroll-margin-top: 22px;
   }
 }

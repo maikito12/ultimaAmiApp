@@ -1,5 +1,5 @@
 
-import { environmentProduccion } from '../../environments/environment';
+
 import { Injectable, NgZone, inject } from '@angular/core';
 import {
   HubConnection,
@@ -9,6 +9,9 @@ import {
 } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { AuthService } from './auth-service.service';
+import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
