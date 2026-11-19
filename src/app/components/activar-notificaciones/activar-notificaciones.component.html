@@ -67,7 +67,13 @@
             : 'Activar notificaciones'
       }}
     </button>
-
+<button
+  type="button"
+  (click)="renovar()"
+  [disabled]="solicitando || !soportado || (esIOS && !instalada)"
+>
+  Renovar notificaciones
+</button>
     <div class="beneficios">
 
       <div class="beneficio">

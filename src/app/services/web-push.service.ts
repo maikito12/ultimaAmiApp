@@ -2,14 +2,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SwPush } from '@angular/service-worker';
-import { firstValueFrom, take } from 'rxjs';import { environment } from '../../environments/environment.development';
+import { firstValueFrom, take } from 'rxjs';
+
 import { environmentProduccion } from '../../environments/environment';
-;
-
-
-// ==========================================
-// INTERFACES
-// ==========================================
 
 interface PushRegistro {
   endpoint: string;
@@ -20,10 +15,6 @@ interface PushRegistro {
   dispositivo: string;
 }
 
-// ==========================================
-// WEB PUSH SERVICE
-// ==========================================
-
 @Injectable({
   providedIn: 'root'
 })
@@ -32,20 +23,25 @@ export class WebPushService {
   private readonly http = inject(HttpClient);
   private readonly swPush = inject(SwPush);
 
-  // ==========================================
-  // DISPONIBILIDAD
-  // ==========================================
-
   get disponible(): boolean {
     return this.swPush.isEnabled &&
       typeof Notification !== 'undefined';
   }
 
-  // ==========================================
-  // ACTIVAR NOTIFICACIONES
-  // ==========================================
-
+  // Activación normal: conserva la suscripción existente.
   async activarNotificaciones(): Promise<void> {
+    await this.registrarSuscripcion(false);
+  }
+
+  // Recuperación manual: elimina la suscripción del navegador
+  // y solicita una nueva.
+  async renovarNotificaciones(): Promise<void> {
+    await this.registrarSuscripcion(true);
+  }
+
+  private async registrarSuscripcion(
+    forzarRenovacion: boolean
+  ): Promise<void> {
 
     if (!this.disponible) {
       throw new Error(
@@ -61,29 +57,27 @@ export class WebPushService {
 
     const clavePublica = environmentProduccion.vapidPublicKey;
 
-    if (!clavePublica || !clavePublica.trim()) {
+    if (!clavePublica?.trim()) {
       throw new Error(
         'Falta configurar la clave pública VAPID.'
       );
     }
 
-    // ==========================================
-    // OBTENER O CREAR SUSCRIPCIÓN
-    // ==========================================
-
     let suscripcion = await firstValueFrom(
       this.swPush.subscription.pipe(take(1))
     );
+
+    // Solo cuando el usuario solicita una renovación.
+ if (forzarRenovacion && suscripcion) {
+  await this.swPush.unsubscribe();
+  suscripcion = null;
+}
 
     if (!suscripcion) {
       suscripcion = await this.swPush.requestSubscription({
         serverPublicKey: clavePublica
       });
     }
-
-    // ==========================================
-    // VALIDAR DATOS DE LA SUSCRIPCIÓN
-    // ==========================================
 
     const datos = suscripcion.toJSON();
 
@@ -97,10 +91,6 @@ export class WebPushService {
       );
     }
 
-    // ==========================================
-    // PREPARAR DATOS PARA EL BACKEND
-    // ==========================================
-
     const registro: PushRegistro = {
       endpoint,
       keys: {
@@ -109,10 +99,6 @@ export class WebPushService {
       },
       dispositivo: navigator.userAgent.substring(0, 120)
     };
-
-    // ==========================================
-    // REGISTRAR DISPOSITIVO EN CORIA SALUD
-    // ==========================================
 
     const apiUrl = environmentProduccion.apiUrl.replace(/\/+$/, '');
 
@@ -125,12 +111,14 @@ export class WebPushService {
       );
 
       console.log(
-        'Web Push: dispositivo registrado correctamente.'
+        forzarRenovacion
+          ? 'Web Push: suscripción renovada correctamente.'
+          : 'Web Push: dispositivo registrado correctamente.'
       );
 
     } catch (error) {
       console.error(
-        'Web Push: error al registrar el dispositivo en Coria Salud.',
+        'Web Push: error al registrar el dispositivo.',
         error
       );
 

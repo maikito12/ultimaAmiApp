@@ -130,4 +130,39 @@ export class ActivarNotificacionesComponent implements OnInit {
       this.solicitando = false;
     }
   }
+
+async renovar(): Promise<void> {
+  if (
+    this.solicitando ||
+    !this.soportado ||
+    (this.esIOS && !this.instalada)
+  ) {
+    return;
+  }
+
+  this.solicitando = true;
+  this.activada = false;
+
+  try {
+    await this.webPush.renovarNotificaciones();
+
+    this.activada = true;
+    this.estado =
+      '¡Suscripción renovada correctamente! El dispositivo está vinculado con Coria Salud.';
+
+  } catch (error: unknown) {
+    if (error instanceof HttpErrorResponse && error.status === 401) {
+      this.estado =
+        'Tu sesión venció. Iniciá sesión nuevamente.';
+    } else {
+      this.estado =
+        error instanceof Error
+          ? error.message
+          : 'No pudimos renovar las notificaciones.';
+    }
+  } finally {
+    this.solicitando = false;
+  }
+}
+
 }
