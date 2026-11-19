@@ -73,7 +73,7 @@ export class TurnosService {
       .set('profesionalEspecialidadId', profesionalEspecialidadId);
 
     return this.http.get<MotivoConsultaInterno[]>(
-      `${environment.apiUrl}/turnos-internos/motivos`,
+      `${environmentProduccion.apiUrl}/turnos-internos/motivos`,
       { params }
     );
   }
