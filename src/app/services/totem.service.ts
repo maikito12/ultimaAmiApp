@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
+
 
 
 
@@ -38,7 +39,7 @@ export interface LlegadaTotemRespuesta {
 
 @Injectable({ providedIn: 'root' })
 export class TotemService {
-  private readonly base = `${environmentProduccion.apiUrl}/totems`;
+  private readonly base = `${environment.apiUrl}/totems`;
   private readonly storageKey = 'coria_totem_device_key';
 
   constructor(private readonly http: HttpClient) {}

@@ -1,6 +1,8 @@
+
 import {
   ApplicationConfig,
-  provideZoneChangeDetection
+  provideZoneChangeDetection,
+  isDevMode
 } from '@angular/core';
 
 import {
@@ -12,6 +14,10 @@ import {
   provideHttpClient,
   withInterceptorsFromDi
 } from '@angular/common/http';
+
+import {
+  provideServiceWorker
+} from '@angular/service-worker';
 
 import { routes } from './app.routes';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
@@ -33,7 +39,16 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,
       multi: true
-    }
+    },
+
+    // ==========================================
+    // SERVICE WORKER - PWA Y NOTIFICACIONES
+    // ==========================================
+
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    })
 
   ]
 };

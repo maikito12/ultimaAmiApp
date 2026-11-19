@@ -10,8 +10,7 @@ import {
 import {
   Observable
 } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
-
+import { environment } from '../../environments/environment.development';
 
 
 
@@ -144,7 +143,7 @@ export interface EstadisticasFiltrosResponse {
 export class EstadisticasService {
 
   private readonly url =
-    `${environmentProduccion.apiUrl}/estadisticas`;
+    `${environment.apiUrl}/estadisticas`;
 
 
   constructor(

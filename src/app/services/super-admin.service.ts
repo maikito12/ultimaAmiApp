@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -452,11 +452,11 @@ export interface ActualizarCantidadProfesionalesResponse {
 export class SuperAdminService {
 
   private readonly apiUrl =
-    `${environmentProduccion.apiUrl}/super-admin`;
+    `${environment.apiUrl}/super-admin`;
 
 
   private readonly suscripcionesApiUrl =
-    `${environmentProduccion.apiUrl}/superadmin/suscripciones`;
+    `${environment.apiUrl}/superadmin/suscripciones`;
 
 
   constructor(

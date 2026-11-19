@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Plan } from '../interfaces/plan';
 import { environment } from '../../environments/environment.development';
-import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -13,7 +13,7 @@ import { environmentProduccion } from '../../environments/environment';
 export class PlanService {
 
   private readonly apiUrl =
-     `${environmentProduccion.apiUrl}/planes`;
+     `${environment.apiUrl}/planes`;
 
   constructor(
     private http: HttpClient

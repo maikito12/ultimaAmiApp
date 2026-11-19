@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, EMPTY } from 'rxjs';
 import { expand, map, reduce } from 'rxjs/operators';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
 
 
 export interface ObraSocial {
@@ -21,7 +21,7 @@ interface PaginaObrasSociales {
 
 @Injectable({ providedIn: 'root' })
 export class ObrasSocialesService {
-  private readonly url = `${environmentProduccion.apiUrl}/obras-sociales`;
+  private readonly url = `${environment.apiUrl}/obras-sociales`;
 
   constructor(private readonly http: HttpClient) {}
 

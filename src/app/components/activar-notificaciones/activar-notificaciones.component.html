@@ -1,0 +1,135 @@
+
+<div class="notificaciones-pagina">
+
+  <div class="notificaciones-card">
+
+    <div class="marca">
+      <div class="marca-icono">C</div>
+      <span>CoriaSalud</span>
+    </div>
+
+    <div class="campana-icono">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+        <path d="M10 21h4"/>
+      </svg>
+    </div>
+
+    <div class="etiqueta">
+      NOTIFICACIONES
+    </div>
+
+    <h1>Mantenete al día con tus turnos</h1>
+
+    <p class="descripcion">
+      Recibí avisos de nuevas reservas, confirmaciones
+      y cancelaciones en tu celular.
+    </p>
+
+    <div class="estado">
+
+      <div class="estado-icono">
+        {{ activada ? '✓' : 'i' }}
+      </div>
+
+      <div>
+        <strong>Estado de notificaciones</strong>
+        <p aria-live="polite">{{ estado }}</p>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="boton-activar"
+      (click)="activar()"
+      [disabled]="
+        solicitando ||
+        activada ||
+        !soportado ||
+        (esIOS && !instalada)
+      "
+    >
+      {{
+        solicitando
+          ? 'Activando notificaciones...'
+          : activada
+            ? 'Dispositivo vinculado'
+            : 'Activar notificaciones'
+      }}
+    </button>
+
+    <div class="beneficios">
+
+      <div class="beneficio">
+        <span class="check">✓</span>
+        <span>Enterate de nuevas reservas</span>
+      </div>
+
+      <div class="beneficio">
+        <span class="check">✓</span>
+        <span>Recibí avisos de confirmaciones</span>
+      </div>
+
+      <div class="beneficio">
+        <span class="check">✓</span>
+        <span>Conocé las cancelaciones de turnos</span>
+      </div>
+
+    </div>
+
+    <div class="separador"></div>
+
+    <div class="ayuda" *ngIf="esIOS && !instalada">
+
+      <strong>Cómo activar en iPhone</strong>
+
+      <p>
+        1. Abrí Coria Salud desde Safari.
+      </p>
+
+      <p>
+        2. Tocá Compartir y seleccioná
+        "Agregar a pantalla de inicio".
+      </p>
+
+      <p>
+        3. Abrí Coria Salud desde el nuevo ícono.
+      </p>
+
+      <p>
+        4. Iniciá sesión si es necesario y
+        presioná "Activar notificaciones".
+      </p>
+
+    </div>
+
+    <div class="ayuda" *ngIf="!esIOS">
+
+      <strong>Cómo activar en Android o computadora</strong>
+
+      <p>
+        Utilizá un navegador compatible, como Chrome,
+        y presioná "Activar notificaciones".
+        Cuando aparezca el permiso, aceptalo.
+      </p>
+
+    </div>
+
+    <p class="pie">
+      Podés administrar los permisos de notificaciones
+      desde la configuración de tu dispositivo.
+    </p>
+
+  </div>
+
+</div>

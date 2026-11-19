@@ -8,7 +8,8 @@ import {
   RegistroConInvitacion,
   UnirseOrganizacion
 } from '../interfaces/invitacion';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
+
 
 
 
@@ -20,7 +21,7 @@ import { environmentProduccion } from '../../environments/environment';
 export class InvitacionService {
 
   private readonly apiUrl =
-    `${environmentProduccion.apiUrl}/Invitaciones`;
+    `${environment.apiUrl}/Invitaciones`;
 
 
   constructor(

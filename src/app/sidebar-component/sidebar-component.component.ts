@@ -33,6 +33,8 @@ import {
   DialogoService
 } from '../services/dialogo.service';
 
+import { NotificacionesCampanitaComponent } from '../components/notificaciones-campanita/notificaciones-campanita.component';
+
 
 @Component({
 
@@ -42,7 +44,8 @@ import {
 
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    NotificacionesCampanitaComponent
   ],
 
   templateUrl:

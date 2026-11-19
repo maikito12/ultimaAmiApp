@@ -82,3 +82,16 @@ app-sidebar {
   }
 
 }
+/* Coria Salud: campanita de notificaciones internas */
+.notificaciones-barra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 5px 20px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 100;
+  background: #f8faf9;
+}

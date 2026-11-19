@@ -60,6 +60,21 @@ export const routes: Routes = [
   },
 
   // ==========================================
+  // ACTIVAR NOTIFICACIONES - CELULAR Y PC
+  // ==========================================
+
+  {
+    path: 'activar-notificaciones',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import(
+        './components/activar-notificaciones/activar-notificaciones.component'
+      ).then(
+        m => m.ActivarNotificacionesComponent
+      )
+  },
+
+  // ==========================================
   // RECUPERACIÓN DE CONTRASEÑA
   // ==========================================
 
@@ -194,12 +209,15 @@ export const routes: Routes = [
         component: AutomatizacionesComponent
       },
 
-{
-  path: 'totems',
-  loadComponent: () =>
-    import('./components/totems-admin/totems-admin.component')
-      .then(m => m.TotemsAdminComponent)
-}
+      {
+        path: 'totems',
+        loadComponent: () =>
+          import(
+            './components/totems-admin/totems-admin.component'
+          ).then(
+            m => m.TotemsAdminComponent
+          )
+      }
 
     ]
   },
@@ -219,22 +237,29 @@ export const routes: Routes = [
 
   {
     path: 'super-admin/organizaciones/:id',
-
     loadComponent: () =>
       import(
         './components/super-admin-suscripcion-detalle/super-admin-suscripcion-detalle.component'
       ).then(
         m => m.SuperAdminSuscripcionDetalleComponent
       ),
-
     canActivate: [superAdminGuard]
   },
-{
-  path: 'eliminacion-de-datos',
-  loadComponent: () =>
-    import('./components/eliminacion-datos/eliminacion-datos.component')
-      .then(m => m.EliminacionDatosComponent)
-},
+
+  // ==========================================
+  // ELIMINACIÓN DE DATOS
+  // ==========================================
+
+  {
+    path: 'eliminacion-de-datos',
+    loadComponent: () =>
+      import(
+        './components/eliminacion-datos/eliminacion-datos.component'
+      ).then(
+        m => m.EliminacionDatosComponent
+      )
+  },
+
   // ==========================================
   // SUPER ADMIN - PANEL PRINCIPAL
   // ==========================================
@@ -255,24 +280,36 @@ export const routes: Routes = [
   },
 
   // ==========================================
-  // RUTAS DESCONOCIDAS
+  // TÓTEM
   // ==========================================
 
+  {
+    path: 'totem',
+    loadComponent: () =>
+      import(
+        './components/totems/totems.component'
+      ).then(
+        m => m.TotemsComponent
+      )
+  },
 
-{
-  path: 'totem',
-  loadComponent: () =>
-    import('./components/totems/totems.component')
-      .then(m => m.TotemsComponent)
-},
+  // ==========================================
+  // REAGENDAMIENTO
+  // ==========================================
 
+  {
+    path: 'reagendar',
+    loadComponent: () =>
+      import(
+        './components/reagendar/reagendar.component'
+      ).then(
+        m => m.ReagendarComponent
+      )
+  },
 
-{
-  path: 'reagendar',
-  loadComponent: () =>
-    import('./components/reagendar/reagendar.component')
-      .then(m => m.ReagendarComponent)
-},
+  // ==========================================
+  // RUTAS DESCONOCIDAS
+  // ==========================================
 
   {
     path: '**',

@@ -10,7 +10,7 @@ import {
 import { Subject } from 'rxjs';
 import { AuthService } from './auth-service.service';
 import { environment } from '../../environments/environment.development';
-import { environmentProduccion } from '../../environments/environment';
+
 
 
 @Injectable({
@@ -54,7 +54,7 @@ async conectar(): Promise<void> {
   }
 
   const apiUrl =
-    environmentProduccion.apiUrl
+    environment.apiUrl
       .replace(/\/api\/?$/i, '')
       .replace(/\/$/, '');
 

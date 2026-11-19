@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+
+import { environment } from '../../environments/environment.development';
 
 
 
@@ -36,7 +37,7 @@ export interface ConfiguracionReservas {
 export class ConfiguracionReservasService {
 
   private readonly URL =
-     `${environmentProduccion.apiUrl}/configuracion-reservas`;
+     `${environment.apiUrl}/configuracion-reservas`;
 
   constructor(private http: HttpClient) {}
 

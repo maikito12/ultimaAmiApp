@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
+
 
 
 export interface MotivoConsulta {
@@ -57,7 +58,7 @@ export interface GuardarFranjasMotivo {
 
 @Injectable({ providedIn: 'root' })
 export class ProfesionalMotivosConsultaService {
-  private readonly url = `${environmentProduccion.apiUrl}/ProfesionalMotivosConsulta`;
+  private readonly url = `${environment.apiUrl}/ProfesionalMotivosConsulta`;
 
   constructor(private http: HttpClient) {}
 

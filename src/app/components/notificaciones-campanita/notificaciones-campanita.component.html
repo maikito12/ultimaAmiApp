@@ -1,0 +1,125 @@
+<div class="coria-notificaciones">
+  <button
+    type="button"
+    class="campanita-boton"
+    (click)="alternar()"
+    [attr.aria-expanded]="abierto"
+    [attr.aria-label]="sinLeer > 0 ? 'Notificaciones: ' + sinLeer + ' sin leer' : 'Notificaciones'"
+    aria-haspopup="true"
+    title="Notificaciones"
+  >
+    <svg class="campanita-icono" xmlns="http://www.w3.org/2000/svg"
+         width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </svg>
+    <span class="campanita-contador" *ngIf="sinLeer > 0">
+      {{ sinLeer > 99 ? '99+' : sinLeer }}
+    </span>
+  </button>
+
+  <section class="campanita-panel" *ngIf="abierto" aria-label="Avisos de turnos">
+    <div class="campanita-cabecera">
+      <div class="campanita-titulos">
+        <strong>Notificaciones</strong>
+        <span>Movimientos de tus turnos</span>
+      </div>
+      <button type="button" class="campanita-marcar"
+              (click)="marcarTodas()" *ngIf="sinLeer > 0">
+        Marcar leídas
+      </button>
+    </div>
+
+    <p class="campanita-vacio" *ngIf="cargando">Cargando avisos...</p>
+    <p class="campanita-vacio" *ngIf="!cargando && errorCarga">No se pudieron cargar los avisos.</p>
+    <p class="campanita-error" *ngIf="errorEliminacion" role="alert">
+      No se pudo quitar el aviso. Intentá nuevamente.
+    </p>
+    <p class="campanita-vacio" *ngIf="!cargando && !errorCarga && items.length === 0">
+      Todavía no hay notificaciones.
+    </p>
+
+    <ng-container *ngIf="!cargando && !errorCarga">
+      <div class="campanita-item" *ngFor="let item of items" [class.sin-leer]="!item.leidaAt">
+        <button type="button" class="campanita-abrir" (click)="abrirTurno(item)"
+                [attr.aria-label]="'Abrir turno: ' + item.titulo + '. ' + item.detalle">
+          <span class="campanita-tipo" [ngClass]="claseTipo(item.tipo)" aria-hidden="true"></span>
+          <span class="campanita-cuerpo">
+            <strong>{{ item.titulo }}</strong>
+            <span>{{ item.detalle }}</span>
+            <small>{{ item.createdAt | date:'dd/MM/yyyy · HH:mm' }}</small>
+          </span>
+          <span class="campanita-punto" *ngIf="!item.leidaAt" aria-label="Sin leer"></span>
+        </button>
+        <button type="button" class="campanita-eliminar"
+                (click)="eliminarNotificacion(item, $event)"
+                [disabled]="eliminandoIds.has(item.id)"
+                [attr.aria-label]="'Eliminar notificación: ' + item.titulo"
+                title="Eliminar notificación">&times;</button>
+      </div>
+    </ng-container>
+
+    <!-- Nuevo acceso, independiente de la lista de avisos. -->
+    <div class="campanita-movil-acceso">
+      <div class="campanita-movil-texto">
+        <strong>Notificaciones en tu celular</strong>
+        <span>Recibí avisos aunque no tengas la web abierta.</span>
+      </div>
+      <button type="button" class="campanita-movil-boton"
+              (click)="abrirModalNotificaciones()">
+        Configurar mi celular
+      </button>
+    </div>
+  </section>
+
+  <!-- Modal fuera del panel con scroll, para que el QR no quede recortado. -->
+  <div class="campanita-modal-fondo"
+       *ngIf="modalNotificacionesAbierto"
+       (click)="cerrarModalNotificaciones()">
+    <section class="campanita-modal" role="dialog" aria-modal="true"
+             aria-labelledby="campanita-modal-titulo"
+             (click)="$event.stopPropagation()">
+      <button type="button" class="campanita-modal-cerrar"
+              aria-label="Cerrar configuración" (click)="cerrarModalNotificaciones()">&times;</button>
+
+      <span class="campanita-modal-etiqueta">CORIA SALUD · NOTIFICACIONES</span>
+      <h2 id="campanita-modal-titulo">Activá los avisos en tu celular</h2>
+      <p class="campanita-modal-descripcion">
+        Escaneá el código, iniciá sesión en tu teléfono y activá las notificaciones.
+      </p>
+
+      <div class="campanita-modal-contenido">
+        <div class="campanita-modal-qr-col">
+          <div class="campanita-modal-qr">
+            <img *ngIf="qrNotificaciones" [src]="qrNotificaciones"
+                 alt="QR para abrir la activación de notificaciones de Coria Salud" />
+            <span *ngIf="!qrNotificaciones && !qrNotificacionesError">Generando QR...</span>
+            <span *ngIf="qrNotificacionesError">QR no disponible</span>
+          </div>
+          <p class="campanita-modal-error" *ngIf="qrNotificacionesError" role="alert">
+            {{ qrNotificacionesError }}
+          </p>
+          <a [href]="enlaceNotificaciones" target="_blank" rel="noopener noreferrer">
+            Abrir página de activación
+          </a>
+        </div>
+
+        <div class="campanita-modal-pasos">
+          <h3>Configuración en 3 pasos</h3>
+          <ol>
+            <li>Escaneá el QR desde tu celular.</li>
+            <li>Iniciá sesión con tu cuenta de Coria Salud.</li>
+            <li>Seguí las instrucciones y presioná «Activar notificaciones».</li>
+          </ol>
+          <div class="campanita-modal-plataformas">
+            <p><strong>iPhone:</strong> abrí el enlace con Safari, agregá Coria Salud a la pantalla de inicio y abrila desde el nuevo ícono para activar.</p>
+            <p><strong>Android:</strong> abrí el enlace con Chrome y aceptá el permiso cuando el navegador lo solicite.</p>
+          </div>
+          <small>El QR no contiene contraseñas ni tokens de acceso.</small>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

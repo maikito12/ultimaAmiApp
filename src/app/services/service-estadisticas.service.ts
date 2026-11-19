@@ -8,7 +8,7 @@ import {
   DashboardEstadisticasResponse
 } from '../interfaces/estadisticas';
 import { environment } from '../../environments/environment.development';
-import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -19,7 +19,7 @@ import { environmentProduccion } from '../../environments/environment';
 export class EstadisticasService {
 
   private readonly apiUrl =
-    `${environmentProduccion.apiUrl}/estadisticas`;
+    `${environment.apiUrl}/estadisticas`;
 
   constructor(private http: HttpClient) {}
 

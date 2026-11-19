@@ -1,0 +1,285 @@
+/* Coria Salud - campanita integrada en el encabezado lateral */
+:host {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.coria-notificaciones {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  z-index: 250;
+}
+
+.campanita-boton {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #17483d;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.campanita-boton:hover,
+.campanita-boton[aria-expanded="true"] {
+  background: #edf5f2;
+  border-color: #dce9e3;
+}
+.campanita-boton:focus-visible {
+  outline: 2px solid #3b8a72;
+  outline-offset: 2px;
+}
+.campanita-icono { width: 20px; height: 20px; display: block; }
+.campanita-contador {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #b84b43;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.campanita-panel {
+  position: absolute;
+  z-index: 2000;
+  top: calc(100% + 12px);
+  left: 0;
+  right: auto;
+  width: min(340px, calc(100vw - 24px));
+  max-height: min(450px, 70vh);
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid #dfe7e3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 16px 38px rgba(11, 56, 43, .14);
+  color: #33443f;
+}
+.campanita-cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #edf1ef;
+  background: #fff;
+}
+.campanita-titulos { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.campanita-titulos strong { font-size: 14px; font-weight: 750; color: #073b34; }
+.campanita-titulos span { font-size: 10px; color: #8b9994; }
+.campanita-marcar {
+  flex: 0 0 auto;
+  padding: 3px 0;
+  border: none;
+  background: transparent;
+  color: #17483d;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.campanita-marcar:hover { text-decoration: underline; }
+.campanita-item {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border-bottom: 1px solid #eef2ef;
+  background: #fff;
+  transition: background .15s ease;
+}
+.campanita-item:last-child { border-bottom: none; }
+.campanita-item:hover { background: #f7faf8; }
+.campanita-item.sin-leer { background: #f1f7f4; }
+.campanita-item.sin-leer:hover { background: #eaf3ee; }
+.campanita-abrir {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 13px 4px 13px 15px;
+  gap: 11px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.campanita-abrir:focus-visible,
+.campanita-eliminar:focus-visible {
+  outline: 2px solid #32816b;
+  outline-offset: -3px;
+}
+.campanita-eliminar {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: 29px;
+  height: 29px;
+  margin: 8px 8px 0 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #83958d;
+  font: inherit;
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .15s ease, background .15s ease;
+}
+.campanita-eliminar:hover { color: #a9443b; background: #fff0ef; }
+.campanita-eliminar:disabled { opacity: .45; cursor: wait; }
+.campanita-error {
+  padding: 10px 15px;
+  margin: 0;
+  color: #ad493d;
+  background: #fff4f2;
+  font-size: 11px;
+}
+.campanita-tipo {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #418b77;
+}
+.campanita-tipo.confirmado { background: #2a8b65; }
+.campanita-tipo.cancelado { background: #ba574d; }
+.campanita-cuerpo { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.campanita-cuerpo strong { font-size: 11px; font-weight: 750; color: #153f35; }
+.campanita-cuerpo span { font-size: 11px; color: #596d65; line-height: 1.5; overflow-wrap: anywhere; }
+.campanita-cuerpo small { font-size: 9px; color: #8b9a93; }
+.campanita-punto { flex: 0 0 6px; width: 6px; height: 6px; margin-top: 5px; border-radius: 50%; background: #2a8b65; }
+.campanita-vacio { margin: 0; padding: 20px 15px; font-size: 11px; color: #73867e; }
+
+/* Acceso a la configuración móvil, al pie del listado. */
+.campanita-movil-acceso {
+  display: grid;
+  gap: 10px;
+  padding: 15px;
+  border-top: 1px solid #e2ebe5;
+  background: #f7faf8;
+}
+.campanita-movil-texto { display: grid; gap: 4px; }
+.campanita-movil-texto strong { font-size: 12px; color: #17483d; }
+.campanita-movil-texto span { font-size: 11px; color: #62746e; line-height: 1.5; }
+.campanita-movil-boton {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: #17483d;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.campanita-movil-boton:hover { background: #245b49; }
+.campanita-movil-boton:focus-visible { outline: 2px solid #32816b; outline-offset: 2px; }
+
+/* Modal independiente del panel con scroll. */
+.campanita-modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(6, 29, 22, .58);
+  box-sizing: border-box;
+}
+.campanita-modal {
+  position: relative;
+  width: min(100%, 690px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #e0e9e4;
+  background: #fff;
+  box-shadow: 0 24px 75px rgba(0, 0, 0, .22);
+  box-sizing: border-box;
+  color: #18322c;
+}
+.campanita-modal-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: #f1f5f3;
+  color: #17483d;
+  font-size: 24px;
+  cursor: pointer;
+}
+.campanita-modal-etiqueta { color: #458a70; font-size: 10px; font-weight: 800; letter-spacing: .09em; }
+.campanita-modal h2 { margin: 8px 36px 8px 0; font-size: 23px; line-height: 1.2; color: #173f35; }
+.campanita-modal-descripcion { margin: 0 0 22px; font-size: 13px; color: #62746e; line-height: 1.6; }
+.campanita-modal-contenido { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 26px; align-items: start; }
+.campanita-modal-qr-col { text-align: center; min-width: 0; }
+.campanita-modal-qr {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 240px;
+  border: 1px solid #e0e9e4;
+  border-radius: 13px;
+  padding: 9px;
+  box-sizing: border-box;
+  background: #fff;
+  font-size: 12px;
+  color: #62746e;
+}
+.campanita-modal-qr img { max-width: 100%; height: auto; display: block; }
+.campanita-modal-qr-col a { display: inline-block; margin-top: 12px; color: #17483d; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+.campanita-modal-error { font-size: 11px; color: #ad493d; }
+.campanita-modal-pasos h3 { margin: 0 0 12px; font-size: 15px; color: #18322c; }
+.campanita-modal-pasos ol { margin: 0 0 15px; padding-left: 20px; }
+.campanita-modal-pasos li { margin-bottom: 9px; font-size: 12px; line-height: 1.5; }
+.campanita-modal-plataformas { padding: 11px 13px; border-radius: 10px; background: #f3f8f5; }
+.campanita-modal-plataformas p { margin: 5px 0; font-size: 11px; line-height: 1.6; color: #40564b; }
+.campanita-modal-pasos small { display: block; margin-top: 12px; color: #8b9994; font-size: 10px; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .campanita-panel {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100dvh - 90px);
+  }
+  .campanita-modal { padding: 24px 18px; }
+  .campanita-modal-contenido { grid-template-columns: 1fr; gap: 19px; }
+  .campanita-modal-qr-col { max-width: 260px; margin: 0 auto; width: 100%; }
+}

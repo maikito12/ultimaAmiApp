@@ -24,6 +24,8 @@ import {
 
 } from '../../services/suscripcion.service';
 import { Suscripcion } from '../../interfaces/suscripcion';
+import { NotificacionesCampanitaComponent } from '../notificaciones-campanita/notificaciones-campanita.component';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +33,9 @@ import { Suscripcion } from '../../interfaces/suscripcion';
   imports: [
     CommonModule,
     RouterModule,
-    SidebarComponent
+    SidebarComponent,
+   NotificacionesCampanitaComponent
+
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'

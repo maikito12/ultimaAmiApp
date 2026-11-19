@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -71,7 +71,7 @@ export interface DesactivarIntegranteResponse {
 export class EquipoService {
 
   private readonly apiUrl =
-    `${environmentProduccion.apiUrl}/equipo`;
+    `${environment.apiUrl}/equipo`;
 
 
   constructor(

@@ -3,7 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { DisponibilidadMesPublica } from './reserva-publica.service';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
+
 
 
 export interface MotivoPublico {
@@ -14,7 +15,7 @@ export interface MotivoPublico {
 
 @Injectable({ providedIn: 'root' })
 export class ReservaMotivosPublicosService {
-  private readonly baseUrl = `${environmentProduccion.apiUrl}/publico/reserva`;
+  private readonly baseUrl = `${environment.apiUrl}/publico/reserva`;
   constructor(private http: HttpClient) {}
 
   obtenerMotivos(slug: string, profesionalOrganizacionId: string,

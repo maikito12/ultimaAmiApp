@@ -2239,3 +2239,20 @@
 
 
 }
+/* PEGAR AL FINAL de sidebar-component.component.css: no reemplazar el CSS original. */
+/* PEGAR AL FINAL de sidebar-component.component.css: no reemplazar el CSS original. */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-header .logo {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.sidebar-header app-notificaciones-campanita {
+  flex: 0 0 auto;
+}

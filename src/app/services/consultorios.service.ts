@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
 
 
 
@@ -45,7 +45,7 @@ export interface ConsultorioOcupacion {
 
 @Injectable({ providedIn: 'root' })
 export class ConsultoriosService {
-  private readonly baseUrl = `${environmentProduccion.apiUrl}`;
+  private readonly baseUrl = `${environment.apiUrl}`;
   constructor(private readonly http: HttpClient) {}
   obtenerPorSucursal(sucursalId: string): Observable<Consultorio[]> {
     return this.http.get<Consultorio[]>(`${this.baseUrl}/Consultorios/sucursal/${sucursalId}`);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
 
 
 
@@ -100,7 +100,7 @@ export interface ReservaPublicaInicial {
 }
 @Injectable({ providedIn: 'root' })
 export class ReservaPublicaService {
-  private readonly apiBaseUrl = `${environmentProduccion.apiUrl}/publico/reserva`;
+  private readonly apiBaseUrl = `${environment.apiUrl}/publico/reserva`;
   constructor(private readonly http: HttpClient) {}
   obtenerInicial(slug: string): Observable<ReservaPublicaInicial> {
     return this.http.get<ReservaPublicaInicial>(`${this.apiBaseUrl}/${encodeURIComponent(slug)}`);

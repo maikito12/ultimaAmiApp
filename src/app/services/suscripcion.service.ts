@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Suscripcion } from '../interfaces/suscripcion';
-import { environmentProduccion } from '../../environments/environment';
+
+import { environment } from '../../environments/environment.development';
+
 
 
 
@@ -77,7 +79,7 @@ export interface WhatsAppComprasResponse {
 
 @Injectable({ providedIn: 'root' })
 export class SuscripcionService {
-  private readonly apiUrl = `${environmentProduccion.apiUrl}/suscripciones`;
+  private readonly apiUrl = `${environment.apiUrl}/suscripciones`;
   private readonly whatsappApiUrl = `${this.apiUrl}/whatsapp`;
 
   constructor(private http: HttpClient) {}

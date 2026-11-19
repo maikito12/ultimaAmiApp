@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentProduccion } from '../../environments/environment';
+import { environment } from '../../environments/environment.development';
+
 
 
 export interface MotivoConsultaInterno {
@@ -13,7 +14,7 @@ export interface MotivoConsultaInterno {
 
 @Injectable({ providedIn: 'root' })
 export class TurnosService {
-  private readonly URL_BASE = `${environmentProduccion.apiUrl}/Turnos`;
+  private readonly URL_BASE = `${environment.apiUrl}/Turnos`;
 
   constructor(private http: HttpClient) {}
 
@@ -71,7 +72,7 @@ export class TurnosService {
       .set('profesionalEspecialidadId', profesionalEspecialidadId);
 
     return this.http.get<MotivoConsultaInterno[]>(
-      `${environmentProduccion.apiUrl}/turnos-internos/motivos`,
+      `${environment.apiUrl}/turnos-internos/motivos`,
       { params }
     );
   }
