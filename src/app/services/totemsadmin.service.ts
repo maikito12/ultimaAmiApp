@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environmentProduccion } from '../../environments/environment';
 
-import { environment } from '../../environments/environment.development';
+
 
 
 
@@ -27,7 +28,7 @@ export interface CodigoTotemRespuesta { codigo: string; venceAt: string; }
 export interface CrearTotemRespuesta extends CodigoTotemRespuesta { totem: Totem; }
 @Injectable({providedIn:'root'})
 export class TotemsAdminService {
-  private readonly url = `${environment.apiUrl}/totems`;
+  private readonly url = `${environmentProduccion.apiUrl}/totems`;
   constructor(private readonly http: HttpClient) {}
   listar(): Observable<Totem[]> { return this.http.get<Totem[]>(this.url); }
   crear(p: CrearTotemPayload): Observable<CrearTotemRespuesta> { return this.http.post<CrearTotemRespuesta>(this.url, p); }

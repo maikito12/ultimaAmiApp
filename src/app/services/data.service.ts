@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
 
 
 
@@ -14,7 +14,7 @@ export class TurnosService {
   // 🔥 CAMBIÁ ESTO POR TU BACKEND (n8n / Spring / etc)
 
 
-private readonly apiUrl = environment.apiUrl;
+private readonly apiUrl = environmentProduccion.apiUrl;
   constructor(private http: HttpClient) {}
 
   // 🔹 FERIADOS

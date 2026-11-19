@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Plan } from '../interfaces/plan';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -13,7 +14,7 @@ import { environment } from '../../environments/environment.development';
 export class PlanService {
 
   private readonly apiUrl =
-     `${environment.apiUrl}/planes`;
+     `${environmentProduccion.apiUrl}/planes`;
 
   constructor(
     private http: HttpClient

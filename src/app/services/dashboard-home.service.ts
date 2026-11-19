@@ -11,7 +11,7 @@ import {
   Observable
 } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-
+import { environmentProduccion } from '../../environments/environment';
 
 
 
@@ -82,7 +82,7 @@ export interface DashboardHomeResponse {
 export class DashboardHomeService {
 
   private readonly url =
-    `${environment.apiUrl}/dashboard/home`;
+    `${environmentProduccion.apiUrl}/dashboard/home`;
 
 
   constructor(

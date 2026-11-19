@@ -2,7 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 export interface NotificacionInterna {
@@ -21,7 +22,7 @@ export interface NotificacionInterna {
 export class NotificacionesInternasService {
 
   private readonly url =
-    `${environment.apiUrl}/notificaciones-internas`;
+    `${environmentProduccion.apiUrl}/notificaciones-internas`;
 
   constructor(
     private readonly http: HttpClient

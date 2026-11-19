@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -37,7 +38,7 @@ export interface ResultadoReagendamiento {
 @Injectable({ providedIn: 'root' })
 export class ReagendamientoPublicoService {
   // Corresponde al controller incluido en /backend.
-  private readonly base = `${environment.apiUrl}/publico/reagendamiento`;
+  private readonly base = `${environmentProduccion.apiUrl}/publico/reagendamiento`;
 
   constructor(private readonly http: HttpClient) {}
 

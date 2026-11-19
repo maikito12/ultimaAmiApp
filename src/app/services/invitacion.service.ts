@@ -9,6 +9,8 @@ import {
   UnirseOrganizacion
 } from '../interfaces/invitacion';
 import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -21,7 +23,7 @@ import { environment } from '../../environments/environment.development';
 export class InvitacionService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/Invitaciones`;
+    `${environmentProduccion.apiUrl}/Invitaciones`;
 
 
   constructor(

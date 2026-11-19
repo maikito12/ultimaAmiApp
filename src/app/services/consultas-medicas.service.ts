@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -118,7 +120,7 @@ export interface ConsultaManualContexto {
 export class ConsultasMedicasService {
 
   private readonly URL_BASE =
-    `${environment.apiUrl}/ConsultasMedicas`;
+    `${environmentProduccion.apiUrl}/ConsultasMedicas`;
 
   private readonly URL_ARCHIVOS =
     `${this.URL_BASE}/archivos`;

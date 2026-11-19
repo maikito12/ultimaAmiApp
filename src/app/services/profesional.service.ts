@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -368,7 +370,7 @@ export class ProfesionalService {
   // ========================================================
 
   private readonly apiBaseUrl =
-   `${environment.apiUrl}`;
+   `${environmentProduccion.apiUrl}`;
 
 
   private readonly profesionalesUrl =

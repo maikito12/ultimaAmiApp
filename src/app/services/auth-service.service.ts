@@ -9,7 +9,8 @@ import {
   LoginRequest,
   LoginResponse
 } from '../interfaces/auth';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -22,10 +23,10 @@ import { environment } from '../../environments/environment.development';
 export class AuthService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/Auth`;
+    `${environmentProduccion.apiUrl}/Auth`;
 
   private readonly invitacionesUrl =
-    `${environment.apiUrl}/Invitaciones`;
+    `${environmentProduccion.apiUrl}/Invitaciones`;
 
   constructor(
     private http: HttpClient

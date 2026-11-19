@@ -2,8 +2,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SwPush } from '@angular/service-worker';
-import { firstValueFrom, take } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { firstValueFrom, take } from 'rxjs';import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+;
 
 
 // ==========================================
@@ -58,7 +59,7 @@ export class WebPushService {
       );
     }
 
-    const clavePublica = environment.vapidPublicKey;
+    const clavePublica = environmentProduccion.vapidPublicKey;
 
     if (!clavePublica || !clavePublica.trim()) {
       throw new Error(
@@ -113,7 +114,7 @@ export class WebPushService {
     // REGISTRAR DISPOSITIVO EN CORIA SALUD
     // ==========================================
 
-    const apiUrl = environment.apiUrl.replace(/\/+$/, '');
+    const apiUrl = environmentProduccion.apiUrl.replace(/\/+$/, '');
 
     try {
       await firstValueFrom(

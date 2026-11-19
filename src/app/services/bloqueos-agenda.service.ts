@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -49,7 +51,7 @@ export interface CrearBloqueoAgendaPayload {
 export class BloqueosAgendaService {
 
   private readonly apiUrl =
-    `${environment.apiUrl}/BloqueosAgenda`;
+    `${environmentProduccion.apiUrl}/BloqueosAgenda`;
 
   constructor(
     private http: HttpClient

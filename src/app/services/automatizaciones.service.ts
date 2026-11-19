@@ -12,6 +12,8 @@ import {
   Observable
 } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -215,16 +217,16 @@ export interface EstadoPlantillaWhatsAppRespuesta {
 export class AutomatizacionesService {
 
   private readonly apiBaseUrl =
-    `${environment.apiUrl}/automatizaciones`;
+    `${environmentProduccion.apiUrl}/automatizaciones`;
 
   private readonly apiR2BaseUrl =
-    `${environment.apiUrl}/r2`;
+    `${environmentProduccion.apiUrl}/r2`;
 
   private readonly apiWhatsAppBaseUrl =
-    `${environment.apiUrl}/WhatsApp`;
+    `${environmentProduccion.apiUrl}/WhatsApp`;
 
   private readonly apiPlantillasBaseUrl =
-    `${environment.apiUrl}/whatsapp/plantillas`;
+    `${environmentProduccion.apiUrl}/whatsapp/plantillas`;
 
 
   // Consulta el estado real de la plantilla en la WABA autorizada.

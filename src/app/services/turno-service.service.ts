@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environmentProduccion } from '../../environments/environment';
+
 
 
 
@@ -14,7 +15,7 @@ export interface MotivoConsultaInterno {
 
 @Injectable({ providedIn: 'root' })
 export class TurnosService {
-  private readonly URL_BASE = `${environment.apiUrl}/Turnos`;
+  private readonly URL_BASE = `${environmentProduccion.apiUrl}/Turnos`;
 
   constructor(private http: HttpClient) {}
 
