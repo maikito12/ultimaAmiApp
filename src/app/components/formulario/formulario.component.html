@@ -2180,7 +2180,7 @@
         </ng-container>
 
         <!-- MOTIVOS DEL PROFESIONAL - OPCIONAL SEGÚN SU CATÁLOGO -->
-        <div class="motivo-publico-panel" id="reserva-elegir-motivo" *ngIf="profesionalSeleccionado">
+        <div class="motivo-publico-panel" id="reserva-elegir-motivo" *ngIf="profesionalSeleccionado && sucursalSeleccionada">
           <div *ngIf="cargandoMotivos" class="motivo-publico-help">
             Consultando tipos de consulta...
           </div>
@@ -3277,31 +3277,17 @@
 
   </div>
 
-  <div
+  
+<div
+  class="booking-success-code"
+  *ngIf="reservaCreada?.turnoId as turnoId"
+>
+  Código de reserva
+  <strong>
+    {{ turnoId | slice:0:8 | uppercase }}
+  </strong>
+</div>
 
-    class="booking-success-code"
-
-    *ngIf="reservaCreada?.turnoId"
-
-  >
-
-    Código de reserva
-
-    <strong>
-
-      {{
-
-        reservaCreada?.turnoId
-
-          | slice:0:8
-
-          | uppercase
-
-      }}
-
-    </strong>
-
-  </div>
 
 </section>
 

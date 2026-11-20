@@ -376,6 +376,7 @@ horaSeleccionada = '';
   prestaciones: { id: string; nombre: string; precio: number | null; duracionMinutos: number | null }[] = [];
   prestacionSeleccionadaId: string | null = null;
   cargandoPrestaciones = false;
+  private peticionPrestaciones = 0;
 
   get prestacionSeleccionada() {
     return this.prestaciones.find(p => p.id === this.prestacionSeleccionadaId) ?? null;
@@ -390,37 +391,58 @@ horaSeleccionada = '';
     if (this.fechaSeleccionada) this.generarHorasDisponibles();
   }
 
-  cargarPrestaciones(): void {
-    const profesionalId = this.obtenerProfesionalId();
-    const especialidadId = this.especialidadSeleccionada?.id;
+  private limpiarPrestaciones(): void {
+    this.peticionPrestaciones++;
     this.prestaciones = [];
     this.prestacionSeleccionadaId = null;
-    if (!profesionalId || !especialidadId) return;
+    this.cargandoPrestaciones = false;
+  }
+
+  // La lista depende del profesional, de la especialidad Y de la sucursal elegida.
+  // Consultamos cuando ya está definida la sucursal (no antes).
+  cargarPrestaciones(): void {
+    this.limpiarPrestaciones();
+
+    const profesionalId = this.obtenerProfesionalId();
+    const especialidadId = this.especialidadSeleccionada?.id;
+    const sucursalId = this.sucursalSeleccionada?.sucursalId;
+    if (!profesionalId || !especialidadId || !sucursalId) return;
+
+    const peticion = ++this.peticionPrestaciones;
     this.cargandoPrestaciones = true;
-    this.turnosService.obtenerMotivosInternos(
-      profesionalId,
-      especialidadId
-    ).subscribe({
+
+    this.turnosService.obtenerMotivosInternos(profesionalId, especialidadId).subscribe({
       next: motivos => {
-        // Evitamos mostrar una respuesta atrasada tras cambiar de profesional.
-        if (this.obtenerProfesionalId() !== profesionalId ||
-            this.especialidadSeleccionada?.id !== especialidadId) return;
-        this.prestaciones = motivos ?? [];
+        if (peticion !== this.peticionPrestaciones ||
+            this.obtenerProfesionalId() !== profesionalId ||
+            this.especialidadSeleccionada?.id !== especialidadId ||
+            this.sucursalSeleccionada?.sucursalId !== sucursalId) return;
+
+        // El GET interno debe devolver sucursalIds desde la relación
+        // profesional_motivo_sucursales. No mostramos motivos sin asignación.
+        const conSucursales = (motivos ?? []) as Array<{
+          id: string;
+          nombre: string;
+          precio: number | null;
+          duracionMinutos: number | null;
+          sucursalIds?: string[];
+        }>;
+        this.prestaciones = conSucursales.filter(m =>
+          Array.isArray(m.sucursalIds) && m.sucursalIds.includes(sucursalId)
+        );
         this.cargandoPrestaciones = false;
         if (this.fechaSeleccionada) this.generarHorasDisponibles();
       },
       error: () => {
+        if (peticion !== this.peticionPrestaciones) return;
         this.cargandoPrestaciones = false;
         this.alertaService.warning('No se cargaron las prestaciones',
-          'El turno puede seguir usando la duracion de la especialidad.');
+          'El turno puede continuar como consulta general.');
       }
     });
   }
 
-
-
-
-observaciones = '';
+  observaciones = '';
 
 
 
@@ -1549,8 +1571,7 @@ if (
     this.especialidades = [];
 
     this.sucursales = [];
-    this.prestaciones = [];
-    this.prestacionSeleccionadaId = null;
+    this.limpiarPrestaciones();
 
 
 
@@ -1722,7 +1743,7 @@ if (
 
       especialidad;
 
-    this.cargarPrestaciones();
+    this.limpiarPrestaciones();
 
 
 
@@ -2235,6 +2256,12 @@ private normalizarHoraApi(
   // =========================================================
 
 volverPaso(): void {
+  if (this.pasoActual === 'profesional' ||
+      this.pasoActual === 'especialidad' ||
+      this.pasoActual === 'sucursal' ||
+      this.pasoActual === 'fecha') {
+    this.limpiarPrestaciones();
+  }
 
 
 
@@ -2956,6 +2983,7 @@ seleccionarSucursal(
 
 
 
+  this.cargarPrestaciones();
   this.cargarHorariosParaTurno();
 
 }

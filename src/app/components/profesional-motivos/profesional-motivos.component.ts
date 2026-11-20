@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { ProfesionalService, ProfesionalEspecialidad } from '../../services/profesional.service';
+import { ProfesionalService, ProfesionalEspecialidad, ProfesionalSucursal } from '../../services/profesional.service';
 import {
   ProfesionalMotivosConsultaService,
   MotivoConsulta,
@@ -41,6 +41,7 @@ export class ProfesionalMotivosComponent implements OnChanges {
 
   motivos: MotivoConsulta[] = [];
   especialidades: ProfesionalEspecialidad[] = [];
+  sucursales: ProfesionalSucursal[] = [];
   cargando = false;
   guardando = false;
   editando = false;
@@ -76,6 +77,7 @@ export class ProfesionalMotivosComponent implements OnChanges {
       this.cerrarDisponibilidad();
       this.motivos = [];
       this.especialidades = [];
+      this.sucursales = [];
       if (this.profesionalOrganizacionId) void this.cargar();
     }
   }
@@ -86,7 +88,8 @@ export class ProfesionalMotivosComponent implements OnChanges {
       nombre: '',
       duracionMinutos: null as number | null,
       precio: null as number | null,
-      orden: 0
+      orden: 0,
+      sucursalIds: [] as string[]
     };
   }
 
@@ -130,18 +133,38 @@ export class ProfesionalMotivosComponent implements OnChanges {
     return this.especialidades.find(x => x.id === id)?.especialidad ?? 'Especialidad';
   }
 
+  // Mostrar en cada motivo las sedes habilitadas, no solo los horarios específicos.
+  nombresSucursales(motivo: MotivoConsulta): string {
+    const ids = motivo.sucursalIds ?? [];
+    if (!ids.length) return 'Sin sucursales asignadas';
+    return ids.map(id => this.sucursales.find(s => s.sucursalId === id)?.sucursal ?? 'Sucursal no disponible').join(' · ');
+  }
+
+  estaSucursalSeleccionada(sucursalId: string): boolean {
+    return this.formulario.sucursalIds.includes(sucursalId);
+  }
+
+  alternarSucursal(sucursalId: string, seleccionada: boolean): void {
+    const ids = new Set(this.formulario.sucursalIds);
+    if (seleccionada) ids.add(sucursalId);
+    else ids.delete(sucursalId);
+    this.formulario.sucursalIds = [...ids];
+  }
+
   async cargar(): Promise<void> {
     const id = this.profesionalOrganizacionId;
     if (!id) return;
     this.cargando = true;
     try {
-      const [motivos, especialidades] = await Promise.all([
+      const [motivos, especialidades, sucursales] = await Promise.all([
         firstValueFrom(this.motivosService.listar(id)),
-        firstValueFrom(this.profesionalService.obtenerProfesionalEspecialidades(id))
+        firstValueFrom(this.profesionalService.obtenerProfesionalEspecialidades(id)),
+        firstValueFrom(this.profesionalService.obtenerProfesionalSucursales(id))
       ]);
       if (id !== this.profesionalOrganizacionId) return;
       this.motivos = motivos;
       this.especialidades = especialidades.filter(x => x.activo);
+      this.sucursales = sucursales.filter(x => x.activo);
     } catch (error: any) {
       if (id === this.profesionalOrganizacionId) {
         this.alertaService.error('No pudimos cargar los motivos',
@@ -169,7 +192,8 @@ export class ProfesionalMotivosComponent implements OnChanges {
       nombre: motivo.nombre,
       duracionMinutos: motivo.duracionMinutos,
       precio: motivo.precio,
-      orden: motivo.orden
+      orden: motivo.orden,
+      sucursalIds: [...(motivo.sucursalIds ?? [])]
     };
     this.editando = true;
   }
@@ -189,6 +213,15 @@ export class ProfesionalMotivosComponent implements OnChanges {
       this.alertaService.error('Datos incompletos', 'Ingresá un nombre y elegí una especialidad.');
       return;
     }
+    if (this.formulario.sucursalIds.length === 0) {
+      this.alertaService.error('Seleccioná una sucursal', 'Elegí al menos una sucursal donde ofrecés esta prestación.');
+      return;
+    }
+    const disponibles = new Set(this.sucursales.map(x => x.sucursalId));
+    if (this.formulario.sucursalIds.some(id => !disponibles.has(id))) {
+      this.alertaService.error('Sucursales no disponibles', 'Hay sucursales que ya no están habilitadas. Actualizá la selección.');
+      return;
+    }
     if ((duracion !== null && (!Number.isInteger(duracion) || duracion <= 0)) ||
         (precio !== null && (!Number.isFinite(precio) || precio < 0))) {
       this.alertaService.error('Valores inválidos', 'Revisá la duración y el precio.');
@@ -200,7 +233,8 @@ export class ProfesionalMotivosComponent implements OnChanges {
       nombre,
       duracionMinutos: duracion,
       precio,
-      orden: this.formulario.orden
+      orden: this.formulario.orden,
+      sucursalIds: [...this.formulario.sucursalIds]
     };
 
     this.guardando = true;

@@ -2280,6 +2280,9 @@
     <small *ngIf="prestacionSeleccionada">Duración: {{ duracionActual }} minutos</small>
   </div>
   <p *ngIf="cargandoPrestaciones" class="info-message">Cargando prestaciones...</p>
+  <p *ngIf="!cargandoPrestaciones && prestaciones.length === 0" class="info-message">
+    No hay prestaciones específicas en esta sucursal. Podés continuar con una consulta general.
+  </p>
 
 
 

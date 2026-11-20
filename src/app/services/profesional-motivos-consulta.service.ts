@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment.development';
 import { environmentProduccion } from '../../environments/environment';
-
-
 
 
 export interface MotivoConsulta {
@@ -16,6 +13,7 @@ export interface MotivoConsulta {
   precio: number | null;
   orden: number;
   activo: boolean;
+  sucursalIds: string[];
 }
 
 export interface CrearMotivoConsulta {
@@ -25,6 +23,8 @@ export interface CrearMotivoConsulta {
   duracionMinutos: number | null;
   precio: number | null;
   orden: number;
+  // Se admite omitirlo solo para compatibilidad con llamadas antiguas.
+  sucursalIds?: string[];
 }
 
 export type ActualizarMotivoConsulta = Omit<CrearMotivoConsulta, 'profesionalOrganizacionId'>;

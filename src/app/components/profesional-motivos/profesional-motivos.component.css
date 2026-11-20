@@ -28,7 +28,7 @@ button:disabled { opacity: .5; cursor:not-allowed; }
 .motivo-form-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
 .inactivos-toggle { display:flex; align-items:center; gap:7px; font-size:12px; margin-top:14px; color:#71817c; }
 
-/* Nuevos estilos: disponibilidad por motivo, aislados del resto del perfil. */
+/* Disponibilidad por motivo, aislada del resto del perfil. */
 .disponibilidad-panel { margin-top:20px; border:1px solid #cfded6; background:#fbfdfc; border-radius:14px; padding:20px; }
 .disponibilidad-header { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
 .disponibilidad-header h4 { margin:0; font-size:17px; color:#073b34; }
@@ -53,4 +53,16 @@ button:disabled { opacity: .5; cursor:not-allowed; }
 .exclusivo-check { display:flex; align-items:center; gap:6px; min-height:38px; color:#365d4e; font-size:12px; }
 .exclusivo-check input { accent-color:#17483d; }
 .quitar-franja { min-height:38px; }
+
+/* Selección explícita de sucursales para cada prestación. */
+.motivo-sucursales-resumen { color:#476c5d !important; }
+.motivo-sucursales-resumen i { margin-right:5px; }
+.motivo-sucursales-selector { margin:16px 0 0; padding:14px; border:1px solid #cdded3; border-radius:12px; background:#fff; min-width:0; }
+.motivo-sucursales-selector legend { color:#073b34; font-size:13px; font-weight:700; padding:0 6px; }
+.motivo-sucursales-selector > p { font-size:12px; margin:0 0 12px; color:#71817c; }
+.motivo-sucursales-opciones { display:grid; grid-template-columns:repeat(auto-fit, minmax(185px, 1fr)); gap:9px; }
+.motivo-sucursal-opcion { display:flex; align-items:center; gap:9px; padding:11px 12px; border:1px solid #e2ebe5; border-radius:9px; background:#f8fbf9; font-size:13px; cursor:pointer; }
+.motivo-sucursal-opcion:hover { border-color:#a9c6b6; }
+.motivo-sucursal-opcion input { flex:0 0 auto; accent-color:#17483d; width:16px; height:16px; }
+.motivo-sucursales-selector .motivo-sucursales-ayuda { margin:10px 0 0; color:#a34343; }
 @media (max-width: 720px) { .motivos-header, .motivo-item { align-items:stretch; flex-direction:column; } .motivo-form-grid { grid-template-columns:1fr; } .motivo-actions { justify-content:flex-start; } .disponibilidad-panel { padding:14px; } .disponibilidad-header, .horario-cabecera { align-items:stretch; flex-direction:column; } .franja-editable { gap:8px; } }

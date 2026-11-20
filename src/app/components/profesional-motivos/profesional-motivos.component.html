@@ -3,10 +3,10 @@
     <div>
       <span class="motivos-eyebrow">ATENCIÓN PROFESIONAL</span>
       <h3>Motivos de consulta y honorarios</h3>
-      <p>Configurá qué consultas ofrecés. El precio y la duración son opcionales.</p>
+      <p>Configurá qué consultas ofrecés y en qué sucursales. El precio y la duración son opcionales.</p>
     </div>
     <button type="button" class="motivo-primary" (click)="nuevo()"
-      [disabled]="cargando || guardando || guardandoDisponibilidad || !especialidades.length || editando || !!motivoConfigurando">
+      [disabled]="cargando || guardando || guardandoDisponibilidad || !especialidades.length || !sucursales.length || editando || !!motivoConfigurando">
       <i class="fas fa-plus"></i> Agregar motivo
     </button>
   </div>
@@ -14,6 +14,10 @@
   <div *ngIf="cargando" class="motivos-empty">Cargando motivos...</div>
 
   <ng-container *ngIf="!cargando">
+    <div class="motivos-empty" *ngIf="!sucursales.length">
+      Este profesional no tiene sucursales activas asignadas. Configuralas primero desde <strong>Sucursales</strong>.
+    </div>
+
     <div class="motivos-empty" *ngIf="!motivosVisibles.length && !editando">
       Todavía no cargaste motivos de consulta. Es opcional: tus reservas actuales siguen funcionando igual.
     </div>
@@ -27,6 +31,10 @@
             {{ motivo.duracionMinutos === null ? 'Duración de la especialidad' : motivo.duracionMinutos + ' min' }}
             · {{ motivo.precio === null ? 'Precio no publicado' : ('$ ' + (motivo.precio | number:'1.0-2')) }}
             <ng-container *ngIf="!motivo.activo"> · Inactivo</ng-container>
+          </small>
+          <small class="motivo-sucursales-resumen">
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            Sucursales: {{ nombresSucursales(motivo) }}
           </small>
         </div>
         <div class="motivo-actions">
@@ -46,14 +54,14 @@
       </div>
     </div>
 
-    <!-- PANEL DE DISPONIBILIDAD POR MOTIVO -->
+    <!-- PANEL DE DISPONIBILIDAD POR MOTIVO: se conserva como estaba. -->
     <div class="disponibilidad-panel" *ngIf="motivoConfigurando as motivo">
       <div class="disponibilidad-header">
         <div>
           <span class="motivos-eyebrow">DISPONIBILIDAD POR MOTIVO</span>
           <h4>{{ motivo.nombre }}</h4>
           <p>Solo podés elegir días, sucursales y horas en los que atendés
-            <strong>{{ nombreEspecialidad(motivo.profesionalEspecialidadId) }}</strong>.</p>
+            <strong>{{ nombreEspecialidad(motivo.profesionalEspecialidadId) }}</strong> y donde este motivo está habilitado.</p>
         </div>
         <button type="button" class="motivo-secondary" (click)="cerrarDisponibilidad()"
           [disabled]="guardandoDisponibilidad">Cerrar</button>
@@ -63,7 +71,8 @@
         <i class="fas fa-info-circle"></i>
         <div>
           <strong>¿Cómo funciona?</strong>
-          <p>Si no configurás ninguna franja, este motivo utiliza todos tus horarios habituales para la especialidad.
+          <p>Si no configurás ninguna franja, este motivo utiliza todos tus horarios habituales para la especialidad
+            <strong>solo en las sucursales habilitadas</strong>.
             Si agregás una o más franjas, estará disponible únicamente en esas franjas y sucursales.
             Activá <strong>Exclusivo</strong> si querés reservar esa franja solo para este motivo.</p>
         </div>
@@ -73,8 +82,8 @@
 
       <ng-container *ngIf="!cargandoDisponibilidad">
         <div class="motivos-empty" *ngIf="!horariosDisponibles.length">
-          Esta especialidad todavía no tiene horarios de atención activos para el profesional.
-          Configuralos primero desde <strong>Horarios de atención</strong>.
+          Esta especialidad no tiene horarios de atención activos en las sucursales habilitadas para este motivo.
+          Revisá primero <strong>Horarios de atención</strong> y las sucursales seleccionadas al editar el motivo.
         </div>
 
         <div class="sucursales-disponibilidad" *ngIf="horariosDisponibles.length">
@@ -126,8 +135,8 @@
 
         <p class="motivo-help">
           <strong>{{ franjasEditables.length }} franja(s) seleccionada(s).</strong>
-          {{ franjasEditables.length ? 'El motivo se ofrecerá únicamente en esas franjas.' : 'Sin restricciones: se usarán todos los horarios habituales.' }}
-          La exclusividad se aplicará a las reservas cuando conectemos el motor de disponibilidad.
+          {{ franjasEditables.length ? 'El motivo se ofrecerá únicamente en esas franjas.' : 'Sin restricciones horarias: se usarán los horarios habituales de las sucursales habilitadas.' }}
+          La exclusividad se aplica sobre los intervalos configurados.
         </p>
 
         <div class="motivo-form-actions">
@@ -141,7 +150,7 @@
       </ng-container>
     </div>
 
-    <!-- FORMULARIO EXISTENTE DE MOTIVOS -->
+    <!-- FORMULARIO DE MOTIVOS -->
     <div class="motivo-form" *ngIf="editando">
       <h4>{{ idEditando ? 'Editar motivo' : 'Nuevo motivo de consulta' }}</h4>
       <div class="motivo-form-grid">
@@ -165,7 +174,28 @@
           <input type="number" min="0" step="0.01" [(ngModel)]="formulario.precio" placeholder="Sin precio publicado" />
         </label>
       </div>
-      <p class="motivo-help">Si no indicás duración, se usa la de la especialidad. Para cambiar la especialidad de un motivo existente, primero habrá que revisar sus franjas y la vinculación en el backend. Una vez guardado el motivo, podrás configurar sus sucursales, días y horarios desde el botón <strong>Configurar disponibilidad</strong>.</p>
+
+      <fieldset class="motivo-sucursales-selector">
+        <legend>Sucursales donde se ofrece *</legend>
+        <p>Marcá solo las sedes que pueden realizar esta consulta o prestación.</p>
+        <div class="motivo-sucursales-opciones">
+          <label class="motivo-sucursal-opcion" *ngFor="let sucursal of sucursales">
+            <input type="checkbox"
+              [checked]="estaSucursalSeleccionada(sucursal.sucursalId)"
+              (change)="alternarSucursal(sucursal.sucursalId, $any($event.target).checked)"
+              [disabled]="guardando" />
+            <span>{{ sucursal.sucursal }}</span>
+          </label>
+        </div>
+        <p class="motivo-sucursales-ayuda" *ngIf="!formulario.sucursalIds.length">
+          Seleccioná al menos una sucursal para poder guardar.
+        </p>
+      </fieldset>
+
+      <p class="motivo-help">Si no indicás duración, se usa la de la especialidad.
+        Para cambiar la especialidad de un motivo existente, primero habrá que revisar sus franjas y la vinculación en el backend.
+        Después de guardar, podés configurar días y horarios desde <strong>Configurar disponibilidad</strong>.
+      </p>
       <div class="motivo-form-actions">
         <button type="button" class="motivo-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
         <button type="button" class="motivo-primary" (click)="guardar()" [disabled]="guardando">
