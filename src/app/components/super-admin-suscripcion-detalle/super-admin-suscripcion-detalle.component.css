@@ -687,3 +687,57 @@ tbody tr:last-child td {
     min-width: 42px;
   }
 }
+
+
+/* Super Admin: creación de suscripción y enlace de autorización */
+.crear-suscripcion-card,
+.checkout-card {
+  max-width: 1380px;
+  margin: 0 auto 16px;
+}
+
+.crear-suscripcion-card .card-body,
+.checkout-card .card-body {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.checkout-actions .primary-button {
+  grid-column: auto;
+}
+
+.checkout-open-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  color: #17483d;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.error-inline {
+  color: #b84b4b !important;
+}
+
+.link-button {
+  border: 0;
+  background: none;
+  color: #17483d;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 850px) {
+  .crear-suscripcion-card .card-body,
+  .checkout-card .card-body {
+    grid-template-columns: 1fr;
+  }
+}

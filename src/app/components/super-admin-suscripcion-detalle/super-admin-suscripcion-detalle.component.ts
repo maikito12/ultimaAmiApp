@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
 
 import {
   ActualizarPrecioSuscripcionRequest,
@@ -28,6 +30,33 @@ interface PagoManualForm {
 interface PrecioSuscripcionForm {
   importeTotal: number | null;
   precioPorProfesional: number | null;
+}
+
+interface PlanDisponibleSuperAdmin {
+  id: string;
+  nombre: string;
+  permitePlanPersonalizado: boolean;
+}
+
+interface NuevaSuscripcionSuperAdminForm {
+  planId: string;
+  cantidadProfesionales: number | null;
+  cantidadSecretarias: number | null;
+  importeTotal: number | null;
+  modalidad: 'Mensual' | 'Anual';
+}
+
+interface CrearSuscripcionSuperAdminResponse {
+  success: boolean;
+  suscripcionId: string;
+  initPoint: string | null;
+  message?: string;
+}
+
+interface GenerarCheckoutSuperAdminResponse {
+  initPoint: string | null;
+  requierePagoManual?: boolean;
+  message?: string;
 }
 
 // Cupos administrados por el Super Admin (no es el número de usuarios registrados).
@@ -65,6 +94,20 @@ export class SuperAdminSuscripcionDetalleComponent
   guardandoPago = false;
   guardandoPrecio = false;
   guardandoCupos = false;
+  guardandoNuevaSuscripcion = false;
+  generandoCheckout = false;
+  cargandoPlanes = false;
+  errorPlanes = false;
+  planesDisponibles: PlanDisponibleSuperAdmin[] = [];
+  enlaceCheckout: string | null = null;
+
+  nuevaSuscripcionForm: NuevaSuscripcionSuperAdminForm = {
+    planId: '',
+    cantidadProfesionales: 1,
+    cantidadSecretarias: 0,
+    importeTotal: null,
+    modalidad: 'Mensual'
+  };
 
   pagoForm:
     PagoManualForm =
@@ -78,6 +121,7 @@ export class SuperAdminSuscripcionDetalleComponent
 
 
   constructor(
+    private readonly http: HttpClient,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly superAdminService: SuperAdminService,
@@ -103,6 +147,7 @@ export class SuperAdminSuscripcionDetalleComponent
 
 
     this.cargarTodo();
+    this.cargarPlanesDisponibles();
   }
 
 
@@ -142,6 +187,23 @@ export class SuperAdminSuscripcionDetalleComponent
           this.cuposForm =
             this.crearCuposForm();
 
+          // Mostrar el checkout pendiente también después de recargar la página.
+          if (this.detalle?.suscripcion?.estado === 'Pendiente') {
+            const pendiente = this.detalle.suscripcion as { initPoint?: string | null };
+            this.enlaceCheckout = pendiente.initPoint || this.enlaceCheckout;
+          } else {
+            this.enlaceCheckout = null;
+          }
+
+          const planActual = this.detalle?.plan as { id?: string } | null | undefined;
+          if (!this.nuevaSuscripcionForm.planId && planActual?.id) {
+            this.nuevaSuscripcionForm.planId = planActual.id;
+          }
+          const minimoProfesionales = Math.max(1, this.profesionalesActivos);
+          if ((this.nuevaSuscripcionForm.cantidadProfesionales ?? 0) < minimoProfesionales) {
+            this.nuevaSuscripcionForm.cantidadProfesionales = minimoProfesionales;
+          }
+
           this.cargando =
             false;
         },
@@ -163,6 +225,136 @@ export class SuperAdminSuscripcionDetalleComponent
       });
   }
 
+
+  // ==========================================
+  // SUSCRIPCIONES PERSONALIZADAS DESDE SUPER ADMIN
+  // ==========================================
+
+  get puedeCrearSuscripcion(): boolean {
+    if (!this.detalle) return false;
+    const estado = this.detalle.suscripcion?.estado?.trim().toLowerCase();
+    return !estado || estado === 'cancelada';
+  }
+
+  get nuevaSuscripcionValida(): boolean {
+    const form = this.nuevaSuscripcionForm;
+    const plan = this.planesDisponibles.find(p => p.id === form.planId);
+    const profesionales = Number(form.cantidadProfesionales);
+    const secretarias = Number(form.cantidadSecretarias);
+    const importe = Number(form.importeTotal);
+    return this.puedeCrearSuscripcion && !!plan &&
+      Number.isSafeInteger(profesionales) &&
+      profesionales >= Math.max(1, this.profesionalesActivos) &&
+      (profesionales <= 15 || plan.permitePlanPersonalizado) &&
+      Number.isSafeInteger(secretarias) && secretarias >= 0 &&
+      form.importeTotal !== null && Number.isFinite(importe) &&
+      importe > 0 && importe <= 2_000_000 &&
+      (form.modalidad === 'Mensual' || form.modalidad === 'Anual');
+  }
+
+  cargarPlanesDisponibles(): void {
+    this.cargandoPlanes = true;
+    this.errorPlanes = false;
+    this.http.get<PlanDisponibleSuperAdmin[]>(
+      `${environment.apiUrl}/super-admin/planes-suscripcion`
+    ).subscribe({
+      next: (planes) => {
+        this.planesDisponibles = planes;
+        this.cargandoPlanes = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener planes para Super Admin:', error);
+        this.errorPlanes = true;
+        this.cargandoPlanes = false;
+      }
+    });
+  }
+
+  async crearSuscripcion(): Promise<void> {
+    if (!this.nuevaSuscripcionValida || this.guardandoNuevaSuscripcion) {
+      this.alertaService.warning('Datos incompletos',
+        'Elegí un plan y revisá los cupos y el importe.');
+      return;
+    }
+    const form = this.nuevaSuscripcionForm;
+    const confirmado = await this.dialogoService.confirmar({
+      titulo: 'Crear suscripción',
+      mensaje: `Vas a crear una suscripción ${form.modalidad.toLowerCase()} para ` +
+        `${this.detalle!.organizacion.nombre} por ${this.formatearDinero(form.importeTotal)}. ` +
+        'Quedará pendiente hasta que la clínica autorice el cobro en Mercado Pago.',
+      textoConfirmar: 'Crear suscripción',
+      textoCancelar: 'Volver'
+    });
+    if (!confirmado) return;
+
+    this.guardandoNuevaSuscripcion = true;
+    this.http.post<CrearSuscripcionSuperAdminResponse>(
+      `${environment.apiUrl}/super-admin/organizaciones/${this.organizacionId}/suscripciones`,
+      {
+        planId: form.planId,
+        cantidadProfesionales: Number(form.cantidadProfesionales),
+        cantidadSecretarias: Number(form.cantidadSecretarias),
+        importeTotal: Number(form.importeTotal),
+        modalidad: form.modalidad
+      }
+    ).subscribe({
+      next: (respuesta) => {
+        this.guardandoNuevaSuscripcion = false;
+        this.enlaceCheckout = respuesta.initPoint || null;
+        this.alertaService.success('Suscripción creada',
+          respuesta.message || 'Se generó el enlace para autorizar el cobro.');
+        this.cargarTodo();
+      },
+      error: (error) => {
+        this.guardandoNuevaSuscripcion = false;
+        this.alertaService.error('No se pudo crear la suscripción',
+          this.obtenerMensajeError(error,
+            'Revisá el estado antes de volver a intentar: podría haberse creado una suscripción pendiente.'));
+        // Si MP falló después de crear la fila, el detalle permite recuperar el checkout.
+        this.cargarTodo();
+      }
+    });
+  }
+
+  generarCheckoutPendiente(): void {
+    const suscripcion = this.detalle?.suscripcion;
+    if (!suscripcion || suscripcion.estado !== 'Pendiente' || this.generandoCheckout) return;
+
+    this.generandoCheckout = true;
+    this.http.post<GenerarCheckoutSuperAdminResponse>(
+      `${environment.apiUrl}/super-admin/suscripciones/${suscripcion.id}/generar-checkout`,
+      {}
+    ).subscribe({
+      next: (respuesta) => {
+        this.generandoCheckout = false;
+        this.enlaceCheckout = respuesta.initPoint || null;
+        if (this.enlaceCheckout) {
+          this.alertaService.success('Enlace disponible',
+            'Ya podés copiar el enlace y enviárselo a la clínica.');
+        } else {
+          this.alertaService.warning('Sin enlace',
+            respuesta.message || 'Mercado Pago no devolvió un enlace.');
+        }
+      },
+      error: (error) => {
+        this.generandoCheckout = false;
+        this.alertaService.error('No se pudo obtener el checkout',
+          this.obtenerMensajeError(error, 'Revisá el estado en Mercado Pago.'));
+      }
+    });
+  }
+
+  async copiarEnlaceCheckout(): Promise<void> {
+    if (!this.enlaceCheckout) return;
+    try {
+      await navigator.clipboard.writeText(this.enlaceCheckout);
+      this.alertaService.success('Enlace copiado',
+        'Compartilo con la persona que autorizará la suscripción.');
+    } catch {
+      this.alertaService.warning('No se pudo copiar automáticamente',
+        'Seleccioná el enlace y copialo manualmente.');
+    }
+  }
 
   volver(): void {
     this.router.navigate(
@@ -317,12 +509,6 @@ export class SuperAdminSuscripcionDetalleComponent
         this.precioForm.importeTotal
       );
 
-    const precioPorProfesional =
-      this.normalizarImporte(
-        this.precioForm.precioPorProfesional
-      );
-
-
     if (
       importeTotal === null
       ||
@@ -332,21 +518,6 @@ export class SuperAdminSuscripcionDetalleComponent
       this.alertaService.warning(
         'Precio inválido',
         'Ingresá un precio habitual mayor a cero.'
-      );
-
-      return;
-    }
-
-
-    if (
-      precioPorProfesional !== null
-      &&
-      precioPorProfesional <= 0
-    ) {
-
-      this.alertaService.warning(
-        'Precio inválido',
-        'El precio por profesional debe ser mayor a cero.'
       );
 
       return;
@@ -378,7 +549,7 @@ export class SuperAdminSuscripcionDetalleComponent
     const request:
       ActualizarPrecioSuscripcionRequest = {
         importeTotal,
-        precioPorProfesional
+        precioPorProfesional: null
       };
 
 

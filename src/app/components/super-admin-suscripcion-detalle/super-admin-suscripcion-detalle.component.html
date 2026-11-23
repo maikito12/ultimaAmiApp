@@ -264,28 +264,136 @@
 
     <div
       class="no-subscription"
-      *ngIf="!data.suscripcion"
+      *ngIf="puedeCrearSuscripcion"
     >
 
       <i class="fa-solid fa-circle-info"></i>
 
       <div>
         <strong>
-          Esta organización todavía no tiene una suscripción
+          {{ data.suscripcion?.estado === 'Cancelada'
+              ? 'La suscripción anterior fue cancelada'
+              : 'Esta organización todavía no tiene una suscripción' }}
         </strong>
 
         <p>
-          Primero creale una suscripción para poder registrar
-          pagos o definir un precio habitual.
+          Podés crear una nueva suscripción con el importe negociado.
+          La clínica deberá autorizarla en Mercado Pago.
         </p>
       </div>
 
     </div>
 
 
+    <!-- NUEVA SUSCRIPCIÓN: disponible sin suscripción o con la última cancelada. -->
+    <section class="management-card crear-suscripcion-card" *ngIf="puedeCrearSuscripcion">
+      <div class="card-header">
+        <div>
+          <span class="card-eyebrow">NUEVO ACUERDO COMERCIAL</span>
+          <h2>Crear suscripción personalizada</h2>
+          <p>Definí los cupos y el precio total. La clínica autoriza el cobro en Mercado Pago.</p>
+        </div>
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+      <div class="card-body">
+        <div class="field full">
+          <label for="admin-plan-nuevo">Plan base *</label>
+          <select id="admin-plan-nuevo" [(ngModel)]="nuevaSuscripcionForm.planId"
+                  [disabled]="guardandoNuevaSuscripcion || cargandoPlanes">
+            <option value="">Seleccioná un plan</option>
+            <option *ngFor="let plan of planesDisponibles" [value]="plan.id">{{ plan.nombre }}</option>
+          </select>
+          <small *ngIf="cargandoPlanes">Cargando planes...</small>
+          <small *ngIf="errorPlanes" class="error-inline">
+            No se pudieron cargar los planes.
+            <button type="button" class="link-button" (click)="cargarPlanesDisponibles()">Reintentar</button>
+          </small>
+        </div>
+        <div class="field">
+          <label for="admin-cupos-nuevo">Profesionales habilitados *</label>
+          <input id="admin-cupos-nuevo" type="number" min="1" step="1"
+                 [(ngModel)]="nuevaSuscripcionForm.cantidadProfesionales"
+                 [disabled]="guardandoNuevaSuscripcion" />
+          <small>Mínimo: {{ profesionalesActivos }} profesionales activos (o 1).</small>
+        </div>
+        <div class="field">
+          <label for="admin-secretarias-nuevo">Secretarias habilitadas</label>
+          <input id="admin-secretarias-nuevo" type="number" min="0" step="1"
+                 [(ngModel)]="nuevaSuscripcionForm.cantidadSecretarias"
+                 [disabled]="guardandoNuevaSuscripcion" />
+        </div>
+        <div class="field">
+          <label for="admin-modalidad-nueva">Periodicidad *</label>
+          <select id="admin-modalidad-nueva" [(ngModel)]="nuevaSuscripcionForm.modalidad"
+                  [disabled]="guardandoNuevaSuscripcion">
+            <option value="Mensual">Mensual</option>
+            <option value="Anual">Anual</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="admin-importe-nuevo">Importe total acordado (ARS) *</label>
+          <div class="money-input">
+            <span>$</span>
+            <input id="admin-importe-nuevo" type="number" min="1" max="2000000" step="0.01"
+                   [(ngModel)]="nuevaSuscripcionForm.importeTotal"
+                   [disabled]="guardandoNuevaSuscripcion" placeholder="Ej: 50000" />
+          </div>
+          <small>Precio total del período, no por profesional. Hasta $2.000.000.</small>
+        </div>
+        <div class="info-note">
+          <i class="fa-solid fa-circle-info"></i>
+          <p>La suscripción se creará <strong>Pendiente</strong>. No se habilita como pagada
+             hasta recibir la autorización y confirmación de Mercado Pago.</p>
+        </div>
+        <button type="button" class="primary-button"
+                [disabled]="guardandoNuevaSuscripcion || !nuevaSuscripcionValida"
+                (click)="crearSuscripcion()">
+          <i class="fa-solid" [class.fa-spinner]="guardandoNuevaSuscripcion"
+             [class.fa-spin]="guardandoNuevaSuscripcion"
+             [class.fa-link]="!guardandoNuevaSuscripcion"></i>
+          {{ guardandoNuevaSuscripcion ? 'Creando suscripción...' : 'Crear suscripción y generar enlace' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Recuperación del checkout de una suscripción aún no autorizada. -->
+    <section class="management-card checkout-card"
+             *ngIf="data.suscripcion && data.suscripcion.estado === 'Pendiente'">
+      <div class="card-header">
+        <div>
+          <span class="card-eyebrow">PAGO POR MERCADO PAGO</span>
+          <h2>Checkout pendiente de autorización</h2>
+          <p>Compartí este enlace con la clínica. No significa que ya haya pagado.</p>
+        </div>
+        <i class="fa-solid fa-link"></i>
+      </div>
+      <div class="card-body">
+        <div class="field full" *ngIf="enlaceCheckout as link">
+          <label for="admin-checkout-link">Enlace para autorizar la suscripción</label>
+          <input id="admin-checkout-link" type="text" [value]="link" readonly />
+          <div class="checkout-actions">
+            <button type="button" class="primary-button" (click)="copiarEnlaceCheckout()">
+              <i class="fa-regular fa-copy"></i> Copiar enlace
+            </button>
+            <a class="checkout-open-link" [href]="link" target="_blank" rel="noopener noreferrer">
+              Abrir checkout
+            </a>
+          </div>
+        </div>
+        <div class="field full" *ngIf="!enlaceCheckout">
+          <small>Podés recuperar el enlace existente o generar uno si todavía no se creó.</small>
+        </div>
+        <button type="button" class="primary-button"
+                [disabled]="generandoCheckout" (click)="generarCheckoutPendiente()">
+          <i class="fa-solid fa-rotate" [class.fa-spin]="generandoCheckout"></i>
+          {{ generandoCheckout ? 'Consultando checkout...' : 'Obtener enlace de Mercado Pago' }}
+        </button>
+      </div>
+    </section>
+
     <section
       class="management-grid"
-      *ngIf="data.suscripcion"
+      *ngIf="data.suscripcion && data.suscripcion.estado !== 'Cancelada'"
     >
 
       <!-- CUPOS DE PROFESIONALES - SUPER ADMIN -->
@@ -545,9 +653,9 @@
             <i class="fa-solid fa-lightbulb"></i>
 
             <p>
-              Si solamente querés cobrarle menos un mes,
-              no cambies este precio. Poné otro importe
-              en “Registrar pago”.
+              Este importe se sincroniza con Mercado Pago al guardar.
+              Para una suscripción autorizada, afecta los próximos cobros
+              según el calendario del proveedor. No programa aumentos futuros.
             </p>
 
           </div>
@@ -576,21 +684,14 @@
 
           <div class="field">
 
-            <label>Precio por profesional</label>
+            <label>Precio estimado por profesional</label>
 
             <div class="money-input">
-
               <span>$</span>
-
-              <input
-                type="number"
-                min="1"
-                step="1"
-                [(ngModel)]="precioForm.precioPorProfesional"
-                [disabled]="guardandoPrecio"
-              >
-
+              <input type="text" readonly
+                     [value]="formatearDinero(cuposActuales > 0 ? (precioForm.importeTotal || 0) / cuposActuales : 0)" />
             </div>
+            <small>Se calcula automáticamente desde el importe total y los cupos actuales.</small>
 
           </div>
 
