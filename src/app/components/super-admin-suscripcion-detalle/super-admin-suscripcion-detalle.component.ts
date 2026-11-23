@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+
 
 import {
   ActualizarPrecioSuscripcionRequest,
@@ -17,6 +17,7 @@ import {
 
 import { AlertaService } from '../../services/alerta.service';
 import { DialogoService } from '../../services/dialogo.service';
+import { environmentProduccion } from '../../../environments/environment';
 
 
 interface PagoManualForm {
@@ -256,7 +257,7 @@ export class SuperAdminSuscripcionDetalleComponent
     this.cargandoPlanes = true;
     this.errorPlanes = false;
     this.http.get<PlanDisponibleSuperAdmin[]>(
-      `${environment.apiUrl}/super-admin/planes-suscripcion`
+      `${environmentProduccion.apiUrl}/super-admin/planes-suscripcion`
     ).subscribe({
       next: (planes) => {
         this.planesDisponibles = planes;
@@ -289,7 +290,7 @@ export class SuperAdminSuscripcionDetalleComponent
 
     this.guardandoNuevaSuscripcion = true;
     this.http.post<CrearSuscripcionSuperAdminResponse>(
-      `${environment.apiUrl}/super-admin/organizaciones/${this.organizacionId}/suscripciones`,
+      `${environmentProduccion.apiUrl}/super-admin/organizaciones/${this.organizacionId}/suscripciones`,
       {
         planId: form.planId,
         cantidadProfesionales: Number(form.cantidadProfesionales),
@@ -322,7 +323,7 @@ export class SuperAdminSuscripcionDetalleComponent
 
     this.generandoCheckout = true;
     this.http.post<GenerarCheckoutSuperAdminResponse>(
-      `${environment.apiUrl}/super-admin/suscripciones/${suscripcion.id}/generar-checkout`,
+      `${environmentProduccion.apiUrl}/super-admin/suscripciones/${suscripcion.id}/generar-checkout`,
       {}
     ).subscribe({
       next: (respuesta) => {
