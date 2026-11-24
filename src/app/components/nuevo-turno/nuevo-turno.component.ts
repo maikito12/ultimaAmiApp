@@ -3580,7 +3580,11 @@ generarHorasDisponibles(): void {
       const turnos: any[] = Array.isArray(response) ? response : response?.data ?? [];
       // Usamos intervalos completos, NO solo las horas de inicio.
       const ocupados = turnos
-        .filter(t => t.estado !== 'Cancelado' && t.estado !== 3 && t.activo !== false)
+        .filter(t => {
+          // EstadoTurno.Cancelado = 6; EstadoTurno.EnSala = 3.
+          const estado = String(t.estado ?? '').trim().toLowerCase();
+          return estado !== 'cancelado' && estado !== '6' && t.activo !== false;
+        })
         .map(t => ({
           inicio: this.horaAMinutos(this.normalizarHora(t.horaInicio ?? t.hora_inicio ?? t.hora)),
           fin: this.horaAMinutos(this.normalizarHora(t.horaFin ?? t.hora_fin))
