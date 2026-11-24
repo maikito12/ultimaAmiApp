@@ -8,6 +8,8 @@ import { environmentProduccion } from '../../environments/environment';
 
 
 
+
+
 // ==========================================================
 // MI PERFIL PROFESIONAL
 // ==========================================================
@@ -324,6 +326,13 @@ export interface UploadImagenResponse {
 // ==========================================================
 // MI CONFIGURACIÓN DE RESERVA ONLINE
 // ==========================================================
+
+export interface MiConfiguracionSobreturnos {
+  permitirSobreturnos: boolean;
+  maxSobreturnosPorDia: number | null;
+  permitirSobreturnosSecretaria: boolean;
+  permitirSobreturnosFueraHorario: boolean;
+}
 
 export interface MiReservaOnline {
 
@@ -666,6 +675,28 @@ actualizarMiReservaOnline(
 // ========================================================
 // PROFESIONALES DE LA ORGANIZACIÓN ACTIVA
 // ========================================================
+
+// ========================================================
+// MI CONFIGURACIÓN DE SOBRETURNOS
+// ========================================================
+
+obtenerMiConfiguracionSobreturnos(
+  profesionalOrganizacionId: string
+): Observable<MiConfiguracionSobreturnos> {
+  return this.http.get<MiConfiguracionSobreturnos>(
+    `${this.profesionalOrganizacionUrl}/mi-sobreturnos/${profesionalOrganizacionId}`
+  );
+}
+
+actualizarMiConfiguracionSobreturnos(
+  profesionalOrganizacionId: string,
+  data: MiConfiguracionSobreturnos
+): Observable<MiConfiguracionSobreturnos> {
+  return this.http.put<MiConfiguracionSobreturnos>(
+    `${this.profesionalOrganizacionUrl}/mi-sobreturnos/${profesionalOrganizacionId}`,
+    data
+  );
+}
 
 obtenerProfesionalesOrganizacion():
   Observable<ProfesionalOrganizacionResumen[]> {

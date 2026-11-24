@@ -5601,3 +5601,194 @@
   }
 }
 
+
+
+/* =========================================================
+   CONFIGURACIÓN DE SOBRETURNOS
+========================================================= */
+.sobreturnos-section .sobreturnos-intro {
+  margin: 7px 0 0;
+  color: #7f8f89;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-limites {
+  padding: 18px 19px;
+  border-top: 1px solid #edf1ef;
+  border-bottom: 1px solid #edf1ef;
+}
+.sobreturnos-section .sobreturnos-limites > strong {
+  color: #33443f;
+  font-size: 14px;
+  font-weight: 650;
+}
+.sobreturnos-section .sobreturnos-limites > p {
+  margin: 5px 0 13px;
+  color: #7f8f89;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-opciones {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.sobreturnos-section .sobreturnos-opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #dce5e1;
+  border-radius: 10px;
+  color: #52645e;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sobreturnos-section .sobreturnos-opcion.seleccionada {
+  border-color: #17483d;
+  background: #f3f8f6;
+  color: #17483d;
+}
+.sobreturnos-section .sobreturnos-opcion input {
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: #17483d;
+}
+.sobreturnos-section .sobreturnos-personalizado {
+  max-width: 300px;
+  margin-top: 16px;
+}
+.sobreturnos-section .sobreturnos-nota {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 14px 0 0;
+  color: #71817c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-error {
+  color: #a74343;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.sobreturnos-section .profile-switch input:focus-visible + .profile-switch-slider {
+  outline: 2px solid #17483d;
+  outline-offset: 3px;
+}
+@media (max-width: 1000px) {
+  .sobreturnos-section .sobreturnos-opciones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .sobreturnos-section .sobreturnos-limites { padding: 16px; }
+  .sobreturnos-section .sobreturnos-footer button { width: 100%; }
+}
+@media (max-width: 360px) {
+  .sobreturnos-section .sobreturnos-opciones { grid-template-columns: 1fr; }
+}
+
+
+/* Resumen de sobreturnos: misma jerarquía visual que Motivos de consulta */
+.sobreturnos-section .sobreturnos-header {
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.sobreturnos-section .sobreturnos-header .summary-section-label {
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+.sobreturnos-section .sobreturnos-header h3 {
+  color: #073b34;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.sobreturnos-section .sobreturnos-intro {
+  margin: 8px 0 0;
+  color: #71817c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-editar {
+  flex-shrink: 0;
+  gap: 8px;
+  white-space: nowrap;
+  padding: 0 14px;
+}
+.sobreturnos-section .sobreturnos-editar:focus-visible {
+  outline: 2px solid #17483d;
+  outline-offset: 3px;
+}
+.sobreturnos-section .sobreturnos-resumen {
+  padding: 14px 15px;
+  background: #fbfcfc;
+  border: 1px solid #dfe7e3;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+.sobreturnos-section .sobreturnos-resumen-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.sobreturnos-section .sobreturnos-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #667770;
+  font-size: 14px;
+  font-weight: 700;
+}
+.sobreturnos-section .sobreturnos-estado.habilitado { color: #17483d; }
+.sobreturnos-section .sobreturnos-estado-punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.sobreturnos-section .sobreturnos-resumen-limite {
+  color: #71817c;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.sobreturnos-section .sobreturnos-resumen-permisos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  color: #52645e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sobreturnos-section .sobreturnos-resumen-permisos span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.sobreturnos-section .sobreturnos-resumen-permisos i { color: #48786b; }
+@media (max-width: 650px) {
+  .sobreturnos-section .sobreturnos-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sobreturnos-section .sobreturnos-editar {
+    align-self: flex-start;
+    max-width: 100%;
+    white-space: normal;
+  }
+}

@@ -878,6 +878,11 @@
 
                 </span>
 
+                <span class="sobreturno-badge sobreturno-badge--hora"
+                      *ngIf="turno.esSobreturno === true">
+                  Sobreturno
+                </span>
+
 
 
               </div>
@@ -947,6 +952,11 @@
 
 
               </div>
+
+              <span class="sobreturno-badge sobreturno-badge--mobile"
+                    *ngIf="turno.esSobreturno === true">
+                Sobreturno
+              </span>
 
 
 
@@ -1770,6 +1780,11 @@
 
 
               </div>
+
+              <span class="sobreturno-badge sobreturno-badge--calendario"
+                    *ngIf="turno.esSobreturno === true">
+                Sobreturno
+              </span>
 
 
 

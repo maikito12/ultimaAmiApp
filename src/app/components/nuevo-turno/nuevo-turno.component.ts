@@ -66,7 +66,7 @@ import {
 
 import {
 
-  TurnosService
+  TurnosService, DisponibilidadSobreturnos
 
 } from '../../services/turno-service.service';
 
@@ -370,7 +370,112 @@ fechaSeleccionada = '';
 
 horaSeleccionada = '';
 
+  // Sobreturnos: el horario manual utiliza la misma selección y el mismo POST.
+  esSobreturno = false;
+  motivoSobreturno = '';
+  cupoSobreturnos: DisponibilidadSobreturnos | null = null;
+  cargandoSobreturnos = false;
+  errorCupoSobreturnos = false;
+  private peticionSobreturnos = 0;
+  private peticionAgenda = 0;
 
+  get cupoSobreturnosAgotado(): boolean {
+    const cupo = this.cupoSobreturnos;
+    return !!cupo && cupo.maxSobreturnosPorDia != null && cupo.utilizados >= cupo.maxSobreturnosPorDia;
+  }
+
+  get textoCupoSobreturnos(): string {
+    const cupo = this.cupoSobreturnos;
+    if (!cupo) return '';
+    return cupo.maxSobreturnosPorDia == null
+      ? `${cupo.utilizados} utilizados · Sin límite diario`
+      : `${cupo.utilizados} de ${cupo.maxSobreturnosPorDia} utilizados`;
+  }
+
+  private limpiarSeleccionSobreturno(): void {
+    this.esSobreturno = false;
+    this.motivoSobreturno = '';
+    this.horaSeleccionada = '';
+  }
+
+  private limpiarCupoSobreturnos(): void {
+    this.peticionSobreturnos++;
+    this.peticionAgenda++;
+    this.cupoSobreturnos = null;
+    this.cargandoSobreturnos = false;
+    this.errorCupoSobreturnos = false;
+    this.limpiarSeleccionSobreturno();
+  }
+
+  cargarCupoSobreturnos(): void {
+    const id = this.obtenerProfesionalId();
+    const fecha = this.fechaSeleccionada;
+    const peticion = ++this.peticionSobreturnos;
+    this.cupoSobreturnos = null;
+    this.errorCupoSobreturnos = false;
+    this.cargandoSobreturnos = false;
+    if (!id || !fecha) return;
+    this.cargandoSobreturnos = true;
+    const vigente = () => peticion === this.peticionSobreturnos &&
+      id === this.obtenerProfesionalId() && fecha === this.fechaSeleccionada;
+    this.turnosService.obtenerDisponibilidadSobreturnos(id, fecha).subscribe({
+      next: cupo => {
+        if (!vigente()) return;
+        this.cargandoSobreturnos = false;
+        this.cupoSobreturnos = cupo;
+        if (!cupo?.permitido && this.esSobreturno) this.limpiarSeleccionSobreturno();
+      },
+      error: () => {
+        if (!vigente()) return;
+        this.cargandoSobreturnos = false;
+        this.errorCupoSobreturnos = true;
+        if (this.esSobreturno) this.limpiarSeleccionSobreturno();
+      }
+    });
+  }
+
+  seleccionarHoraNormal(hora: string): void {
+    this.limpiarSeleccionSobreturno();
+    this.horaSeleccionada = hora;
+  }
+
+  alternarSobreturno(): void {
+    if (this.esSobreturno) {
+      this.limpiarSeleccionSobreturno();
+      return;
+    }
+    if (!this.cupoSobreturnos?.permitido || this.cupoSobreturnosAgotado || this.cargandoSobreturnos) return;
+    this.limpiarSeleccionSobreturno();
+    this.esSobreturno = true;
+  }
+
+  get errorHorarioSobreturno(): string {
+    if (!this.esSobreturno) return '';
+    if (this.cargandoSobreturnos) return 'Consultando disponibilidad de sobreturnos...';
+    if (!this.cupoSobreturnos?.permitido) return 'No tenés permiso para asignar este sobreturno.';
+    if (this.cupoSobreturnosAgotado) return 'Se alcanzó el límite diario de sobreturnos.';
+    if (this.cargandoPrestaciones) return 'Esperá a que se carguen las prestaciones.';
+    if (!this.fechaSeleccionada || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(this.horaSeleccionada)) return 'Ingresá un horario válido.';
+    if (!this.esHorarioReservable(this.fechaSeleccionada, this.horaSeleccionada)) return 'El horario debe ser al menos 10 minutos posterior a la hora actual.';
+    const inicio = this.horaAMinutos(this.horaSeleccionada);
+    const duracion = this.duracionActual;
+    const fin = inicio + duracion;
+    if (!Number.isInteger(duracion) || duracion <= 0 || duracion > 720 || fin >= 1440) return 'El turno debe finalizar dentro del mismo día.';
+    const dia = this.convertirDiaSemana(this.parseFechaLocal(this.fechaSeleccionada));
+    const horarios = this.horariosFiltrados.filter(h => h.diaSemana === dia);
+    if (!horarios.length) return 'El profesional no atiende ese día.';
+    if (!this.cupoSobreturnos.permitirFueraHorario && !horarios.some(h =>
+      inicio >= this.horaAMinutos(h.horaInicio) && fin <= this.horaAMinutos(h.horaFin))) {
+      return 'El sobreturno debe estar dentro del horario habitual de atención.';
+    }
+    if (this.motivoSobreturno.length > 500) return 'El motivo no puede superar los 500 caracteres.';
+    return '';
+  }
+
+  get puedeContinuarFecha(): boolean {
+    return !!this.fechaSeleccionada && !!this.horaSeleccionada && !this.cargandoHorarios &&
+      (this.esSobreturno ? !this.errorHorarioSobreturno : this.horasDisponibles.includes(this.horaSeleccionada));
+  }
 
   motivoConsulta = '';
   prestaciones: { id: string; nombre: string; precio: number | null; duracionMinutos: number | null }[] = [];
@@ -387,7 +492,7 @@ horaSeleccionada = '';
   }
 
   cambiarPrestacion(): void {
-    this.horaSeleccionada = '';
+    this.limpiarSeleccionSobreturno();
     if (this.fechaSeleccionada) this.generarHorasDisponibles();
   }
 
@@ -1925,65 +2030,9 @@ if (
 
 
 
-  continuarAConfirmacion():
-
-    void {
-
-
-
-    if (
-
-      !this.fechaSeleccionada
-
-    ) {
-
-
-
-      this.mostrarValidacion(
-
-        'Seleccioná una fecha.'
-
-      );
-
-
-
-      return;
-
-    }
-
-
-
-    if (
-
-      !this.horaSeleccionada
-
-    ) {
-
-
-
-      this.mostrarValidacion(
-
-        'Seleccioná una hora.'
-
-      );
-
-
-
-      return;
-
-    }
-
-
-
-    this.pasoActual =
-
-      'confirmacion';
-
+  continuarAConfirmacion(): void {
+    this.continuarDesdeFecha();
   }
-
-
-
-
 
   // =========================================================
 
@@ -1994,6 +2043,13 @@ if (
 
 
   confirmarTurno(): void {
+    if (this.guardando) return;
+    if (this.esSobreturno && this.errorHorarioSobreturno) {
+      this.mostrarValidacion(this.errorHorarioSobreturno);
+      this.pasoActual = 'fecha';
+      this.cargarCupoSobreturnos();
+      return;
+    }
 
 
 
@@ -2114,6 +2170,8 @@ horaInicio:
 
 
       profesionalMotivoConsultaId: this.prestacionSeleccionadaId,
+      esSobreturno: this.esSobreturno,
+      motivoSobreturno: this.esSobreturno ? this.normalizarOpcional(this.motivoSobreturno) : null,
 
       motivoConsulta:
 
@@ -2174,9 +2232,7 @@ horaInicio:
 
 
           this.alertaService.success(
-
-            'Turno creado',
-
+            this.esSobreturno ? 'Sobreturno creado' : 'Turno creado',
             'El turno fue registrado correctamente.'
 
           );
@@ -2194,20 +2250,13 @@ horaInicio:
 
 
         error: (error: any) => {
-
-
-
-          this.guardando =
-
-            false;
-
-
-
-          this.mostrarError(
-
-            error
-
-          );
+          this.guardando = false;
+          this.mostrarError(error);
+          if (this.esSobreturno) {
+            this.pasoActual = 'fecha';
+            this.cargarCupoSobreturnos();
+            this.generarHorasDisponibles();
+          }
 
         }
 
@@ -2256,6 +2305,7 @@ private normalizarHoraApi(
   // =========================================================
 
 volverPaso(): void {
+  if (this.pasoActual !== 'confirmacion') this.limpiarCupoSobreturnos();
   if (this.pasoActual === 'profesional' ||
       this.pasoActual === 'especialidad' ||
       this.pasoActual === 'sucursal' ||
@@ -2952,10 +3002,9 @@ volverPaso(): void {
 
 
 seleccionarSucursal(
-
   sucursal: ProfesionalSucursal
-
 ): void {
+  this.limpiarCupoSobreturnos();
 
 
 
@@ -3544,21 +3593,15 @@ seleccionarFechaCalendario(
 
 
 
-  this.fechaSeleccionada =
-
-    dia.fecha;
-
-
-
-  this.horaSeleccionada = '';
-
-
-
+  this.limpiarCupoSobreturnos();
+  this.fechaSeleccionada = dia.fecha;
+  this.cargarCupoSobreturnos();
   this.generarHorasDisponibles();
 
 }
 
 generarHorasDisponibles(): void {
+  const peticion = ++this.peticionAgenda;
   const profesionalId = this.obtenerProfesionalId();
   if (!this.fechaSeleccionada || !this.especialidadSeleccionada || !profesionalId) {
     this.horasDisponibles = [];
@@ -3567,6 +3610,11 @@ generarHorasDisponibles(): void {
   const fechaConsultada = this.fechaSeleccionada;
   const prestacionConsultada = this.prestacionSeleccionadaId;
   const duracion = this.duracionActual;
+  if (!Number.isInteger(duracion) || duracion <= 0) {
+    this.horasDisponibles = [];
+    this.cargandoHorarios = false;
+    return;
+  }
   const diaSemana = this.convertirDiaSemana(this.parseFechaLocal(fechaConsultada));
   const horariosDia = this.horariosFiltrados.filter(h => h.diaSemana === diaSemana);
   this.cargandoHorarios = true;
@@ -3574,7 +3622,7 @@ generarHorasDisponibles(): void {
     fecha: fechaConsultada, profesionalOrganizacionId: profesionalId
   }).subscribe({
     next: (response: any) => {
-      if (this.fechaSeleccionada !== fechaConsultada ||
+      if (peticion !== this.peticionAgenda || this.fechaSeleccionada !== fechaConsultada ||
           this.prestacionSeleccionadaId !== prestacionConsultada ||
           this.obtenerProfesionalId() !== profesionalId) return;
       const turnos: any[] = Array.isArray(response) ? response : response?.data ?? [];
@@ -3614,10 +3662,11 @@ generarHorasDisponibles(): void {
         }
       }
       this.horasDisponibles = [...slots].sort();
-      if (!this.horasDisponibles.includes(this.horaSeleccionada)) this.horaSeleccionada = '';
+      if (!this.esSobreturno && !this.horasDisponibles.includes(this.horaSeleccionada)) this.horaSeleccionada = '';
       this.cargandoHorarios = false;
     },
     error: (error: any) => {
+      if (peticion !== this.peticionAgenda) return;
       console.error('Error calculando agenda interna:', error);
       this.horasDisponibles = [];
       this.cargandoHorarios = false;
@@ -4019,37 +4068,11 @@ parseFechaLocalPublica(
 
 
 continuarDesdeFecha(): void {
-
-
-
-  if (
-
-    !this.fechaSeleccionada ||
-
-    !this.horaSeleccionada
-
-  ) {
-
-
-
-    this.mostrarValidacion(
-
-      'Seleccioná una fecha y un horario.'
-
-    );
-
-
-
+  if (!this.puedeContinuarFecha) {
+    this.mostrarValidacion(this.errorHorarioSobreturno || 'Seleccioná una fecha y un horario disponible.');
     return;
-
   }
-
-
-
-  this.pasoActual =
-
-    'confirmacion';
-
+  this.pasoActual = 'confirmacion';
 }
 
 private esHorarioReservable(

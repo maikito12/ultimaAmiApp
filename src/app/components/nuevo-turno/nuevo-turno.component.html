@@ -2837,19 +2837,11 @@
 
 
 
-            [class.selected]="
-
-              horaSeleccionada === hora
-
-            "
+            [class.selected]="!esSobreturno && horaSeleccionada === hora"
 
 
 
-            (click)="
-
-              horaSeleccionada = hora
-
-            "
+            (click)="seleccionarHoraNormal(hora)"
 
           >
 
@@ -2895,13 +2887,45 @@
 
           <p>
 
-            Seleccioná otra fecha disponible.
+            {{ cupoSobreturnos?.permitido && !cupoSobreturnosAgotado ? 'Podés asignar un sobreturno o elegir otra fecha.' : 'Seleccioná otra fecha disponible.' }}
 
           </p>
 
         </div>
 
 
+
+              <!-- SOBRETURNOS: también disponible si no quedan horarios normales -->
+        <p class="sobreturno-estado" *ngIf="cargandoSobreturnos">Consultando sobreturnos...</p>
+        <div class="sobreturno-estado" *ngIf="errorCupoSobreturnos">
+          No se pudo consultar la disponibilidad de sobreturnos.
+          <button type="button" class="secondary-button" (click)="cargarCupoSobreturnos()">Reintentar</button>
+        </div>
+        <div class="sobreturno-panel" *ngIf="cupoSobreturnos?.permitido" [class.sobreturno-abierto]="esSobreturno">
+          <button type="button" class="sobreturno-toggle" (click)="alternarSobreturno()"
+            [attr.aria-expanded]="esSobreturno" [disabled]="cupoSobreturnosAgotado && !esSobreturno">
+            <span class="sobreturno-icon"><i class="fas fa-calendar-plus" aria-hidden="true"></i></span>
+            <span class="sobreturno-toggle-text">
+              <strong>Asignar sobreturno</strong>
+              <small>{{ textoCupoSobreturnos }}</small>
+            </span>
+            <i class="fas" [class.fa-chevron-up]="esSobreturno" [class.fa-chevron-down]="!esSobreturno" aria-hidden="true"></i>
+          </button>
+          <p class="sobreturno-aviso" *ngIf="cupoSobreturnosAgotado">Se alcanzó el límite diario de sobreturnos.</p>
+          <div class="sobreturno-form" *ngIf="esSobreturno">
+            <div class="form-group">
+              <label for="hora-sobreturno">Horario del sobreturno</label>
+              <input id="hora-sobreturno" type="time" step="60" [(ngModel)]="horaSeleccionada">
+              <small>Duración: {{ duracionActual }} minutos</small>
+            </div>
+            <div class="form-group">
+              <label for="motivo-sobreturno">Motivo del sobreturno (opcional)</label>
+              <textarea id="motivo-sobreturno" rows="2" maxlength="500" [(ngModel)]="motivoSobreturno" placeholder="Ingresá un motivo..."></textarea>
+            </div>
+            <p class="sobreturno-aviso">Puede superponerse con otros turnos en la misma sucursal. Se respetan los bloqueos de agenda y los permisos del profesional.</p>
+            <p class="sobreturno-error" *ngIf="horaSeleccionada && errorHorarioSobreturno">{{ errorHorarioSobreturno }}</p>
+          </div>
+        </div>
 
       </ng-container>
 
@@ -2951,7 +2975,7 @@
 
     <div>
 
-      <span>TURNO SELECCIONADO</span>
+      <span>{{ esSobreturno ? 'SOBRETURNO SELECCIONADO' : 'TURNO SELECCIONADO' }}</span>
 
 
 
@@ -3029,13 +3053,7 @@
 
       class="primary-button"
 
-      [disabled]="
-
-        !fechaSeleccionada ||
-
-        !horaSeleccionada
-
-      "
+      [disabled]="!puedeContinuarFecha"
 
       (click)="continuarDesdeFecha()"
 
@@ -3116,6 +3134,14 @@
 
 
         <div class="summary-card">
+          <div class="summary-row" *ngIf="esSobreturno">
+            <span>Tipo de turno</span>
+            <strong class="sobreturno-etiqueta">Sobreturno</strong>
+          </div>
+          <div class="summary-row" *ngIf="esSobreturno && motivoSobreturno.trim()">
+            <span>Motivo del sobreturno</span>
+            <strong>{{ motivoSobreturno }}</strong>
+          </div>
 
 
 
@@ -3384,7 +3410,7 @@
 
                 ? 'Guardando...'
 
-                : 'Crear turno'
+                : (esSobreturno ? 'Crear sobreturno' : 'Crear turno')
 
             }}
 

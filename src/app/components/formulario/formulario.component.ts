@@ -7,8 +7,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { AlertaService } from '../../services/alerta.service';
 import { CrearReservaPublicaRespuesta, DisponibilidadDiaPublica, ReservaPublicaService } from '../../services/reserva-publica.service';
 import { ReservaMotivosPublicosService, MotivoPublico } from '../../services/reserva-motivos-publicos.service';
-
 import { environmentProduccion } from '../../../environments/environment';
+
+
 type ModoBusqueda =
   | 'rapido'
   | 'profesional'

@@ -43,7 +43,8 @@ import {
 
 
 
-  MiReservaOnline
+  MiReservaOnline,
+  MiConfiguracionSobreturnos
 
 
 
@@ -283,6 +284,22 @@ cargandoReservaOnline = false;
 
 
 guardandoReservaOnline = false;
+
+// =====================================================
+// CONFIGURACIÓN DE SOBRETURNOS
+// =====================================================
+
+sobreturnos: MiConfiguracionSobreturnos | null = null;
+cargandoSobreturnos = false;
+guardandoSobreturnos = false;
+errorSobreturnos = '';
+editandoSobreturnos = false;
+private configuracionSobreturnosGuardada: MiConfiguracionSobreturnos | null = null;
+limiteSobreturnos: '5' | '10' | 'personalizado' | 'sin-limite' = '5';
+limiteSobreturnosPersonalizado: number | null = 5;
+private sobreturnosProfesionalId: string | null = null;
+private limiteSobreturnosGuardado: number | null = 5;
+
 
 
 
@@ -1937,6 +1954,7 @@ cargarDatosResumen(): void {
 
 
   this.cargarReservaOnline();
+  this.cargarConfiguracionSobreturnos();
 
 
 
@@ -1955,6 +1973,112 @@ cargarDatosResumen(): void {
 // =====================================================
 
 
+
+// =====================================================
+// CARGAR Y GUARDAR CONFIGURACIÓN DE SOBRETURNOS
+// =====================================================
+
+cargarConfiguracionSobreturnos(): void {
+  const id = this.profesionalOrganizacionId;
+  if (!id || this.esSecretaria) return;
+  if (this.sobreturnosProfesionalId === id &&
+      (this.cargandoSobreturnos || this.guardandoSobreturnos)) return;
+
+  this.sobreturnosProfesionalId = id;
+  this.editandoSobreturnos = false;
+  this.configuracionSobreturnosGuardada = null;
+  this.sobreturnos = null;
+  this.cargandoSobreturnos = true;
+  this.guardandoSobreturnos = false;
+  this.errorSobreturnos = '';
+
+  this.profesionalService.obtenerMiConfiguracionSobreturnos(id).subscribe({
+    next: configuracion => {
+      if (!this.esConfiguracionSobreturnosActual(id)) return;
+      this.aplicarConfiguracionSobreturnos(configuracion);
+      this.cargandoSobreturnos = false;
+    },
+    error: error => {
+      if (!this.esConfiguracionSobreturnosActual(id)) return;
+      this.cargandoSobreturnos = false;
+      this.errorSobreturnos = 'No pudimos cargar la configuración de sobreturnos.';
+      console.error('Error cargando sobreturnos:', error);
+    }
+  });
+}
+
+private esConfiguracionSobreturnosActual(id: string): boolean {
+  return this.profesionalOrganizacionId === id &&
+    this.sobreturnosProfesionalId === id && !this.esSecretaria;
+}
+
+private aplicarConfiguracionSobreturnos(configuracion: MiConfiguracionSobreturnos): void {
+  this.configuracionSobreturnosGuardada = { ...configuracion };
+  this.sobreturnos = { ...configuracion };
+  const limite = configuracion.maxSobreturnosPorDia;
+  this.limiteSobreturnosGuardado = limite;
+  this.limiteSobreturnos = limite === null ? 'sin-limite' :
+    limite === 5 ? '5' : limite === 10 ? '10' : 'personalizado';
+  this.limiteSobreturnosPersonalizado = limite ?? 5;
+}
+
+alternarEdicionSobreturnos(): void {
+  if (!this.sobreturnos || this.cargandoSobreturnos || this.guardandoSobreturnos) return;
+  if (this.editandoSobreturnos && this.configuracionSobreturnosGuardada) {
+    // Cancelar descarta los cambios locales, sin llamar a la API.
+    this.aplicarConfiguracionSobreturnos(this.configuracionSobreturnosGuardada);
+    this.errorSobreturnos = '';
+  }
+  this.editandoSobreturnos = !this.editandoSobreturnos;
+}
+
+get limiteSobreturnosValido(): boolean {
+  if (this.limiteSobreturnos !== 'personalizado') return true;
+  const limite = this.limiteSobreturnosPersonalizado;
+  return typeof limite === 'number' && Number.isInteger(limite) &&
+    limite >= 1 && limite <= 2147483647;
+}
+
+private obtenerLimiteSobreturnos(): number | null {
+  if (this.limiteSobreturnos === 'sin-limite') return null;
+  if (this.limiteSobreturnos === '5') return 5;
+  if (this.limiteSobreturnos === '10') return 10;
+  return this.limiteSobreturnosPersonalizado;
+}
+
+guardarConfiguracionSobreturnos(): void {
+  const id = this.profesionalOrganizacionId;
+  const config = this.sobreturnos;
+  if (!id || !config || !this.esConfiguracionSobreturnosActual(id) ||
+      this.cargandoSobreturnos || this.guardandoSobreturnos) return;
+  if (config.permitirSobreturnos && !this.limiteSobreturnosValido) return;
+
+  const data: MiConfiguracionSobreturnos = {
+    ...config,
+    // Si se deshabilita con un valor personalizado incompleto, conservar el
+    // último límite válido. Nunca convertir un campo vacío en "sin límite".
+    maxSobreturnosPorDia: this.limiteSobreturnosValido
+      ? this.obtenerLimiteSobreturnos() : this.limiteSobreturnosGuardado
+  };
+  this.guardandoSobreturnos = true;
+  this.errorSobreturnos = '';
+  this.profesionalService.actualizarMiConfiguracionSobreturnos(id, data).subscribe({
+    next: configuracion => {
+      if (!this.esConfiguracionSobreturnosActual(id)) return;
+      this.aplicarConfiguracionSobreturnos(configuracion);
+      this.guardandoSobreturnos = false;
+      this.editandoSobreturnos = false;
+      this.alertaService.success('Configuración de sobreturnos guardada');
+    },
+    error: error => {
+      if (!this.esConfiguracionSobreturnosActual(id)) return;
+      this.guardandoSobreturnos = false;
+      this.errorSobreturnos = error?.error?.message ??
+        'No pudimos guardar la configuración. Intentá nuevamente.';
+      this.alertaService.error('No pudimos guardar el cambio', this.errorSobreturnos);
+    }
+  });
+}
 
 cargarReservaOnline(): void {
 

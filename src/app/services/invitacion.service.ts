@@ -8,8 +8,8 @@ import {
   RegistroConInvitacion,
   UnirseOrganizacion
 } from '../interfaces/invitacion';
-import { environment } from '../../environments/environment.development';
 import { environmentProduccion } from '../../environments/environment';
+
 
 
 

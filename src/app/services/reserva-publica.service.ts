@@ -8,6 +8,8 @@ import { environmentProduccion } from '../../environments/environment';
 
 
 
+
+
 export type EstadoDisponibilidadPublica = 'muchos' | 'pocos' | 'sin-turnos' | 'sin-atencion';
 export interface DisponibilidadDiaPublica {
   fecha: string;

@@ -1134,6 +1134,148 @@
 
         <!-- ======================================= -->
 
+          <!-- CONFIGURACIÓN DE SOBRETURNOS -->
+          <div class="profile-summary-section sobreturnos-section" *ngIf="!esSecretaria">
+            <div class="profile-summary-section-header sobreturnos-header">
+              <div>
+                <span class="summary-section-label">SOBRETURNOS</span>
+                <h3>Configuración de sobreturnos</h3>
+                <p class="sobreturnos-intro">Administrá los turnos adicionales que se pueden asignar manualmente en tu agenda.</p>
+              </div>
+              <button type="button" class="sobreturnos-editar"
+                [class.primary-button]="!editandoSobreturnos"
+                [class.secondary-button]="editandoSobreturnos"
+                *ngIf="sobreturnos && !cargandoSobreturnos"
+                [disabled]="guardandoSobreturnos"
+                [attr.aria-expanded]="editandoSobreturnos"
+                (click)="alternarEdicionSobreturnos()">
+                <i class="fas" [class.fa-cog]="!editandoSobreturnos" [class.fa-times]="editandoSobreturnos" aria-hidden="true"></i>
+                {{ editandoSobreturnos ? 'Cancelar' : 'Configurar sobreturnos' }}
+              </button>
+            </div>
+
+            <div class="online-settings-loading" *ngIf="cargandoSobreturnos">
+              <div class="loading-spinner"></div>
+              <span>Cargando configuración...</span>
+            </div>
+
+            <ng-container *ngIf="!cargandoSobreturnos">
+              <ng-container *ngIf="sobreturnos as config; else sobreturnosSinConfig">
+                <div class="sobreturnos-resumen" *ngIf="!editandoSobreturnos">
+                  <div class="sobreturnos-resumen-info">
+                    <strong class="sobreturnos-estado" [class.habilitado]="config.permitirSobreturnos">
+                      <span class="sobreturnos-estado-punto" aria-hidden="true"></span>
+                      {{ config.permitirSobreturnos ? 'Sobreturnos habilitados' : 'Sobreturnos deshabilitados' }}
+                    </strong>
+                    <ng-container *ngIf="config.permitirSobreturnos; else sobreturnosDeshabilitados">
+                      <span class="sobreturnos-resumen-limite">
+                        {{ config.maxSobreturnosPorDia === null ? 'Sin límite diario' : config.maxSobreturnosPorDia + ' por día' }}
+                      </span>
+                      <div class="sobreturnos-resumen-permisos">
+                        <span><i class="fas fa-user-check" aria-hidden="true"></i> Secretaría: {{ config.permitirSobreturnosSecretaria ? 'permitido' : 'no permitido' }}</span>
+                        <span><i class="far fa-clock" aria-hidden="true"></i> Fuera de horario: {{ config.permitirSobreturnosFueraHorario ? 'permitido' : 'no permitido' }}</span>
+                      </div>
+                    </ng-container>
+                    <ng-template #sobreturnosDeshabilitados>
+                      <span class="sobreturnos-resumen-limite">No se pueden asignar nuevos sobreturnos en tu agenda.</span>
+                    </ng-template>
+                  </div>
+                </div>
+                <ng-container *ngIf="editandoSobreturnos">
+                  <div class="online-settings-list">
+                    <div class="online-setting-row">
+                      <div class="online-setting-main">
+                        <div class="online-setting-icon"><i class="far fa-calendar-plus"></i></div>
+                        <div class="online-setting-copy">
+                          <strong>Habilitar sobreturnos</strong>
+                          <span>Permite asignar turnos adicionales desde el panel interno. Los pacientes no podrán reservarlos online.</span>
+                        </div>
+                      </div>
+                      <label class="profile-switch">
+                        <input type="checkbox" aria-label="Habilitar sobreturnos"
+                          [(ngModel)]="config.permitirSobreturnos" [disabled]="guardandoSobreturnos">
+                        <span class="profile-switch-slider"></span>
+                      </label>
+                    </div>
+
+                    <ng-container *ngIf="config.permitirSobreturnos">
+                      <div class="sobreturnos-limites">
+                        <strong>Límite diario de sobreturnos</strong>
+                        <p>Definí cuántos sobreturnos podés asignar por día.</p>
+                        <div class="sobreturnos-opciones" role="group" aria-label="Límite diario de sobreturnos">
+                          <label class="sobreturnos-opcion" [class.seleccionada]="limiteSobreturnos === '5'">
+                            <input type="radio" name="limiteSobreturnos" value="5" [(ngModel)]="limiteSobreturnos" [disabled]="guardandoSobreturnos">
+                            <span>5 por día</span>
+                          </label>
+                          <label class="sobreturnos-opcion" [class.seleccionada]="limiteSobreturnos === '10'">
+                            <input type="radio" name="limiteSobreturnos" value="10" [(ngModel)]="limiteSobreturnos" [disabled]="guardandoSobreturnos">
+                            <span>10 por día</span>
+                          </label>
+                          <label class="sobreturnos-opcion" [class.seleccionada]="limiteSobreturnos === 'personalizado'">
+                            <input type="radio" name="limiteSobreturnos" value="personalizado" [(ngModel)]="limiteSobreturnos" [disabled]="guardandoSobreturnos">
+                            <span>Personalizado</span>
+                          </label>
+                          <label class="sobreturnos-opcion" [class.seleccionada]="limiteSobreturnos === 'sin-limite'">
+                            <input type="radio" name="limiteSobreturnos" value="sin-limite" [(ngModel)]="limiteSobreturnos" [disabled]="guardandoSobreturnos">
+                            <span>Sin límite</span>
+                          </label>
+                        </div>
+                        <div class="form-group sobreturnos-personalizado" *ngIf="limiteSobreturnos === 'personalizado'">
+                          <label for="sobreturnosCantidad">Cantidad máxima por día</label>
+                          <input id="sobreturnosCantidad" type="number" min="1" max="2147483647" step="1"
+                            [(ngModel)]="limiteSobreturnosPersonalizado" [disabled]="guardandoSobreturnos">
+                          <small class="sobreturnos-error" *ngIf="!limiteSobreturnosValido">Ingresá un número entero mayor a cero (máximo 2147483647).</small>
+                        </div>
+                      </div>
+
+                      <div class="online-setting-row">
+                        <div class="online-setting-main">
+                          <div class="online-setting-icon"><i class="fas fa-user-check"></i></div>
+                          <div class="online-setting-copy">
+                            <strong>Permitir a secretaría</strong>
+                            <span>Secretaría podrá asignar sobreturnos en tu agenda.</span>
+                          </div>
+                        </div>
+                        <label class="profile-switch">
+                          <input type="checkbox" aria-label="Permitir sobreturnos a secretaría"
+                            [(ngModel)]="config.permitirSobreturnosSecretaria" [disabled]="guardandoSobreturnos">
+                          <span class="profile-switch-slider"></span>
+                        </label>
+                      </div>
+                      <div class="online-setting-row">
+                        <div class="online-setting-main">
+                          <div class="online-setting-icon"><i class="far fa-clock"></i></div>
+                          <div class="online-setting-copy">
+                            <strong>Permitir fuera del horario habitual</strong>
+                            <span>Permite asignar sobreturnos fuera de tus franjas de atención, en días con horarios configurados.</span>
+                          </div>
+                        </div>
+                        <label class="profile-switch">
+                          <input type="checkbox" aria-label="Permitir sobreturnos fuera del horario habitual"
+                            [(ngModel)]="config.permitirSobreturnosFueraHorario" [disabled]="guardandoSobreturnos">
+                          <span class="profile-switch-slider"></span>
+                        </label>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <p class="sobreturnos-nota"><i class="fas fa-info-circle"></i> Los bloqueos de agenda se mantienen. Deshabilitar los sobreturnos no cancela los ya asignados.</p>
+                  <p class="sobreturnos-error" role="alert" *ngIf="errorSobreturnos">{{ errorSobreturnos }}</p>
+                  <div class="sobreturnos-footer">
+                    <button type="button" class="primary-button" (click)="guardarConfiguracionSobreturnos()"
+                      [disabled]="guardandoSobreturnos || (config.permitirSobreturnos && !limiteSobreturnosValido)">
+                      <i class="fas" [class.fa-spinner]="guardandoSobreturnos" [class.fa-spin]="guardandoSobreturnos" [class.fa-check]="!guardandoSobreturnos"></i>
+                      {{ guardandoSobreturnos ? 'Guardando...' : 'Guardar configuración' }}
+                    </button>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-template #sobreturnosSinConfig>
+                <p class="sobreturnos-error" role="alert">{{ errorSobreturnos || 'No hay configuración disponible.' }}</p>
+                <button type="button" class="secondary-button" (click)="cargarConfiguracionSobreturnos()">Reintentar</button>
+              </ng-template>
+            </ng-container>
+          </div>
+
         <!-- MOTIVOS DE CONSULTA - OPCIONAL -->
         <app-profesional-motivos
           [profesionalOrganizacionId]="profesionalOrganizacionId">

@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { environmentProduccion } from '../../environments/environment';
-
-
-
 
 
 export interface MotivoConsultaInterno {
@@ -12,6 +10,13 @@ export interface MotivoConsultaInterno {
   nombre: string;
   precio: number | null;
   duracionMinutos: number | null;
+}
+
+export interface DisponibilidadSobreturnos {
+  permitido: boolean;
+  maxSobreturnosPorDia: number | null;
+  utilizados: number;
+  permitirFueraHorario: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -62,6 +67,13 @@ export class TurnosService {
 
   eliminarTurno(turnoId: string): Observable<any> {
     return this.http.delete<any>(`${this.URL_BASE}/${turnoId}`);
+  }
+
+  obtenerDisponibilidadSobreturnos(profesionalOrganizacionId: string, fecha: string): Observable<DisponibilidadSobreturnos> {
+    const params = new HttpParams()
+      .set('profesionalOrganizacionId', profesionalOrganizacionId)
+      .set('fecha', fecha);
+    return this.http.get<DisponibilidadSobreturnos>(`${this.URL_BASE}/sobreturnos/disponibilidad`, { params });
   }
 
   // Prestaciones: centralizamos la llamada HTTP en el servicio.
