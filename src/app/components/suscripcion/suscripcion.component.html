@@ -921,7 +921,7 @@
 
         <div class="price-description">
 
-          Suscripción mensual
+          Precio habitual de la suscripción
 
         </div>
 
@@ -953,7 +953,7 @@
 
             <span>
 
-              Precio
+              Precio habitual
 
             </span>
 
@@ -1007,7 +1007,7 @@
 
             <span>
 
-              Fin del período
+              Vigencia registrada hasta
 
             </span>
 
@@ -1017,6 +1017,11 @@
 
             </strong>
 
+          </div>
+
+          <div class="detail-row" *ngIf="ultimoPagoAprobado as pago">
+            <span>Último pago aprobado</span>
+            <strong>{{ pago.importe | currency:pago.moneda:'symbol':'1.2-2' }} · {{ pago.fechaPago | date:'dd/MM/yyyy' }}</strong>
           </div>
 
           <div
@@ -1354,63 +1359,42 @@
     =========================================== -->
 
     <section class="history-card">
-
       <div class="history-header">
-
         <div>
-
-          <span class="card-label">
-
-            MOVIMIENTOS
-
-          </span>
-
-          <h2>
-
-            Historial de pagos
-
-          </h2>
-
+          <span class="card-label">MOVIMIENTOS</span>
+          <h2>Historial de pagos</h2>
         </div>
-
-        <button
-
-          type="button"
-
-          class="link-button"
-
-        >
-
-          Ver historial
-
+        <button type="button" class="link-button"
+                [disabled]="cargandoPagosSuscripcion" (click)="cargarPagosSuscripcion()">
+          {{ cargandoPagosSuscripcion ? 'Actualizando...' : 'Actualizar' }}
         </button>
-
       </div>
-
-      <div class="empty-history">
-
-        <div class="empty-icon">
-
-          $
-
-        </div>
-
-        <h3>
-
-          Todavía no hay pagos
-
-        </h3>
-
-        <p>
-
-          Cuando realices tu primer pago,
-
-          aparecerá acá.
-
-        </p>
-
+      <div class="empty-history" *ngIf="cargandoPagosSuscripcion" role="status">
+        <p>Cargando pagos...</p>
       </div>
-
+      <div class="empty-history" *ngIf="!cargandoPagosSuscripcion && errorPagosSuscripcion" role="alert">
+        <h3>No pudimos consultar los pagos</h3>
+        <p>Volvé a intentar en unos segundos.</p>
+        <button type="button" class="btn-secondary" (click)="cargarPagosSuscripcion()">Reintentar</button>
+      </div>
+      <div class="empty-history" *ngIf="!cargandoPagosSuscripcion && !errorPagosSuscripcion && pagosSuscripcion.length === 0">
+        <div class="empty-icon">$</div>
+        <h3>Todavía no hay pagos</h3>
+        <p>Cuando se registre tu primer pago, aparecerá acá.</p>
+      </div>
+      <div class="subscription-payment-table" *ngIf="!cargandoPagosSuscripcion && !errorPagosSuscripcion && pagosSuscripcion.length > 0">
+        <table>
+          <thead><tr><th>Fecha</th><th>Importe</th><th>Método</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let pago of pagosSuscripcion">
+              <td>{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td><strong>{{ pago.importe | currency:pago.moneda:'symbol':'1.2-2' }}</strong></td>
+              <td>{{ pago.metodoPago }}</td>
+              <td><span class="subscription-payment-status" [class.approved]="pago.estado.toLowerCase() === 'aprobado'">{{ pago.estado }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
   </ng-container>

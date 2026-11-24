@@ -741,3 +741,10 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 }
+
+/* Herramientas de conciliación */
+.billing-tools { margin-bottom: 16px; }
+.billing-review-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #e4ebe8; border-radius: 10px; padding: 12px; }
+.billing-review-row small { display: block; margin-top: 5px; }
+.billing-tools button:disabled { opacity: .6; cursor: default; }
+@media (max-width: 600px) { .billing-review-row, .billing-tools .history-header { flex-direction: column; align-items: stretch; } }

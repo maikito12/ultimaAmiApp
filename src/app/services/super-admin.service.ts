@@ -390,6 +390,15 @@ export interface RegistrarPagoManualResponse {
 }
 
 
+export interface CambioSuscripcionRevision {
+  id: string;
+  importeAnterior: number;
+  importeNuevo: number;
+  cantidadAnterior: number;
+  cantidadNueva: number;
+  fecha: string;
+}
+
 export interface PagosSuscripcionResponse {
 
   success: boolean;
@@ -662,5 +671,20 @@ generarCheckoutPersonalizado(
       `${this.apiUrl}/organizaciones/${organizacionId}/cantidad-profesionales`,
       request
     );
+  }
+
+  recuperarPagoSuscripcion(organizacionId: string, facturaId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/organizaciones/${encodeURIComponent(organizacionId)}/recuperar-pago/${encodeURIComponent(facturaId)}`, {});
+  }
+
+  obtenerCambiosRevision(organizacionId: string): Observable<{ items: CambioSuscripcionRevision[] }> {
+    return this.http.get<{ items: CambioSuscripcionRevision[] }>(
+      `${this.apiUrl}/organizaciones/${encodeURIComponent(organizacionId)}/cambios-suscripcion-revision`);
+  }
+
+  conciliarCambioSuscripcion(organizacionId: string, cambioId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/organizaciones/${encodeURIComponent(organizacionId)}/cambios-suscripcion/${encodeURIComponent(cambioId)}/conciliar`, {});
   }
 }

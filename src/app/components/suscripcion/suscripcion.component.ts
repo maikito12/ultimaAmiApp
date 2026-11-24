@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 import {
   SuscripcionService,
+  PagoClienteSuscripcion,
   WhatsAppEstadoCupo,
   SolicitudPlanPersonalizadoRequest
 } from '../../services/suscripcion.service';
@@ -69,6 +70,41 @@ export class SuscripcionComponent implements OnInit {
   // ==========================================
 
   suscripcion: Suscripcion | null = null;
+
+  pagosSuscripcion: PagoClienteSuscripcion[] = [];
+  cargandoPagosSuscripcion = false;
+  errorPagosSuscripcion = false;
+  private pagosRequestId = 0;
+
+  get ultimoPagoAprobado(): PagoClienteSuscripcion | null {
+    return this.pagosSuscripcion.find(p => p.estado.toLowerCase() === 'aprobado') ?? null;
+  }
+
+  cargarPagosSuscripcion(): void {
+    const requestId = ++this.pagosRequestId;
+    this.cargandoPagosSuscripcion = true;
+    this.errorPagosSuscripcion = false;
+    this.pagosSuscripcion = [];
+    this.suscripcionService.obtenerPagos().subscribe({
+      next: respuesta => {
+        if (requestId !== this.pagosRequestId) return;
+        this.cargandoPagosSuscripcion = false;
+        if (!respuesta?.success || !Array.isArray(respuesta.items)) {
+          this.errorPagosSuscripcion = true;
+          return;
+        }
+        this.pagosSuscripcion = [...respuesta.items].sort((a, b) =>
+          new Date(b.fechaPago).getTime() - new Date(a.fechaPago).getTime());
+      },
+      error: error => {
+        if (requestId !== this.pagosRequestId) return;
+        console.error('Error al consultar pagos de suscripción:', error);
+        this.cargandoPagosSuscripcion = false;
+        this.errorPagosSuscripcion = true;
+      }
+    });
+  }
+
 
   // ==========================================
 
@@ -215,6 +251,10 @@ export class SuscripcionComponent implements OnInit {
   // ==========================================
 
   cargarSuscripcion(): void {
+    ++this.pagosRequestId;
+    this.pagosSuscripcion = [];
+    this.cargandoPagosSuscripcion = false;
+    this.errorPagosSuscripcion = false;
 
     this.cargando = true;
 
@@ -239,6 +279,7 @@ export class SuscripcionComponent implements OnInit {
           );
 
           this.suscripcion = respuesta;
+          this.cargarPagosSuscripcion();
 
           this.cargando = false;
 
@@ -717,6 +758,7 @@ disminuirProfesionales(): void {
           this.cotizando = false;
 
           this.suscripcion = respuesta;
+          this.cargarPagosSuscripcion();
 
           this.sinSuscripcion = false;
 

@@ -2,14 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Suscripcion } from '../interfaces/suscripcion';
-
 import { environmentProduccion } from '../../environments/environment';
-
-
-
-
-
-
 
 export interface SolicitudPlanPersonalizadoRequest {
   cantidadProfesionales: number;
@@ -80,6 +73,19 @@ export interface WhatsAppComprasResponse {
   items: WhatsAppCompraMensajes[];
 }
 
+export interface PagoClienteSuscripcion {
+  id: string;
+  importe: number;
+  moneda: string;
+  metodoPago: string;
+  estado: string;
+  fechaPago: string;
+}
+export interface PagosClienteSuscripcionResponse {
+  success: boolean;
+  items: PagoClienteSuscripcion[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class SuscripcionService {
   private readonly apiUrl = `${environmentProduccion.apiUrl}/suscripciones`;
@@ -112,6 +118,10 @@ export class SuscripcionService {
   }
   obtenerHistorial(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/historial`);
+  }
+  // Nuevo contrato: requiere endpoint autenticado y limitado a la organización actual.
+  obtenerPagos(): Observable<PagosClienteSuscripcionResponse> {
+    return this.http.get<PagosClienteSuscripcionResponse>(`${this.apiUrl}/pagos`);
   }
   obtenerEstadoWhatsApp(): Observable<WhatsAppEstadoCupo> {
     return this.http.get<WhatsAppEstadoCupo>(this.whatsappApiUrl);

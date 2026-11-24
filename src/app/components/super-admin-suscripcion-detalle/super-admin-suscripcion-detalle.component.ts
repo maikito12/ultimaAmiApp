@@ -10,6 +10,7 @@ import {
   ActualizarPrecioSuscripcionRequest,
   MetodoPagoManual,
   PagoSuscripcion,
+  CambioSuscripcionRevision,
   RegistrarPagoManualRequest,
   SuperAdminOrganizacionDetalle,
   SuperAdminService
@@ -90,6 +91,20 @@ export class SuperAdminSuscripcionDetalleComponent
     PagoSuscripcion[] =
       [];
 
+  facturaRecuperar = '';
+  recuperandoPago = false;
+  cambiosRevision: CambioSuscripcionRevision[] = [];
+  cargandoCambiosRevision = false;
+  private cambiosRevisionRequestId = 0;
+  errorCambiosRevision = false;
+  conciliandoCambioId: string | null = null;
+
+  get operacionFacturacionEnCurso(): boolean {
+    return this.recuperandoPago || !!this.conciliandoCambioId ||
+      this.guardandoPago || this.guardandoPrecio || this.guardandoCupos ||
+      this.guardandoNuevaSuscripcion || this.generandoCheckout;
+  }
+
   cargando = true;
   errorCarga = false;
   guardandoPago = false;
@@ -153,6 +168,7 @@ export class SuperAdminSuscripcionDetalleComponent
 
 
   cargarTodo(): void {
+    this.cargarCambiosRevision();
 
     this.cargando = true;
     this.errorCarga = false;
@@ -370,7 +386,7 @@ export class SuperAdminSuscripcionDetalleComponent
     if (
       !this.detalle?.suscripcion
       ||
-      this.guardandoPago
+      this.operacionFacturacionEnCurso
     ) {
       return;
     }
@@ -499,7 +515,7 @@ export class SuperAdminSuscripcionDetalleComponent
     if (
       !this.detalle?.suscripcion
       ||
-      this.guardandoPrecio
+      this.operacionFacturacionEnCurso
     ) {
       return;
     }
@@ -584,6 +600,7 @@ export class SuperAdminSuscripcionDetalleComponent
           this.guardandoPrecio =
             false;
 
+          this.cargarCambiosRevision();
           this.alertaService.error(
             'No se pudo actualizar el precio',
             this.obtenerMensajeError(
@@ -647,7 +664,7 @@ export class SuperAdminSuscripcionDetalleComponent
   }
 
   async actualizarCupos(): Promise<void> {
-    if (!this.detalle?.suscripcion || this.guardandoCupos) return;
+    if (!this.detalle?.suscripcion || this.operacionFacturacionEnCurso) return;
 
     if (!this.cuposValidos) {
       this.alertaService.warning(
@@ -697,6 +714,7 @@ export class SuperAdminSuscripcionDetalleComponent
       },
       error: (error) => {
         this.guardandoCupos = false;
+        this.cargarCambiosRevision();
         this.alertaService.error(
           'No se pudieron cambiar los cupos',
           this.obtenerMensajeError(error, 'No se aplicó el cambio. Intentá nuevamente.')
@@ -705,10 +723,81 @@ export class SuperAdminSuscripcionDetalleComponent
     });
   }
 
+  cargarCambiosRevision(): void {
+    if (!this.organizacionId) return;
+    const requestId = ++this.cambiosRevisionRequestId;
+    this.cargandoCambiosRevision = true;
+    this.errorCambiosRevision = false;
+    this.cambiosRevision = [];
+    this.superAdminService.obtenerCambiosRevision(this.organizacionId).subscribe({
+      next: respuesta => {
+        if (requestId !== this.cambiosRevisionRequestId) return;
+        this.cargandoCambiosRevision = false;
+        if (!Array.isArray(respuesta?.items)) {
+          this.errorCambiosRevision = true;
+          return;
+        }
+        this.cambiosRevision = respuesta.items;
+      },
+      error: () => {
+        if (requestId !== this.cambiosRevisionRequestId) return;
+        this.cargandoCambiosRevision = false;
+        this.errorCambiosRevision = true;
+      }
+    });
+  }
+
+  async recuperarPago(): Promise<void> {
+    const facturaId = this.facturaRecuperar.trim();
+    if (!/^\d+$/.test(facturaId) || this.operacionFacturacionEnCurso) return;
+    const confirmado = await this.dialogoService.confirmar({
+      titulo: 'Recuperar pago aprobado',
+      mensaje: `Se verificará la factura recurrente ${facturaId} de esta organización. No se generará otro cobro.`,
+      textoConfirmar: 'Recuperar pago', textoCancelar: 'Volver'
+    });
+    if (!confirmado || this.operacionFacturacionEnCurso) return;
+    this.recuperandoPago = true;
+    this.superAdminService.recuperarPagoSuscripcion(this.organizacionId, facturaId).subscribe({
+      next: respuesta => {
+        this.recuperandoPago = false;
+        this.facturaRecuperar = '';
+        this.alertaService.success('Pago recuperado', respuesta.message || 'Pago registrado.');
+        this.cargarTodo();
+      },
+      error: error => {
+        this.recuperandoPago = false;
+        this.alertaService.error('No se pudo recuperar el pago', this.obtenerMensajeError(error, 'Revisá la factura y volvé a intentar.'));
+      }
+    });
+  }
+
+  async conciliarCambio(cambio: CambioSuscripcionRevision): Promise<void> {
+    if (this.operacionFacturacionEnCurso) return;
+    const confirmado = await this.dialogoService.confirmar({
+      titulo: 'Conciliar cambio pendiente',
+      mensaje: `Se verificará en Mercado Pago el cambio de ${this.formatearDinero(cambio.importeAnterior)} a ${this.formatearDinero(cambio.importeNuevo)}. No se modificará el importe remoto.`,
+      textoConfirmar: 'Conciliar', textoCancelar: 'Volver'
+    });
+    if (!confirmado || this.operacionFacturacionEnCurso) return;
+    this.conciliandoCambioId = cambio.id;
+    this.superAdminService.conciliarCambioSuscripcion(this.organizacionId, cambio.id).subscribe({
+      next: respuesta => {
+        this.conciliandoCambioId = null;
+        this.alertaService.success('Cambio conciliado', respuesta.message || 'Cambio aplicado.');
+        this.cargarTodo();
+      },
+      error: error => {
+        this.conciliandoCambioId = null;
+        this.alertaService.error('No se pudo conciliar', this.obtenerMensajeError(error, 'El cambio sigue pendiente de revisión.'));
+        this.cargarCambiosRevision();
+      }
+    });
+  }
+
   get ultimoPago():
     PagoSuscripcion | null {
 
-    return this.pagos[0] ?? null;
+    return this.pagos.find(p => p.estado.toLowerCase() === 'aprobado') ?? null;
   }
 
 
@@ -824,7 +913,7 @@ export class SuperAdminSuscripcionDetalleComponent
         .toLowerCase();
 
 
-    if (valor === 'activa') {
+    if (valor === 'activa' || valor === 'aprobado') {
       return 'estado-verde';
     }
 
@@ -866,7 +955,7 @@ export class SuperAdminSuscripcionDetalleComponent
           'ARS',
 
         maximumFractionDigits:
-          0
+          2
       }
     )
       .format(

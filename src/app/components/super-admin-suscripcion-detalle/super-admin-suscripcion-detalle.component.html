@@ -212,7 +212,7 @@
       <article class="summary-card">
 
         <span class="summary-label">
-          Último pago
+          Último pago aprobado
         </span>
 
         <strong>
@@ -437,14 +437,14 @@
                 min="1"
                 step="1"
                 [(ngModel)]="cuposForm.cantidadProfesionales"
-                [disabled]="guardandoCupos"
+                [disabled]="operacionFacturacionEnCurso"
                 aria-label="Cantidad de profesionales permitidos"
               />
               <button
                 type="button"
                 aria-label="Agregar un cupo"
                 (click)="aumentarCupos()"
-                [disabled]="guardandoCupos"
+                [disabled]="operacionFacturacionEnCurso"
               >+</button>
             </div>
             <small class="cupos-ayuda">
@@ -460,7 +460,7 @@
               <input id="admin-nuevo-importe" type="number" min="1"
                      max="2000000" step="0.01"
                      [(ngModel)]="cuposForm.importeTotal"
-                     [disabled]="guardandoCupos"
+                     [disabled]="operacionFacturacionEnCurso"
                      placeholder="Ingresá el nuevo monto a cobrar" />
             </div>
             <small>Obligatorio para Mercado Pago. Se verificará el nuevo cobro
@@ -473,7 +473,7 @@
               <span>$</span>
               <input id="admin-importe-manual" type="number" min="1"
                      step="0.01" [(ngModel)]="cuposForm.importeTotal"
-                     [disabled]="guardandoCupos"
+                     [disabled]="operacionFacturacionEnCurso"
                      placeholder="Dejar vacío para conservar el precio" />
             </div>
             <small>Para cobro manual: si lo dejás vacío, solo se ajustan los cupos.</small>
@@ -532,7 +532,7 @@
 
             <select
               [(ngModel)]="pagoForm.metodoPago"
-              [disabled]="guardandoPago"
+              [disabled]="operacionFacturacionEnCurso"
             >
               <option value="Transferencia">Transferencia</option>
               <option value="Efectivo">Efectivo</option>
@@ -556,7 +556,7 @@
                 step="1"
                 placeholder="Usar precio habitual"
                 [(ngModel)]="pagoForm.importe"
-                [disabled]="guardandoPago"
+                [disabled]="operacionFacturacionEnCurso"
               >
 
             </div>
@@ -581,7 +581,7 @@
               type="text"
               placeholder="Ej: Transferencia septiembre"
               [(ngModel)]="pagoForm.referencia"
-              [disabled]="guardandoPago"
+              [disabled]="operacionFacturacionEnCurso"
             >
 
           </div>
@@ -595,7 +595,7 @@
               rows="4"
               placeholder="Detalle opcional del pago"
               [(ngModel)]="pagoForm.observaciones"
-              [disabled]="guardandoPago"
+              [disabled]="operacionFacturacionEnCurso"
             ></textarea>
 
           </div>
@@ -604,7 +604,7 @@
           <button
             type="button"
             class="primary-button"
-            [disabled]="guardandoPago"
+            [disabled]="operacionFacturacionEnCurso"
             (click)="registrarPagoManual()"
           >
 
@@ -674,7 +674,7 @@
                 min="1"
                 step="1"
                 [(ngModel)]="precioForm.importeTotal"
-                [disabled]="guardandoPrecio"
+                [disabled]="operacionFacturacionEnCurso"
               >
 
             </div>
@@ -699,7 +699,7 @@
           <button
             type="button"
             class="primary-button"
-            [disabled]="guardandoPrecio"
+            [disabled]="operacionFacturacionEnCurso"
             (click)="actualizarPrecio()"
           >
 
@@ -724,6 +724,42 @@
 
     </section>
 
+
+    <section class="history-card billing-tools" *ngIf="data.suscripcion">
+      <div class="history-header">
+        <div><span class="card-eyebrow">CONCILIACIÓN</span><h2>Pagos y cambios de Mercado Pago</h2>
+          <p>Verificá cobros existentes sin generar un nuevo débito.</p></div>
+        <button type="button" class="back-button" (click)="cargarTodo()"
+                [disabled]="operacionFacturacionEnCurso || cargandoCambiosRevision">Actualizar datos</button>
+      </div>
+      <div class="card-body">
+        <div class="field full" *ngIf="data.suscripcion.estado === 'Activa' && data.suscripcion.tieneCobroMercadoPago">
+          <label for="factura-recurrente">ID de factura recurrente (authorized payment)</label>
+          <input id="factura-recurrente" type="text" inputmode="numeric" [(ngModel)]="facturaRecuperar"
+                 [disabled]="operacionFacturacionEnCurso" placeholder="ID de la factura, no del pago" />
+          <small>Usá el ID de la factura autorizada. No es el ID de la operación de pago.</small>
+          <button type="button" class="primary-button" (click)="recuperarPago()"
+                  [disabled]="operacionFacturacionEnCurso || !facturaRecuperar.trim()">
+            {{ recuperandoPago ? 'Verificando...' : 'Recuperar pago aprobado' }}
+          </button>
+        </div>
+        <div class="field full">
+          <label>Cambios que requieren revisión</label>
+          <small *ngIf="cargandoCambiosRevision">Consultando cambios...</small>
+          <div *ngIf="errorCambiosRevision" role="alert">No se pudieron consultar los cambios.
+            <button type="button" class="back-button" (click)="cargarCambiosRevision()">Reintentar</button>
+          </div>
+          <small *ngIf="!cargandoCambiosRevision && !errorCambiosRevision && cambiosRevision.length === 0">No hay cambios en revisión.</small>
+          <div class="billing-review-row" *ngFor="let cambio of cambiosRevision">
+            <div><strong>{{ formatearDinero(cambio.importeAnterior) }} → {{ formatearDinero(cambio.importeNuevo) }}</strong>
+              <small>{{ cambio.cantidadAnterior }} → {{ cambio.cantidadNueva }} profesionales · {{ formatearFecha(cambio.fecha) }}</small></div>
+            <button type="button" class="back-button" (click)="conciliarCambio(cambio)" [disabled]="operacionFacturacionEnCurso">
+              {{ conciliandoCambioId === cambio.id ? 'Verificando...' : 'Conciliar cambio' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="history-card">
 
@@ -780,7 +816,7 @@
 
               <td>
                 <strong>
-                  {{ formatearDinero(pago.importe) }}
+                  {{ pago.importe | currency:pago.moneda:'symbol':'1.2-2' }}
                 </strong>
               </td>
 
