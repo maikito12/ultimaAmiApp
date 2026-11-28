@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { DisponibilidadMesPublica } from './reserva-publica.service';
-
+import {
+  DisponibilidadMesPublica,
+  ReservaPublicaService
+} from './reserva-publica.service';
 import { environmentProduccion } from '../../environments/environment';
 
 
@@ -14,26 +16,45 @@ export interface MotivoPublico {
   precio: number | null;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ReservaMotivosPublicosService {
-  private readonly baseUrl = `${environmentProduccion.apiUrl}/publico/reserva`;
 
-  constructor(private http: HttpClient) {}
+  private readonly baseUrl =
+    `${environmentProduccion.apiUrl}/publico/reserva`;
 
-  // El cuarto parametro es opcional para no romper consumidores antiguos.
-  // El formulario publico debe enviarlo siempre al elegir una sucursal.
+  constructor(
+    private http: HttpClient,
+    private reservaPublicaService: ReservaPublicaService
+  ) {}
+
+  // ==========================================
+  // OBTENER MOTIVOS DE CONSULTA
+  // ==========================================
+
   obtenerMotivos(
     slug: string,
     profesionalOrganizacionId: string,
     profesionalEspecialidadId: string,
     sucursalId?: string
   ): Observable<MotivoPublico[]> {
+
     let params = new HttpParams()
-      .set('profesionalOrganizacionId', profesionalOrganizacionId)
-      .set('profesionalEspecialidadId', profesionalEspecialidadId);
+      .set(
+        'profesionalOrganizacionId',
+        profesionalOrganizacionId
+      )
+      .set(
+        'profesionalEspecialidadId',
+        profesionalEspecialidadId
+      );
 
     if (sucursalId) {
-      params = params.set('sucursalId', sucursalId);
+      params = params.set(
+        'sucursalId',
+        sucursalId
+      );
     }
 
     return this.http.get<MotivoPublico[]>(
@@ -41,6 +62,10 @@ export class ReservaMotivosPublicosService {
       { params }
     );
   }
+
+  // ==========================================
+  // DISPONIBILIDAD SEGÚN MOTIVO
+  // ==========================================
 
   obtenerDisponibilidad(
     slug: string,
@@ -51,20 +76,15 @@ export class ReservaMotivosPublicosService {
     mes: number,
     motivoConsultaId: string | null
   ): Observable<DisponibilidadMesPublica> {
-    let params = new HttpParams()
-      .set('profesionalOrganizacionId', profesionalOrganizacionId)
-      .set('profesionalEspecialidadId', profesionalEspecialidadId)
-      .set('sucursalId', sucursalId)
-      .set('anio', String(anio))
-      .set('mes', String(mes));
 
-    if (motivoConsultaId) {
-      params = params.set('motivoConsultaId', motivoConsultaId);
-    }
-
-    return this.http.get<DisponibilidadMesPublica>(
-      `${this.baseUrl}/${encodeURIComponent(slug)}/disponibilidad`,
-      { params }
+    return this.reservaPublicaService.obtenerDisponibilidad(
+      slug,
+      profesionalOrganizacionId,
+      profesionalEspecialidadId,
+      sucursalId,
+      anio,
+      mes,
+      motivoConsultaId
     );
   }
 }

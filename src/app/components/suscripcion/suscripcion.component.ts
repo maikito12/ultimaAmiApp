@@ -22,7 +22,8 @@ import { PlanService } from '../../services/plan-service.service';
 import { AlertaService } from '../../services/alerta.service';
 
 import { DialogoService } from '../../services/dialogo.service';
-import { environment } from '../../../environments/environment.development';
+import { environmentProduccion } from '../../../environments/environment';
+
 
 
 
@@ -1195,7 +1196,7 @@ async reactivarSuscripcion():
     // La ruta está reservada para el backend. Si aún no existe, la
     // pantalla muestra un estado vacío, NUNCA estadísticas inventadas.
     this.http.get<ConsumoWhatsAppMensual>(
-      `${environment.apiUrl}/WhatsApp/consumo-mensual`
+      `${environmentProduccion.apiUrl}/WhatsApp/consumo-mensual`
     ).subscribe({
       next: (respuesta) => {
         const mesActual = new Date();

@@ -6,19 +6,28 @@
       <p>Configurá qué consultas ofrecés y en qué sucursales. El precio y la duración son opcionales.</p>
     </div>
     <button type="button" class="motivo-primary" (click)="nuevo()"
-      [disabled]="cargando || guardando || guardandoDisponibilidad || !especialidades.length || !sucursales.length || editando || !!motivoConfigurando">
+      [disabled]="cargando || !!erroresCarga.length || guardando || guardandoDisponibilidad || !especialidades.length || !sucursales.length || editando || !!motivoConfigurando">
       <i class="fas fa-plus"></i> Agregar motivo
     </button>
   </div>
 
   <div *ngIf="cargando" class="motivos-empty">Cargando motivos...</div>
 
-  <ng-container *ngIf="!cargando">
+  <div class="motivos-empty" *ngIf="!cargando && erroresCarga.length" role="alert">
+    <strong>No pudimos completar la carga.</strong>
+    <p *ngFor="let error of erroresCarga">{{ error }}</p>
+    <button type="button" class="motivo-secondary" (click)="cargar()" [disabled]="guardando || guardandoDisponibilidad">Reintentar</button>
+  </div>
+
+  <ng-container *ngIf="!cargando && !erroresCarga.length">
+    <div class="motivos-empty" *ngIf="!especialidades.length">
+      No tenés especialidades activas asignadas en esta organización. Configuralas primero desde <strong>Especialidades</strong>.
+    </div>
     <div class="motivos-empty" *ngIf="!sucursales.length">
       Este profesional no tiene sucursales activas asignadas. Configuralas primero desde <strong>Sucursales</strong>.
     </div>
 
-    <div class="motivos-empty" *ngIf="!motivosVisibles.length && !editando">
+    <div class="motivos-empty" *ngIf="!motivosVisibles.length && !editando && especialidades.length && sucursales.length">
       Todavía no cargaste motivos de consulta. Es opcional: tus reservas actuales siguen funcionando igual.
     </div>
 

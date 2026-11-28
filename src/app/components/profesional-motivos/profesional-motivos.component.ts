@@ -43,6 +43,7 @@ export class ProfesionalMotivosComponent implements OnChanges {
   especialidades: ProfesionalEspecialidad[] = [];
   sucursales: ProfesionalSucursal[] = [];
   cargando = false;
+  erroresCarga: string[] = [];
   guardando = false;
   editando = false;
   idEditando: string | null = null;
@@ -58,6 +59,7 @@ export class ProfesionalMotivosComponent implements OnChanges {
   franjasEditables: FranjaEditable[] = [];
   private siguienteClave = 1;
   private solicitudDisponibilidad = 0;
+  private solicitudCarga = 0;
 
   readonly diasSemana: Record<number, string> = {
     1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves',
@@ -73,6 +75,9 @@ export class ProfesionalMotivosComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['profesionalOrganizacionId']) {
+      this.solicitudCarga++;
+      this.erroresCarga = [];
+      this.cargando = false;
       this.cancelar();
       this.cerrarDisponibilidad();
       this.motivos = [];
@@ -154,24 +159,51 @@ export class ProfesionalMotivosComponent implements OnChanges {
   async cargar(): Promise<void> {
     const id = this.profesionalOrganizacionId;
     if (!id) return;
+    const solicitud = ++this.solicitudCarga;
     this.cargando = true;
+    this.erroresCarga = [];
     try {
-      const [motivos, especialidades, sucursales] = await Promise.all([
+      const [motivos, especialidades, sucursales] = await Promise.allSettled([
         firstValueFrom(this.motivosService.listar(id)),
         firstValueFrom(this.profesionalService.obtenerProfesionalEspecialidades(id)),
         firstValueFrom(this.profesionalService.obtenerProfesionalSucursales(id))
-      ]);
-      if (id !== this.profesionalOrganizacionId) return;
-      this.motivos = motivos;
-      this.especialidades = especialidades.filter(x => x.activo);
-      this.sucursales = sucursales.filter(x => x.activo);
+      ] as const);
+      if (solicitud !== this.solicitudCarga || id !== this.profesionalOrganizacionId) return;
+
+      this.motivos = motivos.status === 'fulfilled' ? motivos.value : [];
+      this.especialidades = especialidades.status === 'fulfilled'
+        ? especialidades.value.filter(x => x.activo) : [];
+      this.sucursales = sucursales.status === 'fulfilled'
+        ? sucursales.value.filter(x => x.activo) : [];
+
+      const errores: string[] = [];
+      const registrarError = (nombre: string, resultado: PromiseSettledResult<unknown>) => {
+        if (resultado.status !== 'rejected') return;
+        const error = resultado.reason;
+        console.error(`[Motivos] Error al cargar ${nombre}`, error);
+        const estado = error?.status ? ` (HTTP ${error.status})` : '';
+        errores.push(`${nombre}${estado}: ${error?.error?.message ?? 'Intentá nuevamente.'}`);
+      };
+      registrarError('Motivos', motivos);
+      registrarError('Especialidades', especialidades);
+      registrarError('Sucursales', sucursales);
+      this.erroresCarga = errores;
+      if (errores.length) {
+        this.alertaService.error('No pudimos completar la carga', errores.join(' · '));
+      }
     } catch (error: any) {
-      if (id === this.profesionalOrganizacionId) {
+      if (solicitud === this.solicitudCarga && id === this.profesionalOrganizacionId) {
+        this.motivos = [];
+        this.especialidades = [];
+        this.sucursales = [];
+        this.erroresCarga = ['No pudimos completar la carga. Intentá nuevamente.'];
         this.alertaService.error('No pudimos cargar los motivos',
           error?.error?.message ?? 'Intentá nuevamente.');
       }
     } finally {
-      if (id === this.profesionalOrganizacionId) this.cargando = false;
+      if (solicitud === this.solicitudCarga && id === this.profesionalOrganizacionId) {
+        this.cargando = false;
+      }
     }
   }
 

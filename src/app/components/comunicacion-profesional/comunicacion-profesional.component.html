@@ -1,0 +1,28 @@
+<section class="communication-card">
+  <div><strong>Origen de la comunicación</strong><p>{{ cargando ? 'Verificando configuración...' : resumen }}</p></div>
+  <button class="secondary" type="button" *ngIf="configuracion" (click)="abrir()">Cambiar</button>
+  <button class="secondary" type="button" *ngIf="!configuracion && !cargando" (click)="cargar()">Reintentar</button>
+</section>
+<p *ngIf="error && !modalAbierta" class="error" role="alert">{{error}}</p>
+<div class="overlay" *ngIf="modalAbierta && configuracion" (click)="cerrar()" (keydown.escape)="cerrar()">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="comunicacionTitulo" (click)="$event.stopPropagation()">
+    <header><h2 id="comunicacionTitulo">Origen de la comunicación</h2><button class="secondary" type="button" (click)="cerrar()" [disabled]="guardando" aria-label="Cerrar">×</button></header>
+    <p>Elegí cómo enviar los mensajes de tus turnos.</p>
+    <p *ngIf="!configuracion.autorizado" class="error">La configuración guardada ya no está autorizada. Revisá el origen.</p>
+    <fieldset [disabled]="guardando">
+      <legend>Origen de los mensajes</legend>
+      <label class="option" [class.selected]="modo === 0"><input type="radio" name="modoComunicacion" [checked]="modo === 0" (change)="seleccionar(0)"><span><strong>Mi configuración local</strong><small>Reglas y número propios de esta organización, con respaldo general.</small></span></label>
+      <label class="option" [class.selected]="modo === 1"><input type="radio" name="modoComunicacion" [checked]="modo === 1" (change)="seleccionar(1)"><span><strong>Utilizar mi consultorio</strong><small>Reutilizá el número y las reglas generales de otro consultorio autorizado.</small></span></label>
+      <div class="origin" *ngIf="modo === 1">
+        <label for="origenComunicacion">Consultorio de origen</label>
+        <select id="origenComunicacion" [(ngModel)]="origenId"><option [ngValue]="null">Seleccionar consultorio</option><option *ngFor="let item of origenes" [ngValue]="item.organizacionId">{{ item.nombre }}</option></select>
+        <p *ngIf="!origenes.length">No hay consultorios de origen disponibles.</p>
+        <ng-container *ngIf="origen as o"><p><strong>{{ o.whatsAppConectado ? 'WhatsApp configurado' : 'WhatsApp sin configurar' }}</strong> {{ o.numeroWhatsApp || '' }}</p><p>{{ o.automatizacionesActivas }} reglas generales activas. Los cumpleaños no se heredan.</p></ng-container>
+        <p>Los turnos y pacientes permanecen en la organización actual. El consumo de WhatsApp corresponde a la cuenta emisora. La configuración del número no garantiza la aprobación de plantillas en Meta.</p>
+      </div>
+      <label class="option" [class.selected]="modo === 2"><input type="radio" name="modoComunicacion" [checked]="modo === 2" (change)="seleccionar(2)"><span><strong>Configuración general de la organización</strong><small>Usá exclusivamente las reglas y el número generales de esta organización.</small></span></label>
+    </fieldset>
+    <p *ngIf="error" class="error" role="alert">{{error}}</p>
+    <footer><button class="secondary" type="button" (click)="cerrar()" [disabled]="guardando">Ahora no</button><button type="button" [disabled]="!puedeGuardar" (click)="guardar()">{{guardando ? 'Guardando...' : 'Guardar configuración'}}</button></footer>
+  </section>
+</div>

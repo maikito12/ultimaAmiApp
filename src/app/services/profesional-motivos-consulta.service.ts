@@ -6,6 +6,7 @@ import { environmentProduccion } from '../../environments/environment';
 
 
 
+
 export interface MotivoConsulta {
   id: string;
   profesionalOrganizacionId: string;

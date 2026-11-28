@@ -40,7 +40,7 @@
 
         class="button button-primary"
 
-        (click)="nueva()"
+        *ngIf="!vistaHeredada" (click)="nueva()"
 
       >
 
@@ -55,6 +55,10 @@
       </button>
 
     </header>
+
+
+
+
 
     <!-- =====================================================
 
@@ -266,6 +270,18 @@
 
     ====================================================== -->
 
+    <ng-container *ngIf="vistaHeredada; else configuracionLocal">
+      <section class="channel-card" [class.connected]="origenHeredado?.whatsAppConectado">
+        <div class="channel-main"><div class="channel-icon" [class.connected]="origenHeredado?.whatsAppConectado">WA</div>
+          <div class="channel-copy"><div class="channel-title-line"><strong>WhatsApp</strong><span class="connection-pill" [class.connected]="origenHeredado?.whatsAppConectado">{{ origenHeredado?.whatsAppConectado ? 'Conectado' : 'Revisar conexión' }}</span></div>
+          <p>{{ origenHeredado?.numeroWhatsApp || 'Número no disponible' }} · {{ origenHeredado?.nombre || 'Origen no autorizado' }}</p></div></div>
+        <span class="scope-helper">Solo lectura</span>
+      </section>
+      <div class="automation-section-heading"><div><span class="eyebrow">RECORRIDO DEL PACIENTE</span><h2>Automatizaciones heredadas</h2><p>Para modificarlas, ingresá a tu consultorio de origen.</p></div><span class="automation-count">{{ reglasHeredadas.length }} reglas activas</span></div>
+      <section class="channel-card" *ngFor="let regla of reglasHeredadas"><div class="channel-main"><div class="channel-icon connected">✦</div><div class="channel-copy"><div class="channel-title-line"><strong>{{ regla.nombre }}</strong></div><p>{{ regla.evento }} · Heredada de {{ origenHeredado?.nombre }}</p><p *ngIf="regla.anticipacionMinutos != null">{{ regla.anticipacionMinutos }} minutos antes</p><p *ngIf="regla.demoraMinutos != null">{{ regla.demoraMinutos }} minutos después</p></div></div><span class="connection-pill connected">Activa · Solo lectura</span></section>
+      <div class="state-card" *ngIf="!reglasHeredadas.length">No hay reglas heredadas disponibles.</div>
+    </ng-container>
+    <ng-template #configuracionLocal>
     <section
 
       class="channel-card"
@@ -800,6 +816,15 @@
       </div>
 
     </div>
+
+    </ng-template>
+    <app-comunicacion-profesional
+      *ngIf="esProfesionalActual && profesionalIdActual"
+      [habilitarGuardado]="true"
+      [claveContexto]="profesionalOrganizacionIdActual || profesionalIdActual || ''"
+      (modoActual)="modoComunicacionActual = $event"
+      (configuracionActual)="comunicacionActual = $event">
+    </app-comunicacion-profesional>
 
   </ng-container>
 

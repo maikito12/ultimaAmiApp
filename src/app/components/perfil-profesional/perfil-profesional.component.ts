@@ -372,7 +372,12 @@ get configuracionCompleta(): boolean {
   );
 
 }
-
+get puedeConfigurarMotivos(): boolean {
+  return !!(
+    this.estado?.tieneEspecialidades &&
+    this.estado?.tieneSucursales
+  );
+}
 
 
   estado: EstadoConfiguracionProfesional | null = null;

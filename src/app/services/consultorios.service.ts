@@ -9,6 +9,7 @@ import { environmentProduccion } from '../../environments/environment';
 
 
 
+
 export interface Consultorio {
   id: string;
   organizacionId: string;

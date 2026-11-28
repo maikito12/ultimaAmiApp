@@ -10,6 +10,7 @@ import { ReservaMotivosPublicosService, MotivoPublico } from '../../services/res
 import { environmentProduccion } from '../../../environments/environment';
 
 
+
 type ModoBusqueda =
   | 'rapido'
   | 'profesional'
@@ -54,6 +55,13 @@ interface EspecialidadReserva {
   color: string | null;
 }
 interface SucursalReserva {
+  organizacionId?: string;
+  nombreOrganizacion?: string;
+  profesionalOrganizacionId?: string;
+  profesionalEspecialidadId?: string;
+  esExterna?: boolean;
+  configuracionReserva?: ConfiguracionReservaPublicaLocal | null;
+  obrasSociales?: ObraSocialDetalleReserva[];
   id: string;
   nombre: string;
   calle: string;
@@ -271,8 +279,8 @@ export class FormularioComponent implements OnInit {
     // Consultamos el catálogo de ESTA sede. No necesitamos alterar la firma
     // del servicio existente (que sigue manejando obtenerDisponibilidad).
     const params = new HttpParams()
-      .set('profesionalOrganizacionId', profesional.profesionalOrganizacionId)
-      .set('profesionalEspecialidadId', profesional.profesionalEspecialidadId)
+      .set('profesionalOrganizacionId', sucursal.profesionalOrganizacionId || profesional.profesionalOrganizacionId)
+      .set('profesionalEspecialidadId', sucursal.profesionalEspecialidadId || profesional.profesionalEspecialidadId)
       .set('sucursalId', sucursal.id);
     this.http.get<MotivoPublico[]>(
       `${environmentProduccion.apiUrl}/publico/reserva/${encodeURIComponent(this.slug)}/motivos`,
@@ -452,6 +460,7 @@ reservaCreada:
                 SucursalReserva[] =
                 profesional.sucursales
                   .map(sucursal => ({
+                    ...sucursal,
                     id: sucursal.id,
                     nombre: sucursal.nombre,
                     calle: sucursal.calle,
@@ -512,7 +521,7 @@ reservaCreada:
                 .map(p => ({
                   ...p,
                   sucursalIds: [this.sucursalTotemId],
-                  sucursales: p.sucursales.filter(s => s.id === this.sucursalTotemId)
+                  sucursales: p.sucursales.filter(s => s.id === this.sucursalTotemId && !s.esExterna)
                 }));
             }
             // ==================================
@@ -721,35 +730,24 @@ get porcentajeProgreso(): number {
             )
       );
   }
-  get turnosRapidos():
-    TurnoRapidoReserva[] {
-    // Temporal hasta conectar el endpoint de
-    // disponibilidad real. Ya utiliza solamente
-    // profesionales y sucursales reales.
-    return this.profesionalesFiltrados
-      .slice(0, 3)
-      .map(profesional => {
-        const sucursal =
-          profesional.sucursales[0];
-        if (!sucursal) {
-          return null;
-        }
-        return {
-          id:
-            `${profesional.id}-${sucursal.id}`,
-          profesional,
-          sucursal,
-          proximoTurno:
-            profesional.proximoTurno
-        };
-      })
-      .filter(
-        (
-          turno
-        ):
-          turno is TurnoRapidoReserva =>
-            turno !== null
-      );
+  get turnosRapidos(): TurnoRapidoReserva[] {
+    return this.profesionalesFiltrados.flatMap(profesional =>
+      profesional.sucursales.map(sucursal => ({id: `${profesional.id}-${sucursal.id}`, profesional, sucursal, proximoTurno: 'Ver disponibilidad'})));
+  }
+  get configuracionDestino(): ConfiguracionReservaPublicaLocal {
+    return this.sucursalSeleccionada?.configuracionReserva || this.configuracionPublica;
+  }
+  get coberturaDestino(): ObraSocialDetalleReserva | undefined {
+    const obras = this.sucursalSeleccionada?.obrasSociales ?? this.profesionalSeleccionado?.obrasSocialesDetalle ?? [];
+    const nombre = this.paciente.obraSocial.trim().toLowerCase();
+    return obras.find(o => o.nombre.trim().toLowerCase() === nombre);
+  }
+  get faltanDatosDestino(): boolean {
+    const c = this.configuracionDestino;
+    return (c.solicitarDni && !/^\d{7,9}$/.test(this.paciente.dni.replace(/\D/g,''))) ||
+      (c.solicitarTelefono && this.paciente.telefono.replace(/\D/g,'').length !== 10) ||
+      (c.solicitarEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.paciente.email.trim())) ||
+      (c.solicitarFechaNacimiento && !this.paciente.fechaNacimiento);
   }
   get sucursalesProfesionalSeleccionado():
     SucursalReserva[] {
@@ -766,7 +764,7 @@ get porcentajeProgreso(): number {
     if (!seleccionCompleta) {
       return false;
     }
-    return this.coberturaResuelta &&
+    return (!this.sucursalSeleccionada?.esExterna || !this.faltanDatosDestino) && this.coberturaResuelta &&
       !this.cargandoMotivos && !this.errorMotivos &&
       (this.motivosDisponibles.length === 0 || !!this.motivoSeleccionadoId);
   }
@@ -1238,6 +1236,7 @@ continuar(): void {
   seleccionarSucursalProfesional(
     sucursal: SucursalReserva
   ): void {
+    this.continuarComoParticular = false;
     this.sucursalSeleccionada =
       sucursal;
     this.fechaSeleccionada = '';
@@ -1267,6 +1266,7 @@ continuar(): void {
   ): void {
     this.profesionalSeleccionado =
       profesional;
+    this.sucursalSeleccionada = profesional.sucursales.find(s => s.id === this.sucursalSeleccionada?.id) || null;
     this.cargarMotivos();
     this.continuarComoParticular =
       false;
@@ -1322,9 +1322,7 @@ continuar(): void {
     ) {
       return true;
     }
-    return profesional
-      .obrasSociales
-      .includes(cobertura);
+    return (this.profesionalSeleccionado?.id === profesional.id && this.sucursalSeleccionada ? !!this.coberturaDestino : profesional.sucursales.some(s => (s.obrasSociales ?? profesional.obrasSocialesDetalle).some(o => o.nombre.trim().toLowerCase() === cobertura.toLowerCase())));
   }
   get tieneCoberturaPaciente(): boolean {
     return !!(
@@ -1370,6 +1368,7 @@ continuar(): void {
     }
   }
 confirmarTurno(): void {
+  if ((this.sucursalSeleccionada?.esExterna && this.faltanDatosDestino) || !this.coberturaResuelta) { this.mostrarError("Revisá los datos y la cobertura del destino."); return; }
   if (this.cargandoMotivos || this.errorMotivos ||
       (this.motivosDisponibles.length > 0 && !this.motivoSeleccionadoId)) {
     this.mostrarError('Seleccioná un tipo de consulta antes de confirmar.');
@@ -1405,12 +1404,8 @@ confirmarTurno(): void {
     );
     return;
   }
-  const profesionalOrganizacionId =
-    this.profesionalSeleccionado
-      .profesionalOrganizacionId;
-  const profesionalEspecialidadId =
-    this.profesionalSeleccionado
-      .profesionalEspecialidadId;
+  const profesionalOrganizacionId = this.sucursalSeleccionada.profesionalOrganizacionId || this.profesionalSeleccionado.profesionalOrganizacionId;
+  const profesionalEspecialidadId = this.sucursalSeleccionada.profesionalEspecialidadId || this.profesionalSeleccionado.profesionalEspecialidadId;
   if (
     !profesionalOrganizacionId
     ||
@@ -1463,7 +1458,7 @@ genero:
             &&
             this.paciente.obraSocial !== 'Particular'
           )
-            ? this.paciente.obraSocialId || null
+            ? this.coberturaDestino?.id || null
             : null,
         obraSocialNombre:
           (
@@ -1556,12 +1551,8 @@ private cargarDisponibilidad():
     this.generarCalendario();
     return;
   }
-  const profesionalOrganizacionId =
-    this.profesionalSeleccionado
-      .profesionalOrganizacionId;
-  const profesionalEspecialidadId =
-    this.profesionalSeleccionado
-      .profesionalEspecialidadId;
+  const profesionalOrganizacionId = this.sucursalSeleccionada.profesionalOrganizacionId || this.profesionalSeleccionado.profesionalOrganizacionId;
+  const profesionalEspecialidadId = this.sucursalSeleccionada.profesionalEspecialidadId || this.profesionalSeleccionado.profesionalEspecialidadId;
   const sucursalId =
     this.sucursalSeleccionada.id;
   if (
@@ -1745,7 +1736,7 @@ private cargarDisponibilidad():
         return false;
       }
     }
- 
+
 if (
   this.configuracionPublica.solicitarEmail &&
   this.paciente.email &&

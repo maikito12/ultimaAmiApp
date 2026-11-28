@@ -1276,11 +1276,6 @@
             </ng-container>
           </div>
 
-        <!-- MOTIVOS DE CONSULTA - OPCIONAL -->
-        <app-profesional-motivos
-          [profesionalOrganizacionId]="profesionalOrganizacionId">
-        </app-profesional-motivos>
-
         <!-- RESERVA ONLINE - RESUMEN -->
 
         <!-- ======================================= -->
@@ -1972,6 +1967,16 @@
       </ng-container>
 
 
+
+      <!-- MOTIVOS DE CONSULTA - INDEPENDIENTE DEL PERFIL COMPLETO -->
+      <ng-container
+        *ngIf="puedeConfigurarMotivos &&
+               profesionalOrganizacionId &&
+               !seccionEditando">
+        <app-profesional-motivos
+          [profesionalOrganizacionId]="profesionalOrganizacionId">
+        </app-profesional-motivos>
+      </ng-container>
 
       <!-- ======================================= -->
 

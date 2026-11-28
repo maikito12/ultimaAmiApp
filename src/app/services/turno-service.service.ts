@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { environmentProduccion } from '../../environments/environment';
+
+
 
 
 export interface MotivoConsultaInterno {
@@ -28,7 +29,19 @@ export class TurnosService {
   obtenerAgenda(filtro: any): Observable<any[]> {
     return this.http.post<any[]>(`${this.URL_BASE}/agenda`, filtro);
   }
+obtenerOcupacionGlobal(
+  profesionalOrganizacionId: string,
+  fecha: string
+): Observable<{ horaInicio: string; horaFin: string }[]> {
 
+  const params = new HttpParams()
+    .set('profesionalOrganizacionId', profesionalOrganizacionId)
+    .set('fecha', fecha);
+
+  return this.http.get<
+    { horaInicio: string; horaFin: string }[]
+  >(`${this.URL_BASE}/ocupacion-global`, { params });
+}
   obtenerDetalleTurno(turnoId: string): Observable<any> {
     return this.http.get<any>(`${this.URL_BASE}/${turnoId}`);
   }
@@ -90,4 +103,6 @@ export class TurnosService {
       { params }
     );
   }
+
+  
 }

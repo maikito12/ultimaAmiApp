@@ -24,136 +24,105 @@ import {
   AlertaService
 } from '../../services/alerta.service';
 
+import {
+  ReservaPersonalComponent
+} from '../reserva-personal/reserva-personal.component';
 
 @Component({
-  selector:
-    'app-reserva-online',
+  selector: 'app-reserva-online',
 
-  standalone:
-    true,
+  standalone: true,
 
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReservaPersonalComponent
   ],
 
-  templateUrl:
-    './reserva-online.component.html',
+  templateUrl: './reserva-online.component.html',
 
   styleUrls: [
     './reserva-online.component.css'
   ]
 })
-export class ReservaOnlineComponent
-  implements OnInit {
-
+export class ReservaOnlineComponent implements OnInit {
 
   // ==========================================
   // ESTADOS
   // ==========================================
 
-  cargando =
-    true;
+  cargando = true;
 
-  guardando =
-    false;
+  guardando = false;
 
-  cargandoEnlace =
-    true;
+  cargandoEnlace = true;
 
-  hayCambiosSinGuardar =
-    false;
-
+  hayCambiosSinGuardar = false;
 
   // ==========================================
   // ENLACE PÚBLICO
   // ==========================================
 
-  urlReservaPublica:
-    string = '';
-
+  urlReservaPublica: string = '';
 
   // ==========================================
   // CONFIGURACIÓN
   // ==========================================
 
-  configuracion:
-    ConfiguracionReservas = {
+  configuracion: ConfiguracionReservas = {
 
-      permitirReservaOnline:
-        true,
+    permitirReservaOnline: true,
 
-      maxTurnosActivos:
-        2,
+    maxTurnosActivos: 2,
 
-      diasMaximosAnticipacion:
-        90,
+    diasMaximosAnticipacion: 90,
 
-      horasMinimasCancelacion:
-        24,
+    horasMinimasCancelacion: 24,
 
-      permitirMultiplesTurnosMismoDia:
-        false,
+    permitirMultiplesTurnosMismoDia: false,
 
-      permitirElegirProfesional:
-        true,
+    permitirElegirProfesional: true,
 
-      permitirElegirSucursal:
-        true,
+    permitirElegirSucursal: true,
 
-      requiereConfirmacion:
-        true,
+    requiereConfirmacion: true,
 
+    // ======================================
+    // CAMPOS
+    // ======================================
 
-      // ======================================
-      // CAMPOS
-      // ======================================
+    solicitarDni: true,
 
-      solicitarDni:
-        true,
+    solicitarEmail: true,
 
-      solicitarEmail:
-        true,
+    solicitarTelefono: true,
 
-      solicitarTelefono:
-        true,
+    solicitarFechaNacimiento: false,
 
-      solicitarFechaNacimiento:
-        false,
+    solicitarObraSocial: true,
 
-      solicitarObraSocial:
-        true,
+    solicitarMotivoConsulta: true,
 
-      solicitarMotivoConsulta:
-        true,
+    solicitarObservaciones: false,
 
-      solicitarObservaciones:
-        false,
+    // ======================================
+    // TEXTOS
+    // ======================================
 
+    tituloReserva: 'Reservá tu turno',
 
-      // ======================================
-      // TEXTOS
-      // ======================================
+    descripcionReserva:
+      'Seleccioná el profesional, la fecha y el horario que prefieras.',
 
-      tituloReserva:
-        'Reservá tu turno',
+    // ======================================
+    // REGLAS
+    // ======================================
 
-      descripcionReserva:
-        'Seleccioná el profesional, la fecha y el horario que prefieras.',
+    tiempoGraciaMinutos: 10,
 
+    permitirSobreturnos: false
 
-      // ======================================
-      // REGLAS
-      // ======================================
-
-      tiempoGraciaMinutos:
-        10,
-
-      permitirSobreturnos:
-        false
-
-    };
-
+  };
 
   // ==========================================
   // CONSTRUCTOR
@@ -172,7 +141,6 @@ export class ReservaOnlineComponent
 
   ) {}
 
-
   // ==========================================
   // INIT
   // ==========================================
@@ -185,82 +153,60 @@ export class ReservaOnlineComponent
 
   }
 
-
   // ==========================================
   // CARGAR ENLACE PÚBLICO
   // ==========================================
 
-  cargarEnlaceReserva():
-    void {
+  cargarEnlaceReserva(): void {
 
-    this.cargandoEnlace =
-      true;
-
+    this.cargandoEnlace = true;
 
     this.organizacionService
       .obtenerOrganizacionActual()
       .subscribe({
 
-        next:
-          organizacion => {
+        next: organizacion => {
 
-           const origen =
-  window.location.origin;
+          const origen = window.location.origin;
 
-this.urlReservaPublica =
-  organizacion.slug
-    ? `${origen}/reservar/${organizacion.slug}`
-    : '';
+          this.urlReservaPublica =
+            organizacion.slug
+              ? `${origen}/reservar/${organizacion.slug}`
+              : '';
 
-            this.cargandoEnlace =
-              false;
+          this.cargandoEnlace = false;
 
-          },
+        },
 
+        error: error => {
 
-        error:
-          error => {
+          console.error(
+            'Error cargando enlace de reserva:',
+            error
+          );
 
-            console.error(
-              'Error cargando enlace de reserva:',
-              error
-            );
+          this.urlReservaPublica = '';
 
+          this.cargandoEnlace = false;
 
-            this.urlReservaPublica =
-              '';
-
-
-            this.cargandoEnlace =
-              false;
-
-          }
+        }
 
       });
 
   }
 
-
   // ==========================================
   // COPIAR ENLACE
   // ==========================================
 
-  copiarLink():
-    void {
+  copiarLink(): void {
 
-    if (
-      !this.urlReservaPublica
-    ) {
-
+    if (!this.urlReservaPublica) {
       return;
-
     }
 
-
     navigator.clipboard
-      .writeText(
-        this.urlReservaPublica
-      )
+      .writeText(this.urlReservaPublica)
       .then(() => {
 
         this.alertaService.success(
@@ -270,41 +216,31 @@ this.urlReservaPublica =
         );
 
       })
-      .catch(
-        error => {
+      .catch(error => {
 
-          console.error(
-            'Error copiando enlace:',
-            error
-          );
+        console.error(
+          'Error copiando enlace:',
+          error
+        );
 
+        this.alertaService.error(
+          'No se pudo copiar',
+          'No pudimos copiar el enlace.'
+        );
 
-          this.alertaService.error(
-            'No se pudo copiar',
-            'No pudimos copiar el enlace.'
-          );
-
-        }
-      );
+      });
 
   }
-
 
   // ==========================================
   // ABRIR PÁGINA PÚBLICA
   // ==========================================
 
-  abrirReservaPublica():
-    void {
+  abrirReservaPublica(): void {
 
-    if (
-      !this.urlReservaPublica
-    ) {
-
+    if (!this.urlReservaPublica) {
       return;
-
     }
-
 
     window.open(
       this.urlReservaPublica,
@@ -314,157 +250,114 @@ this.urlReservaPublica =
 
   }
 
-
   // ==========================================
   // CARGAR CONFIGURACIÓN
   // ==========================================
 
-  cargarConfiguracion():
-    void {
+  cargarConfiguracion(): void {
 
-    this.cargando =
-      true;
-
+    this.cargando = true;
 
     this.configuracionService
       .obtener()
       .subscribe({
 
-        next:
-          respuesta => {
+        next: respuesta => {
 
-            this.configuracion =
-              respuesta;
+          this.configuracion = respuesta;
 
+          this.hayCambiosSinGuardar = false;
 
-            this.hayCambiosSinGuardar =
-              false;
+          this.cargando = false;
 
+        },
 
-            this.cargando =
-              false;
+        error: error => {
 
-          },
+          console.error(
+            'Error cargando configuración:',
+            error
+          );
 
+          this.cargando = false;
 
-        error:
-          error => {
+          this.alertaService.error(
+            'No se pudo cargar',
+            'No pudimos obtener la configuración de reserva online.'
+          );
 
-            console.error(
-              'Error cargando configuración:',
-              error
-            );
-
-
-            this.cargando =
-              false;
-
-
-            this.alertaService.error(
-              'No se pudo cargar',
-              'No pudimos obtener la configuración de reserva online.'
-            );
-
-          }
+        }
 
       });
 
   }
 
-
   // ==========================================
   // CAMBIOS SIN GUARDAR
   // ==========================================
 
-  marcarCambios():
-    void {
+  marcarCambios(): void {
 
     if (
-      this.cargando
-      ||
+      this.cargando ||
       this.guardando
     ) {
-
       return;
-
     }
 
-
-    this.hayCambiosSinGuardar =
-      true;
+    this.hayCambiosSinGuardar = true;
 
   }
-
 
   // ==========================================
   // GUARDAR CONFIGURACIÓN
   // ==========================================
 
-  guardar():
-    void {
+  guardar(): void {
 
     if (
-      this.guardando
-      ||
+      this.guardando ||
       !this.hayCambiosSinGuardar
     ) {
-
       return;
-
     }
 
-
-    this.guardando =
-      true;
-
+    this.guardando = true;
 
     this.configuracionService
-      .guardar(
-        this.configuracion
-      )
+      .guardar(this.configuracion)
       .subscribe({
 
-        next:
-          () => {
+        next: () => {
 
-            this.guardando =
-              false;
+          this.guardando = false;
 
+          this.hayCambiosSinGuardar = false;
 
-            this.hayCambiosSinGuardar =
-              false;
+          this.alertaService.success(
+            'Configuración guardada',
+            'Los cambios se guardaron correctamente.',
+            1800
+          );
 
+        },
 
-            this.alertaService.success(
-              'Configuración guardada',
-              'Los cambios se guardaron correctamente.',
-              1800
-            );
+        error: error => {
 
-          },
+          console.error(
+            'Error guardando configuración:',
+            error
+          );
 
+          this.guardando = false;
 
-        error:
-          error => {
+          this.alertaService.error(
+            'No se pudo guardar',
+            error?.error?.message ??
+            'Ocurrió un error al guardar la configuración.'
+          );
 
-            console.error(
-              'Error guardando configuración:',
-              error
-            );
-
-
-            this.guardando =
-              false;
-
-
-            this.alertaService.error(
-              'No se pudo guardar',
-              error?.error?.message
-              ??
-              'Ocurrió un error al guardar la configuración.'
-            );
-
-          }
+        }
 
       });
 

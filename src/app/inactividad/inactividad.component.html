@@ -302,10 +302,27 @@
       <button type="button" [class.active]="tabActiva === 'consultorios'" (click)="cambiarTab('consultorios')">
       <i class="fas fa-door-open"></i><span>Consultorios</span>
     </button>
+    <!-- ENLACES EXTERNOS -->
+
+<button
+  type="button"
+  [class.active]="tabActiva === 'enlaces-externos'"
+  (click)="cambiarTab('enlaces-externos')">
+
+  <i class="fas fa-link"></i>
+  <span>Enlaces externos</span>
+
+</button>
   </nav>
   <button type="button" class="settings-tabs-arrow" aria-label="Desplazar pestañas a la derecha"
           (click)="tabsNav.scrollBy({ left: 240, behavior: 'smooth' })">›</button>
 </div>
+
+  <!-- ENLACES EXTERNOS -->
+  <section class="tab-content" *ngIf="tabActiva === 'enlaces-externos'">
+    <app-enlaces-externos></app-enlaces-externos>
+  </section>
+
 
 <!-- ======================================================= -->
 

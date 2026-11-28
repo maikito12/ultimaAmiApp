@@ -1,0 +1,449 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+:host(:not(:has(.reserva-personal))) {
+  display: none;
+}
+
+/* ==========================================
+   CONTENEDOR
+========================================== */
+
+.reserva-personal {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #dfe7e3;
+  border-radius: 13px;
+  color: #33443f;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.reserva-personal-header {
+  margin-bottom: 20px;
+}
+
+.reserva-personal-header h2 {
+  margin: 0;
+  color: #073b34;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.reserva-personal-header p {
+  margin: 5px 0 0;
+  color: #899892;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   MODOS DE RESERVA
+========================================== */
+
+.modos-reserva {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modo-opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #dfe7e3;
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.modo-opcion:hover:not(:has(input:disabled)) {
+  border-color: #9db8ae;
+}
+
+.modo-opcion:has(input:checked) {
+  background: #edf5f2;
+  border-color: #9db8ae;
+}
+
+.modo-opcion:has(input:disabled) {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.modo-opcion input,
+.sucursal-row input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  accent-color: #17483d;
+}
+
+.modo-opcion strong {
+  display: block;
+  font-size: 13px;
+  color: #40534d;
+  font-weight: 650;
+}
+
+.modo-opcion p {
+  margin: 4px 0 0;
+  color: #71817c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   ORGANIZACIONES
+========================================== */
+
+.organizaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.organizacion-grupo {
+  padding: 15px;
+  border: 1px solid #dfe7e3;
+  border-radius: 9px;
+}
+
+.organizacion-grupo h3 {
+  margin: 0 0 10px;
+  color: #17483d;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   SUCURSALES
+========================================== */
+
+.sucursal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf1ef;
+  cursor: pointer;
+}
+
+.sucursal-row:has(input:disabled) {
+  cursor: default;
+}
+
+.sucursal-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sucursal-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sucursal-info strong {
+  font-size: 13px;
+  color: #40534d;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.sucursal-info span {
+  font-size: 12px;
+  color: #899892;
+  line-height: 1.4;
+}
+
+.sucursal-info .estado-autorizado {
+  color: #39735d;
+}
+
+.sucursal-info .estado-no-autorizado {
+  color: #a87928;
+}
+
+.sucursal-info .estado-no-disponible {
+  color: #899892;
+}
+
+/* ==========================================
+   ESTADO VACIO
+========================================== */
+
+.estado-vacio {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8faf9;
+  border: 1px dashed #d6e2dd;
+  border-radius: 9px;
+}
+
+.estado-vacio strong {
+  display: block;
+  color: #40534d;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.estado-vacio p {
+  margin: 5px 0 0;
+  color: #71817c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   INFORMACION
+========================================== */
+
+.reserva-personal-info {
+  margin-top: 20px;
+  padding: 14px;
+  background: #f8faf9;
+  border: 1px solid #dfe7e3;
+  border-radius: 9px;
+}
+
+.reserva-personal-info strong {
+  color: #17483d;
+  font-size: 13px;
+}
+
+.reserva-personal-info p {
+  margin: 5px 0 0;
+  color: #71817c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.reserva-personal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.reserva-personal-resumen {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.reserva-personal-resumen span {
+  font-size: 12px;
+  color: #71817c;
+  line-height: 1.4;
+}
+
+.reserva-personal-resumen .cambios-pendientes {
+  color: #a87928;
+  font-weight: 600;
+}
+
+.reserva-personal-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   BOTONES
+========================================== */
+
+.btn-guardar-personal,
+.btn-cancelar-personal {
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btn-guardar-personal {
+  border: 1px solid #17483d;
+  background: #17483d;
+  color: #ffffff;
+}
+
+.btn-guardar-personal:hover:not(:disabled) {
+  background: #123c33;
+}
+
+.btn-cancelar-personal {
+  border: 1px solid #dfe7e3;
+  background: #ffffff;
+  color: #52645e;
+}
+
+.btn-cancelar-personal:hover:not(:disabled) {
+  background: #f8faf9;
+  border-color: #9db8ae;
+}
+
+.btn-guardar-personal:disabled,
+.btn-cancelar-personal:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   MENSAJES
+========================================== */
+
+.mensaje-error,
+.mensaje-exito {
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.mensaje-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+}
+
+.mensaje-exito {
+  background: #edf5f2;
+  color: #17483d;
+  border: 1px solid #d6e2dd;
+}
+
+.btn-reintentar {
+  padding: 7px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #b91c1c;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.btn-reintentar:hover {
+  background: #fee2e2;
+}
+
+/* ==========================================
+   CARGANDO
+========================================== */
+
+.estado-carga {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 70px;
+  color: #71817c;
+  font-size: 13px;
+}
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  border: 2px solid #dfe7e3;
+  border-top-color: #17483d;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 650px) {
+
+  .reserva-personal {
+    padding: 17px;
+  }
+
+  .modo-opcion {
+    padding: 12px;
+  }
+
+  .organizacion-grupo {
+    padding: 12px;
+  }
+
+  .reserva-personal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reserva-personal-acciones {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-guardar-personal,
+  .btn-cancelar-personal {
+    width: 100%;
+  }
+
+  .mensaje-error {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .spinner {
+    animation: none;
+  }
+
+  .modo-opcion,
+  .btn-guardar-personal,
+  .btn-cancelar-personal {
+    transition: none;
+  }
+
+}

@@ -1,0 +1,424 @@
+<section class="enlaces-externos">
+
+  <!-- ENCABEZADO -->
+
+  <div class="ee-header">
+
+    <div class="ee-header-icon">
+
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+
+      </svg>
+
+    </div>
+
+    <div class="ee-header-text">
+
+      <h2>Publicación en enlaces externos</h2>
+
+      <p>
+        Administrá qué profesionales pueden incluir
+        las sucursales de tu organización en su
+        propio enlace de reservas.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- CARGANDO -->
+
+  <div class="ee-loading" *ngIf="cargando">
+
+    <span class="ee-spinner"></span>
+
+    Cargando configuración...
+
+  </div>
+
+  <!-- ERROR -->
+
+  <div
+    class="ee-alert ee-alert-error"
+    role="alert"
+    *ngIf="error">
+
+    <span>{{ error }}</span>
+
+    <button
+      *ngIf="!configuracionCargada"
+      type="button"
+      class="ee-text-button"
+      (click)="cargarConfiguracion()">
+
+      Reintentar
+
+    </button>
+
+  </div>
+
+  <!-- CONTENIDO -->
+
+  <ng-container *ngIf="!cargando && configuracionCargada">
+
+    <!-- MODALIDADES -->
+
+    <div class="ee-options">
+
+      <label
+        class="ee-option"
+        [class.ee-option-active]="modoAutorizacion === 0">
+
+        <input
+          type="radio"
+          name="modoEnlacesExternos"
+          [checked]="modoAutorizacion === 0"
+          [disabled]="guardando"
+          (change)="cambiarModo(0)">
+
+        <div class="ee-option-content">
+
+          <strong>No permitir</strong>
+
+          <span>
+            Ningún profesional podrá publicar
+            las sucursales de esta organización
+            en enlaces externos.
+          </span>
+
+        </div>
+
+      </label>
+
+      <label
+        class="ee-option"
+        [class.ee-option-active]="modoAutorizacion === 1">
+
+        <input
+          type="radio"
+          name="modoEnlacesExternos"
+          [checked]="modoAutorizacion === 1"
+          [disabled]="guardando"
+          (change)="cambiarModo(1)">
+
+        <div class="ee-option-content">
+
+          <strong>Permitir a todos los elegibles</strong>
+
+          <span>
+            Autoriza automáticamente a los profesionales
+            que también administran y ejercen en otra
+            organización, incluyendo futuras incorporaciones.
+          </span>
+
+        </div>
+
+      </label>
+
+      <label
+        class="ee-option"
+        [class.ee-option-active]="modoAutorizacion === 2">
+
+        <input
+          type="radio"
+          name="modoEnlacesExternos"
+          [checked]="modoAutorizacion === 2"
+          [disabled]="guardando"
+          (change)="cambiarModo(2)">
+
+        <div class="ee-option-content">
+
+          <strong>Seleccionar profesionales</strong>
+
+          <span>
+            Elegí individualmente qué profesionales
+            pueden publicar tus sucursales.
+          </span>
+
+        </div>
+
+      </label>
+
+    </div>
+
+    <!-- PROFESIONALES -->
+
+    <div
+      class="ee-professionals"
+      *ngIf="modoAutorizacion !== 0">
+
+      <div class="ee-professionals-header">
+
+        <div>
+
+          <h3>Profesionales elegibles</h3>
+
+          <p>
+            Profesionales que también administran
+            y ejercen en otra organización.
+          </p>
+
+        </div>
+
+        <span class="ee-counter">
+
+          {{ cantidadAutorizados }} /
+          {{ cantidadElegibles }}
+
+        </span>
+
+      </div>
+
+      <!-- LISTADO VACIO -->
+
+      <div
+        class="ee-empty"
+        *ngIf="cantidadElegibles === 0">
+
+        <strong>
+          No hay profesionales elegibles
+        </strong>
+
+        <p>
+          Actualmente ningún profesional de esta
+          organización cumple los requisitos
+          para publicar sucursales externamente.
+        </p>
+
+      </div>
+
+      <ng-container *ngIf="cantidadElegibles > 0">
+
+        <!-- BUSCADOR -->
+
+        <div class="ee-search">
+
+          <svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round">
+
+            <circle cx="11" cy="11" r="7"/>
+
+            <path d="m20 20-4-4"/>
+
+          </svg>
+
+          <input
+            type="search"
+            placeholder="Buscar profesional..."
+            aria-label="Buscar profesional"
+            [(ngModel)]="busqueda"
+            [ngModelOptions]="{ standalone: true }"
+            [disabled]="guardando">
+
+        </div>
+
+        <!-- ACCIONES MASIVAS -->
+
+        <div
+          class="ee-bulk-actions"
+          *ngIf="modoAutorizacion === 2">
+
+          <button
+            type="button"
+            class="ee-text-button"
+            [disabled]="guardando"
+            (click)="seleccionarTodos()">
+
+            Seleccionar todos
+
+          </button>
+
+          <span class="ee-action-divider"></span>
+
+          <button
+            type="button"
+            class="ee-text-button"
+            [disabled]="guardando"
+            (click)="deseleccionarTodos()">
+
+            Deseleccionar todos
+
+          </button>
+
+        </div>
+
+        <!-- LISTADO -->
+
+        <div class="ee-list">
+
+          <div
+            class="ee-professional"
+            *ngFor="
+              let profesional of profesionalesFiltrados;
+              trackBy: trackByProfesional
+            ">
+
+            <div class="ee-avatar">
+
+              {{ obtenerIniciales(profesional.nombreCompleto) }}
+
+            </div>
+
+            <div class="ee-professional-info">
+
+              <strong>
+                {{ profesional.nombreCompleto }}
+              </strong>
+
+              <span>
+                Administrador y profesional
+                en otra organización
+              </span>
+
+            </div>
+
+            <span
+              class="ee-status"
+              [class.ee-status-active]="estaAutorizado(profesional)">
+
+              {{
+                estaAutorizado(profesional)
+                  ? 'Autorizado'
+                  : 'Sin autorización'
+              }}
+
+            </span>
+
+            <input
+              *ngIf="modoAutorizacion === 2"
+              type="checkbox"
+              class="ee-checkbox"
+              [attr.aria-label]="'Autorizar ' + profesional.nombreCompleto"
+              [checked]="estaSeleccionado(profesional.profesionalOrganizacionId)"
+              [disabled]="guardando"
+              (change)="cambiarSeleccion(
+                profesional.profesionalOrganizacionId,
+                $any($event.target).checked
+              )">
+
+          </div>
+
+          <div
+            class="ee-empty"
+            *ngIf="profesionalesFiltrados.length === 0">
+
+            No se encontraron profesionales.
+
+          </div>
+
+        </div>
+
+      </ng-container>
+
+    </div>
+
+    <!-- INFORMACION -->
+
+    <div class="ee-information">
+
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round">
+
+        <circle cx="12" cy="12" r="9"/>
+
+        <path d="M12 11v5"/>
+
+        <path d="M12 7h.01"/>
+
+      </svg>
+
+      <p>
+        Esta autorización únicamente permite publicar
+        las sucursales asignadas al profesional.
+        No modifica los turnos existentes ni la
+        sincronización de horarios entre organizaciones.
+      </p>
+
+    </div>
+
+    <!-- MENSAJE DE EXITO -->
+
+    <div
+      class="ee-alert ee-alert-success"
+      role="status"
+      *ngIf="mensajeExito">
+
+      {{ mensajeExito }}
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="ee-footer">
+
+      <div class="ee-summary">
+
+        <strong>{{ cantidadAutorizados }}</strong>
+
+        <span>Profesionales autorizados</span>
+
+      </div>
+
+      <div class="ee-footer-actions">
+
+        <button
+          *ngIf="hayCambiosSinGuardar"
+          type="button"
+          class="ee-button ee-button-secondary"
+          [disabled]="guardando"
+          (click)="cancelarCambios()">
+
+          Cancelar
+
+        </button>
+
+        <button
+          type="button"
+          class="ee-button ee-button-primary"
+          [disabled]="!puedeGuardar"
+          (click)="guardar()">
+
+          <span
+            class="ee-spinner ee-spinner-white"
+            *ngIf="guardando">
+          </span>
+
+          {{
+            guardando
+              ? 'Guardando...'
+              : 'Guardar autorización'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</section>

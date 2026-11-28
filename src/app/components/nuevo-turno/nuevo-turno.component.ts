@@ -3067,7 +3067,8 @@ cargarHorariosParaTurno(): void {
 
 
 
-  this.cargandoHorarios = true;
+this.horasDisponibles = [];
+this.cargandoHorarios = true;
 
 
 
@@ -3618,27 +3619,26 @@ generarHorasDisponibles(): void {
   const diaSemana = this.convertirDiaSemana(this.parseFechaLocal(fechaConsultada));
   const horariosDia = this.horariosFiltrados.filter(h => h.diaSemana === diaSemana);
   this.cargandoHorarios = true;
-  this.turnosService.obtenerAgenda({
-    fecha: fechaConsultada, profesionalOrganizacionId: profesionalId
-  }).subscribe({
+ this.turnosService.obtenerOcupacionGlobal(
+  profesionalId,
+  fechaConsultada
+).subscribe({
     next: (response: any) => {
       if (peticion !== this.peticionAgenda || this.fechaSeleccionada !== fechaConsultada ||
           this.prestacionSeleccionadaId !== prestacionConsultada ||
           this.obtenerProfesionalId() !== profesionalId) return;
-      const turnos: any[] = Array.isArray(response) ? response : response?.data ?? [];
-      // Usamos intervalos completos, NO solo las horas de inicio.
-      const ocupados = turnos
-        .filter(t => {
-          // EstadoTurno.Cancelado = 6; EstadoTurno.EnSala = 3.
-          const estado = String(t.estado ?? '').trim().toLowerCase();
-          return estado !== 'cancelado' && estado !== '6' && t.activo !== false;
-        })
-        .map(t => ({
-          inicio: this.horaAMinutos(this.normalizarHora(t.horaInicio ?? t.hora_inicio ?? t.hora)),
-          fin: this.horaAMinutos(this.normalizarHora(t.horaFin ?? t.hora_fin))
-        }))
-        .filter(x => x.fin > x.inicio)
-        .sort((a, b) => a.inicio - b.inicio);
+   const turnos: {
+  horaInicio: string;
+  horaFin: string;
+}[] = response;
+
+const ocupados = turnos
+  .map(t => ({
+    inicio: this.horaAMinutos(this.normalizarHora(t.horaInicio)),
+    fin: this.horaAMinutos(this.normalizarHora(t.horaFin))
+  }))
+  .filter(x => x.fin > x.inicio)
+  .sort((a, b) => a.inicio - b.inicio);
       const slots = new Set<string>();
       for (const horario of horariosDia) {
         const desde = this.horaAMinutos(horario.horaInicio);

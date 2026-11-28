@@ -3143,3 +3143,8 @@
     scroll-margin-top: 22px;
   }
 }
+
+.datos-destino { margin-top: 20px; padding: 16px; border: 1px solid #dde7e3; border-radius: 12px; }
+.datos-destino h3 { margin: 0 0 8px; color: var(--brand-primary); }
+.datos-destino p { font-size: 13px; }
+@media(max-width:650px){.datos-destino .booking-form{grid-template-columns:1fr;}}

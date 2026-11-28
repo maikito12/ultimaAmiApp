@@ -1379,7 +1379,7 @@
 
                     <i class="fas fa-location-dot"></i>
 
-                    {{ turno.sucursal.nombre }} ·
+                    {{ turno.sucursal.nombre }} <small *ngIf="turno.sucursal.esExterna">· {{ turno.sucursal.nombreOrganizacion }}</small> ·
 
                     {{ turno.sucursal.direccion }}
 
@@ -1683,7 +1683,7 @@
 
                   <span class="branch-info">
 
-                    <strong>{{ sucursal.nombre }}</strong>
+                    <strong>{{ sucursal.nombre }} <small *ngIf="sucursal.esExterna">· {{ sucursal.nombreOrganizacion }}</small></strong>
 
                     <span>{{ sucursal.direccion }}</span>
 
@@ -1801,7 +1801,7 @@
 
                 <span class="branch-info">
 
-                  <strong>{{ sucursal.nombre }}</strong>
+                  <strong>{{ sucursal.nombre }} <small *ngIf="sucursal.esExterna">· {{ sucursal.nombreOrganizacion }}</small></strong>
 
                   <span>{{ sucursal.direccion }}</span>
 
@@ -2200,7 +2200,17 @@
           </div>
         </div>
 
-        <div class="booking-actions" id="reserva-continuar-paso4">
+        <section class="datos-destino" *ngIf="sucursalSeleccionada?.esExterna && profesionalSeleccionado && ((configuracionDestino.solicitarDni && !configuracionPublica.solicitarDni) || (configuracionDestino.solicitarTelefono && !configuracionPublica.solicitarTelefono) || (configuracionDestino.solicitarEmail && !configuracionPublica.solicitarEmail) || (configuracionDestino.solicitarFechaNacimiento && !configuracionPublica.solicitarFechaNacimiento) || (configuracionDestino.solicitarObservaciones && !configuracionPublica.solicitarObservaciones))">
+<h3>Datos para {{ sucursalSeleccionada?.nombreOrganizacion }}</h3>
+<p>Revisá los datos solicitados por este lugar de atención.</p>
+<div class="booking-form">
+<div class="field-group" *ngIf="configuracionDestino.solicitarDni && !configuracionPublica.solicitarDni"><label>DNI</label><input [(ngModel)]="paciente.dni" (input)="formatearDni()"></div>
+<div class="field-group" *ngIf="configuracionDestino.solicitarTelefono && !configuracionPublica.solicitarTelefono"><label>Teléfono (código de área y número)</label><input type="tel" [(ngModel)]="paciente.telefono"></div>
+<div class="field-group" *ngIf="configuracionDestino.solicitarEmail && !configuracionPublica.solicitarEmail"><label>Email</label><input type="email" [(ngModel)]="paciente.email"></div>
+<div class="field-group" *ngIf="configuracionDestino.solicitarFechaNacimiento && !configuracionPublica.solicitarFechaNacimiento"><label>Fecha de nacimiento</label><input type="date" [(ngModel)]="paciente.fechaNacimiento"></div>
+<div class="field-group full" *ngIf="configuracionDestino.solicitarObservaciones && !configuracionPublica.solicitarObservaciones"><label>Observaciones (opcional)</label><input [(ngModel)]="paciente.observaciones"></div>
+</div></section>
+<div class="booking-actions" id="reserva-continuar-paso4">
 
           <button
 

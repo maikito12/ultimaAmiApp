@@ -1,0 +1,359 @@
+<div
+  class="reserva-personal"
+  *ngIf="disponible || cargando || error"
+>
+
+  <!-- CARGANDO -->
+
+  <div
+    class="estado-carga"
+    *ngIf="cargando"
+  >
+    <span class="spinner"></span>
+    Cargando lugares de atención...
+  </div>
+
+  <!-- ERROR -->
+
+  <div
+    class="mensaje-error"
+    *ngIf="error"
+  >
+
+    <span>{{ error }}</span>
+
+    <button
+      *ngIf="!configuracionCargada"
+      class="btn-reintentar"
+      type="button"
+      (click)="cargarConfiguracion()"
+    >
+      Reintentar
+    </button>
+
+  </div>
+
+  <ng-container
+    *ngIf="disponible && configuracionCargada"
+  >
+
+    <!-- HEADER -->
+
+    <div class="reserva-personal-header">
+
+      <h2>Reservas en otros consultorios</h2>
+
+      <p>
+        Permití que tus pacientes reserven en otros
+        lugares donde atendés, utilizando el enlace
+        de reservas de tu organización.
+      </p>
+
+    </div>
+
+    <!-- MODOS DE RESERVA -->
+
+    <div class="modos-reserva">
+
+      <!-- SOLO MI ORGANIZACION -->
+
+      <label class="modo-opcion">
+
+        <input
+          type="radio"
+          name="modoReservaExterna"
+          [checked]="modoSucursales === 0"
+          [disabled]="guardando"
+          (change)="cambiarModo(0)"
+        />
+
+        <div>
+
+          <strong>Solo mi organización</strong>
+
+          <p>
+            Mostrar únicamente las sucursales
+            de esta organización.
+          </p>
+
+        </div>
+
+      </label>
+
+      <!-- TODAS LAS AUTORIZADAS -->
+
+      <label class="modo-opcion">
+
+        <input
+          type="radio"
+          name="modoReservaExterna"
+          [checked]="modoSucursales === 1"
+          [disabled]="
+            guardando ||
+            cantidadAutorizadas === 0
+          "
+          (change)="cambiarModo(1)"
+        />
+
+        <div>
+
+          <strong>
+            Todas mis sucursales autorizadas
+          </strong>
+
+          <p>
+            Incluir automáticamente los otros lugares
+            donde atendés y tenés autorización.
+          </p>
+
+        </div>
+
+      </label>
+
+      <!-- SELECCION MANUAL -->
+
+      <label class="modo-opcion">
+
+        <input
+          type="radio"
+          name="modoReservaExterna"
+          [checked]="modoSucursales === 2"
+          [disabled]="
+            guardando ||
+            cantidadAutorizadas === 0
+          "
+          (change)="cambiarModo(2)"
+        />
+
+        <div>
+
+          <strong>Seleccionar sucursales</strong>
+
+          <p>
+            Elegí qué lugares externos querés
+            incluir en tu enlace.
+          </p>
+
+        </div>
+
+      </label>
+
+    </div>
+
+    <!-- SIN SUCURSALES -->
+
+    <div
+      class="estado-vacio"
+      *ngIf="sucursales.length === 0"
+    >
+
+      <strong>
+        No tenés otros lugares de atención
+      </strong>
+
+      <p>
+        Cuando formes parte de otra organización
+        y tengas sucursales asignadas, podrás
+        configurarlas desde esta sección.
+      </p>
+
+    </div>
+
+    <!-- SIN AUTORIZACION -->
+
+    <div
+      class="estado-vacio"
+      *ngIf="
+        sucursales.length > 0 &&
+        cantidadAutorizadas === 0
+      "
+    >
+
+      <strong>
+        No tenés sucursales externas autorizadas
+      </strong>
+
+      <p>
+        Para incluir otros lugares en tu enlace,
+        necesitás que sus organizaciones autoricen
+        las reservas externas.
+      </p>
+
+    </div>
+
+    <!-- ORGANIZACIONES -->
+
+    <div
+      class="organizaciones"
+      *ngIf="
+        sucursales.length > 0 &&
+        (
+          modoSucursales !== 0 ||
+          cantidadAutorizadas === 0
+        )
+      "
+    >
+
+      <div
+        class="organizacion-grupo"
+        *ngFor="
+          let organizacion of organizaciones;
+          trackBy: trackByOrganizacion
+        "
+      >
+
+        <h3>{{ organizacion.nombre }}</h3>
+
+        <label
+          class="sucursal-row"
+          *ngFor="
+            let sucursal of organizacion.sucursales;
+            trackBy: trackBySucursal
+          "
+        >
+
+          <input
+            type="checkbox"
+            [checked]="estaSeleccionada(sucursal)"
+            [disabled]="
+              !sucursal.permitida ||
+              modoSucursales !== 2 ||
+              guardando
+            "
+            (change)="cambiarSeleccion(
+              sucursal,
+              $any($event.target).checked
+            )"
+          />
+
+          <div class="sucursal-info">
+
+            <strong>
+              {{ sucursal.nombreSucursal }}
+            </strong>
+
+            <!-- SIN AUTORIZACION -->
+
+            <span
+              class="estado-no-autorizado"
+              *ngIf="!sucursal.permitida"
+            >
+              Requiere autorización de la organización
+            </span>
+
+            <!-- AUTORIZADA PERO NO DISPONIBLE -->
+
+            <span
+              class="estado-no-disponible"
+              *ngIf="
+                sucursal.permitida &&
+                !sucursal.disponibleParaReserva
+              "
+            >
+              Reserva online deshabilitada
+            </span>
+
+            <!-- AUTORIZADA Y DISPONIBLE -->
+
+            <span
+              class="estado-autorizado"
+              *ngIf="
+                sucursal.permitida &&
+                sucursal.disponibleParaReserva
+              "
+            >
+              Autorizada para reservas online
+            </span>
+
+          </div>
+
+        </label>
+
+      </div>
+
+    </div>
+
+    <!-- INFORMACION -->
+
+    <div class="reserva-personal-info">
+
+      <strong>Disponibilidad sincronizada</strong>
+
+      <p>
+        La disponibilidad debe contemplar tus turnos
+        en todas las organizaciones, independientemente
+        de las sucursales que decidas publicar.
+      </p>
+
+      <p>
+        Cada reserva pertenece a la organización
+        donde se realiza la atención.
+      </p>
+
+    </div>
+
+    <!-- MENSAJE DE EXITO -->
+
+    <div
+      class="mensaje-exito"
+      *ngIf="mensajeExito"
+    >
+      {{ mensajeExito }}
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="reserva-personal-footer">
+
+      <div class="reserva-personal-resumen">
+
+        <span>
+          {{ cantidadVisibles }}
+          {{ cantidadVisibles === 1
+            ? 'sucursal externa habilitada'
+            : 'sucursales externas habilitadas'
+          }}
+          según tu selección
+        </span>
+
+        <span
+          class="cambios-pendientes"
+          *ngIf="hayCambiosSinGuardar"
+        >
+          Tenés cambios sin guardar
+        </span>
+
+      </div>
+
+      <div class="reserva-personal-acciones">
+
+        <button
+          *ngIf="hayCambiosSinGuardar"
+          class="btn-cancelar-personal"
+          type="button"
+          [disabled]="guardando"
+          (click)="cancelarCambios()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-guardar-personal"
+          type="button"
+          [disabled]="!puedeGuardar"
+          (click)="guardarConfiguracion()"
+        >
+          {{
+            guardando
+              ? 'Guardando...'
+              : 'Guardar configuración'
+          }}
+        </button>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -43,6 +44,7 @@ import {
   ContextoService
 
 } from '../../services/contexto.service';
+import { ComunicacionProfesionalComponent, ConfiguracionComunicacion } from '../comunicacion-profesional/comunicacion-profesional.component';
 declare const FB: any;
 interface OpcionAutomatizacionCatalogo {
 
@@ -258,7 +260,8 @@ Te dejamos este saludo especialmente para vos. 💜🎈
 
     CommonModule,
 
-    FormsModule
+    FormsModule,
+    ComunicacionProfesionalComponent
 
   ],
 
@@ -269,6 +272,12 @@ Te dejamos este saludo especialmente para vos. 💜🎈
 })
 
 export class AutomatizacionesComponent implements OnInit, OnDestroy {
+
+  modoComunicacionActual = 0;
+  comunicacionActual: ConfiguracionComunicacion | null = null;
+  get vistaHeredada(): boolean { return this.esAlcanceProfesional && this.modoComunicacionActual === 1; }
+  get origenHeredado() { const d = this.comunicacionActual; return d?.autorizado ? d.organizacionesDisponibles.find(o => o.organizacionId === d.organizacionOrigenId) : undefined; }
+  get reglasHeredadas() { return this.comunicacionActual?.autorizado ? this.comunicacionActual.reglasHeredadas ?? [] : []; }
 
   automatizaciones: Automatizacion[] = [];
 

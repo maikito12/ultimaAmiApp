@@ -36,7 +36,7 @@ import {
 
 } from '../services/configuracion-organizacion.service';
 import { Consultorio, ConsultoriosService } from '../services/consultorios.service';
-
+import { EnlacesExternosComponent } from '../components/enlaces-externos/enlaces-externos.component';
 import {
 
   AlertaService
@@ -59,8 +59,8 @@ import {
 
     CommonModule,
 
-    FormsModule
-
+    FormsModule,
+ EnlacesExternosComponent
   ],
 
   templateUrl: './inactividad.component.html',
@@ -83,21 +83,15 @@ export class InactividadComponent
 
   // ==========================================
 
- tabActiva:
-
+tabActiva:
   | 'general'
-
   | 'sucursales'
-
   | 'horarios'
-
   | 'especialidades'
-
   | 'obras'
-
   | 'bloqueos'
-    | 'consultorios'
-
+  | 'consultorios'
+  | 'enlaces-externos'
   = 'general';
 
   // ==========================================
@@ -491,28 +485,26 @@ cargandoObrasSociales = false;
 
   // ==========================================
 
-  cambiarTab(
-
+cambiarTab(
   tab:
-
     | 'general'
-
     | 'sucursales'
-
     | 'horarios'
-
     | 'especialidades'
-
     | 'obras'
-
     | 'bloqueos'
     | 'consultorios'
-
+    | 'enlaces-externos'
 ): void {
 
   this.tabActiva = tab;
-  if (tab === 'consultorios' && this.sucursalConsultoriosId) this.cargarConsultorios();
 
+  if (
+    tab === 'consultorios' &&
+    this.sucursalConsultoriosId
+  ) {
+    this.cargarConsultorios();
+  }
 }
 
 // ==========================================

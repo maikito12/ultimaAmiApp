@@ -170,9 +170,18 @@
 
 </section>
 
-    <!-- ESTADO -->
+<!-- ========================================= -->
+<!-- RESERVAS EN OTROS CONSULTORIOS -->
+<!-- ========================================= -->
 
-    <section class="card principal">
+<app-reserva-personal
+  (input)="$event.stopPropagation()"
+  (change)="$event.stopPropagation()"
+></app-reserva-personal>
+
+<!-- ESTADO -->
+
+<section class="card principal">
 
       <div class="card-info">
 
